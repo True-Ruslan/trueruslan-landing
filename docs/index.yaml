@@ -1,0 +1,41 @@
+fullScreen: true
+blocks:
+  - type: header-block
+    width: xs
+    offset: default
+    title: Как всё устроено?
+    resetPaddings: false
+    verticalOffset: xs
+    description: MarketDB - это комплекс решений для аналитики и автоизменение цен Ваших товаров на маркетплейсах МагнитМаркет и Uzum.
+    background: {}
+  - type: card-layout-block
+    title: Возможности
+    colSizes:
+      xl: 4
+    children:
+      - type: basic-card
+        text: Аналитика маркетплейса на основне расширения для браузера
+        title: Внешняя аналитика
+      - type: basic-card
+        title: Внутренняя аналитика
+        text: Аналитика магазинов, категорий и товаров в личном кабинете
+      - type: basic-card
+        title: Автоизменение цен
+        text: Сервис автоизменения цен на основе динамики товаров конкурентов
+    resetPaddings: false
+    context: ''
+  - type: icons-block
+    size: m
+    title: Присоединяйтесь к нам
+    items:
+      - src: https://storage.yandexcloud.net/cloud-www-assets/pages/index-diplodoc/telegram.svg
+        text: Чат MarketDB
+        url: https://t.me/marketdbchat
+      - src: https://storage.yandexcloud.net/cloud-www-assets/pages/index-diplodoc/telegram.svg
+        text: Канал MarketDB
+        url: https://t.me/marketdbru
+    resetPaddings: true
+    animated: false
+    context: ''
+    description: ''
+animated: false
