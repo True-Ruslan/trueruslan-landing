@@ -1,20 +1,20 @@
 {
-  "name": "@crashteamdev/knowledge-doc",
+  "name": "@true-ruslan/trueruslan-landing",
   "version": "0.1.2",
   "description": "База знаний MarketDB",
   "homepage": "https://wiki.marketdb.ru/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/crashteamdev/knowledge-doc.git"
+    "url": "https://github.com/true-ruslan/trueruslan-landing.git"
   },
   "bugs": {
-    "url": "https://github.com/crashteamdev/knowledge-doc/issues",
+    "url": "https://github.com/true-ruslan/trueruslan-landing/issues",
     "email": "ruslan.nemikin@gmail.com"
   },
   "author": {
     "name": "TrueRuslan",
     "email": "ruslan.nemikin@gmail.com",
-    "url": "https://github.com/TrueDranik"
+    "url": "https://github.com/True-Ruslan"
   },
   "keywords": [
     "diplodoc",
