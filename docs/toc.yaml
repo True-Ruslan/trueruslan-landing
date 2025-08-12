@@ -1,25 +1,57 @@
-href: index.yaml
 navigation:
   logo:
-    url: ./index.html
-    text: База знаний MarketDB
+    url: ../index.html
+    text: TrueRuslan
     target: _self
   header:
     leftItems:
-      - text: Документация
+      - text: Главная
         type: link
-        url: documentation/index.html
+        url: index.html
         target: _self
-      - type: link
-        text: Личный кабинет
-        url: https://space.marketdb.pro
+      - text: Обо мне
+        type: link
+        url: about.html
+        target: _self
+      - text: Резюме
+        type: link
+        url: resume.html
+        target: _self
+      - text: Проекты
+        type: link
+        url: projects.html
+        target: _self
+      - text: Фотографии
+        type: link
+        url: photos.html
+        target: _self
+      - text: Контакты
+        type: link
+        url: contacts.html
+        target: _self
     rightItems:
       - type: link
-        text: Магнит Маркет
-        url: https://marketdb.ru
+        text: GitHub
+        url: https://github.com/True-Ruslan
       - type: link
-        text: Uzum
-        url: https://marketdb.org
+        text: Telegram
+        url: https://t.me/TrueRuslan
+      - type: link
+        text: Habr
+        url: https://habr.com/ru/users/trueruslan
       - type: controls
+title: TrueRuslan - Разработчик
+href: index.yaml
+items:
+  - name: Обо мне
+    href: ./about.md
+  - name: Резюме
+    href: ./resume.md
+  - name: Проекты
+    href: ./projects.md
+  - name: Фотографии
+    href: ./photos.md
+  - name: Контакты
+    href: ./contacts.md
 
 

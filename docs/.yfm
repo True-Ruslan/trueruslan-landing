@@ -1,2 +1,6 @@
 allowHTML: true
 outputFormat: html
+
+interface:
+  toc-header: false
+  favicon-src: https://clck.ru/3NdErX
