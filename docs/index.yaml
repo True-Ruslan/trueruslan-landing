@@ -14,16 +14,16 @@ meta:
 links:
   - title: Обо мне
     description: Подробная информация о моем опыте и навыках
-    href: ./about.md
+    href: ./landing/about.md
   - title: Резюме
     description: Мое резюме, навыки и опыт работы
-    href: ./resume.md
+    href: ./landing/resume.md
   - title: Проекты
     description: Примеры моих работ и проектов
-    href: ./projects.md
+    href: ./landing/projects.md
   - title: Фотографии
     description: Личные фотографии и моменты из жизни
-    href: ./photos.md
+    href: ./landing/photos.md
   - title: Контакты
     description: Способы связаться со мной
-    href: ./contacts.md
+    href: ./landing/contacts.md

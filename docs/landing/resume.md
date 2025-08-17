@@ -23,15 +23,15 @@
 
 ### Встроенный просмотр
 
-<iframe src="./cv.pdf" width="100%" height="600px" style="border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+<iframe src="../cv.pdf" width="100%" height="600px" style="border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
   <p>Ваш браузер не поддерживает отображение PDF. 
-  <a href="./cv.pdf" target="_blank">Открыть резюме в новой вкладке</a></p>
+  <a href="../cv.pdf" target="_blank">Открыть резюме в новой вкладке</a></p>
 </iframe>
 
 ---
 
 {% note warning %}
 
-**Примечание**: Информация в резюме актуальна на момент последнего обновления. Для получения самой свежей информации свяжитесь со мной через [контакты](./contacts.md).
+**Примечание**: Информация в резюме актуальна на момент последнего обновления. Для получения самой свежей информации свяжитесь со мной через [контакты](contacts.md).
 
 {% endnote %}

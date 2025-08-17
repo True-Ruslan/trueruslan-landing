@@ -8,12 +8,12 @@
 
 ## Основные проекты
 
-### E-commerce платформа "MarketDB"
+### E-commerce платформа [MarketDB](https://marketdb.pro)
 
 **Описание**: Сервис аналитики маркетплейсов.
 
-**Технологии**: Java 17-21; Spring, Spring Boot; MongoDB, PostgreSQL, Clickhouse; Yandex Data Streams
-**Результат**: Платформа для 1000+ селлеров
+**Технологии**: Java 17-21; Spring, Spring Boot; PostgreSQL, Clickhouse; Yandex Data Streams
+**Результат**: Платформа для 100+ селлеров
 
 ## Open Source
 
@@ -24,6 +24,6 @@
 
 {% note tip %}
 
-Хотите обсудить проект? Свяжитесь со мной через [контакты](./contacts.md).
+Хотите обсудить проект? Свяжитесь со мной через [контакты](contacts.md).
 
 {% endnote %}

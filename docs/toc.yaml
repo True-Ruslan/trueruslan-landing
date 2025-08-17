@@ -44,14 +44,14 @@ title: TrueRuslan - Разработчик
 href: index.yaml
 items:
   - name: Обо мне
-    href: ./about.md
+    href: ./landing/about.md
   - name: Резюме
-    href: ./resume.md
+    href: ./landing/resume.md
   - name: Проекты
-    href: ./projects.md
+    href: ./landing/projects.md
   - name: Фотографии
-    href: ./photos.md
+    href: ./landing/photos.md
   - name: Контакты
-    href: ./contacts.md
+    href: ./landing/contacts.md
 
 
