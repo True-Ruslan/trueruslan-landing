@@ -1,6 +1,6 @@
 navigation:
   logo:
-    url: ../index.html
+    url: index.html
     text: TrueRuslan
     target: _self
   header:
