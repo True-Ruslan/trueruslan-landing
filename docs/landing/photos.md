@@ -18,21 +18,15 @@
 
 #### Конференции
 
-<img alt="" height="300" src="../_images/Semihatov.jpg" title="Семихатов"/>
-
-<p>
-  <img src="../_images/Semihatov.jpg" alt="Семихатов" height="300">
-</p>
-
 ![Семихатов А.М.](../_images/Semihatov.jpg "Семихатов"){height=300}
 
 ### Хобби и увлечения
 
 ## Галерея
 
-<img alt="" height="" src="../_images/magister.jpg" title="Защита диссертации" width="300"/>
+![Магистр](../_images/magister.jpg "Защита диссертации"){width=300}
 
-<img alt="" height="230" src="../_images/avatar.png" title="Аватарка"/>
+![Аватарка](../_images/avatar.png "Аватарка"){height=230}
 
 {% note warning %}
 
