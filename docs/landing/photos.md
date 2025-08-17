@@ -20,6 +20,12 @@
 
 <img alt="" height="300" src="../_images/Semihatov.jpg" title="Семихатов"/>
 
+<p>
+  <img src="../_images/Semihatov.jpg" alt="Семихатов" height="300">
+</p>
+
+![Семихатов А.М.](../_images/Semihatov.jpg "Семихатов"){height=300}
+
 ### Хобби и увлечения
 
 ## Галерея
