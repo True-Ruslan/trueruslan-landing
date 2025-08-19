@@ -42,6 +42,15 @@ jobs:
         run: npm ci
       - name: Build docs
         run: npm run build:docs
+      - name: Copy PDF files
+        run: |
+          # Copy PDF files from docs to docs-html
+          find docs -name "*.pdf" -exec cp {} docs-html/ \;
+          # Copy PDF files from docs/landing to docs-html/landing
+          mkdir -p docs-html/landing
+          find docs/landing -name "*.pdf" -exec cp {} docs-html/landing/ \;
+          # Ensure .nojekyll file exists
+          touch docs-html/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -43,19 +43,7 @@ title="Резюме Руслана Немыкина">
   <a href="cv.pdf" target="_blank">открыть в новой вкладке</a></p>
 </iframe>
 
-<object
-data="cv.pdf"
-type="application/pdf"
-width="100%"
-height="800px"
-style="border: 1px solid #e5e5e5; border-radius: 8px;">
-  <p>Ваш браузер не поддерживает отображение PDF. 
-  <a href="cv.pdf" target="_blank">Открыть резюме в новой вкладке</a></p>
-</object>
-
-[![Предварительный просмотр резюме](../_images/avatar.png)](cv.pdf)
-
-[Скачать резюме в формате PDF](cv.pdf)
+[Предварительный просмотр резюме](cv.pdf)
 
 ---
 
