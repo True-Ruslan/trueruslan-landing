@@ -23,9 +23,9 @@
 
 ### Встроенный просмотр
 
-<iframe src="../cv.pdf" width="100%" height="800px" style="border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+<iframe src="cv.pdf" width="100%" height="800px" style="border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
   <p>Ваш браузер не поддерживает отображение PDF. 
-  <a href="../cv.pdf" target="_blank">Открыть резюме в новой вкладке</a></p>
+  <a href="cv.pdf" target="_blank">Открыть резюме в новой вкладке</a></p>
 </iframe>
 
 ---
