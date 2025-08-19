@@ -31,13 +31,13 @@ navigation:
         target: _self
     rightItems:
       - type: link
-        text: GitHub
+        text: GitHubㅤ
         url: https://github.com/True-Ruslan
       - type: link
-        text: Telegram
+        text: Telegramㅤ
         url: https://t.me/TrueRuslan_Blog
       - type: link
-        text: Habr
+        text: Habrㅤ
         url: https://habr.com/ru/users/trueruslan
       - type: controls
 title: TrueRuslan - Разработчик

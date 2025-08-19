@@ -35,8 +35,9 @@
     "build:docs": "yfm --input docs --output docs-html"
   },
   "dependencies": {
-    "@diplodoc/cli": "^4.24.0",
-    "@diplodoc/transform": "^4.14.0",
+    "@diplodoc/cli": "^5.5.0",
+    "@diplodoc/transform": "^4.60.2",
+    "@diplodoc/search-extension": "^2.1.0",
     "@gravity-ui/page-constructor": "^5.14.1",
     "chokidar": "^3.5.3",
     "express": "5.0.0",
