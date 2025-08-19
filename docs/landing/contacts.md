@@ -18,6 +18,7 @@
 
 ### 🌐 Социальные сети
 
+- **Telegram Blog**: [@TrueRuslan_Blog](https://t.me/TrueRuslan_Blog)
 - **GitHub**: [True-Ruslan](https://github.com/True-Ruslan)
 - **LinkedIn**: [Ruslan Nemykin](https://linkedin.com/in/trueruslan)
 - **Habr**: [Руслан Немыкин](https://habr.com/ru/users/TrueRuslan/)
