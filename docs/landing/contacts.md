@@ -8,15 +8,15 @@
 
 ## Основные способы связи
 
-### 💬 Мессенджеры
+### Мессенджеры
 
 - **Telegram**: [@TrueRuslan](https://t.me/TrueRuslan)
 
-### 📧 Email
+### Email
 
 - **Основной**: ruslan.nemikin@gmail.com
 
-### 🌐 Социальные сети
+### Социальные сети
 
 - **Telegram Blog**: [@TrueRuslan_Blog](https://t.me/TrueRuslan_Blog)
 - **GitHub**: [True-Ruslan](https://github.com/True-Ruslan)

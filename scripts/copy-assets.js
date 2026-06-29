@@ -1,93 +1,139 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
-console.log('📁 Copying assets to docs-html...');
+import {globSync} from 'glob';
 
-// Function to copy files recursively
-function copyFileSync(source, target) {
-  const targetFile = target;
-  
-  // If target is a directory, a file with the same name will be created
-  if (fs.existsSync(target)) {
-    if (fs.lstatSync(target).isDirectory()) {
-      targetFile = path.join(target, path.basename(source));
+import {injectDarkThemeIntoHtml} from './dark-theme.js';
+import {
+  collectPagesFromToc,
+  getSiteUrl,
+  injectPersonSchemaIntoHtml,
+} from './seo.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.join(__dirname, '..');
+const DOCS_DIR = path.join(ROOT, 'docs');
+const OUTPUT_DIR = path.join(ROOT, 'docs-html');
+
+const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
+
+function copyFile(source, target) {
+  fs.mkdirSync(path.dirname(target), {recursive: true});
+  fs.copyFileSync(source, target);
+}
+
+export function walkAssets(dir, outputRoot, docsDir = DOCS_DIR) {
+  const copied = [];
+
+  if (!fs.existsSync(dir)) {
+    return copied;
+  }
+
+  for (const entry of fs.readdirSync(dir, {withFileTypes: true})) {
+    const sourcePath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      copied.push(...walkAssets(sourcePath, outputRoot, docsDir));
+      continue;
     }
+
+    const extension = path.extname(entry.name).toLowerCase();
+    if (!ASSET_EXTENSIONS.has(extension)) {
+      continue;
+    }
+
+    const relativePath = path.relative(docsDir, sourcePath);
+    const targetPath = path.join(outputRoot, relativePath);
+    copyFile(sourcePath, targetPath);
+    copied.push(relativePath);
   }
-  
-  fs.writeFileSync(targetFile, fs.readFileSync(source));
+
+  return copied;
 }
 
-// Function to copy directory recursively
-function copyFolderRecursiveSync(source, target) {
-  // Check if folder needs to be created or integrated
-  const targetFolder = path.join(target, path.basename(source));
-  if (!fs.existsSync(targetFolder)) {
-    fs.mkdirSync(targetFolder);
-  }
-
-  // Copy
-  if (fs.lstatSync(source).isDirectory()) {
-    const files = fs.readdirSync(source);
-    files.forEach(function (file) {
-      const curSource = path.join(source, file);
-      if (fs.lstatSync(curSource).isDirectory()) {
-        copyFolderRecursiveSync(curSource, targetFolder);
-      } else {
-        copyFileSync(curSource, targetFolder);
-      }
-    });
-  }
+export function createNoJekyllFile(outputDir = OUTPUT_DIR) {
+  fs.writeFileSync(path.join(outputDir, '.nojekyll'), '');
 }
 
-// Function to find and copy PDF files
-function copyPDFFiles() {
-  const docsDir = path.join(__dirname, '..', 'docs');
-  const docsHtmlDir = path.join(__dirname, '..', 'docs-html');
-  
-  if (!fs.existsSync(docsHtmlDir)) {
-    console.log('❌ docs-html directory not found. Run build:docs first.');
-    return;
-  }
+export function writeRobotsTxt(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl()) {
+  const content = `User-agent: *
+Allow: /
 
-  // Copy PDF files from docs to docs-html
-  function findAndCopyPDFs(dir, targetDir) {
-    if (!fs.existsSync(dir)) return;
-    
-    const items = fs.readdirSync(dir);
-    items.forEach(item => {
-      const itemPath = path.join(dir, item);
-      const stat = fs.statSync(itemPath);
-      
-      if (stat.isDirectory()) {
-        const targetSubDir = path.join(targetDir, item);
-        if (!fs.existsSync(targetSubDir)) {
-          fs.mkdirSync(targetSubDir, { recursive: true });
-        }
-        findAndCopyPDFs(itemPath, targetSubDir);
-      } else if (item.toLowerCase().endsWith('.pdf')) {
-        const targetPath = path.join(targetDir, item);
-        fs.copyFileSync(itemPath, targetPath);
-        console.log(`📄 Copied: ${item} -> ${targetPath}`);
-      }
-    });
-  }
-
-  findAndCopyPDFs(docsDir, docsHtmlDir);
+Sitemap: ${siteUrl}/sitemap.xml
+`;
+  fs.writeFileSync(path.join(outputDir, 'robots.txt'), content);
 }
 
-// Function to create .nojekyll file
-function createNoJekyllFile() {
-  const nojekyllPath = path.join(__dirname, '..', 'docs-html', '.nojekyll');
-  fs.writeFileSync(nojekyllPath, '# This file tells GitHub Pages not to process this directory with Jekyll');
-  console.log('✅ Created .nojekyll file');
+export function writeSitemap(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl(), tocPath = path.join(DOCS_DIR, 'toc.yaml')) {
+  const tocContent = fs.readFileSync(tocPath, 'utf8');
+  const pages = collectPagesFromToc(tocContent);
+
+  const urls = pages.map((page) => {
+    const loc = page ? `${siteUrl}/${page}` : `${siteUrl}/`;
+    return `  <url><loc>${loc}</loc></url>`;
+  }).join('\n');
+
+  const content = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>
+`;
+  fs.writeFileSync(path.join(outputDir, 'sitemap.xml'), content);
 }
 
-// Main execution
-try {
-  copyPDFFiles();
+export function applyDarkThemeToHtmlFiles(outputDir = OUTPUT_DIR) {
+  const pattern = path.join(outputDir, '**', '*.html');
+  const htmlFiles = globSync(pattern, {nodir: true});
+
+  for (const htmlPath of htmlFiles) {
+    const html = fs.readFileSync(htmlPath, 'utf8');
+    const transformed = injectDarkThemeIntoHtml(html);
+    fs.writeFileSync(htmlPath, transformed, 'utf8');
+  }
+
+  return htmlFiles.length;
+}
+
+export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl()) {
+  const indexPath = path.join(outputDir, 'index.html');
+
+  if (!fs.existsSync(indexPath)) {
+    return false;
+  }
+
+  const html = fs.readFileSync(indexPath, 'utf8');
+  const transformed = injectPersonSchemaIntoHtml(html, siteUrl);
+  fs.writeFileSync(indexPath, transformed, 'utf8');
+  return true;
+}
+
+function main() {
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    console.error('docs-html directory not found. Run build:docs first.');
+    process.exit(1);
+  }
+
+  console.log('Copying static assets to docs-html...');
+  const copied = walkAssets(path.join(DOCS_DIR, 'assets'), OUTPUT_DIR);
+  for (const file of copied) {
+    console.log(`Copied: ${file}`);
+  }
+
   createNoJekyllFile();
-  console.log('🎉 Assets copied successfully!');
-} catch (error) {
-  console.error('❌ Error copying assets:', error.message);
-  process.exit(1);
+  writeRobotsTxt();
+  writeSitemap();
+
+  const themedPages = applyDarkThemeToHtmlFiles();
+  console.log(`Dark theme applied to ${themedPages} HTML file(s).`);
+
+  if (applyPersonSchemaToIndex()) {
+    console.log('Person schema injected into index.html.');
+  }
+
+  console.log('Assets and SEO files created successfully.');
+}
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
+  main();
 }

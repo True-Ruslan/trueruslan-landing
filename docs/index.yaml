@@ -1,28 +1,45 @@
 title: Руслан Немыкин - Java-разработчик
 description:
-  - >-
-    Добро пожаловать на мой персональный сайт!
-  - >-
-    Я Java-разработчик с опытом создания современных приложений.
-  - >-
-    Здесь вы найдете информацию о моих проектах, навыках и способах связаться со мной.
+  - Добро пожаловать на мой персональный сайт!
+  - Java-разработчик с опытом создания современных приложений.
+  - Проекты, навыки, резюме и способы связаться со мной.
 meta:
-  title: Руслан Немыкин - Разработчик
-  description: >-
-    Персональный сайт TrueRuslan - Java-разработчика. Проекты, навыки, контакты.
-links:
-  - title: Обо мне
-    description: Подробная информация о моем опыте и навыках
-    href: ./landing/about.md
-  - title: Резюме
-    description: Мое резюме, навыки и опыт работы
-    href: ./landing/resume.md
-  - title: Проекты
-    description: Примеры моих работ и проектов
-    href: ./landing/projects.md
-  - title: Фотографии
-    description: Личные фотографии и моменты из жизни
-    href: ./landing/photos.md
-  - title: Контакты
-    description: Способы связаться со мной
-    href: ./landing/contacts.md
+  title: Руслан Немыкин - Java-разработчик
+  description: Персональный сайт TrueRuslan — Java, Spring, DevOps, AI. Проекты, резюме, контакты.
+  og:title: Руслан Немыкин — Java-разработчик
+  og:description: Персональный лендинг разработчика. Проекты, резюме, контакты.
+  og:image: https://wiki.marketdb.ru/assets/images/avatar.png
+  og:type: website
+blocks:
+  - type: header-block
+    title: Руслан Немыкин
+    description: Java-разработчик · Spring · DevOps · AI
+    width: s
+  - type: card-layout-block
+    title: Разделы сайта
+    description: Выберите интересующий раздел
+    children:
+      - type: basic-card
+        title: Обо мне
+        text: Опыт, подход к разработке и технические интересы
+        url: ./landing/about.md
+      - type: basic-card
+        title: Резюме
+        text: Навыки, опыт работы и PDF-версия резюме
+        url: ./landing/resume.md
+      - type: basic-card
+        title: Проекты
+        text: MarketDB, open source и другие работы
+        url: ./landing/projects.md
+      - type: basic-card
+        title: Фотографии
+        text: Личные фото и моменты из жизни
+        url: ./landing/photos.md
+      - type: basic-card
+        title: Источники
+        text: Реестр изученных статей, блогов и материалов
+        url: ./landing/bibliography.md
+      - type: basic-card
+        title: Контакты
+        text: Telegram, GitHub, Habr и email
+        url: ./landing/contacts.md

@@ -1,180 +1,168 @@
-const fs = require('fs');
-const path = require('path');
-const {execSync} = require('child_process');
+import fs from 'node:fs';
+import path from 'node:path';
+import {execSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 
-const chokidar = require('chokidar'); 
-const express = require('express');
-const serveStatic = require('serve-static');
+import chokidar from 'chokidar';
+import express from 'express';
+import serveStatic from 'serve-static';
+import {parse, serialize} from 'parse5';
+import * as utils from 'parse5-utils';
+import {globSync} from 'glob';
+import open from 'open';
 
-const {parse, serialize} = require('parse5');
-const utils = require('parse5-utils');
+import {debounce} from './debounce.js';
+import {injectDarkThemeIntoHtml} from './dark-theme.js';
 
-const watcher = new chokidar.FSWatcher({ignored: '*.swp'});
-const glob = require('glob');
+const SCRIPTS_DIR = path.dirname(fileURLToPath(import.meta.url));
+const PROJECT_ROOT = path.join(SCRIPTS_DIR, '..');
 
-const {debounce} = require('lodash');
-const open = require('open');
+class DevServer {
+  constructor(parameters = {}) {
+    const {
+      autoOpen = false,
+      watchPattern = 'docs/**/*',
+      port = 8000,
+      serveIndexes = ['index.html'],
+      serveDir = 'docs-html',
+      cacheControl = false,
+      ssePath = '/events',
+      sseEventName = 'reload',
+      sseEventMessage = 'rebuilt',
+    } = parameters;
 
-class Server {
-    // read configuration
-    constructor(parameters = {}) {
-        const {
-            autoOpen = false,
+    this.config = {
+      autoOpen,
+      watchPattern,
+      port,
+      serveIndexes,
+      serveDir: path.join(PROJECT_ROOT, serveDir),
+      cacheControl,
+      ssePath,
+      sseEventName,
+      sseEventMessage,
+      sseScript: `
+const events = new EventSource("${ssePath}");
+events.addEventListener("${sseEventName}", () => window.location.reload());
+`,
+    };
 
-            watchPattern = 'docs/**/*',
+    this.sseClients = new Set();
+    this.configure();
+  }
 
-            port = 8000,
+  configure() {
+    this.app = express();
+    this.app.use(serveStatic(this.config.serveDir, {
+      index: this.config.serveIndexes,
+      cacheControl: this.config.cacheControl,
+    }));
+    this.app.get(this.config.ssePath, this.handleSse.bind(this));
 
-            serveIndexes = ['index.html'],
-            serveDir = 'docs-html',
-            cacheControl = false,
+    this.injectSse();
 
-            ssePath = '/events',
-            sseEventName = 'reload',
-            sseEventMessage = 'rebuilt'
-        } = parameters;
-
-        this.configs = {
-            autoOpen,
-
-            watchPattern,
-
-            port,
-
-            serveIndexes,
-            serveDir,
-            cacheControl,
-
-            ssePath,
-            sseEventName,
-            sseEventMessage,
-        };
-
-        this.configs.sseScript = `
-const events = new EventSource("${this.configs.ssePath}");
-
-events.addEventListener("${this.configs.sseEventName}", function(e) {
-  window.location.reload();
-});
-`;
-
-        this.configure();
-    }
-
-    // configure server
-    configure() {
-        this.app = express();
-        this.app.use(serveStatic(this.configs.serveDir, {
-            index: this.configs.serveIndexes,
-            cacheControl: this.configs.cacheControl,
-        }));
-        this.app.get(this.configs.ssePath, this.sseRequestHandler.bind(this));
-        this.sseResponseMessage = `event: ${this.configs.sseEventName}\ndata: ${this.configs.sseEventMessage}\n\n`;
-
-        this.buildDocumentation();
-        this.injectSSE();
-
-        watcher.add(this.configs.watchPattern);
-    }
-
-    // handle sse request
-    sseRequestHandler(req, res, next) {
-        res.writeHead(200, {
-            'Content-Type': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive'
-        });
-        res.flushHeaders();
-
-        // when sources change:
-        // - rebuild documentation
-        // - inject sse into documentation
-        // - notify client with reload event
-        watcher.on('all', debounce((event, path) => {
-            console.info(`event: ${event}, path: ${path}`);
-
-            try {
-                this.buildDocumentation.call(this);
-            } catch (err) {
-                console.error('failed building documentation:', err);
-            }
-
-            this.injectSSE.call(this);
-            this.sendSSEReloadResponse.call(this, res);
-        }, 500));
-    }
-
-    // build documentation
-    buildDocumentation() {
-        console.info('building documentation');
-
-        execSync('npm run build:docs');
-    }
-
-    injectSSE() {
-        console.info('injecting sse into html');
-
-        const pattern = path.join(this.configs.serveDir, '**', '*.html');
-        const paths = glob.globSync(pattern, {ignore: 'node_modules/**'}).map(p => path.join(process.cwd(), p));
-
-        for (const path of paths) {
-            try {
-                const html = fs.readFileSync(path, 'utf8');
-                const transformed = this.injectSSEIntoHTML(html, this.configs.sseScript);
-                fs.writeFileSync(path, transformed, {encoding: 'utf8'});
-            } catch (err) {
-                process.exit(1);
-            }
+    chokidar
+      .watch(this.config.watchPattern, {ignored: /(^|[/\\])\../, cwd: PROJECT_ROOT})
+      .on('all', debounce((event, changedPath) => {
+        console.info(`change: ${event}, path: ${changedPath}`);
+        try {
+          this.rebuild(changedPath);
+          this.injectSse();
+          this.notifyClients();
+        } catch (error) {
+          console.error('failed building documentation:', error);
         }
+      }, 500));
+  }
+
+  handleSse(_req, res) {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    });
+    res.flushHeaders?.();
+
+    this.sseClients.add(res);
+    res.on('close', () => this.sseClients.delete(res));
+  }
+
+  rebuild(changedPath = '') {
+    const normalized = changedPath.replaceAll('\\', '/');
+    const needsAssets = normalized.includes('assets/');
+
+    console.info(needsAssets ? 'building documentation + assets' : 'building documentation (fast)');
+
+    const script = needsAssets ? 'npm run build:docs' : 'npm run build:docs:fast';
+    execSync(script, {cwd: PROJECT_ROOT, stdio: 'inherit'});
+  }
+
+  injectSse() {
+    console.info('injecting sse into html');
+
+    const pattern = path.join(this.config.serveDir, '**', '*.html');
+    const htmlFiles = globSync(pattern, {nodir: true});
+
+    for (const htmlPath of htmlFiles) {
+      const html = fs.readFileSync(htmlPath, 'utf8');
+      const transformed = injectSseIntoHtml(
+        injectDarkThemeIntoHtml(html),
+        this.config.sseScript,
+      );
+      fs.writeFileSync(htmlPath, transformed, {encoding: 'utf8'});
     }
+  }
 
-    // send sse reload message
-    sendSSEReloadResponse(res) {
-        console.info('sending sse event');
-
-        res.write(this.sseResponseMessage);
+  notifyClients() {
+    const message = `event: ${this.config.sseEventName}\ndata: ${this.config.sseEventMessage}\n\n`;
+    for (const client of this.sseClients) {
+      client.write(message);
     }
+  }
 
-    injectSSEIntoHTML(html, sse) {
-        const parsed = parse(html);
-
-        traverse(parsed, (node) => {
-            if (node.nodeName === 'head') {
-                const sseScript = utils.createNode('script');
-                const sseScriptBody = utils.createTextNode(sse);
-
-                utils.append(sseScript, sseScriptBody);
-                utils.append(node, sseScript);
-            }
-        });
-
-        return serialize(parsed);
-    }
-
-    // start up server
-    listen() {
-        this.app.listen(this.configs.port);
-
-        console.info(`serving on: http://localhost:${this.configs.port}`);
-
-        if (this.configs.autoOpen) {
-            open(`http://localhost:${this.configs.port}`);
-        }
-    }
+  listen() {
+    this.app.listen(this.config.port, () => {
+      console.info(`serving on: http://localhost:${this.config.port}`);
+      if (this.config.autoOpen) {
+        open(`http://localhost:${this.config.port}`);
+      }
+    });
+  }
 }
 
-function traverse(node, cb) {
-    cb(node);
+export function injectSseIntoHtml(html, sseScript) {
+  if (html.includes('new EventSource')) {
+    return html;
+  }
 
-    const childNodes = node['childNodes'];
-    if (!childNodes) {
-        return;
+  const parsed = parse(html);
+
+  traverse(parsed, (node) => {
+    if (node.nodeName !== 'head') {
+      return;
     }
 
-    for (const childNode in childNodes) {
-        traverse(childNodes[childNode], cb);
-    }
+    const sseScriptNode = utils.createNode('script');
+    utils.append(sseScriptNode, utils.createTextNode(sseScript));
+    utils.append(node, sseScriptNode);
+  });
+
+  return serialize(parsed);
 }
 
-const server = new Server();
-server.listen();
+function traverse(node, callback) {
+  callback(node);
+
+  if (!node.childNodes) {
+    return;
+  }
+
+  for (const childNode of node.childNodes) {
+    traverse(childNode, callback);
+  }
+}
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
+  const server = new DevServer();
+  server.listen();
+}

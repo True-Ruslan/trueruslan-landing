@@ -1,7 +1,8 @@
 {
   "name": "@true-ruslan/trueruslan-landing",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Многостраничный лендинг TrueRuslan",
+  "type": "module",
   "homepage": "https://wiki.marketdb.ru/",
   "repository": {
     "type": "git",
@@ -18,38 +19,38 @@
   },
   "keywords": [
     "diplodoc",
-    "markdown-it",
-    "markdown",
-    "playground",
-    "sandbox",
+    "landing",
+    "personal-site",
     "documentation",
-    "development",
-    "hot-reload",
-    "codespaces",
-    "template"
+    "markdown"
   ],
   "license": "MIT",
-  "main": "scripts/serve.js",
+  "engines": {
+    "node": ">=24",
+    "npm": ">=11.5.1"
+  },
   "scripts": {
     "start": "npm run build:docs && node scripts/serve.js",
+    "dev": "node scripts/serve.js",
+    "build": "npm run build:docs",
     "build:docs": "yfm --input docs --output docs-html && npm run copy-assets",
-    "copy-assets": "node scripts/copy-assets.js"
+    "build:docs:fast": "yfm --input docs --output docs-html",
+    "copy-assets": "node scripts/copy-assets.js",
+    "test": "node --test scripts/*.test.js"
   },
   "dependencies": {
-    "@diplodoc/cli": "^5.5.0",
-    "@diplodoc/transform": "^4.60.2",
-    "@diplodoc/search-extension": "^2.1.0",
-    "@gravity-ui/page-constructor": "^5.14.1",
-    "chokidar": "^3.5.3",
-    "express": "5.0.0",
-    "glob": "^10.3.4",
-    "lodash": "^4.17.21",
-    "open": "^8.4.2",
-    "parse5": "^7.1.2",
-    "parse5-utils": "^2.0.0",
-    "serve-static": "2.1.0"
+    "@diplodoc/cli": "^5.47.3",
+    "@diplodoc/search-extension": "^3.0.6",
+    "@diplodoc/transform": "^4.76.2",
+    "@gravity-ui/page-constructor": "^8.13.2"
   },
   "devDependencies": {
-    "@gravity-ui/uikit": "^6.14.0"
+    "chokidar": "^5.0.0",
+    "express": "^5.2.1",
+    "glob": "^13.0.6",
+    "open": "^11.0.0",
+    "parse5": "^7.3.0",
+    "parse5-utils": "^2.0.0",
+    "serve-static": "^2.2.1"
   }
 }

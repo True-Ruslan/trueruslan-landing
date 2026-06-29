@@ -1,179 +1,96 @@
-# TrueRuslan Landing - Персональный лендинг
+# TrueRuslan Landing — персональный лендинг
 
-Персональный лендинг разработчика, созданный на основе технологии [Diplodoc](https://diplodoc.com/).
+Персональный лендинг разработчика на базе [Diplodoc](https://diplodoc.com/).
 
-## 🚀 Возможности
+## Возможности
 
-- **Адаптивный дизайн** - корректно отображается на всех устройствах
-- **Быстрая навигация** - удобное меню между страницами
-- **Markdown поддержка** - легко редактировать контент
-- **PDF интеграция** - встроенный просмотр и скачивание документов
-- **Работа с изображениями** - вставка картинок по ссылкам и локальных файлов
-- **Готовые компоненты** - блоки для различных типов контента
+- Адаптивный дизайн Diplodoc
+- Навигация между страницами через `toc.yaml`
+- Markdown-контент с YFM-директивами
+- Встроенный просмотр PDF-резюме
+- Галерея изображений
+- Локальный поиск
 
-## 📁 Структура проекта
+## Структура проекта
 
 ```
 docs/
-├── index.yaml          # Главная страница
-├── about.md            # Страница "Обо мне"
-├── resume.md           # Страница "Резюме" (с PDF просмотром)
-├── projects.md         # Страница "Проекты"
-├── photos.md           # Страница "Фотографии" (с изображениями)
-├── contacts.md         # Страница "Контакты"
-├── toc.yaml            # Навигационное меню
-├── templates/          # Шаблоны для новых страниц
-│   └── page-template.md
-├── pdf-integration-guide.md  # Руководство по PDF интеграции
-├── image-integration-guide.md # Руководство по работе с изображениями
-└── .yfm                # Конфигурация Diplodoc
+├── index.yaml              # Главная страница (page constructor)
+├── toc.yaml                # Верхнее и боковое меню
+├── .yfm                    # Конфигурация Diplodoc
+├── landing/                # Контентные страницы
+│   ├── about.md
+│   ├── resume.md
+│   ├── projects.md
+│   ├── photos.md
+│   └── contacts.md
+└── assets/                 # Статические файлы
+    ├── images/             # Фотографии для галереи
+    └── documents/          # PDF и другие документы
+
+scripts/
+├── serve.js                # Dev-сервер с hot reload
+└── copy-assets.js          # Копирование assets в docs-html
 ```
 
-## 🛠️ Установка и запуск
+## Требования
 
-### Предварительные требования
+- Node.js 24+
+- npm 11.5.1+
 
-- Node.js 16+ 
-- npm или yarn
-
-### Установка зависимостей
+## Установка и запуск
 
 ```bash
 npm install
+npm run build:docs   # первичная сборка
+npm run dev          # dev-сервер с hot reload
 ```
 
-### Запуск в режиме разработки
+Сайт: http://localhost:8000
+
+Полный старт с пересборкой: `npm start`
+
+## Сборка
 
 ```bash
-npm start
-```
-
-Сайт будет доступен по адресу: http://localhost:3000
-
-### Сборка для продакшена
-
-```bash
+npm run build
+# или
 npm run build:docs
 ```
 
-## 📝 Как добавить новую страницу
+Результат сборки — каталог `docs-html/`.
 
-### 1. Создайте Markdown файл
-
-Создайте новый `.md` файл в папке `docs/`, например `blog.md`:
-
-```markdown
-# Мой блог
-
-Содержимое страницы...
-
-## Подзаголовок
-
-Текст...
-```
-
-### 2. Добавьте страницу в навигацию
-
-Отредактируйте `docs/toc.yaml`:
-
-```yaml
-navigation:
-  header:
-    leftItems:
-      # ... существующие пункты ...
-      - text: Блог
-        type: link
-        url: blog.html
-        target: _self
-```
-
-### 3. Добавьте в главное меню
-
-Отредактируйте `docs/index.yaml`:
-
-```yaml
-links:
-  # ... существующие ссылки ...
-  - title: Блог
-    description: Мои мысли и заметки
-    href: ./blog.md
-```
-
-### 4. Добавьте в боковое меню
-
-В `docs/toc.yaml` добавьте:
-
-```yaml
-items:
-  # ... существующие пункты ...
-  - name: Блог
-    href: ./blog.md
-```
-
-## 🎨 Кастомизация
-
-### Изменение логотипа
-
-Замените текст "TrueRuslan" в `docs/toc.yaml`:
-
-```yaml
-navigation:
-  logo:
-    text: Ваше Имя
-```
-
-### Добавление новых блоков
-
-Diplodoc поддерживает различные типы блоков:
-
-```yaml
-blocks:
-  - type: header-block
-    title: Заголовок
-    description: Описание
-  - type: card-layout-block
-    title: Карточки
-    children:
-      - type: basic-card
-        title: Карточка 1
-        text: Описание
-```
-
-## 📱 Адаптивность
-
-Сайт автоматически адаптируется под различные устройства:
-- **Desktop**: полная версия с боковым меню
-- **Tablet**: компактное меню
-- **Mobile**: мобильная навигация
-
-## 🔧 Полезные команды
+## Тесты
 
 ```bash
-# Запуск в режиме разработки с автоперезагрузкой
-npm start
-
-# Только сборка документации
-npm run build:docs
-
-# Просмотр структуры проекта
-tree docs/
+npm test
 ```
 
-## 📚 Документация Diplodoc
+## Добавление страницы
+
+1. Создайте файл в `docs/landing/`, например `blog.md`.
+2. Добавьте ссылку в `docs/toc.yaml` (header, items).
+3. Добавьте карточку на главную в `docs/index.yaml`.
+
+## Добавление медиа
+
+- Изображения — в `docs/assets/images/`, ссылки из markdown: `../assets/images/file.jpg`
+- PDF и документы — в `docs/assets/documents/`
+
+## Деплой
+
+- **GitHub Pages** — workflow `.github/workflows/static.yml`
+- **Docker** — `Dockerfile` (nginx + `docs-html`)
+
+## Документация Diplodoc
 
 - [Официальная документация](https://diplodoc.com/docs/)
 
-## 🤝 Поддержка
+## Контакты
 
-Если у вас есть вопросы или предложения:
+- Telegram: [@TrueRuslan](https://t.me/TrueRuslan)
+- GitHub Issues: [создать issue](https://github.com/True-Ruslan/trueruslan-landing/issues)
 
-- **Telegram**: [@TrueRuslan](https://t.me/TrueRuslan)
-- **GitHub Issues**: [Создать issue](https://github.com/True-Ruslan/trueruslan-landing/issues)
+## Лицензия
 
-## 📄 Лицензия
-
-MIT License - используйте свободно для своих проектов!
-
----
-
-**Удачного использования!** 🚀 
+MIT License

@@ -20,12 +20,15 @@ jobs:
         with:
           submodules: recursive
       - name: Init NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'npm'
       - name: Install Packages
-        run: npm install
+        run: npm ci
+        shell: bash
+      - name: Test
+        run: npm test
         shell: bash
       - name: Build
         run: npm run build:docs

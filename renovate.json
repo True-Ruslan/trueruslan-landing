@@ -2,5 +2,14 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "packageRules": [
+    {
+      "matchPackageNames": ["@diplodoc/**", "@gravity-ui/**"],
+      "groupName": "diplodoc ecosystem"
+    }
   ]
 }

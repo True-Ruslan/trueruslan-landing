@@ -9,13 +9,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build
-        uses: diplodoc-platform/docs-build-action@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          revision: "pr-${{ github.event.pull_request.number }}"
-          src-root: "./docs"
-          storage-endpoint: ${{ vars.DIPLODOC_STORAGE_ENDPOINT }}
-          storage-region: ${{ vars.DIPLODOC_STORAGE_REGION }}
-          storage-bucket: ${{ vars.DIPLODOC_STORAGE_BUCKET }}
-          storage-access-key-id: ${{ secrets.DIPLODOC_ACCESS_KEY_ID }}
-          storage-secret-access-key: ${{ secrets.DIPLODOC_SECRET_ACCESS_KEY }}
+          node-version: '24'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Test
+        run: npm test
+      - name: Build docs
+        run: npm run build:docs

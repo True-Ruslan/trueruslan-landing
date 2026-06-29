@@ -11,33 +11,37 @@ navigation:
         target: _self
       - text: Обо мне
         type: link
-        url: about.html
+        url: landing/about.html
         target: _self
       - text: Резюме
         type: link
-        url: resume.html
+        url: landing/resume.html
         target: _self
       - text: Проекты
         type: link
-        url: projects.html
+        url: landing/projects.html
         target: _self
       - text: Фотографии
         type: link
-        url: photos.html
+        url: landing/photos.html
+        target: _self
+      - text: Источники
+        type: link
+        url: landing/bibliography.html
         target: _self
       - text: Контакты
         type: link
-        url: contacts.html
+        url: landing/contacts.html
         target: _self
     rightItems:
       - type: link
-        text: GitHubㅤ
+        text: GitHub
         url: https://github.com/True-Ruslan
       - type: link
-        text: Telegramㅤ
+        text: Telegram
         url: https://t.me/TrueRuslan_Blog
       - type: link
-        text: Habrㅤ
+        text: Habr
         url: https://habr.com/ru/users/trueruslan
       - type: controls
 title: TrueRuslan - Разработчик
@@ -51,7 +55,7 @@ items:
     href: ./landing/projects.md
   - name: Фотографии
     href: ./landing/photos.md
+  - name: Источники
+    href: ./landing/bibliography.md
   - name: Контакты
     href: ./landing/contacts.md
-
-
