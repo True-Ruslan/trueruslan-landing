@@ -33,8 +33,8 @@
     "start": "npm run build:docs && node scripts/serve.js",
     "dev": "node scripts/serve.js",
     "build": "npm run build:docs",
-    "build:docs": "yfm --input docs --output docs-html && npm run copy-assets",
-    "build:docs:fast": "yfm --input docs --output docs-html",
+    "build:docs": "yfm --input docs --output docs-html --allow-custom-resources && npm run copy-assets",
+    "build:docs:fast": "yfm --input docs --output docs-html --allow-custom-resources",
     "copy-assets": "node scripts/copy-assets.js",
     "test": "node --test scripts/*.test.js"
   },
