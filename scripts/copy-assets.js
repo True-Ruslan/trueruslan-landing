@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 
 import {globSync} from 'glob';
 
+import {applyPageMetadataMap} from './page-metadata.js';
 import {normalizeSearchPageHtml} from './search-page.js';
 import {
   collectPagesFromToc,
@@ -17,6 +18,7 @@ const ROOT = path.join(__dirname, '..');
 const DOCS_DIR = path.join(ROOT, 'docs');
 const OUTPUT_DIR = path.join(ROOT, 'docs-html');
 const STANDALONE_HOME_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
+const PAGE_METADATA_PATH = path.join(ROOT, 'data', 'page-metadata.json');
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
 
@@ -115,6 +117,7 @@ export function postprocessOutput({
   outputDir = OUTPUT_DIR,
   docsDir = DOCS_DIR,
   standaloneTemplatePath = STANDALONE_HOME_TEMPLATE,
+  pageMetadataPath = PAGE_METADATA_PATH,
   siteUrl = getSiteUrl(),
   copyAssets = true,
 } = {}) {
@@ -136,9 +139,22 @@ export function postprocessOutput({
     outputPath: path.join(outputDir, 'index.html'),
     siteUrl,
   });
+
+  let metadataApplied = [];
+  if (pageMetadataPath && fs.existsSync(pageMetadataPath)) {
+    const metadataMap = JSON.parse(fs.readFileSync(pageMetadataPath, 'utf8'));
+    metadataApplied = applyPageMetadataMap({outputDir, metadataMap, siteUrl});
+  }
+
   const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
 
-  return {copied, normalizedSearchPages, standaloneHomePath, personSchemaInjected};
+  return {
+    copied,
+    normalizedSearchPages,
+    standaloneHomePath,
+    metadataApplied,
+    personSchemaInjected,
+  };
 }
 
 function main() {
@@ -154,6 +170,9 @@ function main() {
       console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
     }
     console.log(`Standalone homepage written: ${result.standaloneHomePath}`);
+    if (result.metadataApplied.length) {
+      console.log(`Applied route metadata to ${result.metadataApplied.length} page(s).`);
+    }
     if (result.personSchemaInjected) {
       console.log('Person schema injected into index.html.');
     }
