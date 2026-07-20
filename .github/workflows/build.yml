@@ -27,7 +27,11 @@ jobs:
       - name: Build docs
         run: npm run build:docs
       - name: Check generated site integrity
-        run: npm run check:site
+        shell: bash
+        run: |
+          mkdir -p quality-artifacts
+          set -o pipefail
+          npm run check:site 2>&1 | tee quality-artifacts/site-integrity.log
       - name: Install pinned browser quality tools
         run: >-
           npm install --prefix .quality-tools --package-lock=false --no-save
