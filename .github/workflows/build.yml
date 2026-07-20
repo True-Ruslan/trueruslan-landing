@@ -48,6 +48,7 @@ jobs:
           cp site-integrity.log quality-artifacts/site-integrity.log 2>/dev/null || true
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
+          cp docs-html/landing/resume.html quality-artifacts/resume-generated.html 2>/dev/null || true
       - name: Upload quality evidence
         if: always()
         uses: actions/upload-artifact@v4
