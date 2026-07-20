@@ -1,6 +1,6 @@
-# TrueRuslan Landing — персональный лендинг
+# TrueRuslan Landing — engineering portfolio
 
-Персональный engineering-портфолио на базе [Diplodoc](https://diplodoc.com/) с собственным визуальным слоем поверх стандартной документационной темы.
+Персональное engineering-портфолио на базе [Diplodoc](https://diplodoc.com/) с собственным визуальным слоем, web-CV, инженерными case studies и production-oriented quality gates.
 
 ## Возможности
 
@@ -8,14 +8,13 @@
 - Собственная dark-first палитра через `theme.yaml`
 - Custom CSS/JS без отдельного frontend-фреймворка
 - Progressive-enhancement анимации и terminal accent
-- Навигация между страницами через `toc.yaml`
-- Markdown-контент с YFM-директивами
-- Встроенный просмотр PDF-резюме
-- Галерея изображений
-- Реестр изученных технических материалов
-- Локальный поиск
+- Web-CV + deployment-safe встроенный PDF
+- Инженерные case studies публичных проектов
+- Локальный поиск и реестр технических материалов
 - SEO post-processing: sitemap, robots.txt и JSON-LD
 - `prefers-reduced-motion` и keyboard-focus accessibility
+- Проверка битых внутренних ссылок и assets после реальной сборки
+- Browser smoke на desktop/mobile, axe accessibility, screenshots и Lighthouse budgets в PR CI
 
 ## Визуальная архитектура
 
@@ -27,7 +26,9 @@ Diplodoc / Gravity UI
         ├── docs/theme.yaml
         │      └── базовая палитра и theme tokens
         ├── docs/_assets/style/custom.css
-        │      └── layout polish, cards, CTA, terminal, motion
+        │      └── общая visual system
+        ├── docs/_assets/style/resume.css
+        │      └── изолированный web-CV visual layer
         ├── docs/_assets/script/custom.js
         │      └── progressive enhancement без зависимости контента от JS
         └── docs/index.yaml
@@ -40,17 +41,23 @@ Diplodoc / Gravity UI
 
 ```text
 docs/
-├── index.yaml              # Главная страница (Page Constructor)
-├── toc.yaml                # Верхнее и боковое меню
-├── .yfm                    # Конфигурация Diplodoc и custom resources
-├── theme.yaml              # Палитра Diplodoc
+├── index.yaml
+├── toc.yaml
+├── .yfm
+├── theme.yaml
 ├── _assets/
-│   ├── style/custom.css    # Собственный visual system
-│   └── script/custom.js    # Progressive visual enhancements
+│   ├── style/
+│   │   ├── custom.css
+│   │   └── resume.css
+│   └── script/custom.js
 ├── landing/
 │   ├── about.md
 │   ├── resume.md
 │   ├── projects.md
+│   ├── projects/
+│   │   ├── taskhub.md
+│   │   ├── minichess.md
+│   │   └── godot-horror-template.md
 │   ├── photos.md
 │   ├── bibliography.md
 │   └── contacts.md
@@ -63,8 +70,10 @@ scripts/
 ├── copy-assets.js
 ├── seo.js
 ├── dark-theme.js
-├── visual-config.test.js
-└── visual-enhancements.test.js
+├── site-integrity.js
+├── browser-quality.cjs
+├── lighthouse-budget.js
+└── *.test.js
 ```
 
 ## Требования
@@ -90,15 +99,54 @@ npm run build
 npm run build:docs
 ```
 
-Результат сборки — `docs-html/`. Diplodoc запускается с `--allow-custom-resources`, затем выполняются копирование assets и post-processing HTML: dark-theme compatibility, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
+Результат — `docs-html/`. Diplodoc запускается с `--allow-custom-resources`, затем выполняются копирование assets и post-processing HTML: dark-theme compatibility, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
 
-## Тесты
+## Проверки качества
+
+### Unit / contract tests
 
 ```bash
 npm test
 ```
 
-Тесты проверяют assets, SEO/post-processing, dev-server HTML-инъекции, visual configuration contract и deterministic helpers визуального слоя.
+Проверяются assets, SEO/post-processing, dev-server HTML-инъекции, visual configuration, deployment-safe PDF URL и deterministic helpers визуального слоя.
+
+### Generated-site integrity
+
+```bash
+npm run build:docs
+npm run check:site
+```
+
+`check:site` анализирует именно готовый `docs-html` и проверяет локальные `href`, `src`, iframe, scripts, stylesheets и media references. Битая ссылка или отсутствующий asset блокируют CI/deploy.
+
+### Browser quality gate
+
+PR workflow дополнительно устанавливает pinned quality tools изолированно в `.quality-tools` без изменения production dependency graph:
+
+- Playwright `1.61.1`
+- `@axe-core/playwright` `4.12.1`
+- Lighthouse `13.4.0`
+
+Проверяются:
+
+- homepage / projects / resume в desktop и mobile viewport;
+- HTTP failures и browser page errors;
+- horizontal overflow;
+- инициализация custom visual layer;
+- фактическая доступность PDF через hydrated iframe URL;
+- serious/critical axe violations;
+- Lighthouse budgets: Performance ≥ 85, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 95.
+
+На каждый PR сохраняются screenshots и JSON reports в artifact `quality-artifacts` на 14 дней.
+
+Локальный запуск browser gate:
+
+```bash
+npm install --prefix .quality-tools --package-lock=false --no-save \
+  playwright@1.61.1 @axe-core/playwright@4.12.1 lighthouse@13.4.0
+node scripts/browser-quality.cjs
+```
 
 ## Изменение визуального стиля
 
@@ -106,9 +154,13 @@ npm test
 
 Базовые цвета меняются в `docs/theme.yaml` через поддерживаемые Diplodoc theme tokens.
 
-### Компоненты и эффекты
+### Общие компоненты и эффекты
 
 `docs/_assets/style/custom.css` содержит `--tr-*` design tokens, карточки, CTA, background grid/glow, terminal panel, responsive и reduced-motion правила.
+
+### Web-CV
+
+`docs/_assets/style/resume.css` изолирует стили резюме от общего visual system, чтобы развитие CV не увеличивало риск регрессии остальных страниц.
 
 ### Интерактивность
 
@@ -116,11 +168,11 @@ npm test
 
 ## Добавление страницы
 
-1. Создайте файл в `docs/landing/`, например `blog.md`.
+1. Создайте файл в `docs/landing/`.
 2. Добавьте ссылку в `docs/toc.yaml`.
 3. При необходимости добавьте карточку на главную в `docs/index.yaml`.
 
-Страницы из `toc.yaml` автоматически попадают в `sitemap.xml`.
+Markdown-страницы из `toc.yaml` автоматически попадают в `sitemap.xml`.
 
 ## Добавление медиа
 
@@ -129,9 +181,9 @@ npm test
 
 ## Деплой
 
-- **GitHub Pages** — `.github/workflows/static.yml`, production-деплой только из `master`
-- **Docker** — `Dockerfile` + nginx, сборка образа через `.github/workflows/deploy.yaml`
-- **Pull requests** — `.github/workflows/build.yml` запускает тесты и production-сборку
+- **Pull requests** — `.github/workflows/build.yml`: tests → build → integrity → browser/a11y/Lighthouse → quality artifacts
+- **GitHub Pages** — `.github/workflows/static.yml`: tests → build → integrity → deploy из `master`
+- **Docker** — `.github/workflows/deploy.yaml`: tests → build → integrity → image publish
 
 ## Документация Diplodoc
 
