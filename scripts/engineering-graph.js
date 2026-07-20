@@ -114,7 +114,6 @@ export function renderEngineeringGraphFallback(graph) {
     }).join('');
     return `<section class="tr-engineering-graph-fallback__group"><h2>${escapeHtml(kind)}</h2><ul>${items}</ul></section>`;
   }).join('');
-
   return `<div class="tr-engineering-graph-fallback" data-tr-engineering-graph-fallback>${groups}</div>`;
 }
 
@@ -127,28 +126,52 @@ function findNode(node, predicate) {
   return null;
 }
 
-function hasAttribute(node, name) {
-  return node.attrs?.some((attribute) => attribute.name === name) ?? false;
+function getAttribute(node, name) {
+  return node.attrs?.find((attribute) => attribute.name === name)?.value ?? null;
 }
 
-function ensureGraphRoot(parsed) {
-  const existing = findNode(parsed, (node) => hasAttribute(node, 'data-tr-engineering-graph-root'));
-  if (existing) return existing;
+function hasAttribute(node, name) {
+  return getAttribute(node, name) !== null;
+}
 
-  const markerText = findNode(parsed, (node) => node.nodeName === '#text' && node.value?.trim() === BUILD_SLOT);
-  const markerContainer = markerText?.parentNode;
-  const parent = markerContainer?.parentNode;
-  if (!markerContainer || !parent?.childNodes) return null;
+function createGraphRoot(graph) {
+  return `<div data-tr-engineering-graph-root data-tr-engineering-graph-build="ready" aria-label="Интерактивная карта инженерных связей">${renderEngineeringGraphFallback(graph)}</div>`;
+}
 
-  const index = parent.childNodes.indexOf(markerContainer);
-  if (index < 0) return null;
+function decodeDiplodocState(raw) {
+  return JSON.parse(raw.replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&'));
+}
 
-  const root = utils.createNode('div');
-  utils.setAttribute(root, 'data-tr-engineering-graph-root', '');
-  utils.setAttribute(root, 'aria-label', 'Интерактивная карта инженерных связей');
-  root.parentNode = parent;
-  parent.childNodes.splice(index, 1, root);
-  return root;
+function encodeDiplodocState(state) {
+  return JSON.stringify(state).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
+function injectIntoDiplodocState(parsed, graph) {
+  const stateScript = findNode(parsed, (node) => node.nodeName === 'script' && getAttribute(node, 'id') === 'diplodoc-state');
+  const textNode = stateScript?.childNodes?.find((node) => node.nodeName === '#text');
+  if (!stateScript || !textNode?.value) return false;
+
+  const state = decodeDiplodocState(textNode.value.trim());
+  if (typeof state?.data?.html !== 'string') return false;
+
+  if (!state.data.html.includes('data-tr-engineering-graph-root')) {
+    const marker = `<p>${BUILD_SLOT}</p>`;
+    if (!state.data.html.includes(marker)) return false;
+    state.data.html = state.data.html.replace(marker, createGraphRoot(graph));
+  }
+
+  textNode.value = `\n            ${encodeDiplodocState(state)}\n        `;
+  return true;
+}
+
+function injectIntoRenderedDom(parsed, graph) {
+  const root = findNode(parsed, (node) => hasAttribute(node, 'data-tr-engineering-graph-root'));
+  if (!root) return false;
+  const fallback = parseFragment(renderEngineeringGraphFallback(graph));
+  root.childNodes = fallback.childNodes ?? [];
+  for (const child of root.childNodes) child.parentNode = root;
+  utils.setAttribute(root, 'data-tr-engineering-graph-build', 'ready');
+  return true;
 }
 
 function removeGraphDataScripts(node) {
@@ -159,14 +182,11 @@ function removeGraphDataScripts(node) {
 
 export function injectEngineeringGraph(html, graph) {
   const parsed = parse(html);
-  const root = ensureGraphRoot(parsed);
   const head = findNode(parsed, (node) => node.nodeName === 'head');
-  if (!root || !head) throw new Error('Engineering graph build slot/head not found in generated HTML.');
+  if (!head) throw new Error('Engineering graph HTML head not found.');
 
-  const fallback = parseFragment(renderEngineeringGraphFallback(graph));
-  root.childNodes = fallback.childNodes ?? [];
-  for (const child of root.childNodes) child.parentNode = root;
-  utils.setAttribute(root, 'data-tr-engineering-graph-build', 'ready');
+  const injected = injectIntoRenderedDom(parsed, graph) || injectIntoDiplodocState(parsed, graph);
+  if (!injected) throw new Error('Engineering graph build slot not found in rendered DOM or Diplodoc state payload.');
 
   removeGraphDataScripts(parsed);
   const script = utils.createNode('script');
