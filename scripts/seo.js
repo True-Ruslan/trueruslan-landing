@@ -11,13 +11,19 @@ export function getSiteUrl() {
 }
 
 export function collectPagesFromToc(tocContent) {
-  const pages = [''];
+  const pages = new Set(['']);
 
-  for (const match of tocContent.matchAll(/href:\s*\.\/landing\/([a-z]+)\.md/g)) {
-    pages.push(`landing/${match[1]}.html`);
+  for (const match of tocContent.matchAll(/href:\s*\.\/([^#\s"']+)\.md(?:\s|$)/g)) {
+    const relativePath = match[1].replaceAll('\\', '/');
+
+    if (relativePath.startsWith('../') || relativePath.startsWith('/')) {
+      continue;
+    }
+
+    pages.add(`${relativePath}.html`);
   }
 
-  return pages;
+  return [...pages];
 }
 
 export function buildPersonJsonLd(siteUrl = getSiteUrl()) {
