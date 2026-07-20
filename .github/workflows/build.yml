@@ -34,12 +34,17 @@ jobs:
       - name: Install pinned browser quality tools
         run: >-
           npm install --prefix .quality-tools --package-lock=false --no-save
-          playwright@1.61.1 @axe-core/playwright@4.12.1 lighthouse@13.4.0
+          playwright@1.61.1 @axe-core/playwright@4.12.1 lighthouse@13.4.0 pngjs@7.0.0
       - name: Browser smoke, accessibility and Lighthouse
         shell: bash
         run: |
           set -o pipefail
           node scripts/browser-quality.cjs 2>&1 | tee browser-quality.log
+      - name: Visual regression
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/visual-regression.cjs 2>&1 | tee visual-regression.log
       - name: Preserve quality diagnostics
         if: always()
         shell: bash
@@ -47,6 +52,7 @@ jobs:
           mkdir -p quality-artifacts
           cp site-integrity.log quality-artifacts/site-integrity.log 2>/dev/null || true
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
+          cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           cp docs-html/landing/resume.html quality-artifacts/resume-generated.html 2>/dev/null || true
       - name: Upload quality evidence
