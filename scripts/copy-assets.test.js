@@ -10,6 +10,7 @@ import {
   writeRobotsTxt,
   writeSitemap,
 } from './copy-assets.js';
+import {readPngDimensions} from './og-image.js';
 import {injectSseIntoHtml} from './serve.js';
 
 test('walkAssets copies supported image and PDF files preserving paths', () => {
@@ -60,31 +61,37 @@ test('writeRobotsTxt and writeSitemap create files', () => {
     assert.match(robots, /https:\/\/example\.test\/sitemap\.xml/);
     assert.match(sitemap, /https:\/\/example\.test\/landing\/about\.html/);
   } finally {
-    if (original === undefined) {
-      delete process.env.SITE_URL;
-    } else {
-      process.env.SITE_URL = original;
-    }
+    if (original === undefined) delete process.env.SITE_URL;
+    else process.env.SITE_URL = original;
   }
 });
 
-test('postprocessOutput writes standalone homepage, SEO and hydration-safe output', () => {
+test('postprocessOutput writes standalone homepage, metadata, OG card and SEO output', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-postprocess-'));
   const docsDir = path.join(tempRoot, 'docs');
   const templatePath = path.join(tempRoot, 'templates', 'index.html');
+  const pageMetaPath = path.join(tempRoot, 'data', 'page-meta.json');
   const outputDir = path.join(tempRoot, 'docs-html');
 
   fs.mkdirSync(path.dirname(templatePath), {recursive: true});
+  fs.mkdirSync(path.dirname(pageMetaPath), {recursive: true});
   fs.mkdirSync(docsDir, {recursive: true});
   fs.mkdirSync(outputDir, {recursive: true});
-  fs.writeFileSync(
-    path.join(docsDir, 'toc.yaml'),
-    'items:\n  - name: About\n    href: ./landing/about.md\n',
-  );
+  fs.writeFileSync(path.join(docsDir, 'toc.yaml'), 'items:\n  - name: About\n    href: ./landing/about.md\n');
   fs.writeFileSync(
     templatePath,
     '<!doctype html><html><head><link rel="canonical" href="{{SITE_URL}}/"></head><body class="g-root"><h1>Руслан Немыкин</h1></body></html>',
   );
+  fs.writeFileSync(pageMetaPath, JSON.stringify([{
+    path: 'index.html',
+    card: 'home',
+    title: 'Руслан Немыкин — Backend Engineer',
+    description: 'Portfolio test description.',
+    displayTitle: 'RUSLAN NEMYKIN',
+    kicker: 'BACKEND ENGINEER',
+    tags: ['JAVA', 'AI'],
+    accent: 'cyan',
+  }]));
   fs.writeFileSync(
     path.join(outputDir, 'index.html'),
     '<!doctype html><html><head><title>Generated</title></head><body class="g-root g-root_theme_light"></body></html>',
@@ -94,6 +101,7 @@ test('postprocessOutput writes standalone homepage, SEO and hydration-safe outpu
     outputDir,
     docsDir,
     standaloneTemplatePath: templatePath,
+    pageMetaPath,
     siteUrl: 'https://example.test',
     copyAssets: false,
   });
@@ -101,15 +109,21 @@ test('postprocessOutput writes standalone homepage, SEO and hydration-safe outpu
   const html = fs.readFileSync(path.join(outputDir, 'index.html'), 'utf8');
   const robots = fs.readFileSync(path.join(outputDir, 'robots.txt'), 'utf8');
   const sitemap = fs.readFileSync(path.join(outputDir, 'sitemap.xml'), 'utf8');
+  const ogPath = path.join(outputDir, 'assets', 'og', 'home.png');
 
   assert.equal(result.copied.length, 0);
+  assert.equal(result.ogCards.length, 1);
+  assert.equal(result.metadataUpdated, 1);
   assert.equal(result.personSchemaInjected, true);
   assert.match(html, /Руслан Немыкин/);
-  assert.match(html, /https:\/\/example\.test\//);
+  assert.match(html, /https:\/\/example\.test\/assets\/og\/home\.png/);
+  assert.match(html, /summary_large_image/);
+  assert.match(html, /data-tr-local-path="\/assets\/og\/home\.png"/);
   assert.doesNotMatch(html, /g-root_theme_light/);
   assert.doesNotMatch(html, /_bundle\//);
   assert.match(html, /application\/ld\+json/);
   assert.match(robots, /https:\/\/example\.test\/sitemap\.xml/);
   assert.match(sitemap, /landing\/about\.html/);
   assert.ok(fs.existsSync(path.join(outputDir, '.nojekyll')));
+  assert.deepEqual(readPngDimensions(fs.readFileSync(ogPath)), {width: 1200, height: 630});
 });

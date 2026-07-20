@@ -21,6 +21,10 @@ navigation:
         type: link
         url: landing/resume.html
         target: _self
+      - text: Notes
+        type: link
+        url: landing/notes.html
+        target: _self
       - text: Источники
         type: link
         url: landing/bibliography.html
@@ -61,6 +65,15 @@ items:
         href: ./landing/projects/minichess.md
       - name: Godot Horror Template
         href: ./landing/projects/godot-horror-template.md
+  - name: Engineering Notes
+    href: ./landing/notes.md
+    items:
+      - name: Runtime boundary
+        href: ./landing/notes/portfolio-runtime-boundary.md
+      - name: Static-site quality gates
+        href: ./landing/notes/static-site-quality-gates.md
+      - name: Server-authoritative AI NPCs
+        href: ./landing/notes/server-authoritative-ai-npcs.md
   - name: Обо мне
     href: ./landing/about.md
   - name: Резюме

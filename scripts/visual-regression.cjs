@@ -1,6 +1,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
+const {decodeBaselineSample} = require('./visual-baseline.cjs');
+
 const ROOT = path.resolve(__dirname, '..');
 const TOOLS_DIR = path.join(ROOT, '.quality-tools', 'node_modules');
 const ARTIFACTS_DIR = path.join(ROOT, 'quality-artifacts');
@@ -39,6 +41,10 @@ function dimensionDelta(actual, expected) {
 }
 
 function compareSample(actual, expected) {
+  if (actual.length !== expected.length) {
+    throw new Error(`Cannot compare visual samples with different lengths: ${actual.length} vs ${expected.length}.`);
+  }
+
   let totalDelta = 0;
   let maxDelta = 0;
 
@@ -76,6 +82,7 @@ function main() {
   const config = JSON.parse(fs.readFileSync(BASELINE_PATH, 'utf8'));
   const failures = [];
   const results = [];
+  const expectedSampleLength = config.sampleSize * config.sampleSize * 3;
 
   for (const [name, baseline] of Object.entries(config.baselines)) {
     const screenshotPath = path.join(ARTIFACTS_DIR, name);
@@ -85,8 +92,16 @@ function main() {
     }
 
     const png = PNG.sync.read(fs.readFileSync(screenshotPath));
-    const expected = Buffer.from(baseline.rgbBase64, 'base64');
     const actual = sampleRgb(png, config.sampleSize);
+    let expected;
+
+    try {
+      expected = decodeBaselineSample(baseline, expectedSampleLength);
+    } catch (error) {
+      failures.push(`${name}: ${error.message}`);
+      continue;
+    }
+
     const widthDelta = dimensionDelta(png.width, baseline.width);
     const heightDelta = dimensionDelta(png.height, baseline.height);
     const comparison = compareSample(actual, expected);

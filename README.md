@@ -1,6 +1,6 @@
 # TrueRuslan Landing — engineering portfolio
 
-Персональное engineering-портфолио с лёгкой standalone-главной, Diplodoc knowledge pages, web-CV, инженерными case studies и production-oriented quality gates.
+Персональное engineering-портфолио с лёгкой standalone-главной, Diplodoc knowledge pages, web-CV, инженерными case studies, Engineering Notes и production-oriented quality gates.
 
 ## Архитектура
 
@@ -19,7 +19,7 @@ Diplodoc knowledge pages
         │
         ├── toc / local search
         ├── theme.yaml
-        ├── case studies / web-CV / bibliography
+        ├── case studies / Engineering Notes / web-CV
         └── custom visual/accessibility layer
 
 Build
@@ -29,11 +29,13 @@ Build
         ├── assets
         ├── search-page normalization
         ├── standalone root index.html
+        ├── deterministic OpenGraph PNG cards
+        ├── per-page SEO/social metadata
         ├── sitemap / robots.txt
         └── JSON-LD
 ```
 
-Главная не загружает тяжёлый Diplodoc viewer bundle. Diplodoc остаётся там, где он полезен: структурированный Markdown-контент, навигация, локальный поиск, case studies и документационные страницы.
+Главная не загружает тяжёлый Diplodoc viewer bundle. Diplodoc остаётся там, где он полезен: структурированный Markdown-контент, навигация, локальный поиск, case studies, Engineering Notes и документационные страницы.
 
 ## Возможности
 
@@ -44,17 +46,21 @@ Build
 - Progressive-enhancement terminal accent и микроанимации
 - Web-CV + deployment-safe встроенный PDF
 - Engineering case studies публичных проектов
+- Engineering Notes с техническими разборами архитектуры, reliability и AI systems
+- Build-time `Currently building` из валидируемого JSON manifest
 - Локальный поиск и реестр технических материалов
-- SEO: sitemap, robots.txt, canonical/OpenGraph и JSON-LD
+- SEO: sitemap, robots.txt, canonical, page-specific OpenGraph/Twitter metadata и JSON-LD
+- Детерминированные 1200×630 OpenGraph PNG без внешнего image service
 - `prefers-reduced-motion`, keyboard focus и runtime accessibility repairs
-- Проверка битых внутренних ссылок/assets после реальной сборки
+- Проверка битых внутренних ссылок/assets/OG targets после реальной сборки
 - Browser smoke для desktop/mobile и локального поиска
 - Firefox/WebKit compatibility smoke поверх основного Chromium suite
+- Browser-level metadata/OpenGraph smoke
 - Axe accessibility и Lighthouse budgets
 - Versioned perceptual visual-regression baseline
-- Post-deploy smoke реального GitHub Pages endpoint
+- Post-deploy smoke реального GitHub Pages endpoint, включая Notes и OG image
 - Weekly monitoring внешних публичных ссылок и критичных production endpoint'ов
-- Screenshots, Lighthouse/Axe/visual/health reports как CI artifacts
+- Screenshots, Lighthouse/Axe/visual/metadata/health reports как CI artifacts
 
 ## Структура проекта
 
@@ -63,6 +69,8 @@ templates/
 └── index.html                       # Standalone homepage template
 
 data/
+├── currently-building.json          # Активные проекты для build-time homepage
+├── page-meta.json                   # Page title/description/OG/Twitter manifest
 └── external-links.json              # Мониторинг внешних/public endpoint'ов
 
 docs/
@@ -83,20 +91,30 @@ docs/
 │   ├── resume.md
 │   ├── projects.md
 │   ├── projects/
+│   │   ├── livingworld.md
+│   │   ├── node-zero.md
 │   │   ├── taskhub.md
 │   │   ├── minichess.md
 │   │   └── godot-horror-template.md
+│   ├── notes.md
+│   ├── notes/
+│   │   ├── portfolio-runtime-boundary.md
+│   │   ├── static-site-quality-gates.md
+│   │   └── server-authoritative-ai-npcs.md
 │   ├── photos.md
 │   ├── bibliography.md
 │   └── contacts.md
 └── assets/
     ├── images/
+    ├── diagrams/
     └── documents/
 
 scripts/
 ├── serve.js
 ├── copy-assets.js
 ├── standalone-home.js
+├── page-meta.js
+├── og-image.js
 ├── search-page.js
 ├── seo.js
 ├── site-integrity.js
@@ -106,6 +124,7 @@ scripts/
 ├── browser-quality.cjs
 ├── cross-browser-smoke.cjs
 ├── search-smoke.cjs
+├── metadata-smoke.cjs
 ├── visual-regression.cjs
 ├── lighthouse-budget.js
 └── *.test.js
@@ -143,7 +162,11 @@ npm run build:docs
 2. Assets копируются с сохранением путей.
 3. Генерируемая страница локального поиска нормализуется для root/subpath deployments.
 4. Корневой `docs-html/index.html` заменяется лёгкой standalone-главной из `templates/index.html`.
-5. Генерируются `.nojekyll`, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
+5. `data/page-meta.json` валидируется, после чего Node.js build-time renderer генерирует детерминированные `assets/og/*.png` размером 1200×630.
+6. В финальный HTML инъектируются page-specific title, description, canonical, OpenGraph и Twitter metadata.
+7. Генерируются `.nojekyll`, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
+
+OG renderer не требует браузера, внешнего image API или нового production dependency: PNG кодируется нативным Node.js кодом через `zlib`.
 
 ## Проверки качества
 
@@ -153,7 +176,7 @@ npm run build:docs
 npm test
 ```
 
-Покрыты assets, SEO/post-processing, standalone renderer, local-search normalization, visual configuration, deployment-safe PDF URL, HTTP health policy, production-smoke URL contract, Lighthouse budgets и generated-site integrity helpers.
+Покрыты assets, SEO/post-processing, standalone renderer, page-metadata manifest, deterministic PNG generation, local-search normalization, deployment-safe PDF URL, HTTP health policy, production-smoke URL contract, Lighthouse budgets и generated-site integrity helpers.
 
 ### Generated-site integrity
 
@@ -162,7 +185,7 @@ npm run build:docs
 npm run check:site
 ```
 
-`check:site` анализирует готовый `docs-html`, учитывает HTML `<base href>` semantics и проверяет локальные `href`, `src`, iframe, scripts, stylesheets и media references. Битая ссылка или отсутствующий asset блокируют CI и deployment.
+`check:site` анализирует готовый `docs-html`, учитывает HTML `<base href>` semantics и проверяет локальные `href`, `src`, iframe, scripts, stylesheets, media references и локальные targets сгенерированных OpenGraph image. Битая ссылка или отсутствующий asset блокируют CI и deployment.
 
 ### Browser / accessibility / performance gate
 
@@ -182,6 +205,7 @@ PR workflow изолированно устанавливает pinned quality t
 - фактическая доступность Resume PDF как `application/pdf`;
 - serious/critical axe violations;
 - generated local-search page в настоящем Chromium;
+- page title/description/canonical/OpenGraph/Twitter metadata и фактическая доступность generated PNG cards;
 - Lighthouse budgets: Performance ≥ 85, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 95;
 - homepage / projects / resume в Firefox и WebKit как компактный compatibility smoke.
 
@@ -193,11 +217,11 @@ PR workflow изолированно устанавливает pinned quality t
 - projects desktop/mobile;
 - resume desktop/mobile.
 
-CI блокирует существенное изменение геометрии или визуального fingerprint. Полные screenshots и diff/evidence сохраняются в artifact `quality-artifacts` на 14 дней.
+CI блокирует существенное изменение геометрии или визуального fingerprint. Полные screenshots и diff/evidence сохраняются в artifact `quality-artifacts` на 14 дней. Baseline обновляется только после прохождения функциональных browser gates.
 
 ### Production smoke
 
-После `actions/deploy-pages` workflow проверяет уже реальный опубликованный Pages URL: homepage, Projects, Resume, PDF, core CSS/JS и favicon. Проверка повторяется несколько раз с backoff, чтобы отделить краткую propagation delay от устойчивой production-регрессии.
+После `actions/deploy-pages` workflow проверяет уже реальный опубликованный Pages URL: homepage, Projects, Engineering Notes, Resume, PDF, homepage OpenGraph PNG, core CSS/JS и favicon. Проверка повторяется несколько раз с backoff, чтобы отделить краткую propagation delay от устойчивой production-регрессии.
 
 ### External health
 
@@ -209,6 +233,7 @@ CI блокирует существенное изменение геометр
 - `accessibility.css` — контраст и визуальное различие интерактивных элементов.
 - `standalone.css` — shell/header/footer лёгкой главной.
 - `home.css` — hero/cards/layout главной.
+- `active-projects.css` — build-time `Currently building` cards.
 - `resume.css` — изолированный web-CV visual layer.
 - `custom.js` — progressive enhancement после загрузки приложения: PDF hydration, accessibility repair, terminal/reveal/pointer effects.
 
@@ -216,28 +241,42 @@ CI блокирует существенное изменение геометр
 
 `docs/landing/projects.md` — portfolio hub. Подробные публичные разборы:
 
+- LivingWorld — server-authoritative AI NPCs
+- NODE ZERO — narrative/game systems architecture
 - TaskHub — Backend + AI
 - MiniChess — Java domain logic
 - Godot Atmospheric Horror Template — agentic game development
 
-MarketDB представлен только на безопасном публичном уровне без раскрытия внутренней коммерческой архитектуры.
+MarketDB представлен только на безопасном публичном уровне без раскрытия внутренней коммерческой архитектуры. NODE ZERO сохраняет private/proprietary boundary; публичный case study не раскрывает закрытый исходный код.
+
+## Engineering Notes
+
+`docs/landing/notes.md` — technical-writing hub. Начальные материалы:
+
+- runtime boundary между lightweight landing и Diplodoc knowledge layer;
+- layered quality gates для статического production-сайта;
+- server-authoritative AI NPC pipeline и trust boundaries.
+
+Новые заметки добавляются как обычные Markdown-страницы и проходят тот же sitemap/search/metadata/quality pipeline, что и остальные knowledge pages.
 
 ## Добавление страницы
 
 1. Создайте Markdown-файл в `docs/landing/`.
 2. Добавьте ссылку в `docs/toc.yaml`.
-3. При необходимости добавьте переход с standalone homepage в `templates/index.html`.
+3. Для high-value страницы добавьте запись в `data/page-meta.json`.
+4. При необходимости добавьте переход с standalone homepage в `templates/index.html`.
 
-Markdown-страницы из `toc.yaml` автоматически попадают в `sitemap.xml`.
+Markdown-страницы из `toc.yaml` автоматически попадают в `sitemap.xml`. High-value страницы из `page-meta.json` автоматически получают отдельные social preview PNG и metadata.
 
 ## Добавление медиа
 
 - Изображения — `docs/assets/images/`
+- Диаграммы — `docs/assets/diagrams/`
 - PDF и документы — `docs/assets/documents/`
 
 ## Деплой
 
-- **Pull requests** — tests → build → integrity → Chromium/Axe/Lighthouse → Firefox/WebKit smoke → search smoke → visual regression → quality artifacts
+- **Pull requests** — tests → build → integrity → Chromium/Axe/Lighthouse → Firefox/WebKit smoke → search smoke → metadata/OG smoke → visual regression → quality artifacts
 - **GitHub Pages** — tests → build → integrity → deploy из `master` → production smoke реального опубликованного URL
 - **External health** — еженедельная проверка production/public внешних endpoint'ов
 - **Docker** — tests → build → integrity → image publish

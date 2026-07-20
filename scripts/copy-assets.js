@@ -4,6 +4,8 @@ import {fileURLToPath} from 'node:url';
 
 import {globSync} from 'glob';
 
+import {writeOgCards} from './og-image.js';
+import {applyPageMeta, loadPageMeta} from './page-meta.js';
 import {normalizeSearchPageHtml} from './search-page.js';
 import {
   collectPagesFromToc,
@@ -17,6 +19,7 @@ const ROOT = path.join(__dirname, '..');
 const DOCS_DIR = path.join(ROOT, 'docs');
 const OUTPUT_DIR = path.join(ROOT, 'docs-html');
 const STANDALONE_HOME_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
+const PAGE_META_MANIFEST = path.join(ROOT, 'data', 'page-meta.json');
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
 
@@ -115,6 +118,7 @@ export function postprocessOutput({
   outputDir = OUTPUT_DIR,
   docsDir = DOCS_DIR,
   standaloneTemplatePath = STANDALONE_HOME_TEMPLATE,
+  pageMetaPath = PAGE_META_MANIFEST,
   siteUrl = getSiteUrl(),
   copyAssets = true,
 } = {}) {
@@ -136,9 +140,20 @@ export function postprocessOutput({
     outputPath: path.join(outputDir, 'index.html'),
     siteUrl,
   });
+
+  const pageMeta = loadPageMeta(pageMetaPath);
+  const ogCards = writeOgCards(outputDir, pageMeta);
+  const metadataUpdated = applyPageMeta(outputDir, pageMeta, siteUrl);
   const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
 
-  return {copied, normalizedSearchPages, standaloneHomePath, personSchemaInjected};
+  return {
+    copied,
+    normalizedSearchPages,
+    standaloneHomePath,
+    ogCards,
+    metadataUpdated,
+    personSchemaInjected,
+  };
 }
 
 function main() {
@@ -154,6 +169,8 @@ function main() {
       console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
     }
     console.log(`Standalone homepage written: ${result.standaloneHomePath}`);
+    console.log(`Generated ${result.ogCards.length} OpenGraph PNG card(s).`);
+    console.log(`Injected page metadata into ${result.metadataUpdated} HTML page(s).`);
     if (result.personSchemaInjected) {
       console.log('Person schema injected into index.html.');
     }
