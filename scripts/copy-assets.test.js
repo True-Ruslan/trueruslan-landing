@@ -12,19 +12,27 @@ import {
 } from './copy-assets.js';
 import {injectSseIntoHtml} from './serve.js';
 
-test('walkAssets copies supported files', () => {
+test('walkAssets copies supported image and PDF files preserving paths', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-assets-'));
   const docsDir = path.join(tempRoot, 'docs');
-  const assetsDir = path.join(docsDir, 'assets', 'images');
+  const imagesDir = path.join(docsDir, 'assets', 'images');
+  const documentsDir = path.join(docsDir, 'assets', 'documents');
   const outputDir = path.join(tempRoot, 'docs-html');
 
-  fs.mkdirSync(assetsDir, {recursive: true});
+  fs.mkdirSync(imagesDir, {recursive: true});
+  fs.mkdirSync(documentsDir, {recursive: true});
   fs.mkdirSync(outputDir);
-  fs.writeFileSync(path.join(assetsDir, 'avatar.png'), 'png');
+  fs.writeFileSync(path.join(imagesDir, 'avatar.png'), 'png');
+  fs.writeFileSync(path.join(documentsDir, 'cv.pdf'), '%PDF-test');
 
   const copied = walkAssets(path.join(docsDir, 'assets'), outputDir, docsDir);
-  assert.equal(copied.length, 1);
+
+  assert.deepEqual(copied.sort(), [
+    path.join('assets', 'documents', 'cv.pdf'),
+    path.join('assets', 'images', 'avatar.png'),
+  ]);
   assert.ok(fs.existsSync(path.join(outputDir, 'assets', 'images', 'avatar.png')));
+  assert.ok(fs.existsSync(path.join(outputDir, 'assets', 'documents', 'cv.pdf')));
 });
 
 test('injectSseIntoHtml is idempotent', () => {
