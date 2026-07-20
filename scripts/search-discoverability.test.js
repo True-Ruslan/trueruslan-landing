@@ -14,7 +14,10 @@ const SEARCH_PATH = '_search/ru/index.html';
 
 test('standalone homepage exposes an accessible site-search entry', () => {
   assert.match(template, new RegExp(`href=["']${SEARCH_PATH.replaceAll('/', '\\/')}["']`));
-  assert.match(template, /(?:aria-label=["'][^"']*поиск[^"']*["']|>\s*Поиск\s*</i);
+  assert.ok(
+    template.includes('aria-label="Поиск по сайту"') || template.includes('>Поиск</a>'),
+    'standalone search entry must have a visible or accessible Russian label',
+  );
 });
 
 test('Diplodoc navigation exposes the generated local-search page', () => {
