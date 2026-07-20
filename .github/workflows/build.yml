@@ -25,7 +25,10 @@ jobs:
       - name: Test
         run: npm test
       - name: Build docs
-        run: npm run build:docs
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run build:docs 2>&1 | tee build-docs.log
       - name: Check generated site integrity
         shell: bash
         run: |
@@ -72,6 +75,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p quality-artifacts
+          cp build-docs.log quality-artifacts/build-docs.log 2>/dev/null || true
           cp site-integrity.log quality-artifacts/site-integrity.log 2>/dev/null || true
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
