@@ -24,15 +24,21 @@
 ### Встроенный просмотр
 
 <iframe
-src="../assets/documents/cv.pdf"
+src="about:blank"
+data-tr-resume-pdf
 title="Резюме Руслана Немыкина (PDF)"
 width="100%"
 height="800px"
 loading="lazy"
 style="border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-  <p>Ваш браузер не поддерживает отображение PDF.
-  <a href="../assets/documents/cv.pdf" target="_blank" rel="noopener noreferrer">Открыть резюме в новой вкладке</a></p>
+  <p>Ваш браузер не поддерживает отображение PDF.</p>
 </iframe>
+
+[Открыть резюме в новой вкладке](https://raw.githubusercontent.com/True-Ruslan/trueruslan-landing/master/docs/assets/documents/cv.pdf){target="_blank" data-tr-resume-link}
+
+<noscript>
+  <p><a href="https://raw.githubusercontent.com/True-Ruslan/trueruslan-landing/master/docs/assets/documents/cv.pdf" target="_blank" rel="noopener noreferrer">Открыть PDF-резюме</a></p>
+</noscript>
 
 ---
 
