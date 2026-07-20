@@ -10,7 +10,7 @@ const scriptPath = path.join(ROOT, 'docs', '_assets', 'script', 'custom.js');
 
 function loadVisualApi() {
   const source = fs.readFileSync(scriptPath, 'utf8');
-  const context = {console};
+  const context = {console, URL};
   context.globalThis = context;
   vm.createContext(context);
   vm.runInContext(source, context, {filename: scriptPath});
@@ -38,4 +38,17 @@ test('terminal lines communicate identity without replacing page content', () =>
   assert.ok(lines.some((line) => line.includes('java --version')));
   assert.ok(lines.some((line) => line.includes('Backend Engineer')));
   assert.ok(lines.some((line) => line.includes('distributed systems')));
+});
+
+test('getResumePdfUrl preserves deployment base paths', () => {
+  const {getResumePdfUrl} = loadVisualApi();
+
+  assert.equal(
+    getResumePdfUrl('https://wiki.marketdb.ru/landing/resume.html'),
+    'https://wiki.marketdb.ru/assets/documents/cv.pdf',
+  );
+  assert.equal(
+    getResumePdfUrl('https://true-ruslan.github.io/trueruslan-landing/landing/resume.html'),
+    'https://true-ruslan.github.io/trueruslan-landing/assets/documents/cv.pdf',
+  );
 });
