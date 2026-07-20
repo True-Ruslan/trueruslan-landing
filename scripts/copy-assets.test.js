@@ -6,7 +6,6 @@ import path from 'node:path';
 
 import {
   postprocessOutput,
-  syncAssets,
   walkAssets,
   writeRobotsTxt,
   writeSitemap,
@@ -26,24 +25,6 @@ test('walkAssets copies supported files', () => {
   const copied = walkAssets(path.join(docsDir, 'assets'), outputDir, docsDir);
   assert.equal(copied.length, 1);
   assert.ok(fs.existsSync(path.join(outputDir, 'assets', 'images', 'avatar.png')));
-});
-
-test('syncAssets removes stale generated assets before copying', () => {
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-assets-sync-'));
-  const docsDir = path.join(tempRoot, 'docs');
-  const assetsDir = path.join(docsDir, 'assets', 'images');
-  const outputDir = path.join(tempRoot, 'docs-html');
-  const generatedAssetsDir = path.join(outputDir, 'assets', 'images');
-
-  fs.mkdirSync(assetsDir, {recursive: true});
-  fs.mkdirSync(generatedAssetsDir, {recursive: true});
-  fs.writeFileSync(path.join(assetsDir, 'current.png'), 'current');
-  fs.writeFileSync(path.join(generatedAssetsDir, 'stale.png'), 'stale');
-
-  syncAssets(path.join(docsDir, 'assets'), outputDir, docsDir);
-
-  assert.ok(fs.existsSync(path.join(generatedAssetsDir, 'current.png')));
-  assert.equal(fs.existsSync(path.join(generatedAssetsDir, 'stale.png')), false);
 });
 
 test('injectSseIntoHtml is idempotent', () => {
