@@ -1,0 +1,96 @@
+{
+  "currentProjects": [
+    {
+      "id": "livingworld",
+      "title": "LivingWorld AI",
+      "status": "RELEASE CANDIDATE",
+      "summary": "Server-authoritative AI conversations for MCA Reborn villagers: text/voice input, STT, LLM, memory, TTS, world context and bounded action authorization on the server.",
+      "href": "landing/projects/livingworld.html",
+      "tags": ["Java 21", "Fabric 1.21.1", "AI Agents", "Voice"]
+    },
+    {
+      "id": "node-zero",
+      "title": "NODE ZERO",
+      "status": "PRE-PRODUCTION",
+      "summary": "First-person psychological techno-horror inside an autonomous AI compute facility, currently focused on a production-ready vertical slice.",
+      "href": "landing/projects/node-zero.html",
+      "tags": ["Unity 6.3", "C#", "URP", "Game Systems"]
+    },
+    {
+      "id": "portfolio",
+      "title": "Engineering Portfolio",
+      "status": "ACTIVE",
+      "summary": "This site itself: standalone performance-first landing, Diplodoc knowledge layer, browser QA, accessibility, Lighthouse, visual regression and production smoke.",
+      "href": "landing/notes/portfolio-architecture.html",
+      "tags": ["Static Architecture", "CI/CD", "Playwright", "Quality Gates"]
+    }
+  ],
+  "graphTopics": [
+    {
+      "id": "java-spring",
+      "label": "Java / Spring",
+      "description": "Основной production-контур: Java, Spring Boot, API, доменная логика, безопасность и интеграции.",
+      "links": [
+        {"label": "TaskHub", "href": "landing/projects/taskhub.html"},
+        {"label": "MiniChess", "href": "landing/projects/minichess.html"},
+        {"label": "Web-CV", "href": "landing/resume.html"}
+      ]
+    },
+    {
+      "id": "distributed",
+      "label": "Distributed Systems",
+      "description": "Messaging, сервисные границы, отказоустойчивость, эксплуатационные контракты и воспроизводимые интеграционные контуры.",
+      "links": [
+        {"label": "TaskHub", "href": "landing/projects/taskhub.html"},
+        {"label": "Обо мне", "href": "landing/about.html"}
+      ]
+    },
+    {
+      "id": "data",
+      "label": "Data",
+      "description": "PostgreSQL, Oracle, ClickHouse, Redis и прикладная работа с данными в production/backend системах.",
+      "links": [
+        {"label": "Проекты", "href": "landing/projects.html"},
+        {"label": "Web-CV", "href": "landing/resume.html"}
+      ]
+    },
+    {
+      "id": "devops",
+      "label": "DevOps / Delivery",
+      "description": "Docker, OpenShift/Kubernetes, CI/CD, quality gates, reproducible builds и проверка уже опубликованного production artifact.",
+      "links": [
+        {"label": "Portfolio architecture", "href": "landing/notes/portfolio-architecture.html"},
+        {"label": "TaskHub", "href": "landing/projects/taskhub.html"}
+      ]
+    },
+    {
+      "id": "ai",
+      "label": "AI / LLM / Agents",
+      "description": "LLM-интеграции, agentic workflows, server-authoritative AI behavior, memory/context boundaries и управляемая автономность.",
+      "links": [
+        {"label": "LivingWorld", "href": "landing/projects/livingworld.html"},
+        {"label": "AI NPC design note", "href": "landing/notes/bounded-ai-npc-conversations.html"},
+        {"label": "TaskHub", "href": "landing/projects/taskhub.html"}
+      ]
+    },
+    {
+      "id": "gamedev",
+      "label": "Game Development",
+      "description": "Unity/Godot, first-person systems, horror pacing, gameplay architecture и AI-assisted production workflows.",
+      "links": [
+        {"label": "NODE ZERO", "href": "landing/projects/node-zero.html"},
+        {"label": "Godot Horror Template", "href": "landing/projects/godot-horror-template.html"}
+      ]
+    },
+    {
+      "id": "education",
+      "label": "Education / Research",
+      "description": "Преподавание разработки и тестирования, аспирантское исследование обучения программированию и систематизация инженерных знаний.",
+      "links": [
+        {"label": "Обо мне", "href": "landing/about.html"},
+        {"label": "Источники", "href": "landing/bibliography.html"},
+        {"label": "Engineering Notes", "href": "landing/notes.html"}
+      ]
+    }
+  ]
+}
