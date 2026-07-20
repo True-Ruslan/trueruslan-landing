@@ -4,7 +4,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import {walkAssets, writeRobotsTxt, writeSitemap} from './copy-assets.js';
+import {
+  postprocessOutput,
+  syncAssets,
+  walkAssets,
+  writeRobotsTxt,
+  writeSitemap,
+} from './copy-assets.js';
 import {injectSseIntoHtml} from './serve.js';
 
 test('walkAssets copies supported files', () => {
@@ -20,6 +26,24 @@ test('walkAssets copies supported files', () => {
   const copied = walkAssets(path.join(docsDir, 'assets'), outputDir, docsDir);
   assert.equal(copied.length, 1);
   assert.ok(fs.existsSync(path.join(outputDir, 'assets', 'images', 'avatar.png')));
+});
+
+test('syncAssets removes stale generated assets before copying', () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-assets-sync-'));
+  const docsDir = path.join(tempRoot, 'docs');
+  const assetsDir = path.join(docsDir, 'assets', 'images');
+  const outputDir = path.join(tempRoot, 'docs-html');
+  const generatedAssetsDir = path.join(outputDir, 'assets', 'images');
+
+  fs.mkdirSync(assetsDir, {recursive: true});
+  fs.mkdirSync(generatedAssetsDir, {recursive: true});
+  fs.writeFileSync(path.join(assetsDir, 'current.png'), 'current');
+  fs.writeFileSync(path.join(generatedAssetsDir, 'stale.png'), 'stale');
+
+  syncAssets(path.join(docsDir, 'assets'), outputDir, docsDir);
+
+  assert.ok(fs.existsSync(path.join(generatedAssetsDir, 'current.png')));
+  assert.equal(fs.existsSync(path.join(generatedAssetsDir, 'stale.png')), false);
 });
 
 test('injectSseIntoHtml is idempotent', () => {
@@ -53,4 +77,40 @@ test('writeRobotsTxt and writeSitemap create files', () => {
       process.env.SITE_URL = original;
     }
   }
+});
+
+test('postprocessOutput restores SEO and theme after a fast docs rebuild', () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-postprocess-'));
+  const docsDir = path.join(tempRoot, 'docs');
+  const outputDir = path.join(tempRoot, 'docs-html');
+
+  fs.mkdirSync(docsDir, {recursive: true});
+  fs.mkdirSync(outputDir, {recursive: true});
+  fs.writeFileSync(
+    path.join(docsDir, 'toc.yaml'),
+    'items:\n  - name: About\n    href: ./landing/about.md\n',
+  );
+  fs.writeFileSync(
+    path.join(outputDir, 'index.html'),
+    '<!DOCTYPE html><html><head><title>Home</title></head><body class="g-root g-root_theme_light"></body></html>',
+  );
+
+  const result = postprocessOutput({
+    outputDir,
+    docsDir,
+    siteUrl: 'https://example.test',
+    copyAssets: false,
+  });
+
+  const html = fs.readFileSync(path.join(outputDir, 'index.html'), 'utf8');
+  const robots = fs.readFileSync(path.join(outputDir, 'robots.txt'), 'utf8');
+  const sitemap = fs.readFileSync(path.join(outputDir, 'sitemap.xml'), 'utf8');
+
+  assert.equal(result.copied.length, 0);
+  assert.equal(result.personSchemaInjected, true);
+  assert.match(html, /g-root_theme_dark/);
+  assert.match(html, /application\/ld\+json/);
+  assert.match(robots, /https:\/\/example\.test\/sitemap\.xml/);
+  assert.match(sitemap, /landing\/about\.html/);
+  assert.ok(fs.existsSync(path.join(outputDir, '.nojekyll')));
 });
