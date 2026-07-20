@@ -29,10 +29,9 @@ Checks:
 - root page returns 2xx and expected identity text;
 - Projects and Resume pages return 2xx;
 - CV PDF returns 2xx with `application/pdf`;
-- critical CSS/JS/favicon assets return 2xx;
-- a small Chromium scenario loads the public homepage and Resume without same-origin HTTP failures or browser page errors.
+- critical CSS/JS/favicon assets return 2xx.
 
-The production smoke must fail the deployment workflow when the deployed site is functionally broken.
+The production smoke must fail the deployment workflow when the deployed site is functionally broken. It retries with bounded backoff to separate short Pages propagation delay from an actual persistent regression.
 
 ### 2. Weekly external health workflow
 
@@ -40,7 +39,7 @@ A scheduled workflow checks external destinations that can fail independently of
 
 - public GitHub repositories linked from the portfolio;
 - MarketDB public page;
-- Telegram, Habr, LinkedIn and other public profile URLs where deterministic HTTP checking is practical;
+- Telegram/Habr and other public profile URLs where deterministic HTTP checking is practical;
 - public GitHub Pages root, projects, resume and PDF endpoints.
 
 The checker follows redirects, uses a bounded timeout and classifies failures. Some providers intentionally return 401/403/429 to automation; these are treated as reachable when the response proves the endpoint exists. DNS/connectivity errors and 404/410/5xx are failures.
@@ -63,18 +62,18 @@ This avoids tripling the full Lighthouse/Axe workload while still covering Firef
 
 ### 4. Licensing cleanup
 
-The repository currently has Apache-2.0 in `LICENSE` but npm metadata declares MIT. The final policy is:
+The repository previously conflicted: `LICENSE` was Apache-2.0 while npm/package-lock metadata declared MIT. The final policy is:
 
-- repository source code and build/test tooling: Apache-2.0;
-- personal content (CV, photos, biographical/personal text): not licensed for reuse by the Apache license and remains copyright of the author unless explicitly stated otherwise;
+- repository source code and build/test tooling: MIT License;
+- personal content (CV, photos, biographical/personal text): not licensed for reuse by the MIT software license and remains copyright of the author unless explicitly stated otherwise;
 - third-party assets remain under their own licenses/credits.
 
 Implementation:
 
-- set `package.json` license to `Apache-2.0`;
+- preserve the existing npm/package-lock `MIT` metadata as the software-license source of truth;
+- replace the conflicting Apache `LICENSE` file with MIT;
 - add `CONTENT-LICENSE.md` clarifying the personal-content carve-out;
-- update README licensing section;
-- preserve the existing Apache-2.0 `LICENSE` file.
+- update README licensing section.
 
 ## Error handling
 
