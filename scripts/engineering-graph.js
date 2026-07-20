@@ -11,6 +11,7 @@ const DEFAULT_MANIFEST = path.join(ROOT, 'data', 'engineering-graph.json');
 const ALLOWED_KINDS = new Set(['technology', 'domain', 'project', 'note']);
 const ALLOWED_TAGS = new Set(['backend', 'ai', 'reliability', 'gamedev']);
 const KIND_ORDER = ['technology', 'domain', 'project', 'note'];
+const BUILD_SLOT = 'engineering-map-build-slot';
 
 function escapeHtml(value) {
   return String(value)
@@ -130,6 +131,26 @@ function hasAttribute(node, name) {
   return node.attrs?.some((attribute) => attribute.name === name) ?? false;
 }
 
+function ensureGraphRoot(parsed) {
+  const existing = findNode(parsed, (node) => hasAttribute(node, 'data-tr-engineering-graph-root'));
+  if (existing) return existing;
+
+  const markerText = findNode(parsed, (node) => node.nodeName === '#text' && node.value?.trim() === BUILD_SLOT);
+  const markerContainer = markerText?.parentNode;
+  const parent = markerContainer?.parentNode;
+  if (!markerContainer || !parent?.childNodes) return null;
+
+  const index = parent.childNodes.indexOf(markerContainer);
+  if (index < 0) return null;
+
+  const root = utils.createNode('div');
+  utils.setAttribute(root, 'data-tr-engineering-graph-root', '');
+  utils.setAttribute(root, 'aria-label', 'Интерактивная карта инженерных связей');
+  root.parentNode = parent;
+  parent.childNodes.splice(index, 1, root);
+  return root;
+}
+
 function removeGraphDataScripts(node) {
   if (!node.childNodes) return;
   node.childNodes = node.childNodes.filter((child) => !(child.nodeName === 'script' && hasAttribute(child, 'data-tr-engineering-graph-data')));
@@ -138,9 +159,9 @@ function removeGraphDataScripts(node) {
 
 export function injectEngineeringGraph(html, graph) {
   const parsed = parse(html);
-  const root = findNode(parsed, (node) => hasAttribute(node, 'data-tr-engineering-graph-root'));
+  const root = ensureGraphRoot(parsed);
   const head = findNode(parsed, (node) => node.nodeName === 'head');
-  if (!root || !head) throw new Error('Engineering graph host/head not found in generated HTML.');
+  if (!root || !head) throw new Error('Engineering graph build slot/head not found in generated HTML.');
 
   const fallback = parseFragment(renderEngineeringGraphFallback(graph));
   root.childNodes = fallback.childNodes ?? [];
