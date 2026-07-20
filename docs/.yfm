@@ -10,6 +10,7 @@ resources:
   style:
     - _assets/style/custom.css
     - _assets/style/accessibility.css
+    - _assets/style/home.css
     - _assets/style/resume.css
   script:
     - _assets/script/custom.js
