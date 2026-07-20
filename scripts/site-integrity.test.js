@@ -31,6 +31,20 @@ test('resolveLocalReference strips query/hash and resolves nested paths', () => 
   assert.equal(resolveLocalReference('about:blank', html, root), null);
 });
 
+test('resolveLocalReference honors a relative HTML base href like the browser', () => {
+  const root = '/tmp/site';
+  const html = '/tmp/site/landing/projects/taskhub.html';
+
+  assert.equal(
+    resolveLocalReference('_bundle/app.js', html, root, '../../'),
+    '/tmp/site/_bundle/app.js',
+  );
+  assert.equal(
+    resolveLocalReference('assets/images/avatar.png', html, root, '../../'),
+    '/tmp/site/assets/images/avatar.png',
+  );
+});
+
 test('checkSiteIntegrity validates nested html, images, scripts and pdf iframe targets', () => {
   const root = fixture();
   fs.writeFileSync(
@@ -50,6 +64,25 @@ test('checkSiteIntegrity validates nested html, images, scripts and pdf iframe t
   const result = checkSiteIntegrity(root);
   assert.equal(result.htmlFiles, 2);
   assert.equal(result.referencesChecked, 5);
+});
+
+test('checkSiteIntegrity applies page base href to Diplodoc-style root resources', () => {
+  const root = fixture();
+  fs.mkdirSync(path.join(root, '_bundle'), {recursive: true});
+  fs.mkdirSync(path.join(root, '_assets', 'style'), {recursive: true});
+  fs.writeFileSync(path.join(root, '_bundle', 'app.js'), '');
+  fs.writeFileSync(path.join(root, '_assets', 'style', 'theme.css'), '');
+  fs.writeFileSync(
+    path.join(root, 'landing', 'resume.html'),
+    `<!doctype html><html><head>
+      <base href="../">
+      <link rel="icon" href="assets/images/avatar.png">
+      <link rel="stylesheet" href="_assets/style/theme.css">
+    </head><body><script src="_bundle/app.js"></script></body></html>`,
+  );
+
+  const result = checkSiteIntegrity(root);
+  assert.equal(result.referencesChecked, 3);
 });
 
 test('checkSiteIntegrity reports all missing local references with source context', () => {
