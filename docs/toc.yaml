@@ -1,13 +1,17 @@
 navigation:
   logo:
     url: index.html
-    text: TrueRuslan
+    text: TRUERUSLAN_
     target: _self
   header:
     leftItems:
       - text: Главная
         type: link
         url: index.html
+        target: _self
+      - text: Проекты
+        type: link
+        url: landing/projects.html
         target: _self
       - text: Обо мне
         type: link
@@ -17,17 +21,13 @@ navigation:
         type: link
         url: landing/resume.html
         target: _self
-      - text: Проекты
-        type: link
-        url: landing/projects.html
-        target: _self
-      - text: Фотографии
-        type: link
-        url: landing/photos.html
-        target: _self
       - text: Источники
         type: link
         url: landing/bibliography.html
+        target: _self
+      - text: Фото
+        type: link
+        url: landing/photos.html
         target: _self
       - text: Контакты
         type: link
@@ -44,18 +44,19 @@ navigation:
         text: Habr
         url: https://habr.com/ru/users/trueruslan
       - type: controls
-title: TrueRuslan - Разработчик
+
+title: Руслан Немыкин — Backend Engineer
 href: index.yaml
 items:
+  - name: Проекты
+    href: ./landing/projects.md
   - name: Обо мне
     href: ./landing/about.md
   - name: Резюме
     href: ./landing/resume.md
-  - name: Проекты
-    href: ./landing/projects.md
-  - name: Фотографии
-    href: ./landing/photos.md
   - name: Источники
     href: ./landing/bibliography.md
+  - name: Фото
+    href: ./landing/photos.md
   - name: Контакты
     href: ./landing/contacts.md
