@@ -18,6 +18,7 @@ const {chromium} = requireTool('playwright');
 const pages = [
   {path: '/index.html', title: 'Руслан Немыкин — Backend Engineer', card: 'home'},
   {path: '/landing/projects.html', title: 'Проекты — Руслан Немыкин', card: 'projects'},
+  {path: '/landing/engineering-map.html', title: 'Engineering Map — Руслан Немыкин', card: 'engineering-map'},
   {path: '/landing/resume.html', title: 'Резюме — Руслан Немыкин', card: 'resume'},
   {path: '/landing/projects/livingworld.html', title: 'LivingWorld — Server-Authoritative AI NPCs', card: 'livingworld'},
   {path: '/landing/projects/node-zero.html', title: 'NODE ZERO — Narrative Systems Case Study', card: 'node-zero'},
