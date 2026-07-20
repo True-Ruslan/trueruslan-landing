@@ -52,6 +52,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/search-smoke.cjs 2>&1 | tee search-smoke.log
+      - name: Metadata and OpenGraph browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/metadata-smoke.cjs 2>&1 | tee metadata-smoke.log
       - name: Visual regression
         shell: bash
         run: |
@@ -66,6 +71,7 @@ jobs:
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke.log 2>/dev/null || true
+          cp metadata-smoke.log quality-artifacts/metadata-smoke.log 2>/dev/null || true
           cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           cp docs-html/landing/resume.html quality-artifacts/resume-generated.html 2>/dev/null || true
