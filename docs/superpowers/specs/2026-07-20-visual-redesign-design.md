@@ -97,4 +97,4 @@ Add Node tests for deterministic helper behavior in the custom JavaScript where 
 
 ## Deployment strategy
 
-This redesign is developed on `agent/visual-redesign`, based on the hardening PR head. It should be reviewed as a stacked PR against `agent/harden-landing-production` so the visual work stays isolated from production-hardening changes. After the hardening PR lands, the visual PR can be retargeted to `master` if needed.
+The redesign is developed on `agent/visual-redesign`. Hardening PR #1 was merged into `master` on 2026-07-20, so the visual redesign is opened directly against `master`; the resulting PR contains only redesign/content/test changes on top of the already-merged production hardening.
