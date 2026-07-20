@@ -50,6 +50,13 @@ href: index.yaml
 items:
   - name: Проекты
     href: ./landing/projects.md
+    items:
+      - name: TaskHub — Backend + AI
+        href: ./landing/projects/taskhub.md
+      - name: MiniChess — Domain Logic
+        href: ./landing/projects/minichess.md
+      - name: Godot Horror Template
+        href: ./landing/projects/godot-horror-template.md
   - name: Обо мне
     href: ./landing/about.md
   - name: Резюме
