@@ -3,15 +3,22 @@ import assert from 'node:assert/strict';
 
 import {collectPagesFromToc, getSiteUrl, injectPersonSchemaIntoHtml} from './seo.js';
 
-test('collectPagesFromToc reads landing pages from toc.yaml', () => {
+test('collectPagesFromToc reads and deduplicates markdown pages from toc.yaml', () => {
   const toc = `
 href: index.yaml
 items:
   - href: ./landing/about.md
-  - href: ./landing/resume.md
+  - href: ./landing/system-design_2026.md
+  - href: ./notes/backend/java-21.md
+  - href: ./landing/about.md
 `;
 
-  assert.deepEqual(collectPagesFromToc(toc), ['', 'landing/about.html', 'landing/resume.html']);
+  assert.deepEqual(collectPagesFromToc(toc), [
+    '',
+    'landing/about.html',
+    'landing/system-design_2026.html',
+    'notes/backend/java-21.html',
+  ]);
 });
 
 test('getSiteUrl prefers SITE_URL env variable', () => {

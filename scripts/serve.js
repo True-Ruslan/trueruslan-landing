@@ -13,6 +13,7 @@ import open from 'open';
 
 import {debounce} from './debounce.js';
 import {injectDarkThemeIntoHtml} from './dark-theme.js';
+import {postprocessOutput} from './copy-assets.js';
 
 const SCRIPTS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.join(SCRIPTS_DIR, '..');
@@ -66,7 +67,7 @@ events.addEventListener("${sseEventName}", () => window.location.reload());
       .on('all', debounce((event, changedPath) => {
         console.info(`change: ${event}, path: ${changedPath}`);
         try {
-          this.rebuild(changedPath);
+          this.rebuild();
           this.injectSse();
           this.notifyClients();
         } catch (error) {
@@ -87,14 +88,15 @@ events.addEventListener("${sseEventName}", () => window.location.reload());
     res.on('close', () => this.sseClients.delete(res));
   }
 
-  rebuild(changedPath = '') {
-    const normalized = changedPath.replaceAll('\\', '/');
-    const needsAssets = normalized.includes('assets/');
+  rebuild() {
+    console.info('building documentation and refreshing post-processing');
 
-    console.info(needsAssets ? 'building documentation + assets' : 'building documentation (fast)');
+    execSync('npm run build:docs:fast', {cwd: PROJECT_ROOT, stdio: 'inherit'});
 
-    const script = needsAssets ? 'npm run build:docs' : 'npm run build:docs:fast';
-    execSync(script, {cwd: PROJECT_ROOT, stdio: 'inherit'});
+    const result = postprocessOutput();
+    console.info(
+      `post-processed ${result.themedPages} HTML file(s), copied ${result.copied.length} asset(s)`,
+    );
   }
 
   injectSse() {

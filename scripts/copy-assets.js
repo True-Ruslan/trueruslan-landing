@@ -108,30 +108,49 @@ export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSi
   return true;
 }
 
+export function postprocessOutput({
+  outputDir = OUTPUT_DIR,
+  docsDir = DOCS_DIR,
+  siteUrl = getSiteUrl(),
+  copyAssets = true,
+} = {}) {
+  if (!fs.existsSync(outputDir)) {
+    throw new Error('docs-html directory not found. Run build:docs:fast first.');
+  }
+
+  const copied = copyAssets
+    ? walkAssets(path.join(docsDir, 'assets'), outputDir, docsDir)
+    : [];
+
+  createNoJekyllFile(outputDir);
+  writeRobotsTxt(outputDir, siteUrl);
+  writeSitemap(outputDir, siteUrl, path.join(docsDir, 'toc.yaml'));
+
+  const themedPages = applyDarkThemeToHtmlFiles(outputDir);
+  const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
+
+  return {copied, themedPages, personSchemaInjected};
+}
+
 function main() {
-  if (!fs.existsSync(OUTPUT_DIR)) {
-    console.error('docs-html directory not found. Run build:docs first.');
+  try {
+    console.log('Post-processing generated site...');
+    const result = postprocessOutput();
+
+    for (const file of result.copied) {
+      console.log(`Copied: ${file}`);
+    }
+
+    console.log(`Dark theme applied to ${result.themedPages} HTML file(s).`);
+    if (result.personSchemaInjected) {
+      console.log('Person schema injected into index.html.');
+    }
+
+    console.log('Assets and SEO files created successfully.');
+  } catch (error) {
+    console.error(`Post-processing failed: ${error.message}`);
     process.exit(1);
   }
-
-  console.log('Copying static assets to docs-html...');
-  const copied = walkAssets(path.join(DOCS_DIR, 'assets'), OUTPUT_DIR);
-  for (const file of copied) {
-    console.log(`Copied: ${file}`);
-  }
-
-  createNoJekyllFile();
-  writeRobotsTxt();
-  writeSitemap();
-
-  const themedPages = applyDarkThemeToHtmlFiles();
-  console.log(`Dark theme applied to ${themedPages} HTML file(s).`);
-
-  if (applyPersonSchemaToIndex()) {
-    console.log('Person schema injected into index.html.');
-  }
-
-  console.log('Assets and SEO files created successfully.');
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {

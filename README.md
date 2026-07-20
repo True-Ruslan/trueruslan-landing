@@ -9,7 +9,9 @@
 - Markdown-контент с YFM-директивами
 - Встроенный просмотр PDF-резюме
 - Галерея изображений
+- Реестр изученных технических материалов
 - Локальный поиск
+- SEO post-processing: sitemap, robots.txt и JSON-LD
 
 ## Структура проекта
 
@@ -23,6 +25,7 @@ docs/
 │   ├── resume.md
 │   ├── projects.md
 │   ├── photos.md
+│   ├── bibliography.md
 │   └── contacts.md
 └── assets/                 # Статические файлы
     ├── images/             # Фотографии для галереи
@@ -30,7 +33,9 @@ docs/
 
 scripts/
 ├── serve.js                # Dev-сервер с hot reload
-└── copy-assets.js          # Копирование assets в docs-html
+├── copy-assets.js          # Assets + общий post-processing сборки
+├── seo.js                  # Sitemap/JSON-LD helpers
+└── dark-theme.js           # Применение темной темы к HTML
 ```
 
 ## Требования
@@ -60,27 +65,34 @@ npm run build:docs
 
 Результат сборки — каталог `docs-html/`.
 
+Сборка включает копирование статических файлов и post-processing HTML: темную тему, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
+
 ## Тесты
 
 ```bash
 npm test
 ```
 
+Тесты проверяют обработку assets, SEO/post-processing и HTML-инъекции dev-сервера.
+
 ## Добавление страницы
 
 1. Создайте файл в `docs/landing/`, например `blog.md`.
-2. Добавьте ссылку в `docs/toc.yaml` (header, items).
-3. Добавьте карточку на главную в `docs/index.yaml`.
+2. Добавьте ссылку в `docs/toc.yaml`.
+3. При необходимости добавьте карточку на главную в `docs/index.yaml`.
+
+Страницы, перечисленные как Markdown-ссылки в `toc.yaml`, автоматически попадают в `sitemap.xml`.
 
 ## Добавление медиа
 
-- Изображения — в `docs/assets/images/`, ссылки из markdown: `../assets/images/file.jpg`
+- Изображения — в `docs/assets/images/`, ссылки из Markdown: `../assets/images/file.jpg`
 - PDF и документы — в `docs/assets/documents/`
 
 ## Деплой
 
-- **GitHub Pages** — workflow `.github/workflows/static.yml`
-- **Docker** — `Dockerfile` (nginx + `docs-html`)
+- **GitHub Pages** — `.github/workflows/static.yml`, production-деплой только из `master`
+- **Docker** — `Dockerfile` + nginx, сборка образа через `.github/workflows/deploy.yaml`
+- **Pull requests** — `.github/workflows/build.yml` запускает тесты и production-сборку
 
 ## Документация Diplodoc
 
@@ -93,4 +105,4 @@ npm test
 
 ## Лицензия
 
-MIT License
+Условия лицензирования проекта определены в файле [`LICENSE`](LICENSE).

@@ -10,15 +10,18 @@
 
 ### E-commerce платформа [MarketDB](https://marketdb.pro)
 
-**Описание**: Сервис аналитики маркетплейсов.
+**Описание**: сервис аналитики маркетплейсов.
 
-**Технологии**: Java 17-21; Spring, Spring Boot; PostgreSQL, Clickhouse; Yandex Data Streams
-**Результат**: Платформа для 100+ селлеров
+**Технологии**: Java 17–21, Spring Boot, PostgreSQL, ClickHouse, Yandex Data Streams.
 
-## Open Source
+**Результат**: платформа для 100+ селлеров.
 
-### Управление задачами
-**GitHub**: [TaskHub](https://github.com/True-Ruslan/TaskHub-backend)
+## Open Source и PET-проекты
+
+### TaskHub — управление задачами
+
+- [Backend на GitHub](https://github.com/True-Ruslan/TaskHub-backend)
+- [Frontend на GitHub](https://github.com/True-Ruslan/taskhub-frontend)
 
 ---
 
