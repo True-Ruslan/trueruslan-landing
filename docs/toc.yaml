@@ -13,6 +13,10 @@ navigation:
         type: link
         url: landing/projects.html
         target: _self
+      - text: Заметки
+        type: link
+        url: landing/notes.html
+        target: _self
       - text: Обо мне
         type: link
         url: landing/about.html
@@ -51,12 +55,23 @@ items:
   - name: Проекты
     href: ./landing/projects.md
     items:
+      - name: LivingWorld — AI NPC Architecture
+        href: ./landing/projects/livingworld.md
+      - name: NODE ZERO — Techno-Horror Architecture
+        href: ./landing/projects/node-zero.md
       - name: TaskHub — Backend + AI
         href: ./landing/projects/taskhub.md
       - name: MiniChess — Domain Logic
         href: ./landing/projects/minichess.md
       - name: Godot Horror Template
         href: ./landing/projects/godot-horror-template.md
+  - name: Engineering Notes
+    href: ./landing/notes.md
+    items:
+      - name: Portfolio Architecture
+        href: ./landing/notes/portfolio-architecture.md
+      - name: Bounded AI NPC Conversations
+        href: ./landing/notes/bounded-ai-npc-conversations.md
   - name: Обо мне
     href: ./landing/about.md
   - name: Резюме
