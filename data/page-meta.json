@@ -1,0 +1,92 @@
+[
+  {
+    "path": "index.html",
+    "card": "home",
+    "title": "Руслан Немыкин — Backend Engineer",
+    "description": "Java, Spring Boot, distributed systems, DevOps, AI engineering, проекты, инженерные заметки и web-CV Руслана Немыкина.",
+    "displayTitle": "RUSLAN NEMYKIN",
+    "kicker": "BACKEND ENGINEER",
+    "tags": ["JAVA", "DISTRIBUTED SYSTEMS", "AI ENGINEERING"],
+    "accent": "cyan"
+  },
+  {
+    "path": "landing/projects.html",
+    "card": "projects",
+    "title": "Проекты — Руслан Немыкин",
+    "description": "Engineering case studies: backend, distributed systems, AI agents, game architecture и production-oriented development.",
+    "displayTitle": "ENGINEERING PROJECTS",
+    "kicker": "CASE STUDIES",
+    "tags": ["BACKEND", "AI", "GAMEDEV"],
+    "accent": "violet"
+  },
+  {
+    "path": "landing/resume.html",
+    "card": "resume",
+    "title": "Резюме — Руслан Немыкин",
+    "description": "Web-CV Руслана Немыкина: Java/Spring backend, distributed systems, databases, DevOps, AI engineering, преподавание и исследовательская работа.",
+    "displayTitle": "ENGINEERING RESUME",
+    "kicker": "RUSLAN NEMYKIN",
+    "tags": ["JAVA", "SPRING", "DEVOPS"],
+    "accent": "cyan"
+  },
+  {
+    "path": "landing/projects/livingworld.html",
+    "card": "livingworld",
+    "title": "LivingWorld — Server-Authoritative AI NPCs",
+    "description": "Case study серверно-авторитетного AI NPC pipeline для Minecraft: sessions, voice/text ingress, STT/LLM/TTS, memory и action authorization.",
+    "displayTitle": "LIVINGWORLD AI",
+    "kicker": "SERVER-AUTHORITATIVE NPCS",
+    "tags": ["MINECRAFT", "LLM", "VOICE PIPELINE"],
+    "accent": "green"
+  },
+  {
+    "path": "landing/projects/node-zero.html",
+    "card": "node-zero",
+    "title": "NODE ZERO — Narrative Systems Case Study",
+    "description": "Case study психологического techno-horror проекта: Unity architecture, reusable gameplay systems, facility state, authored sequences и MIRROR prediction loop.",
+    "displayTitle": "NODE ZERO",
+    "kicker": "NARRATIVE SYSTEMS",
+    "tags": ["UNITY", "SYSTEM DESIGN", "AGENTIC WORKFLOW"],
+    "accent": "violet"
+  },
+  {
+    "path": "landing/notes.html",
+    "card": "notes",
+    "title": "Engineering Notes — Руслан Немыкин",
+    "description": "Практические инженерные заметки о backend, AI systems, архитектуре, reliability, quality gates и agentic development.",
+    "displayTitle": "ENGINEERING NOTES",
+    "kicker": "TECHNICAL WRITING",
+    "tags": ["ARCHITECTURE", "RELIABILITY", "AI SYSTEMS"],
+    "accent": "cyan"
+  },
+  {
+    "path": "landing/notes/portfolio-runtime-boundary.html",
+    "card": "note-runtime-boundary",
+    "title": "Почему я отделил landing page от Diplodoc runtime",
+    "description": "Инженерный разбор performance/hydration trade-off: standalone landing page как быстрый presentation layer и Diplodoc как knowledge runtime.",
+    "displayTitle": "RUNTIME BOUNDARY",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["PERFORMANCE", "HYDRATION", "DIPLODOC"],
+    "accent": "violet"
+  },
+  {
+    "path": "landing/notes/static-site-quality-gates.html",
+    "card": "note-quality-gates",
+    "title": "Quality gates для статического инженерного сайта",
+    "description": "Как соединить generated-site integrity, Playwright, Axe, Lighthouse, cross-browser smoke и visual regression в один release gate.",
+    "displayTitle": "QUALITY GATES",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["CI", "PLAYWRIGHT", "LIGHTHOUSE"],
+    "accent": "green"
+  },
+  {
+    "path": "landing/notes/server-authoritative-ai-npcs.html",
+    "card": "note-ai-npcs",
+    "title": "Проектирование server-authoritative AI NPC pipeline",
+    "description": "Архитектурные принципы AI NPC systems: session ownership, voice/text ingress, provider orchestration, memory boundaries и authorized actions.",
+    "displayTitle": "AI NPC PIPELINE",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["AI AGENTS", "VOICE", "SECURITY"],
+    "accent": "cyan"
+  }
+]
