@@ -19,6 +19,7 @@ test('visual theme and custom resources are wired into Diplodoc', () => {
   assert.match(yfm, /assets\/images\/favicon\.svg/);
   assert.match(yfm, /_assets\/style\/custom\.css/);
   assert.match(yfm, /_assets\/style\/accessibility\.css/);
+  assert.match(yfm, /_assets\/style\/standalone\.css/);
   assert.match(yfm, /_assets\/style\/home\.css/);
   assert.match(yfm, /_assets\/style\/resume\.css/);
   assert.match(yfm, /_assets\/script\/custom\.js/);
@@ -26,8 +27,8 @@ test('visual theme and custom resources are wired into Diplodoc', () => {
   assert.match(theme, /base-background:\s*['"]#090B10['"]/i);
   assert.match(theme, /text-primary:\s*['"]#F4F7FB['"]/i);
   assert.match(packageJson.scripts['build:docs'], /--allow-custom-resources/);
-  assert.match(packageJson.scripts['build:docs'], /--static-content/);
+  assert.doesNotMatch(packageJson.scripts['build:docs'], /--static-content/);
   assert.match(packageJson.scripts['build:docs:fast'], /--allow-custom-resources/);
-  assert.match(packageJson.scripts['build:docs:fast'], /--static-content/);
+  assert.doesNotMatch(packageJson.scripts['build:docs:fast'], /--static-content/);
   assert.equal(packageJson.scripts['check:site'], 'node scripts/site-integrity.js');
 });
