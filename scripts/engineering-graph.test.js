@@ -71,7 +71,7 @@ test('renderEngineeringGraphFallback is deterministic and escapes content', () =
   assert.match(first, /href="resume\.html"/);
 });
 
-test('injectEngineeringGraph adds fallback and escaped JSON idempotently', () => {
+test('injectEngineeringGraph adds fallback and escaped JSON idempotently for rendered DOM', () => {
   const validated = validateEngineeringGraph(graph);
   const source = '<!doctype html><html><head><title>Map</title></head><body><div data-tr-engineering-graph-root></div></body></html>';
   const once = injectEngineeringGraph(source, validated);
@@ -82,4 +82,28 @@ test('injectEngineeringGraph adds fallback and escaped JSON idempotently', () =>
   assert.match(once, /data-tr-engineering-graph-fallback/);
   assert.match(once, /data-tr-engineering-graph-data/);
   assert.equal((once.match(/data-tr-engineering-graph-data/g) ?? []).length, 1);
+});
+
+test('injectEngineeringGraph patches the real non-static Diplodoc state payload', () => {
+  const validated = validateEngineeringGraph(graph);
+  const state = {
+    data: {
+      html: '<h1>Engineering Map</h1><p>engineering-map-build-slot</p><h2>How to read</h2>',
+    },
+  };
+  const encodedState = JSON.stringify(state)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+  const source = `<!doctype html><html><head><title>Map</title></head><body><script id="diplodoc-state" type="application/json">${encodedState}</script></body></html>`;
+
+  const once = injectEngineeringGraph(source, validated);
+  const twice = injectEngineeringGraph(once, validated);
+
+  assert.equal(once, twice);
+  assert.doesNotMatch(once, /<p>engineering-map-build-slot<\/p>/);
+  assert.match(once, /data-tr-engineering-graph-root/);
+  assert.match(once, /data-tr-engineering-graph-fallback/);
+  assert.match(once, /data-tr-engineering-graph-data/);
+  assert.match(once, /Backend Systems/);
 });
