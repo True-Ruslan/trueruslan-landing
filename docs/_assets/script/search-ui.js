@@ -12,7 +12,7 @@
 
   function findSearchInput(document) {
     return document.querySelector(
-      'input[type="search"], input[role="searchbox"], input[placeholder*="search" i], input[placeholder*="поиск" i]'
+      '.dc-search-page__search-field input, input[type="search"], input[role="searchbox"], input[placeholder="Поиск"], input[placeholder*="search" i]'
     );
   }
 
@@ -24,19 +24,26 @@
     if (!input.getAttribute('aria-label')) input.setAttribute('aria-label', 'Поиск по сайту');
     if (!input.getAttribute('placeholder')) input.setAttribute('placeholder', 'Найти проект, технологию или заметку…');
 
-    const parent = input.parentElement;
-    if (parent) parent.classList.add('tr-search-input-shell');
+    const shell = input.closest('.dc-search-page__search-field-wrapper') || input.parentElement;
+    if (shell) shell.classList.add('tr-search-input-shell');
 
-    const resultContainers = document.querySelectorAll('[class*="results" i], [class*="result-list" i]');
+    const app = document.querySelector('.Search');
+    if (app) app.classList.add('tr-search-app');
+
+    const resultContainers = document.querySelectorAll(
+      '.dc-search-page__content, .dc-search-page__search-results, [class*="result-list" i]'
+    );
     for (const container of resultContainers) container.classList.add('tr-search-results');
 
-    const resultItems = document.querySelectorAll('[class*="result-item" i], [class*="search-result" i], article');
+    const resultItems = document.querySelectorAll(
+      '.dc-search-page__search-result, [class*="result-item" i], [class*="search-result" i]'
+    );
     for (const item of resultItems) {
       if (item.closest('header, nav')) continue;
       if (item.querySelector('a')) item.classList.add('tr-search-result');
     }
 
-    const emptyStates = document.querySelectorAll('[class*="empty" i], [class*="no-result" i]');
+    const emptyStates = document.querySelectorAll('.dc-search-page__search-empty, [class*="no-result" i]');
     for (const node of emptyStates) node.classList.add('tr-search-empty');
 
     document.documentElement.setAttribute('data-tr-search-enhanced', 'true');
@@ -69,14 +76,12 @@
     let mounted = decorate(document);
     if (mounted || typeof root.MutationObserver !== 'function') return mounted;
 
-    let attempts = 0;
     const observer = new root.MutationObserver(() => {
-      attempts += 1;
       mounted = decorate(document);
-      if (mounted || attempts >= 80) observer.disconnect();
+      if (mounted) observer.disconnect();
     });
     observer.observe(document.documentElement, {childList: true, subtree: true});
-    root.setTimeout(() => observer.disconnect(), 5000);
+    root.setTimeout(() => observer.disconnect(), 8000);
     return false;
   }
 
