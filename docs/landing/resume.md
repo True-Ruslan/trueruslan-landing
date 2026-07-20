@@ -8,7 +8,7 @@
   <div class="tr-resume-actions">
     <a href="https://raw.githubusercontent.com/True-Ruslan/trueruslan-landing/master/docs/assets/documents/cv.pdf" data-tr-resume-link target="_blank" rel="noopener noreferrer">Открыть PDF ↗</a>
     <a href="https://github.com/True-Ruslan" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-    <a href="contacts.html">Связаться →</a>
+    <a href="landing/contacts.html">Связаться →</a>
   </div>
 
   <div class="tr-resume-stats">
