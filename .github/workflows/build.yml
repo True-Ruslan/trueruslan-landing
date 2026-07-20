@@ -38,7 +38,10 @@ jobs:
           npm install --prefix .quality-tools --package-lock=false --no-save
           playwright@1.61.1 @axe-core/playwright@4.12.1 lighthouse@13.4.0
       - name: Browser smoke, accessibility and Lighthouse
-        run: node scripts/browser-quality.cjs
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/browser-quality.cjs 2>&1 | tee quality-artifacts/browser-quality.log
       - name: Upload quality evidence
         if: always()
         uses: actions/upload-artifact@v4
