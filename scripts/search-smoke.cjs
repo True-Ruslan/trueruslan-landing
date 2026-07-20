@@ -58,11 +58,24 @@ async function runScenario(browser, name, viewport) {
     const response = await page.goto(`${BASE_URL}/_search/ru/index.html`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`${name}: search navigation HTTP ${response?.status() ?? 'none'}`);
 
-    await page.waitForTimeout(350);
+    await page.waitForTimeout(700);
+    fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
+    await page.screenshot({
+      path: path.join(ARTIFACTS_DIR, `search-${name}.png`),
+      fullPage: true,
+      animations: 'disabled',
+    });
+
+    const rootHtml = await page.locator('#root').innerHTML().catch(() => '');
+    fs.writeFileSync(path.join(ARTIFACTS_DIR, `search-${name}-root.html`), rootHtml);
+
     const bodyText = (await page.locator('body').innerText()).trim();
     if (!bodyText) throw new Error(`${name}: generated search page rendered an empty body`);
 
     const searchInput = page.locator('input[type="search"], input[role="searchbox"], input.tr-search-input').first();
+    if (await searchInput.count() === 0) {
+      throw new Error(`${name}: search input not found; root HTML length=${rootHtml.length}`);
+    }
     await searchInput.waitFor({state: 'visible', timeout: 5000});
 
     const marker = await page.locator('html').getAttribute('data-tr-search-enhanced');
@@ -89,16 +102,10 @@ async function runScenario(browser, name, viewport) {
     if (pageErrors.length) throw new Error(`${name}: search page errors: ${pageErrors.join('; ')}`);
     if (failures.length) throw new Error(`${name}: search resource failures: ${[...new Set(failures)].join('; ')}`);
 
-    fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, `search-${name}.png`),
-      fullPage: true,
-      animations: 'disabled',
-    });
-
     return {
       name,
       bodyLength: bodyText.length,
+      rootHtmlLength: rootHtml.length,
       overflow,
       seriousAxeViolations: serious.length,
       enhanced: marker === 'true',
