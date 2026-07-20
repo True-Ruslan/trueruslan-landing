@@ -31,55 +31,58 @@ function stopServer(server) {
 }
 
 async function runScenario(browser, name, viewport) {
-  const page = await browser.newPage({viewport, colorScheme:'dark'});
+  const context = await browser.newContext({viewport, colorScheme:'dark'});
+  const page = await context.newPage();
   const pageErrors = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
 
-  const response = await page.goto(`${BASE_URL}/landing/engineering-map.html`, {waitUntil:'networkidle'});
-  if (!response?.ok()) throw new Error(`${name}: navigation HTTP ${response?.status() ?? 'none'}`);
-  await page.waitForSelector('[data-tr-engineering-graph-enhanced="true"]', {timeout:5000});
+  try {
+    const response = await page.goto(`${BASE_URL}/landing/engineering-map.html`, {waitUntil:'networkidle'});
+    if (!response?.ok()) throw new Error(`${name}: navigation HTTP ${response?.status() ?? 'none'}`);
+    await page.waitForSelector('[data-tr-engineering-graph-enhanced="true"]', {timeout:5000});
 
-  const nodes = page.locator('.tr-engineering-graph__node');
-  if (await nodes.count() < 16) throw new Error(`${name}: expected at least 16 graph nodes`);
-  const filters = page.locator('.tr-engineering-graph__filter');
-  if (await filters.count() !== 5) throw new Error(`${name}: expected five filters including All`);
+    const nodes = page.locator('.tr-engineering-graph__node');
+    if (await nodes.count() < 16) throw new Error(`${name}: expected at least 16 graph nodes`);
+    const filters = page.locator('.tr-engineering-graph__filter');
+    if (await filters.count() !== 5) throw new Error(`${name}: expected five filters including All`);
 
-  await page.getByRole('button', {name:'AI', exact:true}).click();
-  const livingWorld = page.locator('[data-node-id="livingworld"]');
-  const java = page.locator('[data-node-id="java"]');
-  if (await livingWorld.evaluate((node) => node.classList.contains('is-filtered-out'))) {
-    throw new Error(`${name}: LivingWorld incorrectly filtered out by AI filter`);
+    await page.getByRole('button', {name:'AI', exact:true}).click();
+    const livingWorld = page.locator('[data-node-id="livingworld"]');
+    const java = page.locator('[data-node-id="java"]');
+    if (await livingWorld.evaluate((node) => node.classList.contains('is-filtered-out'))) {
+      throw new Error(`${name}: LivingWorld incorrectly filtered out by AI filter`);
+    }
+    if (!(await java.evaluate((node) => node.classList.contains('is-filtered-out')))) {
+      throw new Error(`${name}: Java should be dimmed by AI filter`);
+    }
+
+    await page.getByRole('button', {name:'Все', exact:true}).click();
+    await livingWorld.focus();
+    await page.waitForTimeout(50);
+    const detailText = await page.locator('.tr-engineering-graph__detail').innerText();
+    if (!detailText.includes('LivingWorld') || !detailText.includes('Server-authoritative')) {
+      throw new Error(`${name}: selected node detail did not update`);
+    }
+
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    if (overflow > 2) throw new Error(`${name}: horizontal overflow ${overflow}px`);
+
+    const axe = await new AxeBuilder({page}).analyze();
+    const serious = axe.violations.filter((violation) => ['serious','critical'].includes(violation.impact));
+    if (serious.length) throw new Error(`${name}: Axe serious/critical violations: ${serious.map((v) => v.id).join(', ')}`);
+    if (pageErrors.length) throw new Error(`${name}: page errors: ${pageErrors.join('; ')}`);
+
+    fs.mkdirSync(ARTIFACTS_DIR, {recursive:true});
+    await page.screenshot({
+      path:path.join(ARTIFACTS_DIR, `engineering-map-${name}.png`),
+      fullPage:true,
+      animations:'disabled',
+    });
+
+    return {name, nodes:await nodes.count(), filters:await filters.count(), seriousAxeViolations:serious.length, overflow};
+  } finally {
+    await context.close();
   }
-  if (!(await java.evaluate((node) => node.classList.contains('is-filtered-out')))) {
-    throw new Error(`${name}: Java should be dimmed by AI filter`);
-  }
-
-  await page.getByRole('button', {name:'Все', exact:true}).click();
-  await livingWorld.focus();
-  await page.waitForTimeout(50);
-  const detailText = await page.locator('.tr-engineering-graph__detail').innerText();
-  if (!detailText.includes('LivingWorld') || !detailText.includes('Server-authoritative')) {
-    throw new Error(`${name}: selected node detail did not update`);
-  }
-
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  if (overflow > 2) throw new Error(`${name}: horizontal overflow ${overflow}px`);
-
-  const axe = await new AxeBuilder({page}).analyze();
-  const serious = axe.violations.filter((violation) => ['serious','critical'].includes(violation.impact));
-  if (serious.length) throw new Error(`${name}: Axe serious/critical violations: ${serious.map((v) => v.id).join(', ')}`);
-  if (pageErrors.length) throw new Error(`${name}: page errors: ${pageErrors.join('; ')}`);
-
-  fs.mkdirSync(ARTIFACTS_DIR, {recursive:true});
-  await page.screenshot({
-    path:path.join(ARTIFACTS_DIR, `engineering-map-${name}.png`),
-    fullPage:true,
-    animations:'disabled',
-  });
-
-  const result = {name, nodes:await nodes.count(), filters:await filters.count(), seriousAxeViolations:serious.length, overflow};
-  await page.close();
-  return result;
 }
 
 async function main() {
@@ -91,6 +94,7 @@ async function main() {
     const results = [];
     results.push(await runScenario(browser, 'desktop', {width:1440,height:1000}));
     results.push(await runScenario(browser, 'mobile', {width:390,height:844}));
+    fs.mkdirSync(ARTIFACTS_DIR, {recursive:true});
     fs.writeFileSync(path.join(ARTIFACTS_DIR, 'engineering-graph-summary.json'), JSON.stringify(results, null, 2));
     console.log(`Engineering Map browser smoke passed for ${results.length} scenario(s).`);
   } finally {
