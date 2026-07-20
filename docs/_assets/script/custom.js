@@ -41,12 +41,25 @@
       && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
-  function onReady(callback) {
-    const {document} = root;
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', callback, {once: true});
+  function afterApplicationHydration(callback) {
+    const schedule = () => {
+      const afterFrames = () => {
+        if (typeof root.requestAnimationFrame === 'function') {
+          root.requestAnimationFrame(() => root.requestAnimationFrame(callback));
+        } else {
+          root.setTimeout(callback, 0);
+        }
+      };
+
+      // Let Diplodoc/React finish its load-time hydration before progressive
+      // enhancement mutates any server-rendered article DOM.
+      root.setTimeout(afterFrames, 50);
+    };
+
+    if (root.document.readyState === 'complete') {
+      schedule();
     } else {
-      callback();
+      root.addEventListener('load', schedule, {once: true});
     }
   }
 
@@ -308,5 +321,5 @@
     getTerminalLines,
     init,
   });
-  if (hasDom()) onReady(init);
+  if (hasDom()) afterApplicationHydration(init);
 }(typeof globalThis !== 'undefined' ? globalThis : this));
