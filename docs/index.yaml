@@ -1,45 +1,76 @@
-title: Руслан Немыкин - Java-разработчик
+title: Руслан Немыкин — Backend Engineer
 description:
-  - Добро пожаловать на мой персональный сайт!
-  - Java-разработчик с опытом создания современных приложений.
-  - Проекты, навыки, резюме и способы связаться со мной.
+  - Backend Engineer с фокусом на Java, распределённые системы и AI-инструменты.
+  - Здесь собраны проекты, инженерный опыт, резюме и технические материалы.
 meta:
-  title: Руслан Немыкин - Java-разработчик
-  description: Персональный сайт TrueRuslan — Java, Spring, DevOps, AI. Проекты, резюме, контакты.
-  og:title: Руслан Немыкин — Java-разработчик
-  og:description: Персональный лендинг разработчика. Проекты, резюме, контакты.
+  title: Руслан Немыкин — Backend Engineer
+  description: Персональный сайт Руслана Немыкина — Java, Spring Boot, распределённые системы, DevOps и AI. Проекты, опыт, резюме и инженерные материалы.
+  og:title: Руслан Немыкин — Backend Engineer
+  og:description: Java · Distributed Systems · DevOps · AI. Инженерные проекты, опыт, резюме и технические материалы.
   og:image: https://wiki.marketdb.ru/assets/images/avatar.png
   og:type: website
 blocks:
   - type: header-block
     title: Руслан Немыкин
-    description: Java-разработчик · Spring · DevOps · AI
-    width: s
+    description: Backend Engineer · Java · Distributed Systems · AI. Проектирую и развиваю надёжные backend-системы, автоматизирую инженерные процессы и исследую практическое применение AI в разработке.
+    width: m
+    resetPaddings: false
+    verticalOffset: l
+    background:
+      color: '#090B10'
+      fullWidth: false
+    buttons:
+      - text: Проекты
+        theme: dark
+        size: promo
+        url: ./landing/projects.md
+      - text: Резюме
+        theme: outlined
+        size: promo
+        url: ./landing/resume.md
+
   - type: card-layout-block
-    title: Разделы сайта
-    description: Выберите интересующий раздел
+    title: Инженерный фокус
+    description: То, вокруг чего строятся мои проекты и профессиональное развитие
     children:
       - type: basic-card
+        title: Backend systems
+        text: Java, Spring Boot, интеграции, базы данных, надёжность и поддерживаемая архитектура.
+        url: ./landing/projects.md
+      - type: basic-card
+        title: Distributed & DevOps
+        text: Микросервисы, очереди, контейнеризация, CI/CD и эксплуатация сервисов.
+        url: ./landing/about.md
+      - type: basic-card
+        title: AI engineering
+        text: LLM, агентные системы, автоматизация разработки и эксперименты с AI-продуктами.
+        url: ./landing/projects.md
+
+  - type: card-layout-block
+    title: Исследовать
+    description: Проекты, опыт и материалы без лишней витрины
+    children:
+      - type: basic-card
+        title: Проекты
+        text: Production, open source и PET-проекты — с контекстом, стеком и результатами.
+        url: ./landing/projects.md
+      - type: basic-card
         title: Обо мне
-        text: Опыт, подход к разработке и технические интересы
+        text: Опыт, инженерный подход, технические интересы и направления развития.
         url: ./landing/about.md
       - type: basic-card
         title: Резюме
-        text: Навыки, опыт работы и PDF-версия резюме
+        text: Коммерческий опыт, навыки и актуальная PDF-версия резюме.
         url: ./landing/resume.md
       - type: basic-card
-        title: Проекты
-        text: MarketDB, open source и другие работы
-        url: ./landing/projects.md
-      - type: basic-card
-        title: Фотографии
-        text: Личные фото и моменты из жизни
-        url: ./landing/photos.md
-      - type: basic-card
         title: Источники
-        text: Реестр изученных статей, блогов и материалов
+        text: Реестр изученных статей, инженерных разборов, блогов и материалов.
         url: ./landing/bibliography.md
       - type: basic-card
+        title: Фотографии
+        text: Конференции, образование, поездки и отдельные моменты вне кода.
+        url: ./landing/photos.md
+      - type: basic-card
         title: Контакты
-        text: Telegram, GitHub, Habr и email
+        text: Telegram, GitHub, Habr, LinkedIn и email.
         url: ./landing/contacts.md
