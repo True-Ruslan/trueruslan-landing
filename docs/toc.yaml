@@ -43,10 +43,6 @@ navigation:
         target: _self
     rightItems:
       - type: link
-        text: Поиск
-        url: _search/ru/index.html
-        target: _self
-      - type: link
         text: GitHub
         url: https://github.com/True-Ruslan
       - type: link
