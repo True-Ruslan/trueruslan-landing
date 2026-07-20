@@ -1,0 +1,22 @@
+.dc-nav-toc-panel__control-hint {
+  color: #c6d0dc !important;
+}
+
+main p a:not(.tr-cta):not(.tr-card__link),
+main li a:not(.tr-cta):not(.tr-card__link),
+main blockquote a:not(.tr-cta):not(.tr-card__link) {
+  text-decoration-line: underline !important;
+  text-decoration-thickness: .08em !important;
+  text-decoration-color: rgba(114, 215, 245, .62) !important;
+  text-underline-offset: .18em !important;
+}
+
+main p a:not(.tr-cta):not(.tr-card__link):hover,
+main p a:not(.tr-cta):not(.tr-card__link):focus-visible,
+main li a:not(.tr-cta):not(.tr-card__link):hover,
+main li a:not(.tr-cta):not(.tr-card__link):focus-visible,
+main blockquote a:not(.tr-cta):not(.tr-card__link):hover,
+main blockquote a:not(.tr-cta):not(.tr-card__link):focus-visible {
+  text-decoration-thickness: .13em !important;
+  text-decoration-color: currentColor !important;
+}
