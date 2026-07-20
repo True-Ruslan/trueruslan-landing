@@ -13,8 +13,10 @@ export function deriveProductionEndpoints(baseUrl) {
   const entries = [
     ['Homepage', ''],
     ['Projects', 'landing/projects.html'],
+    ['Engineering Notes', 'landing/notes.html'],
     ['Resume', 'landing/resume.html'],
     ['Resume PDF', 'assets/documents/cv.pdf', 'application/pdf'],
+    ['Homepage OpenGraph card', 'assets/og/home.png', 'image/png'],
     ['Core stylesheet', '_assets/style/custom.css'],
     ['Core script', '_assets/script/custom.js'],
     ['Favicon', 'assets/images/favicon.svg'],
@@ -34,9 +36,7 @@ async function assertHomepageIdentity(baseUrl, fetchImpl = globalThis.fetch) {
     signal: AbortSignal.timeout(10_000),
   });
 
-  if (!response.ok) {
-    throw new Error(`Homepage identity check failed with HTTP ${response.status}.`);
-  }
+  if (!response.ok) throw new Error(`Homepage identity check failed with HTTP ${response.status}.`);
 
   const html = await response.text();
   if (!html.includes('Руслан Немыкин') || !html.includes('Backend Engineer')) {
@@ -77,9 +77,7 @@ export async function runProductionSmoke(baseUrl, {fetchImpl = globalThis.fetch}
 
 async function main() {
   const baseUrl = process.argv[2] || process.env.PRODUCTION_URL;
-  if (!baseUrl) {
-    throw new Error('Provide production URL as argv[2] or PRODUCTION_URL.');
-  }
+  if (!baseUrl) throw new Error('Provide production URL as argv[2] or PRODUCTION_URL.');
 
   const report = await runProductionSmoke(baseUrl);
   for (const result of report.results) {
@@ -87,13 +85,8 @@ async function main() {
     console.log(`[${marker}] ${result.name}: ${result.status ?? 'network'} ${result.finalUrl || result.url}`);
   }
 
-  if (report.identityError) {
-    console.error(`[FAIL] Homepage identity: ${report.identityError}`);
-  }
-
-  if (!report.ok) {
-    process.exitCode = 1;
-  }
+  if (report.identityError) console.error(`[FAIL] Homepage identity: ${report.identityError}`);
+  if (!report.ok) process.exitCode = 1;
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
