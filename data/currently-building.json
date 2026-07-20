@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "livingworld",
+    "name": "LivingWorld",
+    "status": "RELEASE CANDIDATE",
+    "summary": "Server-authoritative Russian AI conversations for MCA Reborn villagers with text, voice, memory and bounded actions.",
+    "href": "landing/projects/livingworld.html",
+    "tags": ["Minecraft", "Fabric", "Java 21", "AI agents", "Voice"]
+  },
+  {
+    "slug": "node-zero",
+    "name": "NODE ZERO",
+    "status": "PRE-PRODUCTION",
+    "summary": "Psychological techno-horror about an autonomous AI facility that manipulates constraints until its predictions become true.",
+    "href": "landing/projects/node-zero.html",
+    "tags": ["Unity 6", "C#", "URP", "Narrative systems"]
+  },
+  {
+    "slug": "portfolio-platform",
+    "name": "Engineering Portfolio Platform",
+    "status": "PRODUCTION",
+    "summary": "Standalone landing plus Diplodoc knowledge pages protected by integrity, browser, accessibility, performance and visual-regression gates.",
+    "href": "landing/projects.html",
+    "tags": ["Static HTML", "Diplodoc", "Playwright", "Lighthouse", "CI"]
+  }
+]

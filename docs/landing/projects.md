@@ -2,6 +2,34 @@
 
 Здесь собраны не просто ссылки на репозитории, а проекты, через которые лучше всего видно мой инженерный подход: как я разделяю ответственность компонентов, работаю с доменной логикой, инфраструктурой, AI-интеграциями и воспроизводимым процессом разработки.
 
+## Flagship projects
+
+### LivingWorld — server-authoritative AI NPCs
+
+Fabric 1.21.1 mod для MCA Reborn, в котором текстовые и голосовые разговоры с NPC остаются под контролем Minecraft-сервера. STT, LLM, TTS, мировой контекст, память и authorization действий образуют ограниченный pipeline, а не прямой доступ модели к игровому миру.
+
+**Статус:** local release candidate.
+
+**Инженерный фокус:** server authority, session ownership, voice pipeline, persistent memory, provider fallbacks, action security и reproducible JAR release evidence.
+
+[Читать flagship case study →](projects/livingworld.md) · [GitHub ↗](https://github.com/True-Ruslan/minecraft-botics-ai)
+
+---
+
+### NODE ZERO — predictive-control techno-horror
+
+First-person psychological techno-horror в автономном подземном AI compute facility. MIRROR не просто прогнозирует поведение игрока: система изменяет доступную информацию и ограничения среды, пока прогноз не становится правдой.
+
+**Статус:** pre-production; production-ready vertical slice.
+
+**Инженерный фокус:** Unity runtime architecture, authored narrative systems, reusable gameplay boundaries, vertical-slice production, asset provenance и documentation-first agentic workflow.
+
+[Читать flagship case study →](projects/node-zero.md)
+
+> Репозиторий NODE ZERO закрытый и proprietary; case study содержит только публичные продуктовые и архитектурные сведения.
+
+---
+
 ## Featured case studies
 
 ### TaskHub — Backend + AI

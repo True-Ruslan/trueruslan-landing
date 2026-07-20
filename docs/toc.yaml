@@ -51,6 +51,10 @@ items:
   - name: Проекты
     href: ./landing/projects.md
     items:
+      - name: LivingWorld — AI NPCs
+        href: ./landing/projects/livingworld.md
+      - name: NODE ZERO — Techno-horror
+        href: ./landing/projects/node-zero.md
       - name: TaskHub — Backend + AI
         href: ./landing/projects/taskhub.md
       - name: MiniChess — Domain Logic
