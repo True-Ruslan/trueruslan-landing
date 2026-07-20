@@ -74,8 +74,14 @@
     const viewer = document.querySelector('[data-tr-resume-pdf]');
     const links = document.querySelectorAll('[data-tr-resume-link]');
 
-    if (viewer) viewer.setAttribute('src', pdfUrl);
-    for (const link of links) link.setAttribute('href', pdfUrl);
+    if (viewer && viewer.getAttribute('src') !== pdfUrl) {
+      viewer.setAttribute('src', pdfUrl);
+    }
+    for (const link of links) {
+      if (link.getAttribute('href') !== pdfUrl) {
+        link.setAttribute('href', pdfUrl);
+      }
+    }
   }
 
   function repairRuntimeAccessibility(document) {
@@ -106,8 +112,14 @@
     }
   }
 
-  function setupRuntimeAccessibility(document) {
+  function repairDynamicContent(document) {
     repairRuntimeAccessibility(document);
+    hydrateResumePdf(document);
+    hardenExternalLinks(document);
+  }
+
+  function setupRuntimeAccessibility(document) {
+    repairDynamicContent(document);
 
     if (typeof root.MutationObserver !== 'function' || !document.documentElement) {
       return;
@@ -116,7 +128,7 @@
     let scheduled = false;
     const repair = () => {
       scheduled = false;
-      repairRuntimeAccessibility(document);
+      repairDynamicContent(document);
     };
 
     const observer = new root.MutationObserver(() => {
