@@ -29,10 +29,8 @@ jobs:
       - name: Check generated site integrity
         shell: bash
         run: |
-          mkdir -p quality-artifacts
-          cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           set -o pipefail
-          npm run check:site 2>&1 | tee quality-artifacts/site-integrity.log
+          npm run check:site 2>&1 | tee site-integrity.log
       - name: Install pinned browser quality tools
         run: >-
           npm install --prefix .quality-tools --package-lock=false --no-save
@@ -41,7 +39,15 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          node scripts/browser-quality.cjs 2>&1 | tee quality-artifacts/browser-quality.log
+          node scripts/browser-quality.cjs 2>&1 | tee browser-quality.log
+      - name: Preserve quality diagnostics
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p quality-artifacts
+          cp site-integrity.log quality-artifacts/site-integrity.log 2>/dev/null || true
+          cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
+          cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
       - name: Upload quality evidence
         if: always()
         uses: actions/upload-artifact@v4
