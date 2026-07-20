@@ -43,15 +43,14 @@ async function assertMetadata(page, context, expected) {
   if (!response?.ok()) throw new Error(`${expected.path} returned HTTP ${response?.status() ?? 'no response'}`);
 
   const actualTitle = await page.title();
-  if (actualTitle !== expected.title) {
-    throw new Error(`${expected.path}: unexpected title "${actualTitle}"`);
-  }
+  if (actualTitle !== expected.title) throw new Error(`${expected.path}: unexpected title "${actualTitle}"`);
 
   const read = async (selector, attribute = 'content') => page.locator(selector).getAttribute(attribute);
   const description = await read('meta[name="description"]');
   const ogTitle = await read('meta[property="og:title"]');
   const ogDescription = await read('meta[property="og:description"]');
   const ogImage = await read('meta[property="og:image"]');
+  const ogLocalPath = await read('meta[property="og:image"]', 'data-tr-local-path');
   const ogWidth = await read('meta[property="og:image:width"]');
   const ogHeight = await read('meta[property="og:image:height"]');
   const twitterCard = await read('meta[name="twitter:card"]');
@@ -61,11 +60,12 @@ async function assertMetadata(page, context, expected) {
   if (ogTitle !== expected.title) throw new Error(`${expected.path}: og:title mismatch`);
   if (ogDescription !== description) throw new Error(`${expected.path}: og:description mismatch`);
   if (!ogImage?.endsWith(`/assets/og/${expected.card}.png`)) throw new Error(`${expected.path}: wrong og:image ${ogImage}`);
+  if (ogLocalPath !== `/assets/og/${expected.card}.png`) throw new Error(`${expected.path}: wrong local OG target ${ogLocalPath}`);
   if (ogWidth !== '1200' || ogHeight !== '630') throw new Error(`${expected.path}: wrong OG dimensions metadata`);
   if (twitterCard !== 'summary_large_image') throw new Error(`${expected.path}: wrong twitter:card`);
   if (!canonical?.startsWith('http')) throw new Error(`${expected.path}: canonical must be absolute`);
 
-  const imageResponse = await context.request.get(ogImage);
+  const imageResponse = await context.request.get(`${BASE_URL}${ogLocalPath}`);
   if (!imageResponse.ok()) throw new Error(`${expected.path}: OG image HTTP ${imageResponse.status()}`);
   const body = Buffer.from(await imageResponse.body());
   if (!body.subarray(0, 8).equals(PNG_SIGNATURE)) throw new Error(`${expected.path}: OG image is not PNG`);
@@ -88,10 +88,7 @@ async function main() {
       summary.push(await assertMetadata(page, context, expected));
     }
     fs.mkdirSync(path.join(ROOT, 'quality-artifacts'), {recursive: true});
-    fs.writeFileSync(
-      path.join(ROOT, 'quality-artifacts', 'metadata-summary.json'),
-      JSON.stringify(summary, null, 2),
-    );
+    fs.writeFileSync(path.join(ROOT, 'quality-artifacts', 'metadata-summary.json'), JSON.stringify(summary, null, 2));
     await context.close();
     console.log(`Metadata smoke passed for ${summary.length} page(s).`);
   } finally {
