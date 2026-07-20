@@ -49,15 +49,21 @@ Build
 - `prefers-reduced-motion`, keyboard focus и runtime accessibility repairs
 - Проверка битых внутренних ссылок/assets после реальной сборки
 - Browser smoke для desktop/mobile и локального поиска
+- Firefox/WebKit compatibility smoke поверх основного Chromium suite
 - Axe accessibility и Lighthouse budgets
 - Versioned perceptual visual-regression baseline
-- Screenshots, Lighthouse/Axe/visual reports как CI artifacts
+- Post-deploy smoke реального GitHub Pages endpoint
+- Weekly monitoring внешних публичных ссылок и критичных production endpoint'ов
+- Screenshots, Lighthouse/Axe/visual/health reports как CI artifacts
 
 ## Структура проекта
 
 ```text
 templates/
 └── index.html                       # Standalone homepage template
+
+data/
+└── external-links.json              # Мониторинг внешних/public endpoint'ов
 
 docs/
 ├── index.md                         # Корневой источник/контент для Diplodoc
@@ -94,7 +100,11 @@ scripts/
 ├── search-page.js
 ├── seo.js
 ├── site-integrity.js
+├── http-health.js
+├── production-smoke.js
+├── external-health.js
 ├── browser-quality.cjs
+├── cross-browser-smoke.cjs
 ├── search-smoke.cjs
 ├── visual-regression.cjs
 ├── lighthouse-budget.js
@@ -143,7 +153,7 @@ npm run build:docs
 npm test
 ```
 
-Покрыты assets, SEO/post-processing, standalone renderer, local-search normalization, visual configuration, deployment-safe PDF URL, Lighthouse budgets и generated-site integrity helpers.
+Покрыты assets, SEO/post-processing, standalone renderer, local-search normalization, visual configuration, deployment-safe PDF URL, HTTP health policy, production-smoke URL contract, Lighthouse budgets и generated-site integrity helpers.
 
 ### Generated-site integrity
 
@@ -172,7 +182,8 @@ PR workflow изолированно устанавливает pinned quality t
 - фактическая доступность Resume PDF как `application/pdf`;
 - serious/critical axe violations;
 - generated local-search page в настоящем Chromium;
-- Lighthouse budgets: Performance ≥ 85, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 95.
+- Lighthouse budgets: Performance ≥ 85, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 95;
+- homepage / projects / resume в Firefox и WebKit как компактный compatibility smoke.
 
 ### Visual regression
 
@@ -183,6 +194,14 @@ PR workflow изолированно устанавливает pinned quality t
 - resume desktop/mobile.
 
 CI блокирует существенное изменение геометрии или визуального fingerprint. Полные screenshots и diff/evidence сохраняются в artifact `quality-artifacts` на 14 дней.
+
+### Production smoke
+
+После `actions/deploy-pages` workflow проверяет уже реальный опубликованный Pages URL: homepage, Projects, Resume, PDF, core CSS/JS и favicon. Проверка повторяется несколько раз с backoff, чтобы отделить краткую propagation delay от устойчивой production-регрессии.
+
+### External health
+
+`.github/workflows/external-health.yml` запускается еженедельно и вручную. Он проверяет production endpoints, публичные профили и проектные ссылки из `data/external-links.json`, следует ограниченному числу redirect'ов, использует timeouts и сохраняет JSON/Markdown отчёт. 404/410/5xx/connectivity failures считаются actionable; ожидаемые anti-bot 401/403/429 считаются endpoint'ом, который существует, но ограничивает автоматический клиент.
 
 ## Визуальные слои
 
@@ -218,8 +237,9 @@ Markdown-страницы из `toc.yaml` автоматически попад�
 
 ## Деплой
 
-- **Pull requests** — tests → build → integrity → browser/Axe/Lighthouse → search smoke → visual regression → quality artifacts
-- **GitHub Pages** — tests → build → integrity → deploy из `master`; `SITE_URL` задаётся под repository Pages URL
+- **Pull requests** — tests → build → integrity → Chromium/Axe/Lighthouse → Firefox/WebKit smoke → search smoke → visual regression → quality artifacts
+- **GitHub Pages** — tests → build → integrity → deploy из `master` → production smoke реального опубликованного URL
+- **External health** — еженедельная проверка production/public внешних endpoint'ов
 - **Docker** — tests → build → integrity → image publish
 
 ## Контакты
@@ -227,6 +247,10 @@ Markdown-страницы из `toc.yaml` автоматически попад�
 - Telegram: [@TrueRuslan](https://t.me/TrueRuslan)
 - GitHub Issues: [создать issue](https://github.com/True-Ruslan/trueruslan-landing/issues)
 
-## Лицензия
+## Лицензирование
 
-Условия лицензирования проекта определены в файле [`LICENSE`](LICENSE).
+Исходный код, build/test tooling и CI-конфигурация лицензируются по **MIT License** — см. [`LICENSE`](LICENSE).
+
+CV, персональные фотографии, биографический/профильный текст и другие персональные материалы не передаются по MIT License и остаются защищёнными авторским правом, если явно не указано обратное. Подробности — [`CONTENT-LICENSE.md`](CONTENT-LICENSE.md).
+
+Сторонние материалы и assets регулируются собственными лицензиями и notices их правообладателей.

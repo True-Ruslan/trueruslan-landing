@@ -1,0 +1,68 @@
+[
+  {
+    "name": "Production homepage",
+    "category": "production",
+    "url": "https://true-ruslan.github.io/trueruslan-landing/"
+  },
+  {
+    "name": "Production projects",
+    "category": "production",
+    "url": "https://true-ruslan.github.io/trueruslan-landing/landing/projects.html"
+  },
+  {
+    "name": "Production resume",
+    "category": "production",
+    "url": "https://true-ruslan.github.io/trueruslan-landing/landing/resume.html"
+  },
+  {
+    "name": "Production resume PDF",
+    "category": "production",
+    "url": "https://true-ruslan.github.io/trueruslan-landing/assets/documents/cv.pdf",
+    "expectedContentType": "application/pdf"
+  },
+  {
+    "name": "GitHub profile",
+    "category": "profile",
+    "url": "https://github.com/True-Ruslan"
+  },
+  {
+    "name": "TaskHub backend",
+    "category": "project",
+    "url": "https://github.com/True-Ruslan/TaskHub-backend"
+  },
+  {
+    "name": "TaskHub frontend",
+    "category": "project",
+    "url": "https://github.com/True-Ruslan/taskhub-frontend"
+  },
+  {
+    "name": "MiniChess",
+    "category": "project",
+    "url": "https://github.com/True-Ruslan/MiniChess"
+  },
+  {
+    "name": "Godot Atmospheric Horror Template",
+    "category": "project",
+    "url": "https://github.com/True-Ruslan/godot-simple-tamplate"
+  },
+  {
+    "name": "MarketDB",
+    "category": "production-project",
+    "url": "https://marketdb.pro/"
+  },
+  {
+    "name": "Telegram",
+    "category": "profile",
+    "url": "https://t.me/TrueRuslan"
+  },
+  {
+    "name": "Telegram Blog",
+    "category": "profile",
+    "url": "https://t.me/TrueRuslan_Blog"
+  },
+  {
+    "name": "Habr",
+    "category": "profile",
+    "url": "https://habr.com/ru/users/TrueRuslan/"
+  }
+]
