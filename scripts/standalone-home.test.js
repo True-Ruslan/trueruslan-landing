@@ -17,3 +17,31 @@ test('renderStandaloneHome injects site URL without Diplodoc runtime bundles', (
   assert.doesNotMatch(html, /\{\{SITE_URL\}\}/);
   assert.doesNotMatch(html, /_bundle\//);
 });
+
+test('renderStandaloneHome expands portfolio placeholders with semantic HTML', () => {
+  const template = '<main>{{CURRENTLY_BUILDING}}{{ENGINEERING_GRAPH}}</main>';
+  const portfolioData = {
+    currentProjects: [{
+      id: 'alpha',
+      title: 'Alpha',
+      status: 'ACTIVE',
+      summary: 'Active project.',
+      href: 'landing/projects/alpha.html',
+      tags: ['Java'],
+    }],
+    graphTopics: [{
+      id: 'backend',
+      label: 'Backend',
+      description: 'Backend systems.',
+      links: [{label: 'Alpha', href: 'landing/projects/alpha.html'}],
+    }],
+  };
+
+  const html = renderStandaloneHome(template, 'https://example.test/', portfolioData);
+
+  assert.match(html, /Currently building/);
+  assert.match(html, /Engineering Graph/);
+  assert.match(html, /data-tr-engineering-graph/);
+  assert.doesNotMatch(html, /\{\{CURRENTLY_BUILDING\}\}/);
+  assert.doesNotMatch(html, /\{\{ENGINEERING_GRAPH\}\}/);
+});
