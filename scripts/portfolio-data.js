@@ -10,6 +10,13 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
+function serializeJsonForHtmlScript(value) {
+  return JSON.stringify(value)
+    .replaceAll('&', '\\u0026')
+    .replaceAll('<', '\\u003c')
+    .replaceAll('>', '\\u003e');
+}
+
 function assertText(value, label) {
   if (typeof value !== 'string' || !value.trim()) {
     throw new Error(`${label} must be a non-empty string.`);
@@ -109,7 +116,7 @@ export function renderEngineeringGraph(topics) {
           <span>${escapeHtml(topic.label)}</span>
         </button>`).join('\n');
 
-  const payload = escapeHtml(JSON.stringify(topics));
+  const payload = serializeJsonForHtmlScript(topics);
   const noScript = topics.map((topic) => `      <section><h3>${escapeHtml(topic.label)}</h3><p>${escapeHtml(topic.description)}</p><p>${renderGraphLinks(topic)}</p></section>`).join('\n');
 
   return `<section class="tr-home-section tr-engineering-graph" aria-labelledby="engineering-graph-title" data-tr-engineering-graph>
