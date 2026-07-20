@@ -52,14 +52,6 @@ export function walkAssets(dir, outputRoot, docsDir = DOCS_DIR) {
   return copied;
 }
 
-export function syncAssets(sourceDir, outputRoot, docsDir = DOCS_DIR) {
-  const relativeAssetsPath = path.relative(docsDir, sourceDir);
-  const targetAssetsDir = path.join(outputRoot, relativeAssetsPath);
-
-  fs.rmSync(targetAssetsDir, {recursive: true, force: true});
-  return walkAssets(sourceDir, outputRoot, docsDir);
-}
-
 export function createNoJekyllFile(outputDir = OUTPUT_DIR) {
   fs.writeFileSync(path.join(outputDir, '.nojekyll'), '');
 }
@@ -127,7 +119,7 @@ export function postprocessOutput({
   }
 
   const copied = copyAssets
-    ? syncAssets(path.join(docsDir, 'assets'), outputDir, docsDir)
+    ? walkAssets(path.join(docsDir, 'assets'), outputDir, docsDir)
     : [];
 
   createNoJekyllFile(outputDir);
