@@ -47,7 +47,32 @@ function safeDecodePath(value) {
   }
 }
 
-export function resolveLocalReference(reference, htmlPath, outputDir = DEFAULT_OUTPUT_DIR) {
+function resolveBaseDirectory(baseHref, htmlPath, outputDir) {
+  const raw = baseHref?.trim();
+  if (!raw || raw.startsWith('//') || EXTERNAL_SCHEME.test(raw)) {
+    return path.dirname(htmlPath);
+  }
+
+  const clean = safeDecodePath(stripQueryAndHash(raw)).replaceAll('\\', '/');
+  if (!clean) {
+    return path.dirname(htmlPath);
+  }
+
+  if (clean.startsWith('/')) {
+    const absolute = path.resolve(outputDir, `.${clean}`);
+    return clean.endsWith('/') ? absolute : path.dirname(absolute);
+  }
+
+  const absolute = path.resolve(path.dirname(htmlPath), clean);
+  return clean.endsWith('/') ? absolute : path.dirname(absolute);
+}
+
+export function resolveLocalReference(
+  reference,
+  htmlPath,
+  outputDir = DEFAULT_OUTPUT_DIR,
+  baseHref = null,
+) {
   const raw = reference?.trim();
   if (!raw || raw.startsWith('#') || raw.startsWith('//') || EXTERNAL_SCHEME.test(raw)) {
     return null;
@@ -62,7 +87,8 @@ export function resolveLocalReference(reference, htmlPath, outputDir = DEFAULT_O
     return path.resolve(outputDir, `.${clean}`);
   }
 
-  return path.resolve(path.dirname(htmlPath), clean);
+  const baseDirectory = resolveBaseDirectory(baseHref, htmlPath, outputDir);
+  return path.resolve(baseDirectory, clean);
 }
 
 function resolveExistingTarget(targetPath) {
@@ -92,19 +118,23 @@ function resolveExistingTarget(targetPath) {
   return null;
 }
 
-function collectReferences(node, references) {
+function collectDocumentMetadata(node, state) {
+  if (node.tagName === 'base' && state.baseHref === null) {
+    state.baseHref = getAttribute(node, 'href');
+  }
+
   const attributes = REFERENCE_ATTRIBUTES.get(node.tagName);
   if (attributes) {
     for (const attribute of attributes) {
       const value = getAttribute(node, attribute);
       if (value !== null) {
-        references.push({tag: node.tagName, attribute, value});
+        state.references.push({tag: node.tagName, attribute, value});
       }
     }
   }
 
   for (const child of node.childNodes ?? []) {
-    collectReferences(child, references);
+    collectDocumentMetadata(child, state);
   }
 }
 
@@ -125,11 +155,16 @@ export function checkSiteIntegrity(outputDir = DEFAULT_OUTPUT_DIR) {
   for (const htmlPath of htmlPaths) {
     const html = fs.readFileSync(htmlPath, 'utf8');
     const document = parse(html);
-    const references = [];
-    collectReferences(document, references);
+    const state = {baseHref: null, references: []};
+    collectDocumentMetadata(document, state);
 
-    for (const reference of references) {
-      const targetPath = resolveLocalReference(reference.value, htmlPath, normalizedOutput);
+    for (const reference of state.references) {
+      const targetPath = resolveLocalReference(
+        reference.value,
+        htmlPath,
+        normalizedOutput,
+        state.baseHref,
+      );
       if (!targetPath) {
         continue;
       }
@@ -142,6 +177,7 @@ export function checkSiteIntegrity(outputDir = DEFAULT_OUTPUT_DIR) {
       if (!resolvedTarget) {
         broken.push({
           source: path.relative(normalizedOutput, htmlPath),
+          baseHref: state.baseHref,
           tag: reference.tag,
           attribute: reference.attribute,
           reference: reference.value,
@@ -153,7 +189,7 @@ export function checkSiteIntegrity(outputDir = DEFAULT_OUTPUT_DIR) {
 
   if (broken.length) {
     const lines = broken.map((item) => (
-      `- ${item.source}: <${item.tag}> ${item.attribute}="${item.reference}" -> ${item.target || '.'}`
+      `- ${item.source} (base=${item.baseHref ?? 'document'}): <${item.tag}> ${item.attribute}="${item.reference}" -> ${item.target || '.'}`
     ));
     throw new Error(`Broken local references found (${broken.length}):\n${lines.join('\n')}`);
   }
