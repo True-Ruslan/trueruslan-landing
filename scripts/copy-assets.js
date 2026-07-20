@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 
 import {globSync} from 'glob';
 
+import {fixGeneratedAccessibilityHtml} from './accessibility.js';
 import {injectDarkThemeIntoHtml} from './dark-theme.js';
 import {normalizeSearchPageHtml} from './search-page.js';
 import {
@@ -97,6 +98,19 @@ export function normalizeSearchPages(outputDir = OUTPUT_DIR) {
   return htmlFiles.length;
 }
 
+export function applyGeneratedAccessibilityFixes(outputDir = OUTPUT_DIR) {
+  const pattern = path.join(outputDir, '**', '*.html');
+  const htmlFiles = globSync(pattern, {nodir: true});
+
+  for (const htmlPath of htmlFiles) {
+    const html = fs.readFileSync(htmlPath, 'utf8');
+    const transformed = fixGeneratedAccessibilityHtml(html);
+    fs.writeFileSync(htmlPath, transformed, 'utf8');
+  }
+
+  return htmlFiles.length;
+}
+
 export function applyDarkThemeToHtmlFiles(outputDir = OUTPUT_DIR) {
   const pattern = path.join(outputDir, '**', '*.html');
   const htmlFiles = globSync(pattern, {nodir: true});
@@ -142,10 +156,17 @@ export function postprocessOutput({
   writeSitemap(outputDir, siteUrl, path.join(docsDir, 'toc.yaml'));
 
   const normalizedSearchPages = normalizeSearchPages(outputDir);
+  const accessibilityFixedPages = applyGeneratedAccessibilityFixes(outputDir);
   const themedPages = applyDarkThemeToHtmlFiles(outputDir);
   const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
 
-  return {copied, normalizedSearchPages, themedPages, personSchemaInjected};
+  return {
+    copied,
+    normalizedSearchPages,
+    accessibilityFixedPages,
+    themedPages,
+    personSchemaInjected,
+  };
 }
 
 function main() {
@@ -160,6 +181,7 @@ function main() {
     if (result.normalizedSearchPages) {
       console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
     }
+    console.log(`Accessibility fixes applied across ${result.accessibilityFixedPages} HTML file(s).`);
     console.log(`Dark theme applied to ${result.themedPages} HTML file(s).`);
     if (result.personSchemaInjected) {
       console.log('Person schema injected into index.html.');
