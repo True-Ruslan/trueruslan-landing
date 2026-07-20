@@ -4,7 +4,6 @@ import {fileURLToPath} from 'node:url';
 
 import {globSync} from 'glob';
 
-import {injectDarkThemeIntoHtml} from './dark-theme.js';
 import {normalizeSearchPageHtml} from './search-page.js';
 import {
   collectPagesFromToc,
@@ -97,19 +96,6 @@ export function normalizeSearchPages(outputDir = OUTPUT_DIR) {
   return htmlFiles.length;
 }
 
-export function applyDarkThemeToHtmlFiles(outputDir = OUTPUT_DIR) {
-  const pattern = path.join(outputDir, '**', '*.html');
-  const htmlFiles = globSync(pattern, {nodir: true});
-
-  for (const htmlPath of htmlFiles) {
-    const html = fs.readFileSync(htmlPath, 'utf8');
-    const transformed = injectDarkThemeIntoHtml(html);
-    fs.writeFileSync(htmlPath, transformed, 'utf8');
-  }
-
-  return htmlFiles.length;
-}
-
 export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl()) {
   const indexPath = path.join(outputDir, 'index.html');
 
@@ -142,15 +128,9 @@ export function postprocessOutput({
   writeSitemap(outputDir, siteUrl, path.join(docsDir, 'toc.yaml'));
 
   const normalizedSearchPages = normalizeSearchPages(outputDir);
-  const themedPages = applyDarkThemeToHtmlFiles(outputDir);
   const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
 
-  return {
-    copied,
-    normalizedSearchPages,
-    themedPages,
-    personSchemaInjected,
-  };
+  return {copied, normalizedSearchPages, personSchemaInjected};
 }
 
 function main() {
@@ -165,7 +145,6 @@ function main() {
     if (result.normalizedSearchPages) {
       console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
     }
-    console.log(`Dark theme applied to ${result.themedPages} HTML file(s).`);
     if (result.personSchemaInjected) {
       console.log('Person schema injected into index.html.');
     }
