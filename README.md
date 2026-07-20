@@ -1,10 +1,13 @@
 # TrueRuslan Landing — персональный лендинг
 
-Персональный лендинг разработчика на базе [Diplodoc](https://diplodoc.com/).
+Персональный engineering-портфолио на базе [Diplodoc](https://diplodoc.com/) с собственным визуальным слоем поверх стандартной документационной темы.
 
 ## Возможности
 
-- Адаптивный дизайн Diplodoc
+- Адаптивный Diplodoc / Gravity UI layout
+- Собственная dark-first палитра через `theme.yaml`
+- Custom CSS/JS без отдельного frontend-фреймворка
+- Progressive-enhancement анимации и terminal accent
 - Навигация между страницами через `toc.yaml`
 - Markdown-контент с YFM-директивами
 - Встроенный просмотр PDF-резюме
@@ -12,30 +15,56 @@
 - Реестр изученных технических материалов
 - Локальный поиск
 - SEO post-processing: sitemap, robots.txt и JSON-LD
+- `prefers-reduced-motion` и keyboard-focus accessibility
+
+## Визуальная архитектура
+
+Редизайн не форкает Diplodoc и не редактирует сгенерированный UI вручную.
+
+```text
+Diplodoc / Gravity UI
+        │
+        ├── docs/theme.yaml
+        │      └── базовая палитра и theme tokens
+        ├── docs/_assets/style/custom.css
+        │      └── layout polish, cards, CTA, terminal, motion
+        ├── docs/_assets/script/custom.js
+        │      └── progressive enhancement без зависимости контента от JS
+        └── docs/index.yaml
+               └── Page Constructor composition
+```
+
+Основная визуальная идея: **clean engineering portfolio + restrained developer terminal aesthetic + subtle AI/futuristic accents**.
 
 ## Структура проекта
 
-```
+```text
 docs/
-├── index.yaml              # Главная страница (page constructor)
+├── index.yaml              # Главная страница (Page Constructor)
 ├── toc.yaml                # Верхнее и боковое меню
-├── .yfm                    # Конфигурация Diplodoc
-├── landing/                # Контентные страницы
+├── .yfm                    # Конфигурация Diplodoc и custom resources
+├── theme.yaml              # Палитра Diplodoc
+├── _assets/
+│   ├── style/custom.css    # Собственный visual system
+│   └── script/custom.js    # Progressive visual enhancements
+├── landing/
 │   ├── about.md
 │   ├── resume.md
 │   ├── projects.md
 │   ├── photos.md
 │   ├── bibliography.md
 │   └── contacts.md
-└── assets/                 # Статические файлы
-    ├── images/             # Фотографии для галереи
-    └── documents/          # PDF и другие документы
+└── assets/
+    ├── images/
+    └── documents/
 
 scripts/
-├── serve.js                # Dev-сервер с hot reload
-├── copy-assets.js          # Assets + общий post-processing сборки
-├── seo.js                  # Sitemap/JSON-LD helpers
-└── dark-theme.js           # Применение темной темы к HTML
+├── serve.js
+├── copy-assets.js
+├── seo.js
+├── dark-theme.js
+├── visual-config.test.js
+└── visual-enhancements.test.js
 ```
 
 ## Требования
@@ -47,13 +76,11 @@ scripts/
 
 ```bash
 npm install
-npm run build:docs   # первичная сборка
-npm run dev          # dev-сервер с hot reload
+npm run build:docs
+npm run dev
 ```
 
-Сайт: http://localhost:8000
-
-Полный старт с пересборкой: `npm start`
+Сайт: `http://localhost:8000`. Полный старт с пересборкой: `npm start`.
 
 ## Сборка
 
@@ -63,9 +90,7 @@ npm run build
 npm run build:docs
 ```
 
-Результат сборки — каталог `docs-html/`.
-
-Сборка включает копирование статических файлов и post-processing HTML: темную тему, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
+Результат сборки — `docs-html/`. Diplodoc запускается с `--allow-custom-resources`, затем выполняются копирование assets и post-processing HTML: dark-theme compatibility, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
 
 ## Тесты
 
@@ -73,7 +98,21 @@ npm run build:docs
 npm test
 ```
 
-Тесты проверяют обработку assets, SEO/post-processing и HTML-инъекции dev-сервера.
+Тесты проверяют assets, SEO/post-processing, dev-server HTML-инъекции, visual configuration contract и deterministic helpers визуального слоя.
+
+## Изменение визуального стиля
+
+### Палитра
+
+Базовые цвета меняются в `docs/theme.yaml` через поддерживаемые Diplodoc theme tokens.
+
+### Компоненты и эффекты
+
+`docs/_assets/style/custom.css` содержит `--tr-*` design tokens, карточки, CTA, background grid/glow, terminal panel, responsive и reduced-motion правила.
+
+### Интерактивность
+
+`docs/_assets/script/custom.js` используется только как progressive enhancement. Контент и навигация остаются рабочими при отключённом JavaScript.
 
 ## Добавление страницы
 
@@ -81,12 +120,12 @@ npm test
 2. Добавьте ссылку в `docs/toc.yaml`.
 3. При необходимости добавьте карточку на главную в `docs/index.yaml`.
 
-Страницы, перечисленные как Markdown-ссылки в `toc.yaml`, автоматически попадают в `sitemap.xml`.
+Страницы из `toc.yaml` автоматически попадают в `sitemap.xml`.
 
 ## Добавление медиа
 
-- Изображения — в `docs/assets/images/`, ссылки из Markdown: `../assets/images/file.jpg`
-- PDF и документы — в `docs/assets/documents/`
+- Изображения — `docs/assets/images/`
+- PDF и документы — `docs/assets/documents/`
 
 ## Деплой
 
