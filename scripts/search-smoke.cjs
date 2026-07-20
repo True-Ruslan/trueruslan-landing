@@ -72,14 +72,13 @@ async function runScenario(browser, name, viewport) {
     const bodyText = (await page.locator('body').innerText()).trim();
     if (!bodyText) throw new Error(`${name}: generated search page rendered an empty body`);
 
-    const searchInput = page.locator('input[type="search"], input[role="searchbox"], input.tr-search-input').first();
-    if (await searchInput.count() === 0) {
-      throw new Error(`${name}: search input not found; root HTML length=${rootHtml.length}`);
-    }
+    const searchInput = page.locator('.dc-search-page__search-field input, input[placeholder="Поиск"], input.tr-search-input').first();
     await searchInput.waitFor({state: 'visible', timeout: 5000});
 
     const marker = await page.locator('html').getAttribute('data-tr-search-enhanced');
-    if (marker !== 'true') throw new Error(`${name}: progressive search enhancement marker missing`);
+    if (marker !== 'true') {
+      throw new Error(`${name}: progressive search enhancement marker missing; pageErrors=${pageErrors.join(' | ') || 'none'}`);
+    }
 
     const stylesheetCount = await page.locator('link[href$="_assets/style/search.css"]').count();
     const scriptCount = await page.locator('script[src$="_assets/script/search-ui.js"]').count();
