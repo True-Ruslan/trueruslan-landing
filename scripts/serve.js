@@ -12,7 +12,6 @@ import {globSync} from 'glob';
 import open from 'open';
 
 import {debounce} from './debounce.js';
-import {injectDarkThemeIntoHtml} from './dark-theme.js';
 import {postprocessOutput} from './copy-assets.js';
 
 const SCRIPTS_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -95,7 +94,7 @@ events.addEventListener("${sseEventName}", () => window.location.reload());
 
     const result = postprocessOutput();
     console.info(
-      `post-processed ${result.themedPages} HTML file(s), copied ${result.copied.length} asset(s)`,
+      `post-processed output, normalized ${result.normalizedSearchPages} search page(s), copied ${result.copied.length} asset(s)`,
     );
   }
 
@@ -107,10 +106,7 @@ events.addEventListener("${sseEventName}", () => window.location.reload());
 
     for (const htmlPath of htmlFiles) {
       const html = fs.readFileSync(htmlPath, 'utf8');
-      const transformed = injectSseIntoHtml(
-        injectDarkThemeIntoHtml(html),
-        this.config.sseScript,
-      );
+      const transformed = injectSseIntoHtml(html, this.config.sseScript);
       fs.writeFileSync(htmlPath, transformed, {encoding: 'utf8'});
     }
   }
