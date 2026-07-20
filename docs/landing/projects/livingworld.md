@@ -53,6 +53,21 @@ text command ────────────────────┘
 
 LLM не получает прямого доступа к игровому миру. Любое потенциальное действие проходит отдельный authorization gate и серверную валидацию.
 
+## Request lifecycle как trust-boundary sequence
+
+![LivingWorld request lifecycle и trust boundaries](../../assets/diagrams/livingworld-request-lifecycle.svg)
+
+На схеме важна не последовательность API-вызовов сама по себе, а смена доверительных зон:
+
+1. player input сначала проходит session ownership;
+2. voice превращается в нормализованный text input, а не идёт напрямую в game logic;
+3. context/memory собираются сервером;
+4. LLM выдаёт response или intent, но не authoritative action;
+5. любой action проходит отдельную validation/authorization границу;
+6. cancellation и fallback пересекают весь pipeline.
+
+Таким образом prompt injection, provider failure или устаревший async response не должны автоматически становиться изменением игрового мира.
+
 ## Release baseline
 
 - Minecraft Java `1.21.1`;
