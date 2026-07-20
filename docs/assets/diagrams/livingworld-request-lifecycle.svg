@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">LivingWorld request lifecycle and trust boundaries</title>
+  <desc id="desc">Sequence from player text or voice input through server-owned session validation, STT, context assembly, LLM, action authorization, TTS and bounded game output.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#090B10"/><stop offset="1" stop-color="#111827"/></linearGradient>
+    <style>
+      .box{fill:#11151c;stroke:#334155;stroke-width:2}.safe{stroke:#4ade80}.ai{stroke:#8b5cf6}.io{stroke:#4cc9f0}.t{fill:#f4f7fb;font:600 24px system-ui}.s{fill:#9cabbc;font:500 17px system-ui}.k{fill:#4cc9f0;font:700 15px ui-monospace,monospace;letter-spacing:1px}.a{stroke:#718095;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#718095"/></marker>
+  </defs>
+  <rect width="1200" height="620" rx="28" fill="url(#bg)"/>
+  <text x="58" y="58" class="k">REQUEST LIFECYCLE / TRUST BOUNDARIES</text>
+  <rect x="55" y="105" width="210" height="115" rx="18" class="box io"/><text x="80" y="150" class="t">Player ingress</text><text x="80" y="184" class="s">text or voice PCM</text>
+  <rect x="330" y="105" width="235" height="115" rx="18" class="box safe"/><text x="355" y="150" class="t">Session gate</text><text x="355" y="184" class="s">player ↔ NPC ownership</text>
+  <rect x="630" y="105" width="235" height="115" rx="18" class="box io"/><text x="655" y="150" class="t">Normalize input</text><text x="655" y="184" class="s">STT or validated text</text>
+  <rect x="930" y="105" width="215" height="115" rx="18" class="box safe"/><text x="955" y="150" class="t">Context</text><text x="955" y="184" class="s">world + memory bounds</text>
+  <path d="M265 162H330M565 162H630M865 162H930" class="a"/>
+  <rect x="80" y="330" width="250" height="125" rx="18" class="box ai"/><text x="110" y="378" class="t">LLM provider</text><text x="110" y="412" class="s">response / intent proposal</text>
+  <rect x="420" y="330" width="285" height="125" rx="18" class="box safe"/><text x="450" y="378" class="t">Authorization gate</text><text x="450" y="412" class="s">validate action + state</text>
+  <rect x="795" y="330" width="325" height="125" rx="18" class="box io"/><text x="825" y="378" class="t">Bounded output</text><text x="825" y="412" class="s">subtitle · TTS · allowed action</text>
+  <path d="M1038 220V272H205V330M330 392H420M705 392H795" class="a"/>
+  <rect x="80" y="520" width="1040" height="58" rx="14" fill="#0d1712" stroke="#244b32"/>
+  <text x="105" y="556" class="s">Cancellation and fallback cross every stage: session end, disconnect, timeout and provider failure cannot bypass server authority.</text>
+</svg>
