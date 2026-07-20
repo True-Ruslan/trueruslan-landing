@@ -10,6 +10,7 @@ import {
   getSiteUrl,
   injectPersonSchemaIntoHtml,
 } from './seo.js';
+import {writeStandaloneHome} from './standalone-home.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -128,9 +129,14 @@ export function postprocessOutput({
   writeSitemap(outputDir, siteUrl, path.join(docsDir, 'toc.yaml'));
 
   const normalizedSearchPages = normalizeSearchPages(outputDir);
+  const standaloneHomePath = writeStandaloneHome({
+    templatePath: path.join(docsDir, '_landing', 'index.html'),
+    outputPath: path.join(outputDir, 'index.html'),
+    siteUrl,
+  });
   const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
 
-  return {copied, normalizedSearchPages, personSchemaInjected};
+  return {copied, normalizedSearchPages, standaloneHomePath, personSchemaInjected};
 }
 
 function main() {
@@ -145,6 +151,7 @@ function main() {
     if (result.normalizedSearchPages) {
       console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
     }
+    console.log(`Standalone homepage written: ${result.standaloneHomePath}`);
     if (result.personSchemaInjected) {
       console.log('Person schema injected into index.html.');
     }
