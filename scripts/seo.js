@@ -32,7 +32,16 @@ export function buildPersonJsonLd(siteUrl = getSiteUrl()) {
     '@type': 'Person',
     name: 'Руслан Немыкин',
     url: `${siteUrl}/`,
-    jobTitle: 'Java Developer',
+    jobTitle: 'Backend Engineer / Java Developer',
+    knowsAbout: [
+      'Java',
+      'Spring Boot',
+      'Backend Development',
+      'Distributed Systems',
+      'Databases',
+      'DevOps',
+      'AI Engineering',
+    ],
     sameAs: [
       'https://github.com/True-Ruslan',
       'https://t.me/TrueRuslan_Blog',

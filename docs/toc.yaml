@@ -46,10 +46,17 @@ navigation:
       - type: controls
 
 title: Руслан Немыкин — Backend Engineer
-href: index.yaml
+href: index.md
 items:
   - name: Проекты
     href: ./landing/projects.md
+    items:
+      - name: TaskHub — Backend + AI
+        href: ./landing/projects/taskhub.md
+      - name: MiniChess — Domain Logic
+        href: ./landing/projects/minichess.md
+      - name: Godot Horror Template
+        href: ./landing/projects/godot-horror-template.md
   - name: Обо мне
     href: ./landing/about.md
   - name: Резюме

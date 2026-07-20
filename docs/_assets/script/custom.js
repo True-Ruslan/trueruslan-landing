@@ -41,12 +41,25 @@
       && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
-  function onReady(callback) {
-    const {document} = root;
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', callback, {once: true});
+  function afterApplicationHydration(callback) {
+    const schedule = () => {
+      const afterFrames = () => {
+        if (typeof root.requestAnimationFrame === 'function') {
+          root.requestAnimationFrame(() => root.requestAnimationFrame(callback));
+        } else {
+          root.setTimeout(callback, 0);
+        }
+      };
+
+      // Let Diplodoc/React finish its load-time hydration before progressive
+      // enhancement mutates any server-rendered article DOM.
+      root.setTimeout(afterFrames, 50);
+    };
+
+    if (root.document.readyState === 'complete') {
+      schedule();
     } else {
-      callback();
+      root.addEventListener('load', schedule, {once: true});
     }
   }
 
@@ -72,19 +85,86 @@
 
     const pdfUrl = getResumePdfUrl(root.location.href);
     const viewer = document.querySelector('[data-tr-resume-pdf]');
-    const link = document.querySelector('[data-tr-resume-link]');
+    const links = document.querySelectorAll('[data-tr-resume-link]');
 
-    if (viewer) viewer.setAttribute('src', pdfUrl);
-    if (link) link.setAttribute('href', pdfUrl);
+    if (viewer && viewer.getAttribute('src') !== pdfUrl) {
+      viewer.setAttribute('src', pdfUrl);
+    }
+    for (const link of links) {
+      if (link.getAttribute('href') !== pdfUrl) {
+        link.setAttribute('href', pdfUrl);
+      }
+    }
+  }
+
+  function repairRuntimeAccessibility(document) {
+    for (const anchor of document.querySelectorAll('a[aria-hidden="true"].yfm-anchor, a[aria-hidden="true"].yfm-clipboard-anchor')) {
+      anchor.setAttribute('tabindex', '-1');
+    }
+
+    for (const main of document.querySelectorAll('main')) {
+      if (main.parentElement?.closest('main')) {
+        main.setAttribute('role', 'presentation');
+      }
+    }
+
+    let unnamedNavigationIndex = 0;
+    for (const navigation of document.querySelectorAll('nav')) {
+      if (navigation.hasAttribute('aria-label') || navigation.hasAttribute('aria-labelledby')) {
+        continue;
+      }
+
+      if (navigation.classList.contains('dc-toc')) {
+        navigation.setAttribute('aria-label', 'Навигация по разделам');
+      } else if (navigation.closest('header')) {
+        navigation.setAttribute('aria-label', 'Основная навигация');
+      } else {
+        unnamedNavigationIndex += 1;
+        navigation.setAttribute('aria-label', `Навигация страницы ${unnamedNavigationIndex}`);
+      }
+    }
+  }
+
+  function repairDynamicContent(document) {
+    repairRuntimeAccessibility(document);
+    hydrateResumePdf(document);
+    hardenExternalLinks(document);
+  }
+
+  function setupRuntimeAccessibility(document) {
+    repairDynamicContent(document);
+
+    if (typeof root.MutationObserver !== 'function' || !document.documentElement) {
+      return;
+    }
+
+    let scheduled = false;
+    const repair = () => {
+      scheduled = false;
+      repairDynamicContent(document);
+    };
+
+    const observer = new root.MutationObserver(() => {
+      if (scheduled) return;
+      scheduled = true;
+      if (typeof root.requestAnimationFrame === 'function') {
+        root.requestAnimationFrame(repair);
+      } else {
+        root.setTimeout(repair, 0);
+      }
+    });
+
+    observer.observe(document.documentElement, {childList: true, subtree: true});
   }
 
   function classifyCards(document) {
     const links = document.querySelectorAll('main a[href*="landing/"], main a[href*="/landing/"]');
     for (const link of links) {
-      if (link.closest('nav, aside')) continue;
+      if (link.closest('nav, aside, .tr-home-card, .tr-home-actions')) continue;
       const candidate = link.closest(
-        'article, li, [class*="basic-card"], [class*="BasicCard"], [class*="card-wrapper"], [class*="Card"]',
-      ) || link;
+        '[class*="basic-card"], [class*="BasicCard"], [class*="card-wrapper"], [class*="Card"]',
+      );
+      if (!candidate) continue;
       candidate.classList.add('tr-card');
       link.classList.add('tr-card__link');
     }
@@ -92,8 +172,7 @@
 
   function classifyCtas(document, page) {
     if (page !== 'home') return;
-    const links = [...document.querySelectorAll('main a[href]')]
-      .filter((link) => !link.closest('nav, aside'));
+    const links = [...document.querySelectorAll('.tr-home-actions a[href]')];
 
     for (const link of links) {
       const href = link.getAttribute('href') || '';
@@ -228,6 +307,7 @@
     const page = markPage(document);
     hardenExternalLinks(document);
     hydrateResumePdf(document);
+    setupRuntimeAccessibility(document);
     classifyCards(document);
     classifyCtas(document, page);
     mountTerminal(document, page);
@@ -235,6 +315,11 @@
     setupPointerGlow(document);
   }
 
-  root.TrueRuslanVisual = Object.freeze({getPageKind, getResumePdfUrl, getTerminalLines, init});
-  if (hasDom()) onReady(init);
+  root.TrueRuslanVisual = Object.freeze({
+    getPageKind,
+    getResumePdfUrl,
+    getTerminalLines,
+    init,
+  });
+  if (hasDom()) afterApplicationHydration(init);
 }(typeof globalThis !== 'undefined' ? globalThis : this));

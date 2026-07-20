@@ -4,17 +4,19 @@ import {fileURLToPath} from 'node:url';
 
 import {globSync} from 'glob';
 
-import {injectDarkThemeIntoHtml} from './dark-theme.js';
+import {normalizeSearchPageHtml} from './search-page.js';
 import {
   collectPagesFromToc,
   getSiteUrl,
   injectPersonSchemaIntoHtml,
 } from './seo.js';
+import {writeStandaloneHome} from './standalone-home.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DOCS_DIR = path.join(ROOT, 'docs');
 const OUTPUT_DIR = path.join(ROOT, 'docs-html');
+const STANDALONE_HOME_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
 
@@ -82,13 +84,14 @@ ${urls}
   fs.writeFileSync(path.join(outputDir, 'sitemap.xml'), content);
 }
 
-export function applyDarkThemeToHtmlFiles(outputDir = OUTPUT_DIR) {
-  const pattern = path.join(outputDir, '**', '*.html');
+export function normalizeSearchPages(outputDir = OUTPUT_DIR) {
+  const pattern = path.join(outputDir, '_search', '*', 'index.html');
   const htmlFiles = globSync(pattern, {nodir: true});
 
   for (const htmlPath of htmlFiles) {
     const html = fs.readFileSync(htmlPath, 'utf8');
-    const transformed = injectDarkThemeIntoHtml(html);
+    const relativePath = path.relative(outputDir, htmlPath).replaceAll(path.sep, '/');
+    const transformed = normalizeSearchPageHtml(html, relativePath);
     fs.writeFileSync(htmlPath, transformed, 'utf8');
   }
 
@@ -111,6 +114,7 @@ export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSi
 export function postprocessOutput({
   outputDir = OUTPUT_DIR,
   docsDir = DOCS_DIR,
+  standaloneTemplatePath = STANDALONE_HOME_TEMPLATE,
   siteUrl = getSiteUrl(),
   copyAssets = true,
 } = {}) {
@@ -126,10 +130,15 @@ export function postprocessOutput({
   writeRobotsTxt(outputDir, siteUrl);
   writeSitemap(outputDir, siteUrl, path.join(docsDir, 'toc.yaml'));
 
-  const themedPages = applyDarkThemeToHtmlFiles(outputDir);
+  const normalizedSearchPages = normalizeSearchPages(outputDir);
+  const standaloneHomePath = writeStandaloneHome({
+    templatePath: standaloneTemplatePath,
+    outputPath: path.join(outputDir, 'index.html'),
+    siteUrl,
+  });
   const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
 
-  return {copied, themedPages, personSchemaInjected};
+  return {copied, normalizedSearchPages, standaloneHomePath, personSchemaInjected};
 }
 
 function main() {
@@ -141,7 +150,10 @@ function main() {
       console.log(`Copied: ${file}`);
     }
 
-    console.log(`Dark theme applied to ${result.themedPages} HTML file(s).`);
+    if (result.normalizedSearchPages) {
+      console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
+    }
+    console.log(`Standalone homepage written: ${result.standaloneHomePath}`);
     if (result.personSchemaInjected) {
       console.log('Person schema injected into index.html.');
     }

@@ -68,11 +68,13 @@ test('writeRobotsTxt and writeSitemap create files', () => {
   }
 });
 
-test('postprocessOutput restores SEO and theme after a fast docs rebuild', () => {
+test('postprocessOutput writes standalone homepage, SEO and hydration-safe output', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-postprocess-'));
   const docsDir = path.join(tempRoot, 'docs');
+  const templatePath = path.join(tempRoot, 'templates', 'index.html');
   const outputDir = path.join(tempRoot, 'docs-html');
 
+  fs.mkdirSync(path.dirname(templatePath), {recursive: true});
   fs.mkdirSync(docsDir, {recursive: true});
   fs.mkdirSync(outputDir, {recursive: true});
   fs.writeFileSync(
@@ -80,13 +82,18 @@ test('postprocessOutput restores SEO and theme after a fast docs rebuild', () =>
     'items:\n  - name: About\n    href: ./landing/about.md\n',
   );
   fs.writeFileSync(
+    templatePath,
+    '<!doctype html><html><head><link rel="canonical" href="{{SITE_URL}}/"></head><body class="g-root"><h1>Руслан Немыкин</h1></body></html>',
+  );
+  fs.writeFileSync(
     path.join(outputDir, 'index.html'),
-    '<!DOCTYPE html><html><head><title>Home</title></head><body class="g-root g-root_theme_light"></body></html>',
+    '<!doctype html><html><head><title>Generated</title></head><body class="g-root g-root_theme_light"></body></html>',
   );
 
   const result = postprocessOutput({
     outputDir,
     docsDir,
+    standaloneTemplatePath: templatePath,
     siteUrl: 'https://example.test',
     copyAssets: false,
   });
@@ -97,7 +104,10 @@ test('postprocessOutput restores SEO and theme after a fast docs rebuild', () =>
 
   assert.equal(result.copied.length, 0);
   assert.equal(result.personSchemaInjected, true);
-  assert.match(html, /g-root_theme_dark/);
+  assert.match(html, /Руслан Немыкин/);
+  assert.match(html, /https:\/\/example\.test\//);
+  assert.doesNotMatch(html, /g-root_theme_light/);
+  assert.doesNotMatch(html, /_bundle\//);
   assert.match(html, /application\/ld\+json/);
   assert.match(robots, /https:\/\/example\.test\/sitemap\.xml/);
   assert.match(sitemap, /landing\/about\.html/);

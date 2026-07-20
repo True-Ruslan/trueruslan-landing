@@ -3,3 +3,5 @@ node_modules/
 .idea
 /docs-html/
 graphify-out/
+/.quality-tools/
+/quality-artifacts/

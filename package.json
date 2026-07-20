@@ -36,6 +36,7 @@
     "build:docs": "yfm --input docs --output docs-html --allow-custom-resources && npm run copy-assets",
     "build:docs:fast": "yfm --input docs --output docs-html --allow-custom-resources",
     "copy-assets": "node scripts/copy-assets.js",
+    "check:site": "node scripts/site-integrity.js",
     "test": "node --test scripts/*.test.js"
   },
   "dependencies": {
