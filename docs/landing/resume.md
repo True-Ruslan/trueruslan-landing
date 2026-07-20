@@ -8,7 +8,7 @@
 
 ## Основная информация
 
-- **Имя**: Руслан Немикин
+- **Имя**: Руслан Немыкин
 - **Позиция**: Java Developer
 - **Опыт**: 3+ лет в разработке
 - **Локация**: Россия
@@ -17,20 +17,21 @@
 
 {% note tip %}
 
-**Просмотр**: Используйте встроенный PDF просмотрщик ниже или откройте файл в новой вкладке.
+**Просмотр**: Используйте встроенный PDF-просмотрщик ниже или откройте файл в новой вкладке.
 
 {% endnote %}
 
 ### Встроенный просмотр
 
-<iframe 
-src="../assets/documents/cv.pdf" 
+<iframe
+src="../assets/documents/cv.pdf"
 title="Резюме Руслана Немыкина (PDF)"
-width="100%" 
-height="800px" 
+width="100%"
+height="800px"
+loading="lazy"
 style="border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-  <p>Ваш браузер не поддерживает отображение PDF. 
-  <a href="../assets/documents/cv.pdf" target="_blank">Открыть резюме в новой вкладке</a></p>
+  <p>Ваш браузер не поддерживает отображение PDF.
+  <a href="../assets/documents/cv.pdf" target="_blank" rel="noopener noreferrer">Открыть резюме в новой вкладке</a></p>
 </iframe>
 
 ---
