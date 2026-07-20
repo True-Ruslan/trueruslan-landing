@@ -82,9 +82,15 @@
   }
 
   function classifyCards(document) {
-    const links = document.querySelectorAll('a[href*="landing/"], a[href*="/landing/"]');
+    const links = document.querySelectorAll(
+      'main a[href*="landing/"], main a[href*="/landing/"]',
+    );
 
     for (const link of links) {
+      if (link.closest('nav, aside')) {
+        continue;
+      }
+
       const candidate = link.closest(
         'article, li, [class*="basic-card"], [class*="BasicCard"], [class*="card-wrapper"], [class*="Card"]',
       ) || link;
@@ -99,7 +105,9 @@
       return;
     }
 
-    const links = [...document.querySelectorAll('a[href]')];
+    const links = [...document.querySelectorAll('main a[href]')]
+      .filter((link) => !link.closest('nav, aside'));
+
     for (const link of links) {
       const href = link.getAttribute('href') || '';
 
@@ -210,7 +218,7 @@
     ];
 
     const nodes = [...new Set(selectors.flatMap((selector) => [...document.querySelectorAll(selector)]))]
-      .filter((node) => !node.closest('.tr-terminal'));
+      .filter((node) => !node.closest('.tr-terminal, nav, aside'));
 
     for (const node of nodes) {
       node.classList.add('tr-reveal');
@@ -247,6 +255,7 @@
       reducedMotion()
       || typeof root.matchMedia !== 'function'
       || !root.matchMedia('(pointer: fine)').matches
+      || typeof root.requestAnimationFrame !== 'function'
     ) {
       return;
     }
