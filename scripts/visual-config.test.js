@@ -19,6 +19,7 @@ test('visual theme and custom resources are wired into Diplodoc', () => {
   assert.match(yfm, /assets\/images\/favicon\.svg/);
   assert.match(yfm, /_assets\/style\/custom\.css/);
   assert.match(yfm, /_assets\/style\/accessibility\.css/);
+  assert.match(yfm, /_assets\/style\/home\.css/);
   assert.match(yfm, /_assets\/style\/resume\.css/);
   assert.match(yfm, /_assets\/script\/custom\.js/);
   assert.match(theme, /base-brand:\s*['"]#4CC9F0['"]/i);
