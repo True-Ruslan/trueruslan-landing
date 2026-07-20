@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "description": "Многостраничный лендинг TrueRuslan",
   "type": "module",
-  "homepage": "https://wiki.marketdb.ru/",
+  "homepage": "https://true-ruslan.github.io/trueruslan-landing/",
   "repository": {
     "type": "git",
     "url": "https://github.com/true-ruslan/trueruslan-landing.git"
@@ -24,7 +24,7 @@
     "documentation",
     "markdown"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=24",
     "npm": ">=11.5.1"
