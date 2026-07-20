@@ -34,9 +34,9 @@ test('visual theme and custom resources are wired into Diplodoc', () => {
   assert.doesNotMatch(packageJson.scripts['build:docs:fast'], /--static-content/);
   assert.equal(packageJson.scripts['check:site'], 'node scripts/site-integrity.js');
 
-  assert.equal(packageJson.license, 'Apache-2.0');
+  assert.equal(packageJson.license, 'MIT');
   assert.equal(packageJson.homepage, 'https://true-ruslan.github.io/trueruslan-landing/');
-  assert.match(license, /Apache License\s+Version 2\.0/i);
+  assert.match(license, /^MIT License/m);
   assert.match(contentLicense, /personal content/i);
   assert.match(contentLicense, /All rights reserved/i);
 });
