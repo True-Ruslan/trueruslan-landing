@@ -1,7 +1,7 @@
 import {parse, serialize} from 'parse5';
 import * as utils from 'parse5-utils';
 
-export const DEFAULT_SITE_URL = 'https://wiki.marketdb.ru';
+export const DEFAULT_SITE_URL = 'https://true-ruslan.github.io/trueruslan-landing';
 
 export const PERSON_SCHEMA_MARKER = '"@type":"Person"';
 
