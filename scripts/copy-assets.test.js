@@ -71,17 +71,18 @@ test('writeRobotsTxt and writeSitemap create files', () => {
 test('postprocessOutput writes standalone homepage, SEO and hydration-safe output', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-postprocess-'));
   const docsDir = path.join(tempRoot, 'docs');
-  const landingTemplateDir = path.join(docsDir, '_landing');
+  const templatePath = path.join(tempRoot, 'templates', 'index.html');
   const outputDir = path.join(tempRoot, 'docs-html');
 
-  fs.mkdirSync(landingTemplateDir, {recursive: true});
+  fs.mkdirSync(path.dirname(templatePath), {recursive: true});
+  fs.mkdirSync(docsDir, {recursive: true});
   fs.mkdirSync(outputDir, {recursive: true});
   fs.writeFileSync(
     path.join(docsDir, 'toc.yaml'),
     'items:\n  - name: About\n    href: ./landing/about.md\n',
   );
   fs.writeFileSync(
-    path.join(landingTemplateDir, 'index.html'),
+    templatePath,
     '<!doctype html><html><head><link rel="canonical" href="{{SITE_URL}}/"></head><body class="g-root"><h1>Руслан Немыкин</h1></body></html>',
   );
   fs.writeFileSync(
@@ -92,6 +93,7 @@ test('postprocessOutput writes standalone homepage, SEO and hydration-safe outpu
   const result = postprocessOutput({
     outputDir,
     docsDir,
+    standaloneTemplatePath: templatePath,
     siteUrl: 'https://example.test',
     copyAssets: false,
   });
