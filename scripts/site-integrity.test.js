@@ -66,7 +66,7 @@ test('checkSiteIntegrity validates nested html, images, scripts and pdf iframe t
   assert.equal(result.referencesChecked, 5);
 });
 
-test('checkSiteIntegrity applies page base href to Diplodoc-style root resources', () => {
+test('checkSiteIntegrity applies page base href to references parsed after base', () => {
   const root = fixture();
   fs.mkdirSync(path.join(root, '_bundle'), {recursive: true});
   fs.mkdirSync(path.join(root, '_assets', 'style'), {recursive: true});
@@ -80,6 +80,26 @@ test('checkSiteIntegrity applies page base href to Diplodoc-style root resources
       <link rel="stylesheet" href="_assets/style/theme.css">
     </head><body><script src="_bundle/app.js"></script></body></html>`,
   );
+
+  const result = checkSiteIntegrity(root);
+  assert.equal(result.referencesChecked, 3);
+});
+
+test('checkSiteIntegrity does not retroactively apply a later base href to earlier resource tags', () => {
+  const root = fixture();
+  fs.mkdirSync(path.join(root, '_search', 'ru'), {recursive: true});
+  fs.mkdirSync(path.join(root, '_bundle'), {recursive: true});
+  fs.writeFileSync(path.join(root, '_bundle', 'search.css'), '');
+  fs.writeFileSync(path.join(root, '_bundle', 'search.js'), '');
+  fs.writeFileSync(
+    path.join(root, '_search', 'ru', 'index.html'),
+    `<!doctype html><html><head>
+      <link rel="stylesheet" href="../../_bundle/search.css">
+      <script src="../../_bundle/search.js"></script>
+      <base href="../../">
+    </head><body><a href="landing/about.html">About</a></body></html>`,
+  );
+  fs.writeFileSync(path.join(root, 'landing', 'about.html'), '<!doctype html><html><body></body></html>');
 
   const result = checkSiteIntegrity(root);
   assert.equal(result.referencesChecked, 3);
