@@ -147,10 +147,11 @@
   function classifyCards(document) {
     const links = document.querySelectorAll('main a[href*="landing/"], main a[href*="/landing/"]');
     for (const link of links) {
-      if (link.closest('nav, aside')) continue;
+      if (link.closest('nav, aside, .tr-home-card, .tr-home-actions')) continue;
       const candidate = link.closest(
-        'article, li, [class*="basic-card"], [class*="BasicCard"], [class*="card-wrapper"], [class*="Card"]',
-      ) || link;
+        '[class*="basic-card"], [class*="BasicCard"], [class*="card-wrapper"], [class*="Card"]',
+      );
+      if (!candidate) continue;
       candidate.classList.add('tr-card');
       link.classList.add('tr-card__link');
     }
@@ -158,8 +159,7 @@
 
   function classifyCtas(document, page) {
     if (page !== 'home') return;
-    const links = [...document.querySelectorAll('main a[href]')]
-      .filter((link) => !link.closest('nav, aside'));
+    const links = [...document.querySelectorAll('.tr-home-actions a[href]')];
 
     for (const link of links) {
       const href = link.getAttribute('href') || '';
