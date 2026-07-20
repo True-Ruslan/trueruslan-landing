@@ -13,10 +13,12 @@ export function deriveProductionEndpoints(baseUrl) {
   const entries = [
     ['Homepage', ''],
     ['Projects', 'landing/projects.html'],
+    ['Engineering Map', 'landing/engineering-map.html'],
     ['Engineering Notes', 'landing/notes.html'],
     ['Resume', 'landing/resume.html'],
     ['Resume PDF', 'assets/documents/cv.pdf', 'application/pdf'],
     ['Homepage OpenGraph card', 'assets/og/home.png', 'image/png'],
+    ['Engineering Map OpenGraph card', 'assets/og/engineering-map.png', 'image/png'],
     ['Core stylesheet', '_assets/style/custom.css'],
     ['Core script', '_assets/script/custom.js'],
     ['Favicon', 'assets/images/favicon.svg'],
