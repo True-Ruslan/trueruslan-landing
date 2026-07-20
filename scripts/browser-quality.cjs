@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const zlib = require('node:zlib');
 const {execFileSync, spawn} = require('node:child_process');
 
 const express = require('express');
@@ -10,6 +11,7 @@ const TOOLS_DIR = path.join(ROOT, '.quality-tools', 'node_modules');
 const ARTIFACTS_DIR = path.join(ROOT, 'quality-artifacts');
 const PORT = Number(process.env.QUALITY_PORT || 4173);
 const BASE_URL = `http://127.0.0.1:${PORT}`;
+const COMPRESSIBLE_EXTENSIONS = new Set(['.html', '.css', '.js', '.json', '.svg', '.xml', '.txt']);
 
 function requireTool(name) {
   const toolPath = path.join(TOOLS_DIR, ...name.split('/'));
@@ -40,6 +42,34 @@ function findChrome() {
   throw new Error('Chrome/Chromium executable was not found on the CI runner.');
 }
 
+function resolveQualityServerFile(requestUrl) {
+  let pathname;
+  try {
+    pathname = decodeURIComponent(new URL(requestUrl, BASE_URL).pathname);
+  } catch {
+    return null;
+  }
+
+  if (pathname.endsWith('/')) {
+    pathname += 'index.html';
+  }
+
+  let candidate = path.resolve(OUTPUT_DIR, `.${pathname}`);
+  const insideOutput = candidate === OUTPUT_DIR || candidate.startsWith(`${OUTPUT_DIR}${path.sep}`);
+  if (!insideOutput) return null;
+
+  if (!fs.existsSync(candidate) && !path.extname(candidate)) {
+    const htmlCandidate = `${candidate}.html`;
+    if (fs.existsSync(htmlCandidate)) candidate = htmlCandidate;
+  }
+
+  if (!fs.existsSync(candidate) || !fs.statSync(candidate).isFile()) {
+    return null;
+  }
+
+  return candidate;
+}
+
 function startServer() {
   if (!fs.existsSync(OUTPUT_DIR)) {
     throw new Error('docs-html does not exist. Run npm run build:docs first.');
@@ -47,6 +77,28 @@ function startServer() {
 
   const app = express();
   app.disable('x-powered-by');
+
+  // Model the production nginx/GitHub Pages transport more faithfully. Without
+  // compression Lighthouse measures multi-megabyte framework bundles over its
+  // throttled mobile network as if production served them raw.
+  app.use((req, res, next) => {
+    const accepted = req.headers['accept-encoding'] || '';
+    if (!accepted.includes('gzip')) return next();
+
+    const filePath = resolveQualityServerFile(req.originalUrl || req.url);
+    if (!filePath || !COMPRESSIBLE_EXTENSIONS.has(path.extname(filePath).toLowerCase())) {
+      return next();
+    }
+
+    res.type(path.extname(filePath));
+    res.setHeader('Content-Encoding', 'gzip');
+    res.setHeader('Vary', 'Accept-Encoding');
+
+    const stream = fs.createReadStream(filePath);
+    stream.on('error', next);
+    stream.pipe(zlib.createGzip({level: 6})).pipe(res);
+  });
+
   app.use(express.static(OUTPUT_DIR, {extensions: ['html'], fallthrough: false}));
 
   return new Promise((resolve, reject) => {
