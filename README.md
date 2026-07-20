@@ -1,53 +1,75 @@
 # TrueRuslan Landing — engineering portfolio
 
-Персональное engineering-портфолио на базе [Diplodoc](https://diplodoc.com/) с собственным визуальным слоем, web-CV, инженерными case studies и production-oriented quality gates.
+Персональное engineering-портфолио с лёгкой standalone-главной, Diplodoc knowledge pages, web-CV, инженерными case studies и production-oriented quality gates.
+
+## Архитектура
+
+Проект сознательно разделён на два слоя:
+
+```text
+Standalone homepage
+  templates/index.html
+        │
+        ├── custom.css / standalone.css / home.css
+        ├── progressive custom.js
+        └── без Diplodoc/React runtime bundle
+
+Diplodoc knowledge pages
+  docs/landing/**/*.md
+        │
+        ├── toc / local search
+        ├── theme.yaml
+        ├── case studies / web-CV / bibliography
+        └── custom visual/accessibility layer
+
+Build
+  Diplodoc → docs-html
+        ↓
+  post-processing
+        ├── assets
+        ├── search-page normalization
+        ├── standalone root index.html
+        ├── sitemap / robots.txt
+        └── JSON-LD
+```
+
+Главная не загружает тяжёлый Diplodoc viewer bundle. Diplodoc остаётся там, где он полезен: структурированный Markdown-контент, навигация, локальный поиск, case studies и документационные страницы.
 
 ## Возможности
 
-- Адаптивный Diplodoc / Gravity UI layout
-- Собственная dark-first палитра через `theme.yaml`
-- Custom CSS/JS без отдельного frontend-фреймворка
-- Progressive-enhancement анимации и terminal accent
+- Lightweight standalone engineering landing page
+- Dark-first visual identity: graphite + cyan + violet
+- Diplodoc / Gravity UI для внутренних knowledge pages
+- Custom CSS/JS без отдельного runtime frontend-фреймворка
+- Progressive-enhancement terminal accent и микроанимации
 - Web-CV + deployment-safe встроенный PDF
-- Инженерные case studies публичных проектов
+- Engineering case studies публичных проектов
 - Локальный поиск и реестр технических материалов
-- SEO post-processing: sitemap, robots.txt и JSON-LD
-- `prefers-reduced-motion` и keyboard-focus accessibility
-- Проверка битых внутренних ссылок и assets после реальной сборки
-- Browser smoke на desktop/mobile, axe accessibility, screenshots и Lighthouse budgets в PR CI
-
-## Визуальная архитектура
-
-Редизайн не форкает Diplodoc и не редактирует сгенерированный UI вручную.
-
-```text
-Diplodoc / Gravity UI
-        │
-        ├── docs/theme.yaml
-        │      └── базовая палитра и theme tokens
-        ├── docs/_assets/style/custom.css
-        │      └── общая visual system
-        ├── docs/_assets/style/resume.css
-        │      └── изолированный web-CV visual layer
-        ├── docs/_assets/script/custom.js
-        │      └── progressive enhancement без зависимости контента от JS
-        └── docs/index.yaml
-               └── Page Constructor composition
-```
-
-Основная визуальная идея: **clean engineering portfolio + restrained developer terminal aesthetic + subtle AI/futuristic accents**.
+- SEO: sitemap, robots.txt, canonical/OpenGraph и JSON-LD
+- `prefers-reduced-motion`, keyboard focus и runtime accessibility repairs
+- Проверка битых внутренних ссылок/assets после реальной сборки
+- Browser smoke для desktop/mobile и локального поиска
+- Axe accessibility и Lighthouse budgets
+- Versioned perceptual visual-regression baseline
+- Screenshots, Lighthouse/Axe/visual reports как CI artifacts
 
 ## Структура проекта
 
 ```text
+templates/
+└── index.html                       # Standalone homepage template
+
 docs/
-├── index.yaml
+├── index.md                         # Корневой источник/контент для Diplodoc
 ├── toc.yaml
 ├── .yfm
 ├── theme.yaml
 ├── _assets/
 │   ├── style/
 │   │   ├── custom.css
+│   │   ├── accessibility.css
+│   │   ├── standalone.css
+│   │   ├── home.css
 │   │   └── resume.css
 │   └── script/custom.js
 ├── landing/
@@ -68,12 +90,18 @@ docs/
 scripts/
 ├── serve.js
 ├── copy-assets.js
+├── standalone-home.js
+├── search-page.js
 ├── seo.js
-├── dark-theme.js
 ├── site-integrity.js
 ├── browser-quality.cjs
+├── search-smoke.cjs
+├── visual-regression.cjs
 ├── lighthouse-budget.js
 └── *.test.js
+
+tests/
+└── visual-baselines.json
 ```
 
 ## Требования
@@ -99,7 +127,13 @@ npm run build
 npm run build:docs
 ```
 
-Результат — `docs-html/`. Diplodoc запускается с `--allow-custom-resources`, затем выполняются копирование assets и post-processing HTML: dark-theme compatibility, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
+Сборка:
+
+1. Diplodoc генерирует `docs-html` с поддержкой custom resources.
+2. Assets копируются с сохранением путей.
+3. Генерируемая страница локального поиска нормализуется для root/subpath deployments.
+4. Корневой `docs-html/index.html` заменяется лёгкой standalone-главной из `templates/index.html`.
+5. Генерируются `.nojekyll`, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
 
 ## Проверки качества
 
@@ -109,7 +143,7 @@ npm run build:docs
 npm test
 ```
 
-Проверяются assets, SEO/post-processing, dev-server HTML-инъекции, visual configuration, deployment-safe PDF URL и deterministic helpers визуального слоя.
+Покрыты assets, SEO/post-processing, standalone renderer, local-search normalization, visual configuration, deployment-safe PDF URL, Lighthouse budgets и generated-site integrity helpers.
 
 ### Generated-site integrity
 
@@ -118,59 +152,62 @@ npm run build:docs
 npm run check:site
 ```
 
-`check:site` анализирует именно готовый `docs-html` и проверяет локальные `href`, `src`, iframe, scripts, stylesheets и media references. Битая ссылка или отсутствующий asset блокируют CI/deploy.
+`check:site` анализирует готовый `docs-html`, учитывает HTML `<base href>` semantics и проверяет локальные `href`, `src`, iframe, scripts, stylesheets и media references. Битая ссылка или отсутствующий asset блокируют CI и deployment.
 
-### Browser quality gate
+### Browser / accessibility / performance gate
 
-PR workflow дополнительно устанавливает pinned quality tools изолированно в `.quality-tools` без изменения production dependency graph:
+PR workflow изолированно устанавливает pinned quality tools в `.quality-tools`, не меняя production dependency graph:
 
 - Playwright `1.61.1`
 - `@axe-core/playwright` `4.12.1`
 - Lighthouse `13.4.0`
+- `pngjs` `7.0.0`
 
 Проверяются:
 
-- homepage / projects / resume в desktop и mobile viewport;
+- homepage / projects / resume в desktop и mobile viewports;
 - HTTP failures и browser page errors;
 - horizontal overflow;
-- инициализация custom visual layer;
-- фактическая доступность PDF через hydrated iframe URL;
+- progressive visual layer;
+- фактическая доступность Resume PDF как `application/pdf`;
 - serious/critical axe violations;
+- generated local-search page в настоящем Chromium;
 - Lighthouse budgets: Performance ≥ 85, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 95.
 
-На каждый PR сохраняются screenshots и JSON reports в artifact `quality-artifacts` на 14 дней.
+### Visual regression
 
-Локальный запуск browser gate:
+Шесть ключевых screenshots сравниваются с versioned perceptual baseline из `tests/visual-baselines.json`:
 
-```bash
-npm install --prefix .quality-tools --package-lock=false --no-save \
-  playwright@1.61.1 @axe-core/playwright@4.12.1 lighthouse@13.4.0
-node scripts/browser-quality.cjs
-```
+- homepage desktop/mobile;
+- projects desktop/mobile;
+- resume desktop/mobile.
 
-## Изменение визуального стиля
+CI блокирует существенное изменение геометрии или визуального fingerprint. Полные screenshots и diff/evidence сохраняются в artifact `quality-artifacts` на 14 дней.
 
-### Палитра
+## Визуальные слои
 
-Базовые цвета меняются в `docs/theme.yaml` через поддерживаемые Diplodoc theme tokens.
+- `custom.css` — общая visual system, terminal и design tokens.
+- `accessibility.css` — контраст и визуальное различие интерактивных элементов.
+- `standalone.css` — shell/header/footer лёгкой главной.
+- `home.css` — hero/cards/layout главной.
+- `resume.css` — изолированный web-CV visual layer.
+- `custom.js` — progressive enhancement после загрузки приложения: PDF hydration, accessibility repair, terminal/reveal/pointer effects.
 
-### Общие компоненты и эффекты
+## Проекты / case studies
 
-`docs/_assets/style/custom.css` содержит `--tr-*` design tokens, карточки, CTA, background grid/glow, terminal panel, responsive и reduced-motion правила.
+`docs/landing/projects.md` — portfolio hub. Подробные публичные разборы:
 
-### Web-CV
+- TaskHub — Backend + AI
+- MiniChess — Java domain logic
+- Godot Atmospheric Horror Template — agentic game development
 
-`docs/_assets/style/resume.css` изолирует стили резюме от общего visual system, чтобы развитие CV не увеличивало риск регрессии остальных страниц.
-
-### Интерактивность
-
-`docs/_assets/script/custom.js` используется только как progressive enhancement. Контент и навигация остаются рабочими при отключённом JavaScript.
+MarketDB представлен только на безопасном публичном уровне без раскрытия внутренней коммерческой архитектуры.
 
 ## Добавление страницы
 
-1. Создайте файл в `docs/landing/`.
+1. Создайте Markdown-файл в `docs/landing/`.
 2. Добавьте ссылку в `docs/toc.yaml`.
-3. При необходимости добавьте карточку на главную в `docs/index.yaml`.
+3. При необходимости добавьте переход с standalone homepage в `templates/index.html`.
 
 Markdown-страницы из `toc.yaml` автоматически попадают в `sitemap.xml`.
 
@@ -181,13 +218,9 @@ Markdown-страницы из `toc.yaml` автоматически попад�
 
 ## Деплой
 
-- **Pull requests** — `.github/workflows/build.yml`: tests → build → integrity → browser/a11y/Lighthouse → quality artifacts
-- **GitHub Pages** — `.github/workflows/static.yml`: tests → build → integrity → deploy из `master`
-- **Docker** — `.github/workflows/deploy.yaml`: tests → build → integrity → image publish
-
-## Документация Diplodoc
-
-- [Официальная документация](https://diplodoc.com/docs/)
+- **Pull requests** — tests → build → integrity → browser/Axe/Lighthouse → search smoke → visual regression → quality artifacts
+- **GitHub Pages** — tests → build → integrity → deploy из `master`; `SITE_URL` задаётся под repository Pages URL
+- **Docker** — tests → build → integrity → image publish
 
 ## Контакты
 
