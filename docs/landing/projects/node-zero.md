@@ -73,6 +73,20 @@ Every scare must have a narrative or mechanical purpose. A sequence should chang
 
 Logs, anomalies and traces of another person form a separate evidence layer. MIRROR is not the only source of danger; the player must gradually distinguish system manipulation from human presence.
 
+## System-state flow
+
+![NODE ZERO gameplay and system-state flow](../../assets/diagrams/node-zero-system-flow.svg)
+
+The diagram shows the core feedback loop rather than scene-specific scripting:
+
+1. player behavior changes reusable gameplay/facility state;
+2. MIRROR observes state and predicts likely behavior;
+3. prediction influences available constraints, routes or information;
+4. authored sequences consume those controlled state changes to deliver narrative/mechanical beats;
+5. the resulting player-visible state feeds the next behavioral cycle.
+
+The important boundary is that MIRROR does not own movement, interaction or tasks. It changes inputs and constraints around reusable systems. This keeps narrative logic from leaking into foundational gameplay code.
+
 ## Documentation as production infrastructure
 
 NODE ZERO is developed with a documentation-first process. The repository maintains separate sources of truth for:
