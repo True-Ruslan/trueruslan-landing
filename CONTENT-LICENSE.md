@@ -4,11 +4,11 @@ This repository contains both software/source code and personal portfolio conten
 
 ## Software and tooling
 
-Unless a file or third-party notice states otherwise, the repository's source code, build scripts, CI configuration, tests, stylesheets, JavaScript, templates and related software tooling are licensed under the **Apache License 2.0** in [`LICENSE`](LICENSE).
+Unless a file or third-party notice states otherwise, the repository's source code, build scripts, CI configuration, tests, stylesheets, JavaScript, templates and related software tooling are licensed under the **MIT License** in [`LICENSE`](LICENSE).
 
 ## Personal content
 
-The Apache License 2.0 does **not** grant permission to reuse personal content belonging to Руслан Немыкин, including without limitation:
+The MIT License does **not** grant permission to reuse personal content belonging to Руслан Немыкин, including without limitation:
 
 - CV/resume documents and their contents;
 - personal photographs and portraits;
