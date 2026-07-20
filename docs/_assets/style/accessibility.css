@@ -2,6 +2,10 @@
   color: #c6d0dc !important;
 }
 
+.tr-terminal__title {
+  color: #8797aa !important;
+}
+
 main p a:not(.tr-cta):not(.tr-card__link),
 main li a:not(.tr-cta):not(.tr-card__link),
 main blockquote a:not(.tr-cta):not(.tr-card__link) {
