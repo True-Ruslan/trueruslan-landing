@@ -39,6 +39,8 @@ jobs:
         run: npm test
       - name: Build docs
         run: npm run build:docs
+      - name: Check generated site integrity
+        run: npm run check:site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
