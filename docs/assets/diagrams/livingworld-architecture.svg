@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">LivingWorld server-authoritative AI conversation architecture</title>
+  <desc id="desc">Text and voice input travel from Minecraft clients into a server-owned session. The server combines world context and persistent memory, calls speech recognition and a language model, authorizes bounded actions, and returns subtitles and spatial speech through an MCA Reborn villager.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#090B10"/><stop offset="1" stop-color="#11151C"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#4CC9F0"/></marker>
+    <style>
+      .t{font-family:system-ui,-apple-system,Segoe UI,sans-serif;fill:#F4F7FB}.m{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;fill:#9CA9B8}.box{fill:#11151C;stroke:#304052;stroke-width:2}.server{fill:#121424;stroke:#8B5CF6;stroke-width:3}.verified{fill:#0F1C18;stroke:#4ADE80;stroke-width:2}.flow{fill:none;stroke:#4CC9F0;stroke-width:3;marker-end:url(#arrow)}.soft{fill:none;stroke:#607080;stroke-width:2;stroke-dasharray:8 8;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="28" fill="url(#bg)"/>
+  <text x="60" y="68" class="t" font-size="30" font-weight="750">LIVINGWORLD / SERVER-AUTHORITATIVE PIPELINE</text>
+  <text x="60" y="98" class="m" font-size="15">Minecraft Fabric 1.21.1 · Java 21 · bounded sessions · text + voice</text>
+
+  <rect class="box" x="60" y="160" width="220" height="180" rx="18"/>
+  <text class="t" x="90" y="205" font-size="22" font-weight="700">Minecraft client</text>
+  <text class="m" x="90" y="242" font-size="15">Sneak-right-click NPC</text>
+  <text class="m" x="90" y="272" font-size="15">/livingworld say</text>
+  <text class="m" x="90" y="302" font-size="15">Voice push-to-talk</text>
+
+  <rect class="server" x="350" y="125" width="500" height="460" rx="24"/>
+  <text class="t" x="385" y="170" font-size="24" font-weight="750">LivingWorld server boundary</text>
+  <text class="m" x="385" y="198" font-size="14">Session ownership · cancellation · provider policies</text>
+
+  <rect class="box" x="385" y="230" width="190" height="105" rx="14"/>
+  <text class="t" x="410" y="267" font-size="18" font-weight="700">Session manager</text>
+  <text class="m" x="410" y="296" font-size="13">one player ↔ one NPC</text>
+
+  <rect class="box" x="625" y="230" width="190" height="105" rx="14"/>
+  <text class="t" x="650" y="267" font-size="18" font-weight="700">Context builder</text>
+  <text class="m" x="650" y="296" font-size="13">world + identity + memory</text>
+
+  <rect class="box" x="385" y="385" width="120" height="92" rx="14"/>
+  <text class="t" x="410" y="420" font-size="17" font-weight="700">STT</text>
+  <text class="m" x="410" y="448" font-size="12">voice → text</text>
+
+  <rect class="box" x="535" y="385" width="120" height="92" rx="14"/>
+  <text class="t" x="560" y="420" font-size="17" font-weight="700">LLM</text>
+  <text class="m" x="560" y="448" font-size="12">bounded reply</text>
+
+  <rect class="box" x="685" y="385" width="130" height="92" rx="14"/>
+  <text class="t" x="710" y="420" font-size="17" font-weight="700">TTS</text>
+  <text class="m" x="710" y="448" font-size="12">text → PCM</text>
+
+  <rect class="verified" x="470" y="505" width="270" height="58" rx="14"/>
+  <text class="t" x="500" y="540" font-size="17" font-weight="700">Action authorization gate</text>
+
+  <rect class="box" x="920" y="160" width="220" height="180" rx="18"/>
+  <text class="t" x="950" y="205" font-size="22" font-weight="700">MCA villager</text>
+  <text class="m" x="950" y="242" font-size="15">Named subtitle</text>
+  <text class="m" x="950" y="272" font-size="15">Spatial NPC speech</text>
+  <text class="m" x="950" y="302" font-size="15">Authorized action only</text>
+
+  <rect class="verified" x="920" y="410" width="220" height="140" rx="18"/>
+  <text class="t" x="950" y="450" font-size="19" font-weight="700">Verified in CI</text>
+  <text class="m" x="950" y="480" font-size="13">resilience · persistence</text>
+  <text class="m" x="950" y="506" font-size="13">rejection · fallback</text>
+  <text class="m" x="950" y="532" font-size="13">multi-session ownership</text>
+
+  <path class="flow" d="M280 250 H350"/>
+  <path class="flow" d="M575 282 H625"/>
+  <path class="flow" d="M480 335 V385"/>
+  <path class="flow" d="M505 431 H535"/>
+  <path class="flow" d="M655 431 H685"/>
+  <path class="flow" d="M595 477 V505"/>
+  <path class="flow" d="M740 534 H860 V250 H920"/>
+  <path class="soft" d="M720 335 V365 H595 V385"/>
+
+  <text class="m" x="60" y="660" font-size="14">Trust rule: STT, LLM, TTS, world context, memory and action authorization remain on the server.</text>
+  <circle cx="1020" cy="650" r="6" fill="#4ADE80" filter="url(#glow)"/><text class="m" x="1038" y="656" font-size="13">release-candidate evidence</text>
+</svg>
