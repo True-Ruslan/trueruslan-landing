@@ -13,6 +13,7 @@ import open from 'open';
 
 import {debounce} from './debounce.js';
 import {injectDarkThemeIntoHtml} from './dark-theme.js';
+import {postprocessOutput} from './copy-assets.js';
 
 const SCRIPTS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.join(SCRIPTS_DIR, '..');
@@ -91,10 +92,14 @@ events.addEventListener("${sseEventName}", () => window.location.reload());
     const normalized = changedPath.replaceAll('\\', '/');
     const needsAssets = normalized.includes('assets/');
 
-    console.info(needsAssets ? 'building documentation + assets' : 'building documentation (fast)');
+    console.info(needsAssets
+      ? 'building documentation and synchronizing assets'
+      : 'building documentation and refreshing post-processing');
 
-    const script = needsAssets ? 'npm run build:docs' : 'npm run build:docs:fast';
-    execSync(script, {cwd: PROJECT_ROOT, stdio: 'inherit'});
+    execSync('npm run build:docs:fast', {cwd: PROJECT_ROOT, stdio: 'inherit'});
+
+    const result = postprocessOutput({copyAssets: needsAssets});
+    console.info(`post-processed ${result.themedPages} HTML file(s)`);
   }
 
   injectSse() {
