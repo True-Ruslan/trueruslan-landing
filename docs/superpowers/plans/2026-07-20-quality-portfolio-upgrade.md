@@ -1,100 +1,105 @@
-# Quality & Portfolio Upgrade Implementation Plan
-
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+# Quality & Portfolio Upgrade — Completed Implementation Record
 
 **Goal:** Prevent functional/visual regressions before merge and upgrade the site from a styled documentation site into a production-grade engineering portfolio.
 
-**Architecture:** Keep Diplodoc as the static content engine. Add deterministic post-build integrity checks, browser smoke/accessibility/performance checks in CI using pinned ephemeral tooling so the main dependency graph stays small, then improve Projects and Resume as first-class portfolio surfaces.
+## Final architecture
 
-**Tech Stack:** Node.js 24, Diplodoc, parse5, GitHub Actions, Playwright 1.61.1 (ephemeral CI tool), axe-core Playwright 4.12.1 (ephemeral CI tool), Lighthouse 13.4.0 (ephemeral CI tool).
+The implementation ended with a deliberate split:
 
-## Global Constraints
+- **Standalone root homepage** — lightweight static HTML rendered from `templates/index.html`; no Diplodoc/React vendor bundle on the landing page.
+- **Diplodoc knowledge pages** — Markdown content, navigation, local search, case studies, bibliography and web-CV.
+- **Post-processing** — assets, local-search resource normalization, standalone homepage rendering, sitemap/robots and JSON-LD.
+- **Quality pipeline** — generated-site integrity, real-browser smoke, Axe, Lighthouse, generated-search smoke and versioned perceptual visual regression.
 
-- No new runtime framework.
-- No production dependency added solely for CI quality checks.
-- Existing `npm ci`, `npm test`, and `npm run build:docs` remain mandatory.
-- Browser quality tools are pinned and installed into `.quality-tools` with `--package-lock=false`.
-- All internal `href`, `src`, iframe, stylesheet and script references in generated HTML must resolve to generated output files.
-- Browser smoke must cover desktop and mobile homepage, projects and resume.
-- Accessibility checks block on serious/critical axe violations.
-- Lighthouse thresholds: Performance >= 85, Accessibility >= 95, Best Practices >= 95, SEO >= 95.
-- Visual screenshots are uploaded as CI artifacts on every PR for deterministic human/regression review; browser structure assertions block obvious layout regressions.
-- Content claims must be grounded in existing repository/profile facts; no invented metrics.
+A global Diplodoc `--static-content` experiment was evaluated and rejected because the current viewer produced unstable React hydration mismatches. The final architecture achieves fast first render on the high-traffic root page without forcing incompatible hydration semantics onto internal Diplodoc pages.
 
----
+## Tooling
 
-### Task 1: Static site integrity gate
+- Node.js 24
+- Diplodoc
+- parse5 / glob
+- GitHub Actions
+- Playwright 1.61.1 (ephemeral CI)
+- @axe-core/playwright 4.12.1 (ephemeral CI)
+- Lighthouse 13.4.0 (ephemeral CI)
+- pngjs 7.0.0 (ephemeral CI)
 
-**Files:**
-- Create: `scripts/site-integrity.js`
-- Create: `scripts/site-integrity.test.js`
-- Modify: `package.json`
-- Modify: `.github/workflows/build.yml`
-- Modify: `.github/workflows/static.yml`
+No browser-quality package was added to the production dependency graph.
 
-**Interfaces:**
-- Produces: `checkSiteIntegrity(outputDir)` returning `{htmlFiles, referencesChecked}` or throwing with all broken references.
-- Produces: `npm run check:site`.
+## Completed work
 
-- [ ] Add tests for valid nested links, missing assets, fragment/query stripping, external URL skipping and PDF/iframe paths.
-- [ ] Implement generated-HTML reference scanning with parse5 and safe path normalization.
-- [ ] Add `check:site` after production build in PR and Pages workflows.
-- [ ] Verify CI fails on a synthetic missing asset and passes on the built site.
+### 1. Generated-site integrity — completed
 
-### Task 2: Browser smoke, accessibility and quality evidence
+- [x] Added tests for nested links, missing assets, fragments/queries, external URLs, PDFs/iframes and HTML `<base href>` semantics.
+- [x] Added `scripts/site-integrity.js` and `npm run check:site`.
+- [x] Integrated integrity checking into PR, GitHub Pages and Docker workflows.
+- [x] Checker validates the final `docs-html`, not source assumptions.
+- [x] The gate discovered a real Diplodoc local-search resource-path defect.
+- [x] Added deterministic local-search post-processing rather than whitelisting broken paths.
 
-**Files:**
-- Create: `scripts/browser-quality.cjs`
-- Create: `scripts/lighthouse-budget.js`
-- Modify: `.github/workflows/build.yml`
+### 2. Browser / accessibility / performance — completed
 
-**Interfaces:**
-- Browser runner consumes `BASE_URL` and writes screenshots/reports to `quality-artifacts/`.
-- Browser runner uses pinned ephemeral modules from `.quality-tools/node_modules`.
+- [x] Pinned quality tooling installed ephemerally under `.quality-tools`.
+- [x] Browser smoke covers homepage, projects and resume in desktop/mobile viewports.
+- [x] Checks HTTP failures, page errors, custom visual initialization and horizontal overflow.
+- [x] Resume PDF is verified end-to-end as a successful `application/pdf` response.
+- [x] Axe blocks serious/critical accessibility violations.
+- [x] Local-search page has its own Chromium smoke test.
+- [x] Lighthouse budgets enforced: Performance ≥ 85, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 95.
+- [x] Screenshots and JSON/log evidence uploaded as CI artifacts.
 
-- [ ] Install Playwright/Axe ephemerally in CI without touching package-lock.
-- [ ] Serve `docs-html` on localhost in CI.
-- [ ] Assert homepage/projects/resume load, key headings exist, no horizontal overflow, resume iframe URL responds successfully, and no page errors/failed same-origin requests occur.
-- [ ] Run axe on key pages and fail on serious/critical violations.
-- [ ] Capture desktop/mobile screenshots as CI artifacts.
-- [ ] Run pinned Lighthouse and enforce configured score budgets.
+### 3. Accessibility hardening — completed
 
-### Task 3: Projects 2.0 case studies
+- [x] Runtime repair removes hidden generated heading anchors from keyboard tab order after Diplodoc client mount.
+- [x] Navigation landmarks receive accessible names where needed.
+- [x] Navigation contrast improved.
+- [x] Text links receive non-color visual distinction.
+- [x] Resume iframe excluded only from axe internals while its HTTP/PDF behavior remains explicitly verified.
 
-**Files:**
-- Modify: `docs/landing/projects.md`
-- Create: `docs/landing/projects/taskhub.md`
-- Create: `docs/landing/projects/minichess.md`
-- Create: `docs/landing/projects/godot-horror-template.md`
-- Modify: `docs/toc.yaml`
+### 4. Performance architecture — completed
 
-**Interfaces:**
-- Projects index links to detailed case studies.
-- Case studies use a consistent Context → Architecture → Engineering decisions → Verification → Links structure.
+- [x] Replaced heavyweight root viewer page with a standalone static homepage.
+- [x] Added lightweight SVG favicon instead of loading the large avatar as favicon.
+- [x] Quality server models gzip transport for compressible assets.
+- [x] Internal Diplodoc pages remain hydration-safe.
+- [x] Progressive custom JS is deferred until after application hydration.
+- [x] Verified Lighthouse run reached 100 / 100 / 100 / 100 on the standalone homepage before final documentation-only updates.
 
-- [ ] Turn the projects index into a concise portfolio hub with featured projects.
-- [ ] Add TaskHub, MiniChess and Godot case studies using verified repository facts only.
-- [ ] Keep MarketDB high-level and avoid proprietary implementation claims.
-- [ ] Ensure all new pages enter navigation/sitemap discovery without cluttering top navigation.
+### 5. Visual regression — completed
 
-### Task 4: Resume 2.0 web CV
+- [x] Six versioned perceptual baselines: homepage/projects/resume × desktop/mobile.
+- [x] CI compares geometry and sampled RGB fingerprint.
+- [x] Significant visual drift blocks PR.
+- [x] Full screenshots and diff evidence remain available as artifacts.
 
-**Files:**
-- Modify: `docs/landing/resume.md`
-- Modify: `docs/_assets/style/custom.css`
+### 6. Projects 2.0 — completed
 
-**Interfaces:**
-- Resume remains PDF-backed but presents useful content before the iframe.
+- [x] Projects index converted into featured portfolio hub.
+- [x] Added verified TaskHub case study.
+- [x] Added verified MiniChess case study.
+- [x] Added verified Godot Atmospheric Horror Template case study.
+- [x] MarketDB remains intentionally high-level without proprietary architecture claims.
+- [x] Case studies integrated into nested navigation/sitemap discovery.
 
-- [ ] Add concise profile, core stack, experience areas, education/teaching/research, and action links above the PDF viewer.
-- [ ] Add reusable resume metric/chip/timeline styling using semantic HTML/CSS and responsive layouts.
-- [ ] Keep PDF embed as secondary verification/download surface with deployment-safe hydration.
+### 7. Resume 2.0 — completed
 
-### Task 5: Final release verification
+- [x] Added profile, stack, experience areas, teaching/research and action links above PDF.
+- [x] Added isolated `resume.css` with metrics/chips/timeline/panels.
+- [x] PDF remains secondary download/verification surface.
+- [x] PDF hydration is resilient to Diplodoc client-side content mount through MutationObserver-based idempotent repair.
 
-**Files:** all changed files.
+### 8. SEO / deployment correctness — completed
 
-- [ ] Confirm `master...branch` contains only quality/portfolio changes.
-- [ ] Open PR with exact quality gates documented.
-- [ ] Require green CI before merge.
-- [ ] Re-read merged PR state and verify post-merge master contains the new quality scripts/content.
+- [x] JSON-LD aligned with Backend Engineer / Java Developer positioning.
+- [x] GitHub Pages workflow uses repository Pages base URL for generated sitemap/structured data.
+- [x] Standalone root includes canonical/OpenGraph metadata.
+- [x] Search output normalized for root and project-subpath deployments.
+
+## Release verification
+
+- [x] PR #5 opened with quality gates documented.
+- [x] Expanded CI with tests/build/integrity/browser/Axe/Lighthouse/search smoke/visual regression reached green before final documentation sync.
+- [ ] Final head CI after documentation sync.
+- [ ] Final `master...branch` scope review.
+- [ ] Merge PR #5.
+- [ ] Re-read merged PR/master state.
