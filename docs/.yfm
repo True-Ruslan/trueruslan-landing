@@ -4,7 +4,7 @@ outputFormat: html
 
 interface:
   toc-header: false
-  favicon-src: assets/images/avatar.png
+  favicon-src: assets/images/favicon.svg
 
 resources:
   style:
