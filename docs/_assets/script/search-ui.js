@@ -24,8 +24,14 @@
     if (!input.getAttribute('aria-label')) input.setAttribute('aria-label', 'Поиск по сайту');
     if (!input.getAttribute('placeholder')) input.setAttribute('placeholder', 'Найти проект, технологию или заметку…');
 
-    const shell = input.closest('.dc-search-page__search-field-wrapper') || input.parentElement;
-    if (shell) shell.classList.add('tr-search-input-shell');
+    const inputShell = input.closest('.g-text-input') || input.parentElement;
+    if (inputShell) inputShell.classList.add('tr-search-input-shell');
+
+    const fieldWrapper = input.closest('.dc-search-page__search-field-wrapper');
+    if (fieldWrapper) fieldWrapper.classList.add('tr-search-field-wrapper');
+
+    const searchButton = document.querySelector('.dc-search-page__search-button');
+    if (searchButton) searchButton.classList.add('tr-search-button');
 
     const app = document.querySelector('.Search');
     if (app) app.classList.add('tr-search-app');
