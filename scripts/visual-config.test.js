@@ -17,10 +17,12 @@ test('visual theme and custom resources are wired into Diplodoc', () => {
 
   assert.match(yfm, /allowCustomResources:\s*true/);
   assert.match(yfm, /_assets\/style\/custom\.css/);
+  assert.match(yfm, /_assets\/style\/resume\.css/);
   assert.match(yfm, /_assets\/script\/custom\.js/);
   assert.match(theme, /base-brand:\s*['"]#4CC9F0['"]/i);
   assert.match(theme, /base-background:\s*['"]#090B10['"]/i);
   assert.match(theme, /text-primary:\s*['"]#F4F7FB['"]/i);
   assert.match(packageJson.scripts['build:docs'], /--allow-custom-resources/);
   assert.match(packageJson.scripts['build:docs:fast'], /--allow-custom-resources/);
+  assert.equal(packageJson.scripts['check:site'], 'node scripts/site-integrity.js');
 });
