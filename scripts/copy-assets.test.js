@@ -68,7 +68,7 @@ test('writeRobotsTxt and writeSitemap create files', () => {
   }
 });
 
-test('postprocessOutput restores SEO and theme after a fast docs rebuild', () => {
+test('postprocessOutput restores SEO/assets without mutating React-owned theme classes', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-postprocess-'));
   const docsDir = path.join(tempRoot, 'docs');
   const outputDir = path.join(tempRoot, 'docs-html');
@@ -97,7 +97,8 @@ test('postprocessOutput restores SEO and theme after a fast docs rebuild', () =>
 
   assert.equal(result.copied.length, 0);
   assert.equal(result.personSchemaInjected, true);
-  assert.match(html, /g-root_theme_dark/);
+  assert.match(html, /g-root_theme_light/);
+  assert.doesNotMatch(html, /g-root_theme_dark/);
   assert.match(html, /application\/ld\+json/);
   assert.match(robots, /https:\/\/example\.test\/sitemap\.xml/);
   assert.match(sitemap, /landing\/about\.html/);
