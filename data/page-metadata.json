@@ -1,0 +1,26 @@
+{
+  "index.html": {
+    "title": "Руслан Немыкин — Backend Engineer",
+    "description": "Java · Distributed Systems · DevOps · AI. Инженерные проекты, case studies, web-CV и технические заметки Руслана Немыкина.",
+    "image": "assets/images/og/home.png",
+    "type": "website"
+  },
+  "landing/projects/livingworld.html": {
+    "title": "LivingWorld — Server-Authoritative AI NPC Architecture",
+    "description": "Как построить bounded AI NPC conversations в Minecraft: server authority, memory provenance, STT/LLM/TTS, strict action policy и verification ladder.",
+    "image": "assets/images/og/livingworld.png",
+    "type": "article"
+  },
+  "landing/projects/node-zero.html": {
+    "title": "NODE ZERO — Production Architecture for Authored Techno-Horror",
+    "description": "Unity architecture, authored sequence systems, stable IDs, deterministic checkpoints и validation tooling для psychological techno-horror.",
+    "image": "assets/images/og/node-zero.png",
+    "type": "article"
+  },
+  "landing/notes.html": {
+    "title": "Engineering Notes — Руслан Немыкин",
+    "description": "Короткие технические разборы архитектуры, AI systems, delivery и инженерных решений из реальных проектов.",
+    "image": "assets/images/og/notes.png",
+    "type": "website"
+  }
+}
