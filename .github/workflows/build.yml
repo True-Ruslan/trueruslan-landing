@@ -85,6 +85,7 @@ jobs:
           cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           cp docs-html/landing/resume.html quality-artifacts/resume-generated.html 2>/dev/null || true
+          cp docs-html/landing/engineering-map.html quality-artifacts/engineering-map-generated.html 2>/dev/null || true
       - name: Upload quality evidence
         if: always()
         uses: actions/upload-artifact@v4
