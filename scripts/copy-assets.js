@@ -16,6 +16,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DOCS_DIR = path.join(ROOT, 'docs');
 const OUTPUT_DIR = path.join(ROOT, 'docs-html');
+const STANDALONE_HOME_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
 
@@ -113,6 +114,7 @@ export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSi
 export function postprocessOutput({
   outputDir = OUTPUT_DIR,
   docsDir = DOCS_DIR,
+  standaloneTemplatePath = STANDALONE_HOME_TEMPLATE,
   siteUrl = getSiteUrl(),
   copyAssets = true,
 } = {}) {
@@ -130,7 +132,7 @@ export function postprocessOutput({
 
   const normalizedSearchPages = normalizeSearchPages(outputDir);
   const standaloneHomePath = writeStandaloneHome({
-    templatePath: path.join(docsDir, '_landing', 'index.html'),
+    templatePath: standaloneTemplatePath,
     outputPath: path.join(outputDir, 'index.html'),
     siteUrl,
   });
