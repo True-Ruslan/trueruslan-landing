@@ -9,7 +9,7 @@ permissions:
 jobs:
   build-docs:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,11 +35,18 @@ jobs:
         run: >-
           npm install --prefix .quality-tools --package-lock=false --no-save
           playwright@1.61.1 @axe-core/playwright@4.12.1 lighthouse@13.4.0 pngjs@7.0.0
+      - name: Install Firefox and WebKit for compatibility smoke
+        run: node .quality-tools/node_modules/playwright/cli.js install --with-deps firefox webkit
       - name: Browser smoke, accessibility and Lighthouse
         shell: bash
         run: |
           set -o pipefail
           node scripts/browser-quality.cjs 2>&1 | tee browser-quality.log
+      - name: Firefox and WebKit compatibility smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/cross-browser-smoke.cjs 2>&1 | tee cross-browser-smoke.log
       - name: Generated search browser smoke
         shell: bash
         run: |
@@ -57,6 +64,7 @@ jobs:
           mkdir -p quality-artifacts
           cp site-integrity.log quality-artifacts/site-integrity.log 2>/dev/null || true
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
+          cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke.log 2>/dev/null || true
           cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
