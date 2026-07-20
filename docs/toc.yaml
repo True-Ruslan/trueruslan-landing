@@ -46,7 +46,7 @@ navigation:
       - type: controls
 
 title: Руслан Немыкин — Backend Engineer
-href: index.yaml
+href: index.md
 items:
   - name: Проекты
     href: ./landing/projects.md
