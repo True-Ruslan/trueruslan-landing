@@ -34,7 +34,7 @@ style="border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 2px 8px rgba
   <p>Ваш браузер не поддерживает отображение PDF.</p>
 </iframe>
 
-[Открыть резюме в новой вкладке](https://raw.githubusercontent.com/True-Ruslan/trueruslan-landing/master/docs/assets/documents/cv.pdf){target="_blank" data-tr-resume-link}
+<p><a href="https://raw.githubusercontent.com/True-Ruslan/trueruslan-landing/master/docs/assets/documents/cv.pdf" data-tr-resume-link target="_blank" rel="noopener noreferrer">Открыть резюме в новой вкладке</a></p>
 
 <noscript>
   <p><a href="https://raw.githubusercontent.com/True-Ruslan/trueruslan-landing/master/docs/assets/documents/cv.pdf" target="_blank" rel="noopener noreferrer">Открыть PDF-резюме</a></p>
