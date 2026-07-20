@@ -62,12 +62,8 @@ export function validatePageMeta(entries) {
     assertDisplayText(displayTitle, 'displayTitle');
     assertDisplayText(kicker, 'kicker');
 
-    if (paths.has(pathValue)) {
-      throw new Error(`Duplicate page metadata path: ${pathValue}`);
-    }
-    if (cards.has(card)) {
-      throw new Error(`Duplicate OpenGraph card slug: ${card}`);
-    }
+    if (paths.has(pathValue)) throw new Error(`Duplicate page metadata path: ${pathValue}`);
+    if (cards.has(card)) throw new Error(`Duplicate OpenGraph card slug: ${card}`);
     paths.add(pathValue);
     cards.add(card);
 
@@ -83,22 +79,12 @@ export function validatePageMeta(entries) {
       return normalized;
     });
 
-    return {
-      path: pathValue,
-      card,
-      title,
-      description,
-      displayTitle,
-      kicker,
-      tags,
-      accent,
-    };
+    return {path: pathValue, card, title, description, displayTitle, kicker, tags, accent};
   });
 }
 
 export function loadPageMeta(manifestPath = DEFAULT_MANIFEST) {
-  const raw = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  return validatePageMeta(raw);
+  return validatePageMeta(JSON.parse(fs.readFileSync(manifestPath, 'utf8')));
 }
 
 function getAttribute(node, name) {
@@ -114,12 +100,11 @@ function findHead(node) {
   return null;
 }
 
-function createMeta(attributes) {
+function createMeta(attributes, localPath = null) {
   const node = utils.createNode('meta');
-  for (const [name, value] of Object.entries(attributes)) {
-    utils.setAttribute(node, name, value);
-  }
+  for (const [name, value] of Object.entries(attributes)) utils.setAttribute(node, name, value);
   utils.setAttribute(node, 'data-tr-generated', 'page-meta');
+  if (localPath) utils.setAttribute(node, 'data-tr-local-path', localPath);
   return node;
 }
 
@@ -132,16 +117,14 @@ function createCanonical(href) {
 }
 
 function shouldRemoveMetadataNode(node) {
-  if (node.nodeName === 'link' && getAttribute(node, 'rel')?.toLowerCase() === 'canonical') {
-    return true;
-  }
+  if (node.nodeName === 'link' && getAttribute(node, 'rel')?.toLowerCase() === 'canonical') return true;
   if (node.nodeName !== 'meta') return false;
-
   const name = getAttribute(node, 'name')?.toLowerCase();
   const property = getAttribute(node, 'property')?.toLowerCase();
-  if (name === 'description' || name?.startsWith('twitter:')) return true;
-  if (property?.startsWith('og:')) return true;
-  return getAttribute(node, 'data-tr-generated') === 'page-meta';
+  return name === 'description'
+    || name?.startsWith('twitter:')
+    || property?.startsWith('og:')
+    || getAttribute(node, 'data-tr-generated') === 'page-meta';
 }
 
 function setDocumentTitle(head, title) {
@@ -166,10 +149,9 @@ export function injectPageMeta(html, entry, siteUrl) {
   head.childNodes = (head.childNodes ?? []).filter((node) => !shouldRemoveMetadataNode(node));
   setDocumentTitle(head, entry.title);
 
-  const canonical = entry.path === 'index.html'
-    ? `${normalizedSiteUrl}/`
-    : `${normalizedSiteUrl}/${entry.path}`;
-  const image = `${normalizedSiteUrl}/assets/og/${entry.card}.png`;
+  const canonical = entry.path === 'index.html' ? `${normalizedSiteUrl}/` : `${normalizedSiteUrl}/${entry.path}`;
+  const localImagePath = `/assets/og/${entry.card}.png`;
+  const image = `${normalizedSiteUrl}${localImagePath}`;
 
   utils.append(head, createMeta({name: 'description', content: entry.description}));
   utils.append(head, createCanonical(canonical));
@@ -177,14 +159,14 @@ export function injectPageMeta(html, entry, siteUrl) {
   utils.append(head, createMeta({property: 'og:description', content: entry.description}));
   utils.append(head, createMeta({property: 'og:type', content: 'website'}));
   utils.append(head, createMeta({property: 'og:url', content: canonical}));
-  utils.append(head, createMeta({property: 'og:image', content: image}));
+  utils.append(head, createMeta({property: 'og:image', content: image}, localImagePath));
   utils.append(head, createMeta({property: 'og:image:width', content: '1200'}));
   utils.append(head, createMeta({property: 'og:image:height', content: '630'}));
   utils.append(head, createMeta({property: 'og:image:alt', content: `${entry.displayTitle} — ${entry.kicker}`}));
   utils.append(head, createMeta({name: 'twitter:card', content: 'summary_large_image'}));
   utils.append(head, createMeta({name: 'twitter:title', content: entry.title}));
   utils.append(head, createMeta({name: 'twitter:description', content: entry.description}));
-  utils.append(head, createMeta({name: 'twitter:image', content: image}));
+  utils.append(head, createMeta({name: 'twitter:image', content: image}, localImagePath));
 
   return serialize(parsed);
 }
@@ -193,9 +175,7 @@ export function applyPageMeta(outputDir, entries, siteUrl) {
   let updated = 0;
   for (const entry of entries) {
     const htmlPath = path.join(outputDir, ...entry.path.split('/'));
-    if (!fs.existsSync(htmlPath)) {
-      throw new Error(`Page metadata target does not exist: ${entry.path}`);
-    }
+    if (!fs.existsSync(htmlPath)) throw new Error(`Page metadata target does not exist: ${entry.path}`);
     const html = fs.readFileSync(htmlPath, 'utf8');
     fs.writeFileSync(htmlPath, injectPageMeta(html, entry, siteUrl), 'utf8');
     updated += 1;
