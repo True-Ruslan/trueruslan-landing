@@ -9,7 +9,7 @@ permissions:
 jobs:
   build-docs:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,3 +26,19 @@ jobs:
         run: npm test
       - name: Build docs
         run: npm run build:docs
+      - name: Check generated site integrity
+        run: npm run check:site
+      - name: Install pinned browser quality tools
+        run: >-
+          npm install --prefix .quality-tools --package-lock=false --no-save
+          playwright@1.61.1 @axe-core/playwright@4.12.1 lighthouse@13.4.0
+      - name: Browser smoke, accessibility and Lighthouse
+        run: node scripts/browser-quality.cjs
+      - name: Upload quality evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-artifacts
+          path: quality-artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
