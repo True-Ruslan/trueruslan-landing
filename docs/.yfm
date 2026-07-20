@@ -1,9 +1,16 @@
 allowHTML: true
+allowCustomResources: true
 outputFormat: html
 
 interface:
   toc-header: false
   favicon-src: assets/images/avatar.png
+
+resources:
+  style:
+    - _assets/style/custom.css
+  script:
+    - _assets/script/custom.js
 
 search:
   provider: local
