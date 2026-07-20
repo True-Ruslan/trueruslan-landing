@@ -1,24 +1,29 @@
 name: Master
+
 on:
   push:
     branches:
       - 'master'
-      - 'main'
       - 'rc/**'
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
+      contents: read
       packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          persist-credentials: false
       - name: Init NodeJS
         uses: actions/setup-node@v4
         with:
@@ -38,5 +43,3 @@ jobs:
           registry-username: ${{ github.actor }}
           registry-access-token: ${{ secrets.GITHUB_TOKEN }}
           dockerfile-path: .
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
