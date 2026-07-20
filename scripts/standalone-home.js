@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
-const DEFAULT_TEMPLATE = path.join(ROOT, 'docs', '_landing', 'index.html');
+const DEFAULT_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 const DEFAULT_OUTPUT = path.join(ROOT, 'docs-html', 'index.html');
 
 export function renderStandaloneHome(template, siteUrl) {
