@@ -30,6 +30,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p quality-artifacts
+          cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           set -o pipefail
           npm run check:site 2>&1 | tee quality-artifacts/site-integrity.log
       - name: Install pinned browser quality tools
