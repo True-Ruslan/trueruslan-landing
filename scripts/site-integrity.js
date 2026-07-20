@@ -18,6 +18,7 @@ const REFERENCE_ATTRIBUTES = new Map([
   ['img', ['src']],
   ['input', ['src']],
   ['link', ['href']],
+  ['meta', ['data-tr-local-path']],
   ['object', ['data']],
   ['script', ['src']],
   ['source', ['src']],
@@ -49,44 +50,23 @@ function safeDecodePath(value) {
 
 function resolveBaseDirectory(baseHref, htmlPath, outputDir) {
   const raw = baseHref?.trim();
-  if (!raw || raw.startsWith('//') || EXTERNAL_SCHEME.test(raw)) {
-    return path.dirname(htmlPath);
-  }
-
+  if (!raw || raw.startsWith('//') || EXTERNAL_SCHEME.test(raw)) return path.dirname(htmlPath);
   const clean = safeDecodePath(stripQueryAndHash(raw)).replaceAll('\\', '/');
-  if (!clean) {
-    return path.dirname(htmlPath);
-  }
-
+  if (!clean) return path.dirname(htmlPath);
   if (clean.startsWith('/')) {
     const absolute = path.resolve(outputDir, `.${clean}`);
     return clean.endsWith('/') ? absolute : path.dirname(absolute);
   }
-
   const absolute = path.resolve(path.dirname(htmlPath), clean);
   return clean.endsWith('/') ? absolute : path.dirname(absolute);
 }
 
-export function resolveLocalReference(
-  reference,
-  htmlPath,
-  outputDir = DEFAULT_OUTPUT_DIR,
-  baseHref = null,
-) {
+export function resolveLocalReference(reference, htmlPath, outputDir = DEFAULT_OUTPUT_DIR, baseHref = null) {
   const raw = reference?.trim();
-  if (!raw || raw.startsWith('#') || raw.startsWith('//') || EXTERNAL_SCHEME.test(raw)) {
-    return null;
-  }
-
+  if (!raw || raw.startsWith('#') || raw.startsWith('//') || EXTERNAL_SCHEME.test(raw)) return null;
   const clean = safeDecodePath(stripQueryAndHash(raw)).replaceAll('\\', '/');
-  if (!clean) {
-    return null;
-  }
-
-  if (clean.startsWith('/')) {
-    return path.resolve(outputDir, `.${clean}`);
-  }
-
+  if (!clean) return null;
+  if (clean.startsWith('/')) return path.resolve(outputDir, `.${clean}`);
   const baseDirectory = resolveBaseDirectory(baseHref, htmlPath, outputDir);
   return path.resolve(baseDirectory, clean);
 }
@@ -94,27 +74,18 @@ export function resolveLocalReference(
 function resolveExistingTarget(targetPath) {
   if (fs.existsSync(targetPath)) {
     const stat = fs.statSync(targetPath);
-    if (stat.isFile()) {
-      return targetPath;
-    }
+    if (stat.isFile()) return targetPath;
     if (stat.isDirectory()) {
       const indexPath = path.join(targetPath, 'index.html');
       return fs.existsSync(indexPath) ? indexPath : null;
     }
   }
-
   if (!path.extname(targetPath)) {
     const htmlPath = `${targetPath}.html`;
-    if (fs.existsSync(htmlPath) && fs.statSync(htmlPath).isFile()) {
-      return htmlPath;
-    }
-
+    if (fs.existsSync(htmlPath) && fs.statSync(htmlPath).isFile()) return htmlPath;
     const indexPath = path.join(targetPath, 'index.html');
-    if (fs.existsSync(indexPath) && fs.statSync(indexPath).isFile()) {
-      return indexPath;
-    }
+    if (fs.existsSync(indexPath) && fs.statSync(indexPath).isFile()) return indexPath;
   }
-
   return null;
 }
 
@@ -124,12 +95,7 @@ function collectReferencesInDocumentOrder(node, state) {
     for (const attribute of attributes) {
       const value = getAttribute(node, attribute);
       if (value !== null) {
-        state.references.push({
-          tag: node.tagName,
-          attribute,
-          value,
-          baseHref: state.activeBaseHref,
-        });
+        state.references.push({tag: node.tagName, attribute, value, baseHref: state.activeBaseHref});
       }
     }
   }
@@ -142,21 +108,15 @@ function collectReferencesInDocumentOrder(node, state) {
     }
   }
 
-  for (const child of node.childNodes ?? []) {
-    collectReferencesInDocumentOrder(child, state);
-  }
+  for (const child of node.childNodes ?? []) collectReferencesInDocumentOrder(child, state);
 }
 
 export function checkSiteIntegrity(outputDir = DEFAULT_OUTPUT_DIR) {
-  if (!fs.existsSync(outputDir)) {
-    throw new Error(`Generated site directory does not exist: ${outputDir}`);
-  }
+  if (!fs.existsSync(outputDir)) throw new Error(`Generated site directory does not exist: ${outputDir}`);
 
   const normalizedOutput = path.resolve(outputDir);
   const htmlPaths = globSync(path.join(normalizedOutput, '**', '*.html'), {nodir: true}).sort();
-  if (htmlPaths.length === 0) {
-    throw new Error(`No generated HTML files found in ${normalizedOutput}`);
-  }
+  if (htmlPaths.length === 0) throw new Error(`No generated HTML files found in ${normalizedOutput}`);
 
   const broken = [];
   let referencesChecked = 0;
@@ -168,19 +128,11 @@ export function checkSiteIntegrity(outputDir = DEFAULT_OUTPUT_DIR) {
     collectReferencesInDocumentOrder(document, state);
 
     for (const reference of state.references) {
-      const targetPath = resolveLocalReference(
-        reference.value,
-        htmlPath,
-        normalizedOutput,
-        reference.baseHref,
-      );
-      if (!targetPath) {
-        continue;
-      }
+      const targetPath = resolveLocalReference(reference.value, htmlPath, normalizedOutput, reference.baseHref);
+      if (!targetPath) continue;
 
       referencesChecked += 1;
-      const insideOutput = targetPath === normalizedOutput
-        || targetPath.startsWith(`${normalizedOutput}${path.sep}`);
+      const insideOutput = targetPath === normalizedOutput || targetPath.startsWith(`${normalizedOutput}${path.sep}`);
       const resolvedTarget = insideOutput ? resolveExistingTarget(targetPath) : null;
 
       if (!resolvedTarget) {
@@ -216,6 +168,4 @@ function main() {
   }
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
-  main();
-}
+if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) main();
