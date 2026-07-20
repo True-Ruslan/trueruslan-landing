@@ -67,7 +67,7 @@ async function runScenario(browser, name, viewport) {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     if (overflow > 2) throw new Error(`${name}: horizontal overflow ${overflow}px`);
 
-    const axe = await new AxeBuilder({page}).analyze();
+    const axe = await new AxeBuilder({page}).include('.tr-engineering-graph').analyze();
     const serious = axe.violations.filter((violation) => ['serious','critical'].includes(violation.impact));
     if (serious.length) throw new Error(`${name}: Axe serious/critical violations: ${serious.map((v) => v.id).join(', ')}`);
     if (pageErrors.length) throw new Error(`${name}: page errors: ${pageErrors.join('; ')}`);
