@@ -20,6 +20,16 @@
     "accent": "violet"
   },
   {
+    "path": "landing/engineering-map.html",
+    "card": "engineering-map",
+    "title": "Engineering Map — Руслан Немыкин",
+    "description": "Интерактивная карта связей между Java/backend, distributed systems, reliability, AI engineering, GameDev, реальными проектами и техническими заметками.",
+    "displayTitle": "ENGINEERING MAP",
+    "kicker": "SKILLS TO SYSTEMS",
+    "tags": ["JAVA", "AI", "RELIABILITY"],
+    "accent": "violet"
+  },
+  {
     "path": "landing/resume.html",
     "card": "resume",
     "title": "Резюме — Руслан Немыкин",

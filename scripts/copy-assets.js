@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 
 import {globSync} from 'glob';
 
+import {applyEngineeringGraph, loadEngineeringGraph} from './engineering-graph.js';
 import {writeOgCards} from './og-image.js';
 import {applyPageMeta, loadPageMeta} from './page-meta.js';
 import {normalizeSearchPageHtml} from './search-page.js';
@@ -20,6 +21,7 @@ const DOCS_DIR = path.join(ROOT, 'docs');
 const OUTPUT_DIR = path.join(ROOT, 'docs-html');
 const STANDALONE_HOME_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 const PAGE_META_MANIFEST = path.join(ROOT, 'data', 'page-meta.json');
+const ENGINEERING_GRAPH_MANIFEST = path.join(ROOT, 'data', 'engineering-graph.json');
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
 
@@ -31,22 +33,17 @@ function copyFile(source, target) {
 export function walkAssets(dir, outputRoot, docsDir = DOCS_DIR) {
   const copied = [];
 
-  if (!fs.existsSync(dir)) {
-    return copied;
-  }
+  if (!fs.existsSync(dir)) return copied;
 
   for (const entry of fs.readdirSync(dir, {withFileTypes: true})) {
     const sourcePath = path.join(dir, entry.name);
-
     if (entry.isDirectory()) {
       copied.push(...walkAssets(sourcePath, outputRoot, docsDir));
       continue;
     }
 
     const extension = path.extname(entry.name).toLowerCase();
-    if (!ASSET_EXTENSIONS.has(extension)) {
-      continue;
-    }
+    if (!ASSET_EXTENSIONS.has(extension)) continue;
 
     const relativePath = path.relative(docsDir, sourcePath);
     const targetPath = path.join(outputRoot, relativePath);
@@ -73,12 +70,10 @@ Sitemap: ${siteUrl}/sitemap.xml
 export function writeSitemap(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl(), tocPath = path.join(DOCS_DIR, 'toc.yaml')) {
   const tocContent = fs.readFileSync(tocPath, 'utf8');
   const pages = collectPagesFromToc(tocContent);
-
   const urls = pages.map((page) => {
     const loc = page ? `${siteUrl}/${page}` : `${siteUrl}/`;
     return `  <url><loc>${loc}</loc></url>`;
   }).join('\n');
-
   const content = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
@@ -90,27 +85,19 @@ ${urls}
 export function normalizeSearchPages(outputDir = OUTPUT_DIR) {
   const pattern = path.join(outputDir, '_search', '*', 'index.html');
   const htmlFiles = globSync(pattern, {nodir: true});
-
   for (const htmlPath of htmlFiles) {
     const html = fs.readFileSync(htmlPath, 'utf8');
     const relativePath = path.relative(outputDir, htmlPath).replaceAll(path.sep, '/');
-    const transformed = normalizeSearchPageHtml(html, relativePath);
-    fs.writeFileSync(htmlPath, transformed, 'utf8');
+    fs.writeFileSync(htmlPath, normalizeSearchPageHtml(html, relativePath), 'utf8');
   }
-
   return htmlFiles.length;
 }
 
 export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl()) {
   const indexPath = path.join(outputDir, 'index.html');
-
-  if (!fs.existsSync(indexPath)) {
-    return false;
-  }
-
+  if (!fs.existsSync(indexPath)) return false;
   const html = fs.readFileSync(indexPath, 'utf8');
-  const transformed = injectPersonSchemaIntoHtml(html, siteUrl);
-  fs.writeFileSync(indexPath, transformed, 'utf8');
+  fs.writeFileSync(indexPath, injectPersonSchemaIntoHtml(html, siteUrl), 'utf8');
   return true;
 }
 
@@ -119,6 +106,7 @@ export function postprocessOutput({
   docsDir = DOCS_DIR,
   standaloneTemplatePath = STANDALONE_HOME_TEMPLATE,
   pageMetaPath = PAGE_META_MANIFEST,
+  engineeringGraphPath = ENGINEERING_GRAPH_MANIFEST,
   siteUrl = getSiteUrl(),
   copyAssets = true,
 } = {}) {
@@ -126,9 +114,7 @@ export function postprocessOutput({
     throw new Error('docs-html directory not found. Run build:docs:fast first.');
   }
 
-  const copied = copyAssets
-    ? walkAssets(path.join(docsDir, 'assets'), outputDir, docsDir)
-    : [];
+  const copied = copyAssets ? walkAssets(path.join(docsDir, 'assets'), outputDir, docsDir) : [];
 
   createNoJekyllFile(outputDir);
   writeRobotsTxt(outputDir, siteUrl);
@@ -141,6 +127,9 @@ export function postprocessOutput({
     siteUrl,
   });
 
+  const engineeringGraph = loadEngineeringGraph(engineeringGraphPath);
+  const engineeringGraphTarget = applyEngineeringGraph(outputDir, engineeringGraph);
+
   const pageMeta = loadPageMeta(pageMetaPath);
   const ogCards = writeOgCards(outputDir, pageMeta);
   const metadataUpdated = applyPageMeta(outputDir, pageMeta, siteUrl);
@@ -150,6 +139,7 @@ export function postprocessOutput({
     copied,
     normalizedSearchPages,
     standaloneHomePath,
+    engineeringGraphTarget,
     ogCards,
     metadataUpdated,
     personSchemaInjected,
@@ -160,21 +150,13 @@ function main() {
   try {
     console.log('Post-processing generated site...');
     const result = postprocessOutput();
-
-    for (const file of result.copied) {
-      console.log(`Copied: ${file}`);
-    }
-
-    if (result.normalizedSearchPages) {
-      console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
-    }
+    for (const file of result.copied) console.log(`Copied: ${file}`);
+    if (result.normalizedSearchPages) console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
     console.log(`Standalone homepage written: ${result.standaloneHomePath}`);
+    console.log(`Engineering Map injected: ${result.engineeringGraphTarget}`);
     console.log(`Generated ${result.ogCards.length} OpenGraph PNG card(s).`);
     console.log(`Injected page metadata into ${result.metadataUpdated} HTML page(s).`);
-    if (result.personSchemaInjected) {
-      console.log('Person schema injected into index.html.');
-    }
-
+    if (result.personSchemaInjected) console.log('Person schema injected into index.html.');
     console.log('Assets and SEO files created successfully.');
   } catch (error) {
     console.error(`Post-processing failed: ${error.message}`);
@@ -182,6 +164,4 @@ function main() {
   }
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
-  main();
-}
+if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) main();

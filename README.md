@@ -1,6 +1,6 @@
 # TrueRuslan Landing — engineering portfolio
 
-Персональное engineering-портфолио с лёгкой standalone-главной, Diplodoc knowledge pages, web-CV, инженерными case studies, Engineering Notes и production-oriented quality gates.
+Персональное engineering-портфолио с лёгкой standalone-главной, Diplodoc knowledge pages, web-CV, инженерными case studies, Engineering Notes, интерактивной Engineering Map и production-oriented quality gates.
 
 ## Архитектура
 
@@ -19,7 +19,7 @@ Diplodoc knowledge pages
         │
         ├── toc / local search
         ├── theme.yaml
-        ├── case studies / Engineering Notes / web-CV
+        ├── case studies / Engineering Notes / Engineering Map / web-CV
         └── custom visual/accessibility layer
 
 Build
@@ -29,13 +29,14 @@ Build
         ├── assets
         ├── search-page normalization
         ├── standalone root index.html
+        ├── Engineering Map state-payload injection
         ├── deterministic OpenGraph PNG cards
         ├── per-page SEO/social metadata
         ├── sitemap / robots.txt
         └── JSON-LD
 ```
 
-Главная не загружает тяжёлый Diplodoc viewer bundle. Diplodoc остаётся там, где он полезен: структурированный Markdown-контент, навигация, локальный поиск, case studies, Engineering Notes и документационные страницы.
+Главная не загружает тяжёлый Diplodoc viewer bundle. Diplodoc остаётся там, где он полезен: структурированный Markdown-контент, навигация, локальный поиск, case studies, Engineering Notes, Engineering Map и документационные страницы.
 
 ## Возможности
 
@@ -47,6 +48,7 @@ Build
 - Web-CV + deployment-safe встроенный PDF
 - Engineering case studies публичных проектов
 - Engineering Notes с техническими разборами архитектуры, reliability и AI systems
+- Интерактивная Engineering Map: стек → инженерные домены → реальные проекты → Notes
 - Build-time `Currently building` из валидируемого JSON manifest
 - Локальный поиск и реестр технических материалов
 - SEO: sitemap, robots.txt, canonical, page-specific OpenGraph/Twitter metadata и JSON-LD
@@ -56,9 +58,10 @@ Build
 - Browser smoke для desktop/mobile и локального поиска
 - Firefox/WebKit compatibility smoke поверх основного Chromium suite
 - Browser-level metadata/OpenGraph smoke
+- Dedicated Engineering Map interaction + component-scoped Axe smoke
 - Axe accessibility и Lighthouse budgets
-- Versioned perceptual visual-regression baseline
-- Post-deploy smoke реального GitHub Pages endpoint, включая Notes и OG image
+- Versioned perceptual visual-regression baseline для 8 ключевых экранов
+- Post-deploy smoke реального GitHub Pages endpoint, включая Map, Notes и OG images
 - Weekly monitoring внешних публичных ссылок и критичных production endpoint'ов
 - Screenshots, Lighthouse/Axe/visual/metadata/health reports как CI artifacts
 
@@ -70,6 +73,7 @@ templates/
 
 data/
 ├── currently-building.json          # Активные проекты для build-time homepage
+├── engineering-graph.json           # Technology/domain/project/note graph
 ├── page-meta.json                   # Page title/description/OG/Twitter manifest
 └── external-links.json              # Мониторинг внешних/public endpoint'ов
 
@@ -84,11 +88,16 @@ docs/
 │   │   ├── accessibility.css
 │   │   ├── standalone.css
 │   │   ├── home.css
+│   │   ├── active-projects.css
+│   │   ├── engineering-graph.css
 │   │   └── resume.css
-│   └── script/custom.js
+│   └── script/
+│       ├── custom.js
+│       └── engineering-graph.js
 ├── landing/
 │   ├── about.md
 │   ├── resume.md
+│   ├── engineering-map.md
 │   ├── projects.md
 │   ├── projects/
 │   │   ├── livingworld.md
@@ -113,6 +122,7 @@ scripts/
 ├── serve.js
 ├── copy-assets.js
 ├── standalone-home.js
+├── engineering-graph.js
 ├── page-meta.js
 ├── og-image.js
 ├── search-page.js
@@ -125,7 +135,9 @@ scripts/
 ├── cross-browser-smoke.cjs
 ├── search-smoke.cjs
 ├── metadata-smoke.cjs
+├── engineering-graph-smoke.cjs
 ├── visual-regression.cjs
+├── visual-baseline.cjs
 ├── lighthouse-budget.js
 └── *.test.js
 
@@ -162,11 +174,14 @@ npm run build:docs
 2. Assets копируются с сохранением путей.
 3. Генерируемая страница локального поиска нормализуется для root/subpath deployments.
 4. Корневой `docs-html/index.html` заменяется лёгкой standalone-главной из `templates/index.html`.
-5. `data/page-meta.json` валидируется, после чего Node.js build-time renderer генерирует детерминированные `assets/og/*.png` размером 1200×630.
-6. В финальный HTML инъектируются page-specific title, description, canonical, OpenGraph и Twitter metadata.
-7. Генерируются `.nojekyll`, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
+5. `data/engineering-graph.json` валидируется; semantic fallback инъектируется в официальный `diplodoc-state` content payload страницы Engineering Map до client hydration.
+6. `data/page-meta.json` валидируется, после чего Node.js build-time renderer генерирует детерминированные `assets/og/*.png` размером 1200×630.
+7. В финальный HTML инъектируются page-specific title, description, canonical, OpenGraph и Twitter metadata.
+8. Генерируются `.nojekyll`, `robots.txt`, `sitemap.xml` и JSON-LD профиля.
 
 OG renderer не требует браузера, внешнего image API или нового production dependency: PNG кодируется нативным Node.js кодом через `zlib`.
+
+Engineering Map также не использует runtime API или graph-library. Build-time слой создаёт semantic fallback и embedded JSON, а отдельный vanilla JS resource прогрессивно превращает их в интерактивную карту после штатной hydration Diplodoc.
 
 ## Проверки качества
 
@@ -176,7 +191,7 @@ OG renderer не требует браузера, внешнего image API и�
 npm test
 ```
 
-Покрыты assets, SEO/post-processing, standalone renderer, page-metadata manifest, deterministic PNG generation, local-search normalization, deployment-safe PDF URL, HTTP health policy, production-smoke URL contract, Lighthouse budgets и generated-site integrity helpers.
+Покрыты assets, SEO/post-processing, standalone renderer, Engineering Map graph validation и `diplodoc-state` injection, page-metadata manifest, deterministic PNG generation, local-search normalization, deployment-safe PDF URL, HTTP health policy, production-smoke URL contract, visual-baseline codec, Lighthouse budgets и generated-site integrity helpers.
 
 ### Generated-site integrity
 
@@ -206,22 +221,24 @@ PR workflow изолированно устанавливает pinned quality t
 - serious/critical axe violations;
 - generated local-search page в настоящем Chromium;
 - page title/description/canonical/OpenGraph/Twitter metadata и фактическая доступность generated PNG cards;
+- Engineering Map desktop/mobile: hydration-enhancement, filters, node selection/detail, horizontal overflow и component-scoped Axe;
 - Lighthouse budgets: Performance ≥ 85, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 95;
 - homepage / projects / resume в Firefox и WebKit как компактный compatibility smoke.
 
 ### Visual regression
 
-Шесть ключевых screenshots сравниваются с versioned perceptual baseline из `tests/visual-baselines.json`:
+Восемь ключевых screenshots сравниваются с versioned perceptual baseline из `tests/visual-baselines.json`:
 
 - homepage desktop/mobile;
 - projects desktop/mobile;
-- resume desktop/mobile.
+- resume desktop/mobile;
+- Engineering Map desktop/mobile.
 
-CI блокирует существенное изменение геометрии или визуального fingerprint. Полные screenshots и diff/evidence сохраняются в artifact `quality-artifacts` на 14 дней. Baseline обновляется только после прохождения функциональных browser gates.
+CI блокирует существенное изменение геометрии или визуального fingerprint. Baselines хранят lossless-deflate RGB samples с обязательной проверкой длины, поэтому повреждённый baseline не может превратиться в некорректное `NaN`-сравнение. Полные screenshots и diff/evidence сохраняются в artifact `quality-artifacts` на 14 дней. Baseline обновляется только после прохождения функциональных browser gates.
 
 ### Production smoke
 
-После `actions/deploy-pages` workflow проверяет уже реальный опубликованный Pages URL: homepage, Projects, Engineering Notes, Resume, PDF, homepage OpenGraph PNG, core CSS/JS и favicon. Проверка повторяется несколько раз с backoff, чтобы отделить краткую propagation delay от устойчивой production-регрессии.
+После `actions/deploy-pages` workflow проверяет уже реальный опубликованный Pages URL: homepage, Projects, Engineering Map, Engineering Notes, Resume, PDF, homepage/Map OpenGraph PNG, core CSS/JS и favicon. Проверка повторяется несколько раз с backoff, чтобы отделить краткую propagation delay от устойчивой production-регрессии.
 
 ### External health
 
@@ -234,8 +251,10 @@ CI блокирует существенное изменение геометр
 - `standalone.css` — shell/header/footer лёгкой главной.
 - `home.css` — hero/cards/layout главной.
 - `active-projects.css` — build-time `Currently building` cards.
+- `engineering-graph.css` — deterministic grid, edge layer, filters, node/detail states и responsive fallback Engineering Map.
 - `resume.css` — изолированный web-CV visual layer.
-- `custom.js` — progressive enhancement после загрузки приложения: PDF hydration, accessibility repair, terminal/reveal/pointer effects.
+- `custom.js` — общие progressive repairs/effects после загрузки приложения.
+- `engineering-graph.js` — изолированный progressive enhancement Engineering Map без runtime fetch.
 
 ## Проекты / case studies
 
@@ -248,6 +267,18 @@ CI блокирует существенное изменение геометр
 - Godot Atmospheric Horror Template — agentic game development
 
 MarketDB представлен только на безопасном публичном уровне без раскрытия внутренней коммерческой архитектуры. NODE ZERO сохраняет private/proprietary boundary; публичный case study не раскрывает закрытый исходный код.
+
+## Engineering Map
+
+`docs/landing/engineering-map.md` показывает связи, а не просто перечень навыков:
+
+```text
+technology → engineering domain → project → technical note
+```
+
+Источник истины — `data/engineering-graph.json`. В нём заданы узлы, explicit grid coordinates, фильтры и отношения. Validator запрещает duplicate/orphan/missing-edge/self-edge/unsafe-link состояния.
+
+Без JavaScript посетитель получает semantic grouped fallback с реальными ссылками. После hydration отдельный progressive resource добавляет фильтры `Backend / AI / Reliability / GameDev`, SVG edge layer, neighborhood highlighting и live detail panel. На узком экране рёбра скрываются, а узлы переходят в обычную карточную сетку.
 
 ## Engineering Notes
 
@@ -276,7 +307,7 @@ Markdown-страницы из `toc.yaml` автоматически попад�
 
 ## Деплой
 
-- **Pull requests** — tests → build → integrity → Chromium/Axe/Lighthouse → Firefox/WebKit smoke → search smoke → metadata/OG smoke → visual regression → quality artifacts
+- **Pull requests** — tests → build → integrity → Chromium/Axe/Lighthouse → Firefox/WebKit smoke → search smoke → metadata/OG smoke → Engineering Map smoke → visual regression → quality artifacts
 - **GitHub Pages** — tests → build → integrity → deploy из `master` → production smoke реального опубликованного URL
 - **External health** — еженедельная проверка production/public внешних endpoint'ов
 - **Docker** — tests → build → integrity → image publish

@@ -66,17 +66,19 @@ test('writeRobotsTxt and writeSitemap create files', () => {
   }
 });
 
-test('postprocessOutput writes standalone homepage, metadata, OG card and SEO output', () => {
+test('postprocessOutput writes homepage, Engineering Map, metadata, OG card and SEO output', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-postprocess-'));
   const docsDir = path.join(tempRoot, 'docs');
   const templatePath = path.join(tempRoot, 'templates', 'index.html');
   const pageMetaPath = path.join(tempRoot, 'data', 'page-meta.json');
+  const engineeringGraphPath = path.join(tempRoot, 'data', 'engineering-graph.json');
   const outputDir = path.join(tempRoot, 'docs-html');
+  const engineeringMapPath = path.join(outputDir, 'landing', 'engineering-map.html');
 
   fs.mkdirSync(path.dirname(templatePath), {recursive: true});
   fs.mkdirSync(path.dirname(pageMetaPath), {recursive: true});
+  fs.mkdirSync(path.dirname(engineeringMapPath), {recursive: true});
   fs.mkdirSync(docsDir, {recursive: true});
-  fs.mkdirSync(outputDir, {recursive: true});
   fs.writeFileSync(path.join(docsDir, 'toc.yaml'), 'items:\n  - name: About\n    href: ./landing/about.md\n');
   fs.writeFileSync(
     templatePath,
@@ -92,9 +94,21 @@ test('postprocessOutput writes standalone homepage, metadata, OG card and SEO ou
     tags: ['JAVA', 'AI'],
     accent: 'cyan',
   }]));
+  fs.writeFileSync(engineeringGraphPath, JSON.stringify({
+    filters: [{id:'backend',label:'Backend'}],
+    nodes: [
+      {id:'java',label:'Java',kind:'technology',description:'Language',column:1,row:1,tags:['backend']},
+      {id:'systems',label:'Systems',kind:'domain',description:'Domain',column:2,row:2,tags:['backend'],href:'resume.html'},
+    ],
+    edges: [{from:'java',to:'systems',label:'builds'}],
+  }));
   fs.writeFileSync(
     path.join(outputDir, 'index.html'),
     '<!doctype html><html><head><title>Generated</title></head><body class="g-root g-root_theme_light"></body></html>',
+  );
+  fs.writeFileSync(
+    engineeringMapPath,
+    '<!doctype html><html><head><title>Map</title></head><body><div data-tr-engineering-graph-root></div></body></html>',
   );
 
   const result = postprocessOutput({
@@ -102,19 +116,25 @@ test('postprocessOutput writes standalone homepage, metadata, OG card and SEO ou
     docsDir,
     standaloneTemplatePath: templatePath,
     pageMetaPath,
+    engineeringGraphPath,
     siteUrl: 'https://example.test',
     copyAssets: false,
   });
 
   const html = fs.readFileSync(path.join(outputDir, 'index.html'), 'utf8');
+  const mapHtml = fs.readFileSync(engineeringMapPath, 'utf8');
   const robots = fs.readFileSync(path.join(outputDir, 'robots.txt'), 'utf8');
   const sitemap = fs.readFileSync(path.join(outputDir, 'sitemap.xml'), 'utf8');
   const ogPath = path.join(outputDir, 'assets', 'og', 'home.png');
 
   assert.equal(result.copied.length, 0);
+  assert.equal(result.engineeringGraphTarget, 'landing/engineering-map.html');
   assert.equal(result.ogCards.length, 1);
   assert.equal(result.metadataUpdated, 1);
   assert.equal(result.personSchemaInjected, true);
+  assert.match(mapHtml, /data-tr-engineering-graph-build="ready"/);
+  assert.match(mapHtml, /data-tr-engineering-graph-data/);
+  assert.match(mapHtml, /Java/);
   assert.match(html, /Руслан Немыкин/);
   assert.match(html, /https:\/\/example\.test\/assets\/og\/home\.png/);
   assert.match(html, /summary_large_image/);

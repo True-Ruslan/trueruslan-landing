@@ -25,7 +25,10 @@ jobs:
       - name: Test
         run: npm test
       - name: Build docs
-        run: npm run build:docs
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run build:docs 2>&1 | tee build-docs.log
       - name: Check generated site integrity
         shell: bash
         run: |
@@ -57,6 +60,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/metadata-smoke.cjs 2>&1 | tee metadata-smoke.log
+      - name: Engineering Map browser and accessibility smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/engineering-graph-smoke.cjs 2>&1 | tee engineering-graph-smoke.log
       - name: Visual regression
         shell: bash
         run: |
@@ -67,14 +75,17 @@ jobs:
         shell: bash
         run: |
           mkdir -p quality-artifacts
+          cp build-docs.log quality-artifacts/build-docs.log 2>/dev/null || true
           cp site-integrity.log quality-artifacts/site-integrity.log 2>/dev/null || true
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke.log 2>/dev/null || true
           cp metadata-smoke.log quality-artifacts/metadata-smoke.log 2>/dev/null || true
+          cp engineering-graph-smoke.log quality-artifacts/engineering-graph-smoke.log 2>/dev/null || true
           cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           cp docs-html/landing/resume.html quality-artifacts/resume-generated.html 2>/dev/null || true
+          cp docs-html/landing/engineering-map.html quality-artifacts/engineering-map-generated.html 2>/dev/null || true
       - name: Upload quality evidence
         if: always()
         uses: actions/upload-artifact@v4
