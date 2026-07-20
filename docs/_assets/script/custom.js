@@ -28,6 +28,10 @@
     ];
   }
 
+  function getResumePdfUrl(currentHref) {
+    return new URL('../assets/documents/cv.pdf', currentHref).href;
+  }
+
   function hasDom() {
     return typeof root.document !== 'undefined' && root.document !== null;
   }
@@ -61,6 +65,17 @@
       rel.add('noreferrer');
       link.setAttribute('rel', [...rel].join(' '));
     }
+  }
+
+  function hydrateResumePdf(document) {
+    if (!root.location?.href) return;
+
+    const pdfUrl = getResumePdfUrl(root.location.href);
+    const viewer = document.querySelector('[data-tr-resume-pdf]');
+    const link = document.querySelector('[data-tr-resume-link]');
+
+    if (viewer) viewer.setAttribute('src', pdfUrl);
+    if (link) link.setAttribute('href', pdfUrl);
   }
 
   function classifyCards(document) {
@@ -212,6 +227,7 @@
 
     const page = markPage(document);
     hardenExternalLinks(document);
+    hydrateResumePdf(document);
     classifyCards(document);
     classifyCtas(document, page);
     mountTerminal(document, page);
@@ -219,6 +235,6 @@
     setupPointerGlow(document);
   }
 
-  root.TrueRuslanVisual = Object.freeze({getPageKind, getTerminalLines, init});
+  root.TrueRuslanVisual = Object.freeze({getPageKind, getResumePdfUrl, getTerminalLines, init});
   if (hasDom()) onReady(init);
 }(typeof globalThis !== 'undefined' ? globalThis : this));
