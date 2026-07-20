@@ -72,10 +72,64 @@
 
     const pdfUrl = getResumePdfUrl(root.location.href);
     const viewer = document.querySelector('[data-tr-resume-pdf]');
-    const link = document.querySelector('[data-tr-resume-link]');
+    const links = document.querySelectorAll('[data-tr-resume-link]');
 
     if (viewer) viewer.setAttribute('src', pdfUrl);
-    if (link) link.setAttribute('href', pdfUrl);
+    for (const link of links) link.setAttribute('href', pdfUrl);
+  }
+
+  function repairRuntimeAccessibility(document) {
+    for (const anchor of document.querySelectorAll('a[aria-hidden="true"].yfm-anchor, a[aria-hidden="true"].yfm-clipboard-anchor')) {
+      anchor.setAttribute('tabindex', '-1');
+    }
+
+    for (const main of document.querySelectorAll('main')) {
+      if (main.parentElement?.closest('main')) {
+        main.setAttribute('role', 'presentation');
+      }
+    }
+
+    let unnamedNavigationIndex = 0;
+    for (const navigation of document.querySelectorAll('nav')) {
+      if (navigation.hasAttribute('aria-label') || navigation.hasAttribute('aria-labelledby')) {
+        continue;
+      }
+
+      if (navigation.classList.contains('dc-toc')) {
+        navigation.setAttribute('aria-label', 'Навигация по разделам');
+      } else if (navigation.closest('header')) {
+        navigation.setAttribute('aria-label', 'Основная навигация');
+      } else {
+        unnamedNavigationIndex += 1;
+        navigation.setAttribute('aria-label', `Навигация страницы ${unnamedNavigationIndex}`);
+      }
+    }
+  }
+
+  function setupRuntimeAccessibility(document) {
+    repairRuntimeAccessibility(document);
+
+    if (typeof root.MutationObserver !== 'function' || !document.documentElement) {
+      return;
+    }
+
+    let scheduled = false;
+    const repair = () => {
+      scheduled = false;
+      repairRuntimeAccessibility(document);
+    };
+
+    const observer = new root.MutationObserver(() => {
+      if (scheduled) return;
+      scheduled = true;
+      if (typeof root.requestAnimationFrame === 'function') {
+        root.requestAnimationFrame(repair);
+      } else {
+        root.setTimeout(repair, 0);
+      }
+    });
+
+    observer.observe(document.documentElement, {childList: true, subtree: true});
   }
 
   function classifyCards(document) {
@@ -228,6 +282,7 @@
     const page = markPage(document);
     hardenExternalLinks(document);
     hydrateResumePdf(document);
+    setupRuntimeAccessibility(document);
     classifyCards(document);
     classifyCtas(document, page);
     mountTerminal(document, page);
@@ -235,6 +290,11 @@
     setupPointerGlow(document);
   }
 
-  root.TrueRuslanVisual = Object.freeze({getPageKind, getResumePdfUrl, getTerminalLines, init});
+  root.TrueRuslanVisual = Object.freeze({
+    getPageKind,
+    getResumePdfUrl,
+    getTerminalLines,
+    init,
+  });
   if (hasDom()) onReady(init);
 }(typeof globalThis !== 'undefined' ? globalThis : this));
