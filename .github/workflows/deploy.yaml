@@ -37,6 +37,8 @@ jobs:
         shell: bash
       - name: Build
         run: npm run build:docs
+      - name: Check generated site integrity
+        run: npm run check:site
       - name: Deploy image
         uses: valitydev/action-deploy-docker@v1.0.16
         with:
