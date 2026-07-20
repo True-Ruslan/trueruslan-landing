@@ -118,23 +118,32 @@ function resolveExistingTarget(targetPath) {
   return null;
 }
 
-function collectDocumentMetadata(node, state) {
-  if (node.tagName === 'base' && state.baseHref === null) {
-    state.baseHref = getAttribute(node, 'href');
-  }
-
+function collectReferencesInDocumentOrder(node, state) {
   const attributes = REFERENCE_ATTRIBUTES.get(node.tagName);
   if (attributes) {
     for (const attribute of attributes) {
       const value = getAttribute(node, attribute);
       if (value !== null) {
-        state.references.push({tag: node.tagName, attribute, value});
+        state.references.push({
+          tag: node.tagName,
+          attribute,
+          value,
+          baseHref: state.activeBaseHref,
+        });
       }
     }
   }
 
+  if (node.tagName === 'base' && !state.baseSeen) {
+    const href = getAttribute(node, 'href');
+    if (href !== null) {
+      state.activeBaseHref = href;
+      state.baseSeen = true;
+    }
+  }
+
   for (const child of node.childNodes ?? []) {
-    collectDocumentMetadata(child, state);
+    collectReferencesInDocumentOrder(child, state);
   }
 }
 
@@ -155,15 +164,15 @@ export function checkSiteIntegrity(outputDir = DEFAULT_OUTPUT_DIR) {
   for (const htmlPath of htmlPaths) {
     const html = fs.readFileSync(htmlPath, 'utf8');
     const document = parse(html);
-    const state = {baseHref: null, references: []};
-    collectDocumentMetadata(document, state);
+    const state = {activeBaseHref: null, baseSeen: false, references: []};
+    collectReferencesInDocumentOrder(document, state);
 
     for (const reference of state.references) {
       const targetPath = resolveLocalReference(
         reference.value,
         htmlPath,
         normalizedOutput,
-        state.baseHref,
+        reference.baseHref,
       );
       if (!targetPath) {
         continue;
@@ -177,7 +186,7 @@ export function checkSiteIntegrity(outputDir = DEFAULT_OUTPUT_DIR) {
       if (!resolvedTarget) {
         broken.push({
           source: path.relative(normalizedOutput, htmlPath),
-          baseHref: state.baseHref,
+          baseHref: reference.baseHref,
           tag: reference.tag,
           attribute: reference.attribute,
           reference: reference.value,
