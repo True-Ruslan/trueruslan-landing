@@ -1,8 +1,30 @@
 # Проекты
 
-Здесь собраны не просто ссылки на репозитории, а проекты, через которые лучше всего видно мой инженерный подход: как я разделяю ответственность компонентов, работаю с доменной логикой, инфраструктурой, AI-интеграциями и воспроизводимым процессом разработки.
+Здесь собраны не просто ссылки на репозитории, а проекты, через которые лучше всего видно мой инженерный подход: как я разделяю ответственность компонентов, работаю с доменной логикой, инфраструктурой, AI-интеграциями, game systems и воспроизводимым процессом разработки.
 
-## Featured case studies
+## Flagship case studies
+
+### LivingWorld — server-authoritative AI NPC architecture
+
+Fabric-мод для Minecraft 1.21.1, который добавляет MCA Reborn villagers ограниченные AI-разговоры через текст и голос. STT, LLM, TTS, world context, memory, trusted knowledge и action authorization остаются на сервере.
+
+**Инженерный фокус:** trust boundaries, server authority, bounded context/resources, persistent NPC identity, memory provenance, strict LLM action policy и многоуровневая verification ladder.
+
+[Читать case study →](projects/livingworld.md) · [GitHub ↗](https://github.com/True-Ruslan/minecraft-botics-ai)
+
+---
+
+### NODE ZERO — authored techno-horror as a production system
+
+First-person psychological techno-horror в автономном AI compute facility. Проект строится вокруг production-ready vertical slice, authored sequence architecture, stable IDs, deterministic checkpoints и строгого разделения gameplay systems от scene-specific scripting.
+
+**Инженерный фокус:** Unity architecture, reusable authored sequences, stable persistent identity, checkpoint contracts, validation tooling и controlled production workflow.
+
+[Читать case study →](projects/node-zero.md) · [GitHub ↗](https://github.com/True-Ruslan/node-zero)
+
+---
+
+## Backend / domain case studies
 
 ### TaskHub — Backend + AI
 
@@ -58,6 +80,6 @@
 
 {% note tip %}
 
-Больше исходного кода — в [GitHub](https://github.com/True-Ruslan). Для технического обсуждения или сотрудничества — раздел [Контакты](contacts.md).
+Инженерные решения и разборы архитектуры — также в разделе [Engineering Notes](notes.md). Больше исходного кода — в [GitHub](https://github.com/True-Ruslan).
 
 {% endnote %}
