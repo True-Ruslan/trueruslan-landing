@@ -13,9 +13,9 @@ vm.runInNewContext(script, sandbox, {filename: 'command-palette.js'});
 const palette = sandbox.TrueRuslanCommandPalette;
 
 test('command palette exposes deterministic quick destinations and one search handoff', () => {
-  const commands = palette.getCommands();
+  const commands = Array.from(palette.getCommands());
   assert.deepEqual(
-    commands.map((command) => command.id),
+    Array.from(commands, (command) => command.id),
     ['projects', 'now', 'notes', 'map', 'resume', 'search', 'github'],
   );
   assert.equal(commands.filter((command) => command.kind === 'search').length, 1);
