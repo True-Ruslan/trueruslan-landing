@@ -1,0 +1,6 @@
+/* Keep long technical prose and identifiers from expanding Diplodoc content beyond the viewport. */
+main,
+article {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
