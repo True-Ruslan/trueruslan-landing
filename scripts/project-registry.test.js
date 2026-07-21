@@ -5,8 +5,10 @@ import os from 'node:os';
 import path from 'node:path';
 
 import {
+  applyProjectRegistryContent,
   getActiveProjects,
   renderProjectCards,
+  renderProjectStatus,
   validateProjectRegistry,
 } from './project-registry.js';
 
@@ -71,4 +73,27 @@ test('renderProjectCards uses statusLabel and escapes content', () => {
   assert.match(html, /RELEASE CANDIDATE/);
   assert.match(html, /&lt;Living &amp; World&gt;/);
   assert.doesNotMatch(html, /<Living/);
+});
+
+test('renderProjectStatus derives the public badge from canonical registry state', () => {
+  const html = renderProjectStatus(validProject);
+  assert.match(html, /tr-project-status--release-candidate/);
+  assert.match(html, /RELEASE CANDIDATE/);
+  assert.match(html, /data-project-status="livingworld"/);
+});
+
+test('applyProjectRegistryContent replaces project hub status placeholders only', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-project-hub-'));
+  const hubPath = path.join(outputDir, 'landing', 'projects.html');
+  fs.mkdirSync(path.dirname(hubPath), {recursive: true});
+  fs.writeFileSync(
+    hubPath,
+    '<main><span data-tr-project-status="livingworld"></span><p>Keep me</p></main>',
+  );
+
+  assert.equal(applyProjectRegistryContent(outputDir, [validProject]), 1);
+  const html = fs.readFileSync(hubPath, 'utf8');
+  assert.match(html, /RELEASE CANDIDATE/);
+  assert.match(html, /Keep me/);
+  assert.doesNotMatch(html, /data-tr-project-status="livingworld"><\/span>/);
 });
