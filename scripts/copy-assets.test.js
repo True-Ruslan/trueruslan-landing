@@ -78,6 +78,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card 
   const notesPath = path.join(dataDir, 'notes.json');
   const historyDir = path.join(dataDir, 'project-history');
   const outputDir = path.join(tempRoot, 'docs-html');
+  const projectsHtmlPath = path.join(outputDir, 'landing', 'projects.html');
   const engineeringMapPath = path.join(outputDir, 'landing', 'engineering-map.html');
   const nowHtmlPath = path.join(outputDir, 'landing', 'now.html');
   const noteHtmlPath = path.join(outputDir, 'landing', 'notes', 'test-note.html');
@@ -146,6 +147,10 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card 
     '<!doctype html><html><head><title>Generated</title></head><body class="g-root g-root_theme_light"></body></html>',
   );
   fs.writeFileSync(
+    projectsHtmlPath,
+    '<!doctype html><html><head><title>Projects</title></head><body><main><h1>Projects</h1><span data-tr-project-status="test-project"></span></main></body></html>',
+  );
+  fs.writeFileSync(
     engineeringMapPath,
     '<!doctype html><html><head><title>Map</title></head><body><div data-tr-engineering-graph-root></div></body></html>',
   );
@@ -173,6 +178,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card 
   });
 
   const html = fs.readFileSync(path.join(outputDir, 'index.html'), 'utf8');
+  const projectsHtml = fs.readFileSync(projectsHtmlPath, 'utf8');
   const mapHtml = fs.readFileSync(engineeringMapPath, 'utf8');
   const nowHtml = fs.readFileSync(nowHtmlPath, 'utf8');
   const noteHtml = fs.readFileSync(noteHtmlPath, 'utf8');
@@ -182,6 +188,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card 
   const ogPath = path.join(outputDir, 'assets', 'og', 'home.png');
 
   assert.equal(result.copied.length, 0);
+  assert.equal(result.projectStatusTargets, 1);
   assert.equal(result.nowPageTarget, 'landing/now.html');
   assert.equal(result.timelineTargets.length, 0);
   assert.equal(result.noteTargets.length, 1);
@@ -189,6 +196,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card 
   assert.equal(result.ogCards.length, 1);
   assert.equal(result.metadataUpdated, 1);
   assert.equal(result.personSchemaInjected, true);
+  assert.match(projectsHtml, /PRODUCTION/);
   assert.match(mapHtml, /data-tr-engineering-graph-build="ready"/);
   assert.match(mapHtml, /data-tr-engineering-graph-data/);
   assert.match(mapHtml, /Java/);
