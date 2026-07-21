@@ -50,6 +50,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/browser-quality.cjs 2>&1 | tee browser-quality.log
+      - name: Portfolio v0.3 browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/v03-browser-smoke.cjs 2>&1 | tee v03-browser-smoke.log
       - name: Firefox and WebKit compatibility smoke
         shell: bash
         run: |
@@ -84,6 +89,7 @@ jobs:
           cp site-integrity.log quality-artifacts/site-integrity.log 2>/dev/null || true
           cp layout-overflow.log quality-artifacts/layout-overflow.log 2>/dev/null || true
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
+          cp v03-browser-smoke.log quality-artifacts/v03-browser-smoke.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke.log 2>/dev/null || true
           cp metadata-smoke.log quality-artifacts/metadata-smoke.log 2>/dev/null || true
@@ -91,6 +97,10 @@ jobs:
           cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           cp docs-html/landing/resume.html quality-artifacts/resume-generated.html 2>/dev/null || true
+          cp docs-html/landing/now.html quality-artifacts/now-generated.html 2>/dev/null || true
+          cp docs-html/landing/projects/livingworld.html quality-artifacts/livingworld-generated.html 2>/dev/null || true
+          cp docs-html/landing/projects/node-zero.html quality-artifacts/node-zero-generated.html 2>/dev/null || true
+          cp docs-html/feed.xml quality-artifacts/feed.xml 2>/dev/null || true
           cp docs-html/landing/engineering-map.html quality-artifacts/engineering-map-generated.html 2>/dev/null || true
       - name: Upload quality evidence
         if: always()
