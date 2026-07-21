@@ -38,13 +38,13 @@ jobs:
         run: >-
           npm install --prefix .quality-tools --package-lock=false --no-save
           playwright@1.61.1 @axe-core/playwright@4.12.1 lighthouse@13.4.0 pngjs@7.0.0
-      - name: Install Firefox and WebKit for compatibility smoke
-        run: node .quality-tools/node_modules/playwright/cli.js install --with-deps firefox webkit
       - name: Diagnose mobile layout overflow
         shell: bash
         run: |
           set -o pipefail
           node scripts/layout-overflow-smoke.cjs 2>&1 | tee layout-overflow.log
+      - name: Install Firefox and WebKit for compatibility smoke
+        run: node .quality-tools/node_modules/playwright/cli.js install --with-deps firefox webkit
       - name: Browser smoke, accessibility and Lighthouse
         shell: bash
         run: |
