@@ -37,6 +37,32 @@ async function inspectOverflow(page) {
     const maxScrollX = window.scrollX;
     window.scrollTo(0, window.scrollY);
 
+    const drawer = document.querySelector('.dc-doc-layout__left');
+    const drawerInfo = drawer ? {
+      className: drawer.className,
+      attributes: Object.fromEntries([...drawer.attributes].map((attribute) => [attribute.name, attribute.value])),
+      parentClassName: drawer.parentElement?.className || '',
+      parentAttributes: drawer.parentElement
+        ? Object.fromEntries([...drawer.parentElement.attributes].map((attribute) => [attribute.name, attribute.value]))
+        : {},
+      style: {
+        left: getComputedStyle(drawer).left,
+        right: getComputedStyle(drawer).right,
+        width: getComputedStyle(drawer).width,
+        transform: getComputedStyle(drawer).transform,
+        visibility: getComputedStyle(drawer).visibility,
+      },
+    } : null;
+
+    const buttons = [...document.querySelectorAll('button')].map((button) => ({
+      text: (button.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 100),
+      ariaLabel: button.getAttribute('aria-label') || '',
+      title: button.getAttribute('title') || '',
+      className: button.className || '',
+      ariaExpanded: button.getAttribute('aria-expanded') || '',
+      ariaControls: button.getAttribute('aria-controls') || '',
+    })).filter((button) => button.text || button.ariaLabel || button.title || button.ariaExpanded || button.ariaControls);
+
     const offenders = [...document.querySelectorAll('*')]
       .map((node) => {
         const rect = node.getBoundingClientRect();
@@ -73,7 +99,7 @@ async function inspectOverflow(page) {
       .sort((a, b) => Math.max(b.rightOverflow, b.leftOverflow, b.internalOverflow) - Math.max(a.rightOverflow, a.leftOverflow, a.internalOverflow))
       .slice(0, 20);
 
-    return {viewportWidth, bodyWidth, initialScrollX, maxScrollX, offenders};
+    return {viewportWidth, bodyWidth, initialScrollX, maxScrollX, drawerInfo, buttons, offenders};
   });
 }
 
