@@ -1,0 +1,15 @@
+/* Keep long technical prose and identifiers from expanding Diplodoc content beyond the viewport. */
+main,
+article {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Diplodoc keeps its desktop TOC as a fixed off-canvas layer on mobile.
+   Clip that intentional layer at the document-layout boundary so it cannot
+   create a blank horizontal scroll area, without hiding overflow globally. */
+@media (max-width: 768px) {
+  .dc-doc-layout {
+    overflow-x: clip;
+  }
+}

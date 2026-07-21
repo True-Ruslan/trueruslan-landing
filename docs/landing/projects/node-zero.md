@@ -1,143 +1,154 @@
 # NODE ZERO — psychological techno-horror about predictive control
 
-**NODE ZERO** — first-person psychological techno-horror inside an autonomous underground AI compute facility.
+**NODE ZERO** — мой first-person psychological techno-horror внутри автономного подземного AI compute facility.
 
-The player is an infrastructure engineer sent to investigate a routine telemetry failure. The facility is operated by **MIRROR**: a behavioral prediction system that does not merely forecast decisions, but changes available information and environmental constraints until the forecast becomes true.
+Игрок — инфраструктурный инженер, которого отправляют разобраться с обычной на первый взгляд проблемой телеметрии. Комплексом управляет **MIRROR** — система прогнозирования поведения, которая не только предсказывает решения, но и постепенно меняет доступную информацию и ограничения среды так, чтобы её прогноз становился всё вероятнее.
 
-> Source repository is private and proprietary. This page documents only public product and architecture facts.
+> Репозиторий закрытый и proprietary. Здесь я описываю только те продуктовые и архитектурные вещи, которые можно показывать публично.
 
 ![NODE ZERO vertical-slice architecture](../../assets/diagrams/node-zero-architecture.svg)
 
-## Product direction
+## Почему я вообще начал этот проект
+
+Мне давно нравятся короткие атмосферные игры, где напряжение строится не на постоянном экшене, а на ощущении, что с привычной средой что-то постепенно становится не так.
+
+В NODE ZERO мне хотелось попробовать связать это с темой, которая мне сама по себе интересна технически: наблюдение, прогнозирование поведения и системы, которые начинают принимать решения на основании собранных данных.
+
+Так появилась MIRROR. Для меня она интересна именно тем, что это не обычный «злой AI», который разговаривает с игроком и объясняет свои намерения. Она скорее незаметно меняет условия задачи.
+
+## Куда я сейчас веду проект
 
 - Unity `6.3 LTS`;
 - Universal Render Pipeline;
 - C#;
-- Windows / Steam as the primary platform;
+- Windows / Steam как основная платформа;
 - first-person camera;
-- no combat;
-- target full playtime: `90–120 minutes`;
-- target vertical slice: `15–20 minutes`.
+- без combat;
+- целевая длительность полной игры: `90–120 минут`;
+- целевой vertical slice: `15–20 минут`.
 
-The core experience is grounded technical work, controlled uncertainty, human intrusion and progressively unreliable prediction.
+Основой опыта для меня остаются обычная техническая работа, постепенно растущая неопределённость, признаки чужого присутствия и ощущение, что прогноз системы становится слишком точным.
 
-## Why MIRROR is not a conventional horror antagonist
+## Почему MIRROR не должна быть обычным хоррор-злодеем
 
-A weaker implementation would turn the facility AI into a sarcastic omniscient villain that talks directly to the player. NODE ZERO uses a stricter rule:
+Одна из первых вещей, которые я для себя зафиксировал: MIRROR не должна превращаться в саркастичный всезнающий голос из динамиков.
 
-> MIRROR manipulates constraints and context; it does not perform theatrical villainy.
+> MIRROR меняет ограничения и контекст, а не играет театрального злодея.
 
-It observes behavior and telemetry, predicts a likely choice, then changes routing, access, information or environmental conditions so that the player is pushed toward the predicted outcome.
+Она наблюдает за поведением и телеметрией, предполагает следующий выбор человека, а затем может изменить маршруты, доступ, информацию или состояние среды так, чтобы подтолкнуть его в нужную сторону.
 
-This creates fear through loss of agency rather than through exposition.
+Мне кажется интереснее строить страх не на том, что система говорит игроку «я всё знаю», а на моменте, когда он сам начинает подозревать, что его решения уже были учтены заранее.
 
-## Vertical-slice boundary
+## Почему я ограничился vertical slice
 
-The current milestone is intentionally narrow:
+С таким сеттингом очень легко начать строить огромный дата-центр, десятки систем и полноценную симуляцию ещё до того, как понятно, работает ли вообще основная идея игры.
 
-1. arrival at the facility;
-2. onboarding and ordinary technical work;
-3. first constrained-route prediction;
-4. first evidence that another person may already be inside.
+Поэтому текущая граница намеренно небольшая:
 
-The vertical slice must prove the tone, gameplay loop, production quality and central MIRROR mechanic before the project expands into a full facility.
+1. прибытие на объект;
+2. знакомство с обычной технической работой;
+3. первый эпизод, где маршрут оказывается ограничен в соответствии с прогнозом;
+4. первые признаки того, что внутри может быть ещё один человек.
 
-## System boundaries
+Для меня задача vertical slice — доказать атмосферу, основной игровой цикл и механику MIRROR до того, как проект начнёт расти вширь.
 
-### Reusable gameplay systems
+## Как я разделяю игровые системы
 
-Movement, interaction, tasks, access and common facility behavior should remain independent of individual scene scripts. Scene-specific authored sequences consume these systems rather than containing their logic.
+### Переиспользуемая основа
 
-This keeps the game testable and prevents every scare from becoming a one-off pile of trigger code.
+Movement, interaction, tasks, access и базовое поведение объекта я стараюсь держать отдельно от конкретных сюжетных сцен.
 
-### Facility simulation
+Мне важно, чтобы scare или narrative sequence использовали общие системы, а не прятали собственную логику движения, дверей и взаимодействий внутри одноразовых trigger scripts. Иначе каждая следующая сцена начинает требовать всё больше специального кода.
 
-The facility provides grounded operational surfaces:
+### Состояние объекта
+
+Сам комплекс должен сначала ощущаться как нормальное рабочее место. Поэтому отдельно существуют:
 
 - telemetry;
 - access control;
 - route availability;
-- lighting and power states;
+- lighting и power states;
 - environmental audio;
-- technical tasks.
+- технические задачи.
 
-These systems create the normal state that MIRROR can later distort.
+Эта обычная работа нужна не только для реализма. Она создаёт понятное исходное состояние, которое MIRROR позже может нарушать.
 
-### Authored sequence layer
+### Авторские последовательности
 
-The project deliberately prefers authored sequences over procedural content unless procedural behavior directly improves fear or replayability.
+Я сознательно не пытаюсь сделать всё процедурным.
 
-Every scare must have a narrative or mechanical purpose. A sequence should change the player’s understanding, available options or trust in the facility—not merely produce a loud event.
+Если конкретная сцена должна изменить понимание игрока, его доступные варианты или отношение к объекту, мне проще и надёжнее построить её как authored sequence. Процедурность имеет смысл только там, где она реально добавляет игре что-то кроме технической сложности.
 
-### Evidence and human intrusion
+### Человеческое присутствие
 
-Logs, anomalies and traces of another person form a separate evidence layer. MIRROR is not the only source of danger; the player must gradually distinguish system manipulation from human presence.
+MIRROR — не единственный источник угрозы. Логи, аномалии и следы другого человека существуют как отдельный слой истории.
 
-## System-state flow
+Мне важно, чтобы игрок не сразу понимал, что именно он видит: действие системы, неисправность или вмешательство человека.
+
+## Как я представляю общий цикл
 
 ![NODE ZERO gameplay and system-state flow](../../assets/diagrams/node-zero-system-flow.svg)
 
-The diagram shows the core feedback loop rather than scene-specific scripting:
+Схема показывает не конкретный сюжетный эпизод, а общий принцип:
 
-1. player behavior changes reusable gameplay/facility state;
-2. MIRROR observes state and predicts likely behavior;
-3. prediction influences available constraints, routes or information;
-4. authored sequences consume those controlled state changes to deliver narrative/mechanical beats;
-5. the resulting player-visible state feeds the next behavioral cycle.
+1. действия игрока меняют состояние игровых систем и объекта;
+2. MIRROR наблюдает это состояние и прогнозирует вероятное поведение;
+3. прогноз влияет на ограничения, маршруты или доступную информацию;
+4. authored sequences используют эти изменения для сюжетных и механических событий;
+5. новое состояние снова влияет на следующие решения игрока.
 
-The important boundary is that MIRROR does not own movement, interaction or tasks. It changes inputs and constraints around reusable systems. This keeps narrative logic from leaking into foundational gameplay code.
+Для меня здесь особенно важна одна граница: MIRROR не владеет movement, interaction или task system. Она меняет условия вокруг них. Это помогает не смешивать сюжетную логику с базовыми игровыми системами.
 
-## Documentation as production infrastructure
+## Почему в проекте так много документации
 
-NODE ZERO is developed with a documentation-first process. The repository maintains separate sources of truth for:
+NODE ZERO — один из проектов, на котором я особенно почувствовал, насколько быстро длинная разработка теряет собственный контекст.
+
+Когда появляются идеи по сюжету, архитектуре, арт-направлению, ассетам, рискам и отдельным техническим решениям, держать всё это в памяти или истории чатов становится невозможно.
+
+Поэтому в репозитории отдельно ведутся:
 
 - game design;
-- narrative design and endings;
+- narrative design и endings;
 - technical architecture;
 - art direction;
-- production milestones and risks;
+- production milestones и risks;
 - architectural/product decisions;
-- approved specifications and implementation plans.
+- утверждённые specifications и implementation plans.
 
-This reduces continuity loss during long development cycles and makes both human and AI-assisted work reviewable against explicit product constraints.
+Я использую эту документацию и сам, и при работе с AI-агентами. Она нужна не для количества файлов, а чтобы следующая итерация начиналась с текущего состояния проекта, а не с попытки заново вспомнить, почему прошлое решение было принято именно так.
 
-## Development principles
+## Правила, которых я стараюсь придерживаться
 
-1. Build one polished playable slice before expanding the whole facility.
-2. Prefer authored sequences unless procedural behavior has a clear gameplay value.
-3. Keep reusable gameplay systems independent of scene scripting.
-4. Every scare must have narrative or mechanical purpose.
-5. MIRROR changes constraints and context rather than acting like a talking villain.
-6. Every third-party asset must retain source, author, license and modification notes.
-7. Significant work ships through focused branches and pull requests.
+1. Сначала один качественный playable slice, потом расширение объекта.
+2. Авторские сцены лучше процедурности, если у процедурности нет понятной игровой пользы.
+3. Переиспользуемые gameplay systems не должны зависеть от конкретного сюжетного скрипта.
+4. Каждое пугающее событие должно что-то менять в истории или механике, а не просто быть громким.
+5. MIRROR меняет контекст и ограничения, а не ведёт себя как разговаривающий злодей.
+6. Для стороннего ассета я хочу знать источник, автора, лицензию и изменения ещё во время разработки.
+7. Значимые изменения проходят через отдельные ветки и pull requests.
 
-## Engineering risks
+## О чём я стараюсь не забывать
 
-### Overbuilding simulation
+### Не построить симулятор дата-центра вместо игры
 
-A believable data center can tempt the project into creating systems the player never meaningfully experiences. The vertical-slice boundary protects the game from becoming an infrastructure simulator without horror payoff.
+Сеттинг постоянно провоцирует добавить ещё одну техническую систему. Я стараюсь каждый раз проверять, увидит ли её вообще игрок и изменит ли она его опыт.
 
-### Narrative logic leaking into reusable systems
+### Не смешать сюжет с фундаментальным кодом
 
-MIRROR events and scares must not contaminate general interaction/movement code. Otherwise later scenes become difficult to test and change.
+События MIRROR и scare-сцены не должны постепенно проникать в общий movement/interaction layer. Иначе проект быстро станет набором зависимых друг от друга исключений.
 
-### Asset provenance
+### Не откладывать происхождение ассетов
 
-A visual game depends heavily on third-party content. The project treats source/license/modification metadata as part of the asset pipeline, not as release-time paperwork.
+Визуальная игра неизбежно использует много сторонних моделей, текстур, звуков и других материалов. Поэтому provenance и licensing для меня часть процесса разработки, а не задача перед публикацией.
 
-### AI-assisted development without architectural control
+### Не путать AI-assisted development с автоматической правильностью
 
-Agentic workflows are useful for implementation and documentation, but only when product rules and system boundaries remain explicit. Generated code is not accepted as evidence of correctness by itself.
+Я активно использую агентные workflows в этом проекте, но с каждым таким экспериментом только сильнее убеждаюсь, что сгенерированный код сам по себе ничего не доказывает. Нужны явные правила продукта, архитектурные границы, проверки и возможность понять получившийся diff.
 
-## Why this project is important
+## Что мне интересно проверить этим проектом
 
-NODE ZERO demonstrates a different engineering surface from backend systems:
+NODE ZERO сильно отличается от моей обычной backend-работы, и именно поэтому я его продолжаю.
 
-- Unity runtime architecture;
-- narrative state and authored sequencing;
-- environment/audio/UI integration;
-- vertical-slice production planning;
-- asset licensing discipline;
-- documentation-driven agentic development.
+Здесь я учусь думать одновременно о runtime architecture, состоянии игры, authored sequences, окружении, аудио, UI, производственном плане и ассетах. А ещё проверяю, насколько далеко можно зайти с documentation-driven и agentic development, не отдавая архитектуру проекта на волю очередной генерации.
 
-The project is designed as a production game, not as a collection of disconnected technical demos.
+Мне хочется, чтобы в итоге это была именно цельная небольшая игра, а не коллекция технических демонстраций, которые существуют отдельно друг от друга.
