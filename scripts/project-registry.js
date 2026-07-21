@@ -125,6 +125,27 @@ export function getActiveProjects(projects) {
   return projects.filter((project) => project.active === true);
 }
 
+export function renderProjectStatus(project) {
+  return `<span class="tr-project-status tr-project-status--${escapeHtml(project.status)}" data-project-status="${escapeHtml(project.slug)}">${escapeHtml(project.statusLabel)}</span>`;
+}
+
+export function applyProjectRegistryContent(outputDir, projects) {
+  const htmlPath = path.join(outputDir, 'landing', 'projects.html');
+  if (!fs.existsSync(htmlPath)) throw new Error('generated projects hub not found: landing/projects.html');
+  let html = fs.readFileSync(htmlPath, 'utf8');
+  let replacements = 0;
+
+  for (const project of projects) {
+    const marker = new RegExp(`<span[^>]*data-tr-project-status=["']${project.slug}["'][^>]*>\\s*</span>`, 'i');
+    if (!marker.test(html)) continue;
+    html = html.replace(marker, renderProjectStatus(project));
+    replacements += 1;
+  }
+
+  fs.writeFileSync(htmlPath, html, 'utf8');
+  return replacements;
+}
+
 export function renderProjectCards(projects, {hrefTransform = (href) => href} = {}) {
   return projects.map((project) => {
     const tags = project.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
