@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const {execFileSync} = require('node:child_process');
 
 const express = require('express');
 
@@ -21,6 +22,20 @@ function requireTool(name) {
 
 const {chromium} = requireTool('playwright');
 const AxeBuilder = requireTool('@axe-core/playwright').default;
+
+function findChrome() {
+  const explicit = process.env.CHROME_PATH;
+  if (explicit && fs.existsSync(explicit)) return explicit;
+  for (const command of ['google-chrome-stable', 'google-chrome', 'chromium', 'chromium-browser']) {
+    try {
+      const resolved = execFileSync('which', [command], {encoding: 'utf8'}).trim();
+      if (resolved) return resolved;
+    } catch {
+      // Try the next known browser executable.
+    }
+  }
+  throw new Error('Chrome/Chromium executable was not found on the CI runner.');
+}
 
 function startServer() {
   if (!fs.existsSync(OUTPUT_DIR)) throw new Error('docs-html does not exist. Run npm run build:docs first.');
@@ -122,7 +137,12 @@ async function main() {
   const server = await startServer();
   let browser;
   try {
-    browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
+    const chromePath = findChrome();
+    try {
+      browser = await chromium.launch({channel: 'chrome', headless: true, args: ['--no-sandbox']});
+    } catch {
+      browser = await chromium.launch({executablePath: chromePath, headless: true, args: ['--no-sandbox']});
+    }
 
     await checkPage(browser, {
       slug: 'home-command-palette',
