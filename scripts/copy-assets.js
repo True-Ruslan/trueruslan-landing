@@ -24,6 +24,10 @@ const PAGE_META_MANIFEST = path.join(ROOT, 'data', 'page-meta.json');
 const ENGINEERING_GRAPH_MANIFEST = path.join(ROOT, 'data', 'engineering-graph.json');
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
+const SEARCH_RESOURCES = [
+  ['_assets', 'style', 'search.css'],
+  ['_assets', 'script', 'search-ui.js'],
+];
 
 function copyFile(source, target) {
   fs.mkdirSync(path.dirname(target), {recursive: true});
@@ -32,7 +36,6 @@ function copyFile(source, target) {
 
 export function walkAssets(dir, outputRoot, docsDir = DOCS_DIR) {
   const copied = [];
-
   if (!fs.existsSync(dir)) return copied;
 
   for (const entry of fs.readdirSync(dir, {withFileTypes: true})) {
@@ -52,6 +55,16 @@ export function walkAssets(dir, outputRoot, docsDir = DOCS_DIR) {
   }
 
   return copied;
+}
+
+export function copySearchResources(docsDir = DOCS_DIR, outputDir = OUTPUT_DIR) {
+  return SEARCH_RESOURCES.map((segments) => {
+    const relativePath = path.join(...segments);
+    const source = path.join(docsDir, relativePath);
+    if (!fs.existsSync(source)) throw new Error(`Search UI resource missing: ${relativePath}`);
+    copyFile(source, path.join(outputDir, relativePath));
+    return relativePath;
+  });
 }
 
 export function createNoJekyllFile(outputDir = OUTPUT_DIR) {
@@ -115,6 +128,7 @@ export function postprocessOutput({
   }
 
   const copied = copyAssets ? walkAssets(path.join(docsDir, 'assets'), outputDir, docsDir) : [];
+  const copiedSearchResources = copyAssets ? copySearchResources(docsDir, outputDir) : [];
 
   createNoJekyllFile(outputDir);
   writeRobotsTxt(outputDir, siteUrl);
@@ -136,7 +150,7 @@ export function postprocessOutput({
   const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
 
   return {
-    copied,
+    copied: [...copied, ...copiedSearchResources],
     normalizedSearchPages,
     standaloneHomePath,
     engineeringGraphTarget,

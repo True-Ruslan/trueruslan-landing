@@ -1,0 +1,102 @@
+(function bootstrapEngineeringSearch(root) {
+  'use strict';
+
+  function isEditableTarget(target) {
+    if (!target || typeof target !== 'object') return false;
+    const tagName = String(target.tagName || '').toLowerCase();
+    return tagName === 'input'
+      || tagName === 'textarea'
+      || tagName === 'select'
+      || target.isContentEditable === true;
+  }
+
+  function findSearchInput(document) {
+    return document.querySelector(
+      '.dc-search-page__search-field input, input[type="search"], input[role="searchbox"], input[placeholder="Поиск"], input[placeholder*="search" i]'
+    );
+  }
+
+  function decorate(document) {
+    const input = findSearchInput(document);
+    if (!input) return false;
+
+    input.classList.add('tr-search-input');
+    if (!input.getAttribute('aria-label')) input.setAttribute('aria-label', 'Поиск по сайту');
+    if (!input.getAttribute('placeholder')) input.setAttribute('placeholder', 'Найти проект, технологию или заметку…');
+
+    const inputShell = input.closest('.g-text-input') || input.parentElement;
+    if (inputShell) inputShell.classList.add('tr-search-input-shell');
+
+    const fieldWrapper = input.closest('.dc-search-page__search-field-wrapper');
+    if (fieldWrapper) fieldWrapper.classList.add('tr-search-field-wrapper');
+
+    const searchButton = document.querySelector('.dc-search-page__search-button');
+    if (searchButton) searchButton.classList.add('tr-search-button');
+
+    const app = document.querySelector('.Search');
+    if (app) app.classList.add('tr-search-app');
+
+    const resultContainers = document.querySelectorAll(
+      '.dc-search-page__content, .dc-search-page__search-results, [class*="result-list" i]'
+    );
+    for (const container of resultContainers) container.classList.add('tr-search-results');
+
+    const resultItems = document.querySelectorAll(
+      '.dc-search-page__search-result, [class*="result-item" i], [class*="search-result" i]'
+    );
+    for (const item of resultItems) {
+      if (item.closest('header, nav')) continue;
+      if (item.querySelector('a')) item.classList.add('tr-search-result');
+    }
+
+    const emptyStates = document.querySelectorAll('.dc-search-page__search-empty, [class*="no-result" i]');
+    for (const node of emptyStates) node.classList.add('tr-search-empty');
+
+    document.documentElement.setAttribute('data-tr-search-enhanced', 'true');
+    document.body?.setAttribute('data-tr-search-enhanced', 'true');
+    return true;
+  }
+
+  function installShortcut(rootObject, document) {
+    if (document.documentElement.dataset.trSearchShortcut === 'ready') return;
+    document.documentElement.dataset.trSearchShortcut = 'ready';
+
+    rootObject.addEventListener('keydown', (event) => {
+      if (event.defaultPrevented || isEditableTarget(event.target)) return;
+      const isSlash = event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey;
+      const isCommandK = String(event.key).toLowerCase() === 'k' && (event.ctrlKey || event.metaKey) && !event.altKey;
+      if (!isSlash && !isCommandK) return;
+
+      const input = findSearchInput(document);
+      if (!input) return;
+      event.preventDefault();
+      input.focus({preventScroll: false});
+      if (typeof input.select === 'function' && input.value) input.select();
+    });
+  }
+
+  function init(document = root.document) {
+    if (!document?.documentElement) return false;
+    installShortcut(root, document);
+
+    let mounted = decorate(document);
+    if (mounted || typeof root.MutationObserver !== 'function') return mounted;
+
+    const observer = new root.MutationObserver(() => {
+      mounted = decorate(document);
+      if (mounted) observer.disconnect();
+    });
+    observer.observe(document.documentElement, {childList: true, subtree: true});
+    root.setTimeout(() => observer.disconnect(), 8000);
+    return false;
+  }
+
+  root.TrueRuslanSearchUI = Object.freeze({isEditableTarget, findSearchInput, decorate, init});
+
+  if (!root.document) return;
+  if (root.document.readyState === 'loading') {
+    root.document.addEventListener('DOMContentLoaded', () => init(), {once: true});
+  } else {
+    init();
+  }
+})(typeof window !== 'undefined' ? window : globalThis);
