@@ -28,7 +28,7 @@ function stopServer(server) {
   return new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
 }
 
-async function inspectOverflow(page) {
+async function snapshot(page) {
   return page.evaluate(() => {
     const viewportWidth = window.innerWidth;
     const bodyWidth = Math.max(document.body.scrollWidth, document.documentElement.scrollWidth);
@@ -54,52 +54,13 @@ async function inspectOverflow(page) {
       },
     } : null;
 
-    const buttons = [...document.querySelectorAll('button')].map((button) => ({
-      text: (button.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 100),
-      ariaLabel: button.getAttribute('aria-label') || '',
-      title: button.getAttribute('title') || '',
-      className: button.className || '',
-      ariaExpanded: button.getAttribute('aria-expanded') || '',
-      ariaControls: button.getAttribute('aria-controls') || '',
-    })).filter((button) => button.text || button.ariaLabel || button.title || button.ariaExpanded || button.ariaControls);
+    const mobileButton = document.querySelector('.pc-mobile-menu-button');
+    const mobileButtonInfo = mobileButton ? {
+      className: mobileButton.className,
+      attributes: Object.fromEntries([...mobileButton.attributes].map((attribute) => [attribute.name, attribute.value])),
+    } : null;
 
-    const offenders = [...document.querySelectorAll('*')]
-      .map((node) => {
-        const rect = node.getBoundingClientRect();
-        const style = getComputedStyle(node);
-        const rightOverflow = Math.max(0, rect.right - viewportWidth);
-        const leftOverflow = Math.max(0, -rect.left);
-        const internalOverflow = Math.max(0, node.scrollWidth - node.clientWidth);
-        return {
-          tag: node.tagName.toLowerCase(),
-          id: node.id || '',
-          className: typeof node.className === 'string' ? node.className : '',
-          text: (node.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 180),
-          left: Math.round(rect.left * 10) / 10,
-          right: Math.round(rect.right * 10) / 10,
-          width: Math.round(rect.width * 10) / 10,
-          clientWidth: node.clientWidth,
-          scrollWidth: node.scrollWidth,
-          rightOverflow: Math.round(rightOverflow * 10) / 10,
-          leftOverflow: Math.round(leftOverflow * 10) / 10,
-          internalOverflow,
-          display: style.display,
-          position: style.position,
-          minWidth: style.minWidth,
-          widthStyle: style.width,
-          leftStyle: style.left,
-          transform: style.transform,
-          whiteSpace: style.whiteSpace,
-          overflowX: style.overflowX,
-          wordBreak: style.wordBreak,
-          overflowWrap: style.overflowWrap,
-        };
-      })
-      .filter((item) => item.rightOverflow > 2 || item.leftOverflow > 2 || item.internalOverflow > 2)
-      .sort((a, b) => Math.max(b.rightOverflow, b.leftOverflow, b.internalOverflow) - Math.max(a.rightOverflow, a.leftOverflow, a.internalOverflow))
-      .slice(0, 20);
-
-    return {viewportWidth, bodyWidth, initialScrollX, maxScrollX, drawerInfo, buttons, offenders};
+    return {viewportWidth, bodyWidth, initialScrollX, maxScrollX, drawerInfo, mobileButtonInfo};
   });
 }
 
@@ -114,12 +75,20 @@ async function main() {
     const response = await page.goto(`${BASE_URL}/landing/projects.html`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`Projects page returned HTTP ${response?.status() ?? 'no response'}`);
 
-    const result = await inspectOverflow(page);
-    console.log(JSON.stringify(result, null, 2));
-    if (result.maxScrollX > 2) {
-      throw new Error(`Page can actually scroll horizontally by ${result.maxScrollX}px; offenders are listed above.`);
+    const closed = await snapshot(page);
+    const menuButton = page.locator('.pc-mobile-menu-button');
+    if (await menuButton.count()) {
+      await menuButton.click();
+      await page.waitForTimeout(100);
     }
-    console.log(`Projects mobile layout cannot scroll horizontally (reported scrollWidth ${result.bodyWidth}px for viewport ${result.viewportWidth}px).`);
+    const opened = await snapshot(page);
+
+    const result = {closed, opened};
+    console.log(JSON.stringify(result, null, 2));
+    if (closed.maxScrollX > 2) {
+      throw new Error(`Closed page can scroll horizontally by ${closed.maxScrollX}px; drawer state is listed above.`);
+    }
+    console.log('Projects mobile layout cannot scroll horizontally while the drawer is closed.');
     await context.close();
   } finally {
     if (browser) await browser.close();
