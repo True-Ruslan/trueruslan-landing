@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "portfolio-runtime-boundary",
+    "title": "Почему я отделил landing page от Diplodoc runtime",
+    "description": "Ретроспектива о том, почему лёгкая standalone-главная оказалась надёжнее попыток заставить простой первый экран платить стоимость полного documentation runtime.",
+    "published": "2026-07-20",
+    "updated": "2026-07-21",
+    "readingMinutes": 6,
+    "tags": ["Performance", "Hydration", "Diplodoc"],
+    "related": ["static-site-quality-gates"]
+  },
+  {
+    "slug": "static-site-quality-gates",
+    "title": "Quality gates для статического инженерного сайта",
+    "description": "Как вокруг обычной статической сборки появились generated-site integrity, browser smoke, Axe, Lighthouse, cross-browser и visual regression проверки.",
+    "published": "2026-07-20",
+    "updated": "2026-07-21",
+    "readingMinutes": 7,
+    "tags": ["CI", "Reliability", "Playwright", "Lighthouse"],
+    "related": ["portfolio-runtime-boundary", "server-authoritative-ai-npcs"]
+  },
+  {
+    "slug": "server-authoritative-ai-npcs",
+    "title": "Проектирование server-authoritative AI NPC pipeline",
+    "description": "Архитектурные границы LivingWorld: session ownership, voice/text ingress, provider orchestration, memory, cancellation и авторизация действий модели.",
+    "published": "2026-07-20",
+    "updated": "2026-07-21",
+    "readingMinutes": 8,
+    "tags": ["AI agents", "Voice", "Security", "Architecture"],
+    "related": ["static-site-quality-gates"]
+  }
+]
