@@ -66,24 +66,63 @@ test('writeRobotsTxt and writeSitemap create files', () => {
   }
 });
 
-test('postprocessOutput writes homepage, Engineering Map, metadata, OG card and SEO output', () => {
+test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card and SEO output', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-postprocess-'));
   const docsDir = path.join(tempRoot, 'docs');
   const templatePath = path.join(tempRoot, 'templates', 'index.html');
-  const pageMetaPath = path.join(tempRoot, 'data', 'page-meta.json');
-  const engineeringGraphPath = path.join(tempRoot, 'data', 'engineering-graph.json');
+  const dataDir = path.join(tempRoot, 'data');
+  const pageMetaPath = path.join(dataDir, 'page-meta.json');
+  const engineeringGraphPath = path.join(dataDir, 'engineering-graph.json');
+  const projectRegistryPath = path.join(dataDir, 'projects.json');
+  const nowPath = path.join(dataDir, 'now.json');
+  const notesPath = path.join(dataDir, 'notes.json');
+  const historyDir = path.join(dataDir, 'project-history');
   const outputDir = path.join(tempRoot, 'docs-html');
   const engineeringMapPath = path.join(outputDir, 'landing', 'engineering-map.html');
+  const nowHtmlPath = path.join(outputDir, 'landing', 'now.html');
+  const noteHtmlPath = path.join(outputDir, 'landing', 'notes', 'test-note.html');
+  const noteSourcePath = path.join(docsDir, 'landing', 'notes', 'test-note.md');
 
   fs.mkdirSync(path.dirname(templatePath), {recursive: true});
-  fs.mkdirSync(path.dirname(pageMetaPath), {recursive: true});
+  fs.mkdirSync(dataDir, {recursive: true});
+  fs.mkdirSync(historyDir, {recursive: true});
   fs.mkdirSync(path.dirname(engineeringMapPath), {recursive: true});
-  fs.mkdirSync(docsDir, {recursive: true});
-  fs.writeFileSync(path.join(docsDir, 'toc.yaml'), 'items:\n  - name: About\n    href: ./landing/about.md\n');
+  fs.mkdirSync(path.dirname(noteHtmlPath), {recursive: true});
+  fs.mkdirSync(path.dirname(noteSourcePath), {recursive: true});
+  fs.writeFileSync(path.join(docsDir, 'toc.yaml'), 'items:\n  - name: About\n    href: ./landing/about.md\n  - name: Now\n    href: ./landing/now.md\n');
+  fs.writeFileSync(noteSourcePath, '# Test note\n');
   fs.writeFileSync(
     templatePath,
-    '<!doctype html><html><head><link rel="canonical" href="{{SITE_URL}}/"></head><body class="g-root"><h1>Руслан Немыкин</h1></body></html>',
+    '<!doctype html><html><head><link rel="canonical" href="{{SITE_URL}}/"></head><body class="g-root"><h1>Руслан Немыкин</h1><section>{{CURRENTLY_BUILDING}}</section></body></html>',
   );
+  fs.writeFileSync(projectRegistryPath, JSON.stringify([{
+    slug: 'test-project',
+    name: 'Test Project',
+    status: 'production',
+    statusLabel: 'PRODUCTION',
+    summary: 'A test project.',
+    featured: true,
+    active: true,
+    visibility: 'public',
+    href: 'landing/projects/test-project.html',
+    tags: ['Node.js', 'Testing'],
+  }]));
+  fs.writeFileSync(nowPath, JSON.stringify({
+    updated: '2026-07-22',
+    focus: 'Testing the integrated build.',
+    learning: ['Deterministic generation'],
+    writing: ['Integration tests'],
+  }));
+  fs.writeFileSync(notesPath, JSON.stringify([{
+    slug: 'test-note',
+    title: 'Test note',
+    description: 'Feed entry.',
+    published: '2026-07-20',
+    updated: '2026-07-22',
+    readingMinutes: 3,
+    tags: ['Testing'],
+    related: [],
+  }]));
   fs.writeFileSync(pageMetaPath, JSON.stringify([{
     path: 'index.html',
     card: 'home',
@@ -110,6 +149,14 @@ test('postprocessOutput writes homepage, Engineering Map, metadata, OG card and 
     engineeringMapPath,
     '<!doctype html><html><head><title>Map</title></head><body><div data-tr-engineering-graph-root></div></body></html>',
   );
+  fs.writeFileSync(
+    nowHtmlPath,
+    '<!doctype html><html><head><title>Now</title></head><body><main><h1>Now</h1><div data-tr-now-placeholder></div></main></body></html>',
+  );
+  fs.writeFileSync(
+    noteHtmlPath,
+    '<!doctype html><html><head><title>Note</title></head><body><main><h1>Test note</h1><p>Body</p></main></body></html>',
+  );
 
   const result = postprocessOutput({
     outputDir,
@@ -117,17 +164,27 @@ test('postprocessOutput writes homepage, Engineering Map, metadata, OG card and 
     standaloneTemplatePath: templatePath,
     pageMetaPath,
     engineeringGraphPath,
+    projectRegistryPath,
+    projectHistoryDir: historyDir,
+    nowPath,
+    notesPath,
     siteUrl: 'https://example.test',
     copyAssets: false,
   });
 
   const html = fs.readFileSync(path.join(outputDir, 'index.html'), 'utf8');
   const mapHtml = fs.readFileSync(engineeringMapPath, 'utf8');
+  const nowHtml = fs.readFileSync(nowHtmlPath, 'utf8');
+  const noteHtml = fs.readFileSync(noteHtmlPath, 'utf8');
+  const feed = fs.readFileSync(path.join(outputDir, 'feed.xml'), 'utf8');
   const robots = fs.readFileSync(path.join(outputDir, 'robots.txt'), 'utf8');
   const sitemap = fs.readFileSync(path.join(outputDir, 'sitemap.xml'), 'utf8');
   const ogPath = path.join(outputDir, 'assets', 'og', 'home.png');
 
   assert.equal(result.copied.length, 0);
+  assert.equal(result.nowPageTarget, 'landing/now.html');
+  assert.equal(result.timelineTargets.length, 0);
+  assert.equal(result.noteTargets.length, 1);
   assert.equal(result.engineeringGraphTarget, 'landing/engineering-map.html');
   assert.equal(result.ogCards.length, 1);
   assert.equal(result.metadataUpdated, 1);
@@ -135,7 +192,13 @@ test('postprocessOutput writes homepage, Engineering Map, metadata, OG card and 
   assert.match(mapHtml, /data-tr-engineering-graph-build="ready"/);
   assert.match(mapHtml, /data-tr-engineering-graph-data/);
   assert.match(mapHtml, /Java/);
+  assert.match(nowHtml, /Test Project/);
+  assert.match(noteHtml, /3 мин/);
+  assert.match(noteHtml, /tr-note-nav/);
+  assert.match(feed, /Test note/);
   assert.match(html, /Руслан Немыкин/);
+  assert.match(html, /Test Project/);
+  assert.match(html, /application\/atom\+xml/);
   assert.match(html, /https:\/\/example\.test\/assets\/og\/home\.png/);
   assert.match(html, /summary_large_image/);
   assert.match(html, /data-tr-local-path="\/assets\/og\/home\.png"/);
@@ -143,7 +206,7 @@ test('postprocessOutput writes homepage, Engineering Map, metadata, OG card and 
   assert.doesNotMatch(html, /_bundle\//);
   assert.match(html, /application\/ld\+json/);
   assert.match(robots, /https:\/\/example\.test\/sitemap\.xml/);
-  assert.match(sitemap, /landing\/about\.html/);
+  assert.match(sitemap, /landing\/now\.html/);
   assert.ok(fs.existsSync(path.join(outputDir, '.nojekyll')));
   assert.deepEqual(readPngDimensions(fs.readFileSync(ogPath)), {width: 1200, height: 630});
 });
