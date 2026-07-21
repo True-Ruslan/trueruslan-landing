@@ -84,9 +84,6 @@ export function validateProjectRegistry(projects, {
     if (!isSafeLocalHtmlHref(project.href)) {
       throw new Error(`unsafe project href: ${project.href}`);
     }
-    if (project.active && !project.href) {
-      throw new Error(`active project must have a usable destination: ${project.slug}`);
-    }
 
     if (!Array.isArray(project.tags) || project.tags.length < 2 || project.tags.length > 5) {
       throw new Error(`project tags must contain 2–5 items for ${project.slug}`);
@@ -128,10 +125,12 @@ export function getActiveProjects(projects) {
   return projects.filter((project) => project.active === true);
 }
 
-export function renderProjectCards(projects) {
+export function renderProjectCards(projects, {hrefTransform = (href) => href} = {}) {
   return projects.map((project) => {
     const tags = project.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
-    return `<a class="tr-active-card" href="${escapeHtml(project.href)}" data-project="${escapeHtml(project.slug)}">
+    const href = hrefTransform(project.href);
+    if (!isSafeLocalHtmlHref(href)) throw new Error(`unsafe rendered project href: ${href}`);
+    return `<a class="tr-active-card" href="${escapeHtml(href)}" data-project="${escapeHtml(project.slug)}">
   <div class="tr-active-card__head">
     <span class="tr-active-card__pulse" aria-hidden="true"></span>
     <span class="tr-active-card__status">${escapeHtml(project.statusLabel)}</span>
