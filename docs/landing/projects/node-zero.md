@@ -8,6 +8,8 @@
 
 ![NODE ZERO vertical-slice architecture](../../assets/diagrams/node-zero-architecture.svg)
 
+<div data-tr-project-timeline="node-zero"></div>
+
 ## Почему я вообще начал этот проект
 
 Мне давно нравятся короткие атмосферные игры, где напряжение строится не на постоянном экшене, а на ощущении, что с привычной средой что-то постепенно становится не так.
