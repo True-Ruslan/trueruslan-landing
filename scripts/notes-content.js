@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {transformGeneratedContent} from './diplodoc-state.js';
 import {escapeHtml} from './project-registry.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -79,6 +80,10 @@ export function renderNoteMeta(note) {
 </aside>`;
 }
 
+function noteHref(slug) {
+  return `landing/notes/${escapeHtml(slug)}.html`;
+}
+
 export function renderNoteNavigation(note, notes) {
   const index = notes.findIndex((candidate) => candidate.slug === note.slug);
   const previous = index > 0 ? notes[index - 1] : null;
@@ -87,11 +92,11 @@ export function renderNoteNavigation(note, notes) {
   const related = note.related.map((slug) => bySlug.get(slug)).filter(Boolean);
 
   const sequence = [
-    previous ? `<a href="${escapeHtml(previous.slug)}.html">← ${escapeHtml(previous.title)}</a>` : '',
-    next ? `<a href="${escapeHtml(next.slug)}.html">${escapeHtml(next.title)} →</a>` : '',
+    previous ? `<a href="${noteHref(previous.slug)}">← ${escapeHtml(previous.title)}</a>` : '',
+    next ? `<a href="${noteHref(next.slug)}">${escapeHtml(next.title)} →</a>` : '',
   ].filter(Boolean).join('');
   const relatedMarkup = related.length
-    ? `<div class="tr-note-nav__related"><strong>Связанные заметки</strong><ul>${related.map((item) => `<li><a href="${escapeHtml(item.slug)}.html">${escapeHtml(item.title)}</a></li>`).join('')}</ul></div>`
+    ? `<div class="tr-note-nav__related"><strong>Связанные заметки</strong><ul>${related.map((item) => `<li><a href="${noteHref(item.slug)}">${escapeHtml(item.title)}</a></li>`).join('')}</ul></div>`
     : '';
 
   return `<nav class="tr-note-nav" aria-label="Навигация по Engineering Notes">
@@ -100,20 +105,34 @@ export function renderNoteNavigation(note, notes) {
 </nav>`;
 }
 
+function enhanceNoteContent(contentHtml, note, notes, source) {
+  const meta = renderNoteMeta(note);
+  const navigation = renderNoteNavigation(note, notes);
+
+  if (source === 'diplodoc-state') return `${meta}${contentHtml}${navigation}`;
+
+  const heading = /<h1\b[^>]*>[\s\S]*?<\/h1>/i;
+  const headingMatch = contentHtml.match(heading);
+  if (!headingMatch) return contentHtml;
+  const withMeta = contentHtml.replace(heading, `${headingMatch[0]}${meta}`);
+  const mainClose = withMeta.lastIndexOf('</main>');
+  if (mainClose < 0) return contentHtml;
+  return `${withMeta.slice(0, mainClose)}${navigation}${withMeta.slice(mainClose)}`;
+}
+
 export function applyNoteEnhancements(outputDir, notes) {
   const updated = [];
   for (const note of notes) {
     const htmlPath = path.join(outputDir, 'landing', 'notes', `${note.slug}.html`);
     if (!fs.existsSync(htmlPath)) throw new Error(`generated note page not found: ${note.slug}`);
-    let html = fs.readFileSync(htmlPath, 'utf8');
-    const heading = /<h1\b[^>]*>[\s\S]*?<\/h1>/i;
-    const headingMatch = html.match(heading);
-    if (!headingMatch) throw new Error(`note heading not found for ${note.slug}`);
-    html = html.replace(heading, `${headingMatch[0]}${renderNoteMeta(note)}`);
-    const mainClose = html.lastIndexOf('</main>');
-    if (mainClose < 0) throw new Error(`note main container not found for ${note.slug}`);
-    html = `${html.slice(0, mainClose)}${renderNoteNavigation(note, notes)}${html.slice(mainClose)}`;
-    fs.writeFileSync(htmlPath, html, 'utf8');
+    const html = fs.readFileSync(htmlPath, 'utf8');
+    const transformed = transformGeneratedContent(
+      html,
+      (contentHtml, context) => enhanceNoteContent(contentHtml, note, notes, context.source),
+      `note enhancement for ${note.slug}`,
+    );
+    if (!transformed.source) throw new Error(`note content container not found for ${note.slug}`);
+    fs.writeFileSync(htmlPath, transformed.html, 'utf8');
     updated.push(`landing/notes/${note.slug}.html`);
   }
   return updated;
