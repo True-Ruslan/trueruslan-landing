@@ -13,14 +13,18 @@ export function deriveProductionEndpoints(baseUrl) {
   const entries = [
     ['Homepage', ''],
     ['Projects', 'landing/projects.html'],
+    ['Now', 'landing/now.html'],
     ['Engineering Map', 'landing/engineering-map.html'],
     ['Engineering Notes', 'landing/notes.html'],
+    ['Atom feed', 'feed.xml'],
     ['Resume', 'landing/resume.html'],
     ['Resume PDF', 'assets/documents/cv.pdf', 'application/pdf'],
     ['Homepage OpenGraph card', 'assets/og/home.png', 'image/png'],
     ['Engineering Map OpenGraph card', 'assets/og/engineering-map.png', 'image/png'],
     ['Core stylesheet', '_assets/style/custom.css'],
+    ['Command palette stylesheet', '_assets/style/command-palette.css'],
     ['Core script', '_assets/script/custom.js'],
+    ['Command palette script', '_assets/script/command-palette.js'],
     ['Favicon', 'assets/images/favicon.svg'],
   ];
 
@@ -46,6 +50,19 @@ async function assertHomepageIdentity(baseUrl, fetchImpl = globalThis.fetch) {
   }
 }
 
+async function assertFeedIdentity(baseUrl, fetchImpl = globalThis.fetch) {
+  const base = new URL(baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
+  const response = await fetchImpl(new URL('feed.xml', base).href, {
+    headers: {'user-agent': 'TrueRuslan-Production-Smoke/1.0'},
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!response.ok) throw new Error(`Feed identity check failed with HTTP ${response.status}.`);
+  const xml = await response.text();
+  if (!xml.includes('<feed xmlns="http://www.w3.org/2005/Atom">') || !xml.includes('<title>TrueRuslan Engineering Notes</title>')) {
+    throw new Error('Atom feed identity markers were not found in deployed XML.');
+  }
+}
+
 export async function runProductionSmoke(baseUrl, {fetchImpl = globalThis.fetch} = {}) {
   const endpoints = deriveProductionEndpoints(baseUrl);
   const results = await checkUrls(endpoints, {
@@ -55,22 +72,27 @@ export async function runProductionSmoke(baseUrl, {fetchImpl = globalThis.fetch}
     concurrency: 4,
   });
 
-  let identityError = null;
+  const identityErrors = [];
   try {
     await assertHomepageIdentity(baseUrl, fetchImpl);
   } catch (error) {
-    identityError = error.message;
+    identityErrors.push(`Homepage identity: ${error.message}`);
+  }
+  try {
+    await assertFeedIdentity(baseUrl, fetchImpl);
+  } catch (error) {
+    identityErrors.push(`Atom feed identity: ${error.message}`);
   }
 
   const failures = results.filter((result) => !result.ok);
-  if (identityError) failures.push({name: 'Homepage identity', error: identityError});
+  for (const error of identityErrors) failures.push({name: error.split(':', 1)[0], error});
 
   const report = {
     checkedAt: new Date().toISOString(),
     baseUrl,
     ok: failures.length === 0,
     results,
-    identityError,
+    identityErrors,
   };
 
   fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2));
@@ -87,7 +109,7 @@ async function main() {
     console.log(`[${marker}] ${result.name}: ${result.status ?? 'network'} ${result.finalUrl || result.url}`);
   }
 
-  if (report.identityError) console.error(`[FAIL] Homepage identity: ${report.identityError}`);
+  for (const identityError of report.identityErrors) console.error(`[FAIL] ${identityError}`);
   if (!report.ok) process.exitCode = 1;
 }
 
