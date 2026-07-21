@@ -38,7 +38,7 @@ jobs:
         run: >-
           npm install --prefix .quality-tools --package-lock=false --no-save
           playwright@1.61.1 @axe-core/playwright@4.12.1 lighthouse@13.4.0 pngjs@7.0.0
-      - name: Diagnose mobile layout overflow
+      - name: Mobile layout overflow smoke
         shell: bash
         run: |
           set -o pipefail
