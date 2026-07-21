@@ -14,7 +14,11 @@ import {
 import {applyNowPage, loadNowData} from './now-page.js';
 import {writeOgCards} from './og-image.js';
 import {applyPageMeta, loadPageMeta} from './page-meta.js';
-import {DEFAULT_HISTORY_DIR, loadProjectRegistry} from './project-registry.js';
+import {
+  applyProjectRegistryContent,
+  DEFAULT_HISTORY_DIR,
+  loadProjectRegistry,
+} from './project-registry.js';
 import {applyProjectTimelines} from './project-timeline.js';
 import {normalizeSearchPageHtml} from './search-page.js';
 import {
@@ -160,6 +164,7 @@ export function postprocessOutput({
     projectRegistryPath,
     siteUrl,
   });
+  const projectStatusTargets = applyProjectRegistryContent(outputDir, projects);
   const nowPageTarget = applyNowPage(outputDir, nowData, projects);
   const timelineTargets = applyProjectTimelines(outputDir, projects, projectHistoryDir);
   const noteTargets = applyNoteEnhancements(outputDir, notes);
@@ -178,6 +183,7 @@ export function postprocessOutput({
     copied: [...copied, ...copiedSearchResources],
     normalizedSearchPages,
     standaloneHomePath,
+    projectStatusTargets,
     nowPageTarget,
     timelineTargets,
     noteTargets,
@@ -197,6 +203,7 @@ function main() {
     for (const file of result.copied) console.log(`Copied: ${file}`);
     if (result.normalizedSearchPages) console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
     console.log(`Standalone homepage written: ${result.standaloneHomePath}`);
+    console.log(`Injected ${result.projectStatusTargets} registry-derived project status badge(s).`);
     console.log(`Now page injected: ${result.nowPageTarget}`);
     console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
     console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
