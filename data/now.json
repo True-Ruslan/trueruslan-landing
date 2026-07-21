@@ -1,0 +1,13 @@
+{
+  "updated": "2026-07-22",
+  "focus": "Сейчас я стараюсь доводить несколько собственных систем не до состояния «есть код», а до состояния, где понятны границы, проверены реальные сценарии и следующий шаг можно объяснить без маркетинговых формулировок.",
+  "learning": [
+    "AI agents и надёжные границы между моделью, инструментами и реальным состоянием системы",
+    "Narrative/game systems architecture на примере NODE ZERO",
+    "Static-first product engineering: build-time automation, quality gates и долговечный контент"
+  ],
+  "writing": [
+    "Продолжаю превращать Engineering Notes в журнал конкретных технических решений и ретроспектив",
+    "Фиксирую архитектурные выводы из LivingWorld по voice pipeline, memory и server-authoritative AI"
+  ]
+}
