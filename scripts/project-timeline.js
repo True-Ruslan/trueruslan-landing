@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {transformGeneratedContent} from './diplodoc-state.js';
 import {escapeHtml} from './project-registry.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -87,9 +88,15 @@ export function applyProjectTimelines(outputDir, projects, historyDir = DEFAULT_
     if (!fs.existsSync(htmlPath)) throw new Error(`timeline target page not found: ${project.href}`);
     const html = fs.readFileSync(htmlPath, 'utf8');
     const marker = new RegExp(`<div[^>]*data-tr-project-timeline=["']${project.timeline}["'][^>]*>\\s*</div>`, 'i');
-    if (!marker.test(html)) throw new Error(`timeline placeholder not found for ${project.slug}`);
     const timeline = loadTimeline(project.timeline, historyDir);
-    fs.writeFileSync(htmlPath, html.replace(marker, renderTimeline(project.slug, timeline)), 'utf8');
+    const rendered = renderTimeline(project.slug, timeline);
+    const transformed = transformGeneratedContent(
+      html,
+      (contentHtml) => marker.test(contentHtml) ? contentHtml.replace(marker, rendered) : contentHtml,
+      `timeline for ${project.slug}`,
+    );
+    if (!transformed.source) throw new Error(`timeline placeholder not found for ${project.slug} in rendered DOM or Diplodoc state payload`);
+    fs.writeFileSync(htmlPath, transformed.html, 'utf8');
     updated.push(project.href);
   }
   return updated;
