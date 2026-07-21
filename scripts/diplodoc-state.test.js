@@ -34,7 +34,7 @@ test('transformGeneratedContent mutates escaped Diplodoc state html when content
   assert.equal(result.source, 'diplodoc-state');
   assert.match(result.html, /id="diplodoc-state"/);
   assert.match(result.html, /data-ready/);
-  assert.match(result.html, /Ready &amp;amp; safe/);
+  assert.match(result.html, /Ready &amp; safe/);
 });
 
 test('transformGeneratedContent reports no source when neither document nor state changes', () => {
