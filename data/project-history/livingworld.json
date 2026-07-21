@@ -8,8 +8,7 @@
   {
     "date": "2026-07",
     "title": "End-to-end voice dialogue",
-    "description": "Проверен полный путь микрофон → Simple Voice Chat → STT → конкретный NPC → AI → текстовый ответ и TTS fallback.",
-    "version": "0.1.2",
+    "description": "В локальном acceptance-сценарии проверен полный путь микрофон → Simple Voice Chat → STT → конкретный NPC → AI → текстовый ответ и TTS fallback.",
     "state": "current",
     "evidence": "https://github.com/True-Ruslan/minecraft-botics-ai"
   },
