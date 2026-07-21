@@ -6,19 +6,19 @@
 
 ## Над чем я сейчас работаю серьёзнее всего
 
-### LivingWorld — server-authoritative AI NPCs
+### LivingWorld — AI NPC для Minecraft
 
 LivingWorld начался с довольно простой идеи: мне хотелось, чтобы NPC в Minecraft могли разговаривать не как обычный чат-бот, а как часть самого игрового мира — помнить контекст, слышать игрока голосом и при этом оставаться под контролем сервера.
 
 Чем дальше я развивал проект, тем больше он становился не про «подключить LLM», а про сессии, владение NPC, память, STT/TTS, отказ внешних провайдеров и безопасную границу между ответом модели и действием в мире.
 
-**Сейчас:** local release candidate.
+**Сейчас:** локальный release candidate.
 
 [Подробнее о проекте →](projects/livingworld.md) · [GitHub ↗](https://github.com/True-Ruslan/minecraft-botics-ai)
 
 ---
 
-### NODE ZERO — predictive-control techno-horror
+### NODE ZERO — техно-хоррор о предсказании поведения
 
 NODE ZERO — мой текущий игровой проект на Unity. Это first-person psychological techno-horror в автономном подземном AI compute facility.
 
@@ -26,7 +26,7 @@ NODE ZERO — мой текущий игровой проект на Unity. Эт
 
 Из-за этого проект быстро превратился для меня ещё и в задачу про архитектуру игровых систем, vertical slice, документацию, работу с ассетами и длинный процесс разработки, где важно не потерять исходную идею по дороге.
 
-**Сейчас:** pre-production; production-ready vertical slice.
+**Сейчас:** pre-production; готовый к дальнейшей проверке vertical slice.
 
 [Подробнее о проекте →](projects/node-zero.md)
 
@@ -36,7 +36,7 @@ NODE ZERO — мой текущий игровой проект на Unity. Эт
 
 ## Другие проекты, к которым я возвращаюсь
 
-### TaskHub — Backend + AI
+### TaskHub — backend и AI
 
 TaskHub я использовал как площадку, где можно собрать в одном проекте привычный backend-стек и несколько инфраструктурных компонентов, которые обычно живут уже в более крупных системах.
 
@@ -48,7 +48,7 @@ TaskHub я использовал как площадку, где можно с�
 
 ---
 
-### MiniChess — Java domain logic
+### MiniChess — доменная логика на Java
 
 MiniChess — небольшой шахматный web-проект на Java 21 / Spring Boot.
 
