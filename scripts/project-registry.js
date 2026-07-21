@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {transformGeneratedContent} from './diplodoc-state.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 export const DEFAULT_PROJECTS_PATH = path.join(ROOT, 'data', 'projects.json');
@@ -132,17 +134,25 @@ export function renderProjectStatus(project) {
 export function applyProjectRegistryContent(outputDir, projects) {
   const htmlPath = path.join(outputDir, 'landing', 'projects.html');
   if (!fs.existsSync(htmlPath)) throw new Error('generated projects hub not found: landing/projects.html');
-  let html = fs.readFileSync(htmlPath, 'utf8');
+  const html = fs.readFileSync(htmlPath, 'utf8');
   let replacements = 0;
 
-  for (const project of projects) {
-    const marker = new RegExp(`<span[^>]*data-tr-project-status=["']${project.slug}["'][^>]*>\\s*</span>`, 'i');
-    if (!marker.test(html)) continue;
-    html = html.replace(marker, renderProjectStatus(project));
-    replacements += 1;
-  }
+  const transformed = transformGeneratedContent(
+    html,
+    (contentHtml) => {
+      let updated = contentHtml;
+      for (const project of projects) {
+        const marker = new RegExp(`<span[^>]*data-tr-project-status=["']${project.slug}["'][^>]*>\\s*</span>`, 'i');
+        if (!marker.test(updated)) continue;
+        updated = updated.replace(marker, renderProjectStatus(project));
+        replacements += 1;
+      }
+      return updated;
+    },
+    'project status badges',
+  );
 
-  fs.writeFileSync(htmlPath, html, 'utf8');
+  fs.writeFileSync(htmlPath, transformed.html, 'utf8');
   return replacements;
 }
 
