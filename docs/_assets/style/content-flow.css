@@ -5,12 +5,11 @@ article {
   overflow-wrap: anywhere;
 }
 
-/* Diplodoc uses a 100vw off-canvas TOC on mobile. With a classic vertical
-   scrollbar, 100vw is wider than the layout viewport and creates a small
-   horizontal scroll area even while the drawer is closed. */
+/* Diplodoc keeps its desktop TOC as a fixed off-canvas layer on mobile.
+   Clip that intentional layer at the document-layout boundary so it cannot
+   create a blank horizontal scroll area, without hiding overflow globally. */
 @media (max-width: 768px) {
-  .dc-doc-layout__left {
-    width: 100% !important;
-    max-width: 100% !important;
+  .dc-doc-layout {
+    overflow-x: clip;
   }
 }
