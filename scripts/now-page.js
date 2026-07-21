@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {transformGeneratedContent} from './diplodoc-state.js';
 import {escapeHtml, getActiveProjects, renderProjectCards} from './project-registry.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -38,9 +39,7 @@ function renderList(title, items) {
 export function renderNowContent(nowData, projects) {
   validateNowData(nowData);
   const activeProjects = getActiveProjects(projects);
-  const projectCards = renderProjectCards(activeProjects, {
-    hrefTransform: (href) => href.replace(/^landing\//, ''),
-  });
+  const projectCards = renderProjectCards(activeProjects);
 
   return `<div class="tr-now" data-tr-now>
   <p class="tr-now__updated">UPDATED <time datetime="${escapeHtml(nowData.updated)}">${escapeHtml(nowData.updated)}</time></p>
@@ -59,7 +58,13 @@ export function applyNowPage(outputDir, nowData, projects) {
   if (!fs.existsSync(htmlPath)) throw new Error('generated now page not found: landing/now.html');
   const html = fs.readFileSync(htmlPath, 'utf8');
   const marker = /<div[^>]*data-tr-now-placeholder(?:=["'][^"']*["'])?[^>]*>\s*<\/div>/i;
-  if (!marker.test(html)) throw new Error('now page placeholder not found.');
-  fs.writeFileSync(htmlPath, html.replace(marker, renderNowContent(nowData, projects)), 'utf8');
+  const content = renderNowContent(nowData, projects);
+  const transformed = transformGeneratedContent(
+    html,
+    (contentHtml) => marker.test(contentHtml) ? contentHtml.replace(marker, content) : contentHtml,
+    'now page placeholder',
+  );
+  if (!transformed.source) throw new Error('now page placeholder not found in rendered DOM or Diplodoc state payload.');
+  fs.writeFileSync(htmlPath, transformed.html, 'utf8');
   return 'landing/now.html';
 }
