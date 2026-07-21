@@ -28,11 +28,10 @@ test('validateNowData rejects invalid dates and empty lists', () => {
   assert.throws(() => validateNowData({...nowData, learning: []}), /non-empty string array/);
 });
 
-test('renderNowContent derives active project cards and safe relative links', () => {
+test('renderNowContent derives active project cards with deployment-safe registry hrefs', () => {
   const html = renderNowContent(nowData, projects);
   assert.match(html, /LivingWorld/);
-  assert.match(html, /href="projects\/livingworld\.html"/);
-  assert.doesNotMatch(html, /landing\/projects\/livingworld\.html/);
+  assert.match(html, /href="landing\/projects\/livingworld\.html"/);
   assert.match(html, /AI systems/);
   assert.match(html, /Engineering Notes/);
   assert.match(html, /datetime="2026-07-22"/);
