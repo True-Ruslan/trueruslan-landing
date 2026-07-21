@@ -74,14 +74,49 @@
     return host;
   }
 
+  function findTriggerMount(document) {
+    return document.querySelector('.tr-site-nav')
+      || document.querySelector('header nav')
+      || document.querySelector('header');
+  }
+
+  function mountTrigger(document, button) {
+    const mount = findTriggerMount(document);
+    if (mount) {
+      mount.appendChild(button);
+      return;
+    }
+
+    if (typeof root.MutationObserver !== 'function') {
+      button.classList.add('tr-command-trigger--floating');
+      document.body.appendChild(button);
+      return;
+    }
+
+    const observer = new root.MutationObserver(() => {
+      const hydratedMount = findTriggerMount(document);
+      if (!hydratedMount) return;
+      hydratedMount.appendChild(button);
+      observer.disconnect();
+    });
+    observer.observe(document.documentElement, {childList: true, subtree: true});
+
+    root.setTimeout(() => {
+      if (!button.isConnected) {
+        button.classList.add('tr-command-trigger--floating');
+        document.body.appendChild(button);
+      }
+      observer.disconnect();
+    }, 5000);
+  }
+
   function createTrigger(document) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'tr-command-trigger';
     button.setAttribute('aria-label', 'Открыть быстрый переход');
     button.innerHTML = '<span>Быстрый переход</span><kbd>⌘/Ctrl K</kbd>';
-    const header = document.querySelector('.tr-site-header__inner') || document.querySelector('header');
-    if (header) header.appendChild(button);
+    mountTrigger(document, button);
     return button;
   }
 
