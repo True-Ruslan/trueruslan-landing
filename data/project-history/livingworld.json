@@ -1,0 +1,22 @@
+[
+  {
+    "date": "2026-07",
+    "title": "Server-authoritative foundation",
+    "description": "Сессии player ↔ NPC, серверный контекст, память, provider boundaries и правила отмены стали базовой архитектурой проекта.",
+    "state": "past"
+  },
+  {
+    "date": "2026-07",
+    "title": "End-to-end voice dialogue",
+    "description": "Проверен полный путь микрофон → Simple Voice Chat → STT → конкретный NPC → AI → текстовый ответ и TTS fallback.",
+    "version": "0.1.2",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/minecraft-botics-ai"
+  },
+  {
+    "date": "NEXT",
+    "title": "Stable voice identity and affect",
+    "description": "Закрепить голос за каждым NPC, учитывать пол персонажа и передавать настроение без потери предсказуемости TTS pipeline.",
+    "state": "next"
+  }
+]
