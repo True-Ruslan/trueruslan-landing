@@ -13,6 +13,10 @@ navigation:
         type: link
         url: landing/projects.html
         target: _self
+      - text: Сейчас
+        type: link
+        url: landing/now.html
+        target: _self
       - text: Map
         type: link
         url: landing/engineering-map.html
@@ -73,6 +77,8 @@ items:
         href: ./landing/projects/minichess.md
       - name: Godot Horror Template
         href: ./landing/projects/godot-horror-template.md
+  - name: Сейчас
+    href: ./landing/now.md
   - name: Engineering Map
     href: ./landing/engineering-map.md
   - name: Engineering Notes
