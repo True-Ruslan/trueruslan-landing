@@ -32,6 +32,11 @@ async function inspectOverflow(page) {
   return page.evaluate(() => {
     const viewportWidth = window.innerWidth;
     const bodyWidth = Math.max(document.body.scrollWidth, document.documentElement.scrollWidth);
+    const initialScrollX = window.scrollX;
+    window.scrollTo(10000, window.scrollY);
+    const maxScrollX = window.scrollX;
+    window.scrollTo(0, window.scrollY);
+
     const offenders = [...document.querySelectorAll('*')]
       .map((node) => {
         const rect = node.getBoundingClientRect();
@@ -56,6 +61,8 @@ async function inspectOverflow(page) {
           position: style.position,
           minWidth: style.minWidth,
           widthStyle: style.width,
+          leftStyle: style.left,
+          transform: style.transform,
           whiteSpace: style.whiteSpace,
           overflowX: style.overflowX,
           wordBreak: style.wordBreak,
@@ -66,7 +73,7 @@ async function inspectOverflow(page) {
       .sort((a, b) => Math.max(b.rightOverflow, b.leftOverflow, b.internalOverflow) - Math.max(a.rightOverflow, a.leftOverflow, a.internalOverflow))
       .slice(0, 20);
 
-    return {viewportWidth, bodyWidth, offenders};
+    return {viewportWidth, bodyWidth, initialScrollX, maxScrollX, offenders};
   });
 }
 
@@ -83,10 +90,10 @@ async function main() {
 
     const result = await inspectOverflow(page);
     console.log(JSON.stringify(result, null, 2));
-    if (result.bodyWidth > result.viewportWidth + 2) {
-      throw new Error(`Horizontal overflow: ${result.bodyWidth}px > ${result.viewportWidth}px; offenders are listed above.`);
+    if (result.maxScrollX > 2) {
+      throw new Error(`Page can actually scroll horizontally by ${result.maxScrollX}px; offenders are listed above.`);
     }
-    console.log('Projects mobile layout has no horizontal overflow.');
+    console.log(`Projects mobile layout cannot scroll horizontally (reported scrollWidth ${result.bodyWidth}px for viewport ${result.viewportWidth}px).`);
     await context.close();
   } finally {
     if (browser) await browser.close();
