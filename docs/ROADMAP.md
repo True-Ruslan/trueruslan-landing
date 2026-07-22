@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-07-22**, после merge P1.3 Stronger Flagship Case-Study Format PR #34.
+> Обновлено: **2026-07-23**, после merge P1.4 Additional Grounded Engineering Notes PR #36.
 >
 > Roadmap отвечает на вопрос **«что делать дальше, в каком порядке и зачем?»**.
 > Фактическое текущее состояние — `docs/PROJECT_STATE.md`, история — `docs/CHANGELOG.md`.
@@ -19,7 +19,6 @@
 - maintenance signals не переписывают public truth автоматически;
 - сначала реальные data/evidence, потом presentation;
 - evidence не говорит больше, чем доказывает bounded scope;
-- narrative не дублирует canonical machine-like current/trust facts;
 - shared infrastructure не скрывает focused domain ownership;
 - quality gates не ослабляются ради refactor/feature velocity.
 
@@ -55,11 +54,7 @@ PR #22 / squash:
 
 `e3e48ac56b45eddeb872c04b83bff1408da6556f`
 
-Exact head:
-
-`7ce0d428327e29436a03fc2be4b94ef7c0f2f15b`
-
-Build #247 / run `29935334882`: **fully green**.
+Exact head `7ce0d428327e29436a03fc2be4b94ef7c0f2f15b`, Build #247 / run `29935334882` fully green.
 
 Canonical evidence, `verified / stale / unverified`, bounded automated/manual signals, no-JS rendering и trust-aware QA.
 
@@ -71,13 +66,9 @@ PR #25 / squash:
 
 `f2775b7c9150281bcb4bcc01a4e021e007e18ca0`
 
-Exact head:
+Build #257 / run `29943616448` fully green.
 
-`8a2973961e5ec38e4c8b3e0626460c04e88438a8`
-
-Build #257 / run `29943616448`: **fully green**.
-
-Добавлены 3 repository-grounded notes; всего Engineering Notes — 6.
+Добавлены три repository-grounded notes; после P1.4 всего Engineering Notes стало 7.
 
 ## P0.6 Content Freshness Guard — DONE
 
@@ -85,7 +76,7 @@ PR #27 / squash:
 
 `33770983789fbde5c59a94972709360286a06ad5`
 
-Build #269 / run `29947803201`: **fully green**.
+Exact head `4b50dd78a41b3cbe2fce327e6c752508134862d0`, Build #269 / run `29947803201` fully green.
 
 Guard проверяет age/link/repository/release/timeline/signal drift и создаёт maintenance report/issue, но никогда автоматически не меняет public registries/trust state.
 
@@ -93,7 +84,7 @@ Operational follow-up: первый реальный post-merge scheduled/manual
 
 ---
 
-# P1 — maintainability и глубина
+# P1 — maintainability и глубина завершены
 
 ## P1.1 Consolidated Browser Quality Harness — DONE
 
@@ -101,50 +92,29 @@ PR #29 / squash:
 
 `06e60425e31ef19ddae0c3ac8b0991808b45837e`
 
-Exact implementation head:
+Exact head `00633c69e56354cbb8821c34a1b772cf259c3e18`, Build #293 / run `29951464481` fully green.
 
-`00633c69e56354cbb8821c34a1b772cf259c3e18`
+Создан `scripts/quality-harness/` с shared infrastructure primitives. Focused runners остались focused; giant monolithic runner/DSL не создавался.
 
-Build #293 / run `29951464481`: **fully green по полной configured matrix**.
-
-Создан `scripts/quality-harness/` с shared infrastructure primitives. Focused runners остались focused; giant monolithic runner/DSL не создавался. `visual-regression.cjs` намеренно оставлен отдельным.
-
-## P1.2 Project metadata cleanup — DONE
+## P1.2 Project Metadata Cleanup — DONE
 
 PR #31 / squash:
 
 `1df2a2905ef2eb4b52173271f9012defc33b25ab`
 
-Exact implementation head:
+Exact head `12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`, Build #296 / run `29954043887` fully green.
 
-`12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`
+Package identity соответствует engineering portfolio / knowledge platform; `private: true`; canonical URLs/keywords; `version: 0.2.0` оставлен намеренно до explicit release contract.
 
-Build #296 / run `29954043887`: **fully green по полной configured matrix**.
-
-Реализовано:
-
-- package identity → engineering portfolio / knowledge platform;
-- `private: true`;
-- canonical repository/bugs URLs;
-- modern keywords;
-- metadata contract test;
-- `version: 0.2.0` оставлен намеренно до explicit package-release contract.
-
-## P1.3 Stronger flagship case-study format — DONE
+## P1.3 Stronger Flagship Case-Study Format — DONE
 
 PR #34 / squash:
 
 `107b69311f6eed408de5306406d9ff41f0e32ea2`
 
-Exact implementation head:
+Exact head `edda2fbbf94b808f8955a2efb00e885dbb964040`, Build #301 / run `29958607263` fully green.
 
-`edda2fbbf94b808f8955a2efb00e885dbb964040`
-
-Build #301 / run `29958607263`: **fully green по полной configured matrix**.
-
-### Реализовано
-
-LivingWorld и NODE ZERO переведены на общий Markdown-first narrative contract:
+LivingWorld и NODE ZERO используют общий Markdown-first narrative contract:
 
 1. Problem
 2. Constraints
@@ -154,123 +124,70 @@ LivingWorld и NODE ZERO переведены на общий Markdown-first nar
 6. Evidence
 7. What I would change now
 
-### Critical source-of-truth boundary
+Project Registry/timeline/Evidence ownership сохранён; новый universal case-study engine не создан.
 
-Существующие owners сохранены:
+## P1.4 Additional Grounded Engineering Notes — DONE
 
-- `data/projects.json` — identity/status/summary/links/tags;
-- `data/project-history/*.json` — structured evolution;
-- `data/project-evidence.json` — trust/current verification;
-- Markdown — human-authored reasoning и retrospective.
+PR #36 / squash:
 
-Не создан новый case-study registry/renderer/CMS/schema.
+`24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`
 
-### Contract protection
+Exact implementation head:
 
-`scripts/flagship-case-study.test.js` проверяет:
+`ced6ce0208d691fd891e8b8e1cf03be4c40465d5`
 
-- семь stable section markers;
-- canonical order;
-- timeline placeholder ровно один раз;
-- Project Evidence placeholder ровно один раз;
-- architecture diagram ровно один раз;
-- controlled flagship set `livingworld`, `node-zero`.
+Build #308 / run `29961571632`: **fully green по полной configured matrix**.
+
+### Реализовано
+
+Добавлена note:
+
+`llm-output-is-a-protocol-boundary`
+
+Тема:
+
+**provider success ≠ application contract success**.
+
+Grounded facts проверены по текущему `True-Ruslan/minecraft-botics-ai`:
+
+- strict parser config;
+- trailing-token rejection;
+- unknown fields/actions;
+- scalar type/null rejection;
+- no permissive coercion;
+- bounded domain validation;
+- duplicate/conflicting action rejection;
+- strict JSON validation перед persistence policy/action authorization;
+- bounded provider-degradation fallback.
+
+Старые недоступные MCA-fork incidents не были превращены в неподтверждённые публичные claims.
 
 ### TDD trail
 
-- Build #299 / run `29958395678` — RED до миграции;
-- Build #300 / run `29958496645` — промежуточный RED после LivingWorld;
-- Build #301 / run `29958607263` — final full matrix GREEN.
+- Build #303 / run `29961363873` — expected RED после contract-first требования нового slug;
+- Build #308 / run `29961571632` — final exact-head full matrix GREEN.
 
-### Что не менялось
+### Scope decision
 
-- project/timeline/evidence registries;
-- CSS;
-- build/postprocess renderers;
-- routes;
-- visual baselines/thresholds;
-- CI workflow order/budgets.
+Вторая generic voice-pipeline note не опубликована: она сейчас слишком сильно дублировала бы существующую `server-authoritative-ai-npcs`.
 
-Design:
-
-`docs/superpowers/specs/2026-07-22-flagship-case-study-format-design.md`
-
-Plan:
-
-`docs/superpowers/plans/2026-07-22-flagship-case-study-format.md`
-
----
-
-## P1.4 Additional grounded Engineering Notes — NEXT
-
-### Почему сейчас
-
-После P1.3 основные flagship pages уже объясняют человеческий engineering reasoning, а infrastructure/evidence/freshness/quality layers стабилизированы.
-
-Следующий низкорисковый high-value шаг — добавить ещё 1–2 сильных Engineering Notes на основе реальных repository incidents/decisions, а не SEO-контента ради количества.
-
-### Обязательная первая стадия — source verification
-
-До написания note:
-
-1. определить candidate incident/decision;
-2. открыть соответствующий repository/docs/PR/commits/tests;
-3. отделить факты от памяти/интерпретации;
-4. проверить, что тема не дублирует существующие 6 notes;
-5. только после этого фиксировать narrative.
-
-### Candidate A — malformed / almost-correct LLM JSON
-
-Предпочтительный первый кандидат для проверки.
-
-Потенциальный engineering lesson:
-
-- structured LLM output — внешний protocol boundary;
-- «почти валидный JSON» не должен просачиваться в user-visible response/state;
-- parsing/validation/fallback должны быть explicit;
-- provider success ≠ contract success;
-- malformed fields/null content/JSON tails требуют bounded recovery rather than unchecked casts/string concatenation.
-
-Важно: конкретные incidents и claims писать только после проверки исходного repository history.
-
-### Candidate B — Minecraft NPC voice pipeline
-
-Проверять только если новая note даст самостоятельный lesson и не станет пересказом существующей:
-
-`server-authoritative-ai-npcs`
-
-Возможный уникальный angle — end-to-end voice degradation/latency/identity/acceptance boundary, но решение принимать только после source verification.
-
-### Implementation direction
-
-Сохранить существующую Notes architecture:
-
-- Markdown source в `docs/landing/notes/*.md`;
-- canonical metadata/relations в `data/notes.json`;
-- existing Diplodoc/build-time postprocess;
-- Atom feed;
-- TOC/search/sitemap/SEO integration;
-- no second renderer/search index/CMS.
-
-### Definition of Done
-
-- 1–2 новые notes основаны на реально проверенных repository facts;
-- у каждой есть конкретный problem/failure/decision/takeaway;
-- нет invented incidents/metrics;
-- нет смыслового дубля существующих notes;
-- metadata/relations/feed/search/SEO integrated;
-- content contract updated;
-- full exact-head quality matrix green.
+Notes architecture не менялась: Markdown + `data/notes.json` + existing build-time feed/search/sitemap/SEO.
 
 ---
 
 # P2 — аудитория и эксплуатация
 
-## P2.1 Minimal RU/EN
+## P2.1 Minimal RU/EN — NEXT
 
-Не переводить весь сайт сразу.
+### Почему сейчас
 
-Первый слой позже:
+Foundation, evidence, freshness, quality infrastructure, flagship narrative и первая волна grounded technical writing уже стабилизированы.
+
+Следующий high-value product step — сделать лучшие части portfolio доступными англоязычному читателю **без полного перевода всего knowledge space**.
+
+### Initial scope
+
+Первый EN layer ограничить:
 
 - homepage;
 - About;
@@ -279,11 +196,70 @@ Plan:
 - LivingWorld;
 - 1–2 лучших Engineering Notes.
 
-Русский остаётся default.
+Русский остаётся default language.
+
+### Design questions до implementation
+
+Отдельный spec должен решить:
+
+1. **URL strategy**
+   - отдельный `/en/` subtree или другой deterministic static routing;
+   - никаких client-only language routes.
+
+2. **Canonical / hreflang**
+   - explicit RU/EN alternates;
+   - корректные canonical URLs;
+   - не создавать duplicate-content ambiguity.
+
+3. **Authoring ownership**
+   - shared machine-like registries не дублировать вручную;
+   - language-specific prose хранить явно и version-controlled;
+   - не строить CMS/i18n framework заранее.
+
+4. **Navigation / switcher**
+   - понятный language switch;
+   - graceful no-JS behavior;
+   - switch должен вести на semantic counterpart или честный fallback, а не угадывать nonexistent routes.
+
+5. **Search**
+   - Diplodoc остаётся владельцем full-text search;
+   - не создавать второй search engine;
+   - определить, нужен ли отдельный EN index или единый supported Diplodoc strategy.
+
+6. **SEO/social**
+   - metadata/OpenGraph для EN страниц;
+   - hreflang/canonical/sitemap integration.
+
+7. **Quality gates**
+   - generated route integrity;
+   - language-switch navigation;
+   - no broken alternate links;
+   - mobile/accessibility/cross-browser;
+   - search/metadata regression.
+
+### Critical boundary
+
+**Не создавать два независимых вручную расходящихся сайта.**
+
+Shared factual registries должны оставаться canonical там, где смысл language-neutral. Переводимый prose может иметь отдельные RU/EN sources, но ownership должен быть явным.
+
+### Definition of Done
+
+- initial EN scope полностью определён и реализован;
+- Russian default behavior не сломан;
+- deterministic static URLs;
+- canonical/hreflang корректны;
+- language switcher semantic/no-JS usable;
+- project/evidence/notes data ownership не дублирован без необходимости;
+- search strategy остаётся в границах Diplodoc;
+- SEO/sitemap/social metadata интегрированы;
+- full exact-head quality matrix green.
 
 ## P2.2 Privacy-friendly analytics
 
 Только product-useful aggregate signals без invasive ad profiling/cookie surface.
+
+Не добавлять аналитику «потому что у сайтов она есть». Сначала определить решения, которые реально будут приниматься по данным.
 
 ## P2.3 Custom domain / hosting
 
@@ -301,6 +277,8 @@ Plan:
 
 Без нового обоснования не планировать:
 
+- полный перевод всего сайта одним milestone;
+- отдельный CMS/i18n backend ради EN;
 - AI chat поверх резюме;
 - accounts;
 - comments/likes;
@@ -313,7 +291,6 @@ Plan:
 - infinite scroll;
 - automatic public-state mutation из CI/release/freshness signals;
 - giant QA runner, скрывающий domain-specific tests;
-- универсальный case-study engine без repeated need;
 - декоративные version bumps без release semantics.
 
 ---
@@ -321,14 +298,19 @@ Plan:
 # Оптимальная последовательность следующих действий
 
 ```text
-1. P1.4 Additional grounded Engineering Notes
-   └─ сначала cross-repository source verification
+1. P2.1 Minimal RU/EN
         ↓
-2. First real Photo Story whenever genuine material is ready (non-blocking)
+2. Privacy-friendly analytics only after a concrete measurement design
         ↓
-3. Minimal EN / privacy analytics / custom domain later
+3. Custom domain / hosting only when there is a real operational reason
         ↓
 4. Richer architecture explorer only when real artifacts justify it
+```
+
+Независимый content track:
+
+```text
+First real Photo Story whenever genuine material is ready
 ```
 
 Operational side-check, не блокирующий feature roadmap:
