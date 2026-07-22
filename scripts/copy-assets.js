@@ -15,6 +15,11 @@ import {applyNowPage, loadNowData} from './now-page.js';
 import {writeOgCards} from './og-image.js';
 import {applyPageMeta, loadPageMeta} from './page-meta.js';
 import {
+  validatePhotoAlbums,
+  validatePhotoArchive,
+  writePhotoStories,
+} from './photo-stories.js';
+import {
   applyProjectRegistryContent,
   DEFAULT_HISTORY_DIR,
   loadProjectRegistry,
@@ -38,6 +43,8 @@ const ENGINEERING_GRAPH_MANIFEST = path.join(ROOT, 'data', 'engineering-graph.js
 const PROJECTS_MANIFEST = path.join(ROOT, 'data', 'projects.json');
 const NOW_MANIFEST = path.join(ROOT, 'data', 'now.json');
 const NOTES_MANIFEST = path.join(ROOT, 'data', 'notes.json');
+const PHOTO_ALBUMS_MANIFEST = path.join(ROOT, 'data', 'photo-albums.json');
+const PHOTO_ARCHIVE_MANIFEST = path.join(ROOT, 'data', 'photo-archive.json');
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
 const SEARCH_RESOURCES = [
@@ -96,9 +103,25 @@ Sitemap: ${siteUrl}/sitemap.xml
   fs.writeFileSync(path.join(outputDir, 'robots.txt'), content);
 }
 
-export function writeSitemap(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl(), tocPath = path.join(DOCS_DIR, 'toc.yaml')) {
+function normalizeExtraRoute(route) {
+  const normalized = String(route).replace(/^\/+/, '');
+  if (!normalized || normalized.includes('..') || /^[a-z][a-z\d+.-]*:/i.test(normalized)) {
+    throw new Error(`Unsafe sitemap route: ${route}`);
+  }
+  return normalized;
+}
+
+export function writeSitemap(
+  outputDir = OUTPUT_DIR,
+  siteUrl = getSiteUrl(),
+  tocPath = path.join(DOCS_DIR, 'toc.yaml'),
+  extraRoutes = [],
+) {
   const tocContent = fs.readFileSync(tocPath, 'utf8');
-  const pages = collectPagesFromToc(tocContent);
+  const pages = [...new Set([
+    ...collectPagesFromToc(tocContent),
+    ...extraRoutes.map(normalizeExtraRoute),
+  ])];
   const urls = pages.map((page) => {
     const loc = page ? `${siteUrl}/${page}` : `${siteUrl}/`;
     return `  <url><loc>${loc}</loc></url>`;
@@ -130,6 +153,15 @@ export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSi
   return true;
 }
 
+function loadPhotoRegistries(photoAlbumsPath, photoArchivePath, docsDir) {
+  const rawAlbums = JSON.parse(fs.readFileSync(photoAlbumsPath, 'utf8'));
+  const rawArchive = JSON.parse(fs.readFileSync(photoArchivePath, 'utf8'));
+  return {
+    albums: validatePhotoAlbums(rawAlbums, {docsDir, requireFiles: true}),
+    archive: validatePhotoArchive(rawArchive, {docsDir, requireFiles: true}),
+  };
+}
+
 export function postprocessOutput({
   outputDir = OUTPUT_DIR,
   docsDir = DOCS_DIR,
@@ -140,6 +172,8 @@ export function postprocessOutput({
   projectHistoryDir = DEFAULT_HISTORY_DIR,
   nowPath = NOW_MANIFEST,
   notesPath = NOTES_MANIFEST,
+  photoAlbumsPath,
+  photoArchivePath,
   siteUrl = getSiteUrl(),
   copyAssets = true,
 } = {}) {
@@ -150,12 +184,22 @@ export function postprocessOutput({
   const projects = loadProjectRegistry(projectRegistryPath, {historyDir: projectHistoryDir});
   const nowData = loadNowData(nowPath);
   const notes = loadNotesManifest(notesPath, {docsDir});
+
+  const isProductionDocs = path.resolve(docsDir) === path.resolve(DOCS_DIR);
+  const resolvedPhotoAlbumsPath = photoAlbumsPath ?? (isProductionDocs ? PHOTO_ALBUMS_MANIFEST : null);
+  const resolvedPhotoArchivePath = photoArchivePath ?? (isProductionDocs ? PHOTO_ARCHIVE_MANIFEST : null);
+  if (Boolean(resolvedPhotoAlbumsPath) !== Boolean(resolvedPhotoArchivePath)) {
+    throw new Error('photoAlbumsPath and photoArchivePath must be provided together');
+  }
+  const photoContent = resolvedPhotoAlbumsPath
+    ? loadPhotoRegistries(resolvedPhotoAlbumsPath, resolvedPhotoArchivePath, docsDir)
+    : null;
+
   const copied = copyAssets ? walkAssets(path.join(docsDir, 'assets'), outputDir, docsDir) : [];
   const copiedSearchResources = copyAssets ? copySearchResources(docsDir, outputDir) : [];
 
   createNoJekyllFile(outputDir);
   writeRobotsTxt(outputDir, siteUrl);
-  writeSitemap(outputDir, siteUrl, path.join(docsDir, 'toc.yaml'));
 
   const normalizedSearchPages = normalizeSearchPages(outputDir);
   const standaloneHomePath = writeStandaloneHome({
@@ -169,6 +213,17 @@ export function postprocessOutput({
   const timelineTargets = applyProjectTimelines(outputDir, projects, projectHistoryDir);
   const noteTargets = applyNoteEnhancements(outputDir, notes);
   const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
+
+  const photoStories = photoContent
+    ? writePhotoStories({
+      outputDir,
+      albums: photoContent.albums,
+      archive: photoContent.archive,
+      siteUrl,
+    })
+    : {routes: [], albumRoutes: [], indexPath: null, legacyPath: null};
+
+  writeSitemap(outputDir, siteUrl, path.join(docsDir, 'toc.yaml'), photoStories.routes);
 
   const engineeringGraph = loadEngineeringGraph(engineeringGraphPath, {projects});
   const engineeringGraphTarget = applyEngineeringGraph(outputDir, engineeringGraph);
@@ -189,6 +244,9 @@ export function postprocessOutput({
     noteTargets,
     feedPath,
     feedDiscoveryUpdated,
+    photoStoryRoutes: photoStories.routes,
+    photoStoryIndexPath: photoStories.indexPath,
+    photoStoryLegacyPath: photoStories.legacyPath,
     engineeringGraphTarget,
     ogCards,
     metadataUpdated,
@@ -208,6 +266,7 @@ function main() {
     console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
     console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
     console.log(`Atom feed written: ${result.feedPath}`);
+    if (result.photoStoryIndexPath) console.log(`Photo Stories written: ${result.photoStoryIndexPath}`);
     console.log(`Engineering Map injected: ${result.engineeringGraphTarget}`);
     console.log(`Generated ${result.ogCards.length} OpenGraph PNG card(s).`);
     console.log(`Injected page metadata into ${result.metadataUpdated} HTML page(s).`);

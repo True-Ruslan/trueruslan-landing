@@ -19,11 +19,13 @@ resources:
     - _assets/style/command-palette.css
     - _assets/style/engineering-graph.css
     - _assets/style/resume.css
+    - _assets/style/photo-stories.css
   script:
     - _assets/script/custom.js
     - _assets/script/diplodoc-runtime-a11y.js
     - _assets/script/command-palette.js
     - _assets/script/engineering-graph.js
+    - _assets/script/photo-stories.js
 
 search:
   provider: local

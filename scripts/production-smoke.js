@@ -16,6 +16,7 @@ export function deriveProductionEndpoints(baseUrl) {
     ['Now', 'landing/now.html'],
     ['Engineering Map', 'landing/engineering-map.html'],
     ['Engineering Notes', 'landing/notes.html'],
+    ['Photo Stories', 'photos/'],
     ['Atom feed', 'feed.xml'],
     ['Resume', 'landing/resume.html'],
     ['Resume PDF', 'assets/documents/cv.pdf', 'application/pdf'],
@@ -23,8 +24,10 @@ export function deriveProductionEndpoints(baseUrl) {
     ['Engineering Map OpenGraph card', 'assets/og/engineering-map.png', 'image/png'],
     ['Core stylesheet', '_assets/style/custom.css'],
     ['Command palette stylesheet', '_assets/style/command-palette.css'],
+    ['Photo Stories stylesheet', '_assets/style/photo-stories.css'],
     ['Core script', '_assets/script/custom.js'],
     ['Command palette script', '_assets/script/command-palette.js'],
+    ['Photo Stories script', '_assets/script/photo-stories.js'],
     ['Favicon', 'assets/images/favicon.svg'],
   ];
 
