@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-07-22**, после merge P1.1 Consolidated Browser Quality Harness PR #29.
+> Последнее смысловое обновление: **2026-07-22**, после merge P1.2 Project Metadata Cleanup PR #31.
 >
 > Главный durable snapshot для ответа на вопрос **«что сейчас представляет собой проект, что уже сделано и что дальше?»**.
 >
@@ -46,95 +46,99 @@
 
 ### Последний technical milestone
 
-**P1.1 — Consolidated Browser Quality Harness**.
+**P1.2 — Project Metadata Cleanup**.
 
-PR #29:
+PR #31:
 
-`refactor: consolidate browser quality harness`
+`chore: align project metadata identity`
 
 Squash commit:
 
-`06e60425e31ef19ddae0c3ac8b0991808b45837e`
+`1df2a2905ef2eb4b52173271f9012defc33b25ab`
 
 Exact implementation head:
 
-`00633c69e56354cbb8821c34a1b772cf259c3e18`
+`12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`
 
 Verification:
 
-**Build #293 / workflow run `29951464481`: fully green по полной configured matrix.**
+**Build #296 / workflow run `29954043887`: fully green по полной configured matrix.**
 
-### Что изменил P1.1
+### Что изменил P1.2
 
-Создан модульный `scripts/quality-harness/`:
+`package.json` теперь честно описывает фактический продукт:
 
-- `paths.cjs` — canonical quality paths;
-- `tools.cjs` — `.quality-tools` loading, Chrome discovery, Chromium launch fallback;
-- `static-server.cjs` — общий static-server lifecycle с optional gzip transport;
-- `browser.cjs` — context/page lifecycle factory;
-- `diagnostics.cjs` — page/request/HTTP diagnostics, same-origin filtering, expected abort handling;
-- `assertions.cjs` — horizontal overflow/real-scroll/Axe primitives;
-- `evidence.cjs` — screenshots и JSON/text artifacts;
-- `scenarios.cjs` — immutable common viewports/core route declarations.
+- description: `TrueRuslan engineering portfolio and knowledge platform`;
+- добавлен `private: true` — repository является deployable site workspace, а не npm package для публикации;
+- keywords отражают engineering portfolio / knowledge platform / backend engineering / software architecture / Engineering Notes;
+- старый primary keyword `landing` удалён;
+- repository и bugs URLs нормализованы на canonical owner spelling `True-Ruslan`;
+- GitHub Pages homepage `https://true-ruslan.github.io/trueruslan-landing/` сохранён без изменений.
 
-На shared primitives переведены focused runners:
+### Deliberate version decision
 
-- `browser-quality.cjs`;
-- `sources-knowledge-base-smoke.cjs`;
-- `project-evidence-smoke.cjs`;
-- `photo-stories-browser-smoke.cjs`;
-- `v03-browser-smoke.cjs`;
-- `cross-browser-smoke.cjs`;
-- `search-smoke.cjs`;
-- `metadata-smoke.cjs`;
-- `engineering-graph-smoke.cjs`;
-- `layout-overflow-smoke.cjs`.
+`version: 0.2.0` **сознательно оставлен без bump**.
 
-**Domain ownership не объединён в giant runner.** Каждый focused smoke по-прежнему владеет своими interaction/assertion semantics.
+Причина:
 
-`visual-regression.cjs` намеренно оставлен отдельным и не переписан под browser harness: его PNG sample/baseline comparison model отличается и не требовала искусственной абстракции.
+- проект не публикуется как npm package;
+- нет установленного mapping между product milestones (`Portfolio v0.3`, `v0.4`, P0/P1) и npm semver;
+- bump до `0.4.0`, `1.0.0` или другого числа создавал бы декоративный/ложный release claim;
+- `private: true` делает package semantics явными.
 
-### Что P1.1 сознательно НЕ изменил
+Будущий version change требует отдельного explicit versioning/release contract.
 
-- CSS/public content;
-- `tests/visual-baselines.json`;
-- visual thresholds;
-- Lighthouse budget;
-- workflow step ordering;
-- product routes;
-- feature-specific assertions;
-- no-JS scenarios;
-- trust semantics Project Evidence;
-- screenshot/artifact naming contracts.
+`package-lock.json` не изменялся: package name/version и dependency graph остались прежними.
 
-Во время self-review до final verification отдельно исправлены preservation-нюансы:
+### Metadata contract
 
-- cross-browser home route сохранён как `/`;
-- metadata smoke сохранил прежнюю light/default-like browser context semantics;
-- Project Evidence screenshots сохранили standalone-safe artifact creation.
+Добавлен `scripts/package-metadata.test.js`, который защищает:
 
-### P1.1 TDD / verification trail
+- package name;
+- `private: true`;
+- engineering portfolio / knowledge platform description;
+- required modern keywords и отсутствие landing-only identity;
+- canonical repository/bugs URLs;
+- неизменный Pages homepage;
+- deliberate `0.2.0` version decision;
+- package/package-lock root name-version consistency.
 
-- Build #271 / run `29950434704` — ожидаемый RED: tests импортировали ещё не существующие harness modules;
-- Build #280 / run `29950664284` — shared harness contracts GREEN;
-- Build #284 / run `29950951055` — core migrated runners GREEN;
-- Build #293 / run `29951464481` — final exact-head full matrix GREEN.
+TDD trail:
+
+- Build #295 / run `29953964548` — ожидаемый RED на stale metadata;
+- Build #296 / run `29954043887` — exact implementation head полностью GREEN.
 
 Design:
 
-`docs/superpowers/specs/2026-07-22-consolidated-browser-quality-harness-design.md`
+`docs/superpowers/specs/2026-07-22-project-metadata-cleanup-design.md`
 
 Plan:
 
-`docs/superpowers/plans/2026-07-22-consolidated-browser-quality-harness.md`
+`docs/superpowers/plans/2026-07-22-project-metadata-cleanup.md`
+
+### Предыдущий technical milestone
+
+**P1.1 — Consolidated Browser Quality Harness**, PR #29.
+
+Squash:
+
+`06e60425e31ef19ddae0c3ac8b0991808b45837e`
+
+Exact head:
+
+`00633c69e56354cbb8821c34a1b772cf259c3e18`
+
+Build #293 / run `29951464481`: **fully green**.
+
+Создан `scripts/quality-harness/` с shared paths/tooling/static-server/browser lifecycle/diagnostics/overflow/Axe/evidence/scenario primitives. Focused runners сохранили свои domain-specific assertions; giant monolithic runner не создавался. `visual-regression.cjs` намеренно оставлен отдельным.
 
 ### Сейчас в разработке
 
-После merge PR #29 active feature implementation PR отсутствует; текущий continuity follow-up — docs-only.
+После merge PR #31 active feature implementation PR отсутствует; текущий continuity follow-up — docs-only.
 
 Следующий оптимальный technical priority:
 
-**P1.2 — Project metadata cleanup.**
+**P1.3 — Stronger flagship case-study format.**
 
 Первая настоящая Photo Story остаётся content-dependent/non-blocking задачей.
 
@@ -159,7 +163,7 @@ Plan:
 - semantic HTML;
 - progressive vanilla JS;
 - quality infrastructure не должна скрывать domain ownership;
-- существующие quality gates не ослабляются ради рефакторинга;
+- существующие quality gates не ослабляются ради feature/refactor;
 - evidence не говорит больше, чем реально доказывает bounded `scope`.
 
 Diplodoc остаётся владельцем единственного site-wide local full-text search index.
@@ -193,11 +197,15 @@ Maintenance tooling P0.6 находится вне core public site truth:
 - `scripts/content-freshness-probe.js`;
 - `.github/workflows/content-freshness.yml`.
 
-Quality infrastructure P1.1 находится в:
+Quality infrastructure P1.1:
 
 `scripts/quality-harness/`
 
 Она переиспользуется focused CI runners, но не определяет product/domain assertions вместо них.
+
+Package identity contract P1.2:
+
+`scripts/package-metadata.test.js`
 
 ---
 
@@ -215,7 +223,7 @@ Case studies:
 - MiniChess;
 - Godot Atmospheric Horror Template.
 
-Для flagship проектов есть structured timelines и architecture diagrams.
+Для flagship проектов есть structured timelines, architecture diagrams и Project Evidence integration.
 
 ### 5.2 Project Evidence Layer — DONE
 
@@ -254,29 +262,17 @@ Exact head:
 
 Build #269 / run `29947803201`: **fully green**.
 
-Guard обнаруживает maintenance findings:
-
-- old `lastVerified`;
-- unreachable evidence links;
-- repository/release drift;
-- structured timeline contradictions;
-- verified snapshot с более новым signal после last check.
+Guard обнаруживает age/link/repository/release/timeline/signal drift и создаёт maintenance report/issue.
 
 Ключевая trust boundary:
 
 **Guard обнаруживает, но никогда автоматически не переписывает public truth или `verified / stale / unverified`.**
-
-Workflow permissions ограничены `contents: read` + `issues: write`, checkout `persist-credentials: false`, commit/push path отсутствует.
 
 ### 5.4 Grounded Engineering Notes — DONE
 
 PR #25 / squash:
 
 `f2775b7c9150281bcb4bcc01a4e021e007e18ca0`
-
-Exact head:
-
-`8a2973961e5ec38e4c8b3e0626460c04e88438a8`
 
 Build #257 / run `29943616448`: **fully green**.
 
@@ -344,36 +340,27 @@ Configured Build matrix:
 - visual regression;
 - quality diagnostics/evidence upload.
 
-P1.1 exact implementation head:
+P1.2 exact implementation head:
 
-`00633c69e56354cbb8821c34a1b772cf259c3e18`
+`12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`
 
-Build #293 / run `29951464481`:
+Build #296 / run `29954043887`:
 
 **fully green по всей configured matrix**.
 
 Особенно важно:
 
-- visual regression прошёл без обновления baseline;
-- existing focused runner boundaries сохранены;
-- новый harness покрыт `scripts/quality-harness.test.js`;
-- refactor не потребовал weakening/exceptions в existing quality gates.
+- `package-lock.json` не менялся;
+- public content/CSS/data registries/routes не менялись;
+- visual baselines и thresholds не менялись;
+- Lighthouse budget/workflow ordering не менялись;
+- metadata cleanup защищён unit contract, а не только документацией.
 
 ---
 
 ## 7. Известные незавершённые части / technical debt
 
-### P1.2 — Project metadata cleanup — NEXT
-
-`package.json` всё ещё содержит исторические metadata:
-
-- `version: 0.2.0`;
-- description: `Многостраничный лендинг TrueRuslan`;
-- keywords отражают раннюю landing/Diplodoc фазу сильнее, чем текущий engineering portfolio / knowledge platform scope.
-
-Версию менять только как explicit milestone/release decision, а не механически.
-
-### P1.3 — Flagship narrative depth
+### P1.3 — Flagship narrative depth — NEXT
 
 LivingWorld и NODE ZERO постепенно привести к структуре:
 
@@ -398,6 +385,10 @@ Candidates после отдельной source verification:
 
 Первая настоящая Photo Story отсутствует. Platform готова; fake/demo album не добавлять.
 
+### Versioning
+
+`0.2.0` не считать product maturity indicator. Пока нет explicit package release contract, version не bump’ать механически.
+
 ### Отложено сознательно
 
 - minimal RU/EN;
@@ -409,23 +400,23 @@ Candidates после отдельной source verification:
 
 ## 8. Следующий оптимальный этап
 
-### P1.2 — Project metadata cleanup
+### P1.3 — Stronger flagship case-study format
 
-Следующий небольшой controlled milestone:
+Следующий этап — улучшить narrative depth двух flagship case studies: LivingWorld и NODE ZERO.
 
-1. проверить, какую semantic version реально имеет смысл зафиксировать после evolution от landing к engineering portfolio/knowledge platform;
-2. обновить `package.json` description;
-3. пересмотреть keywords под фактический scope;
-4. не менять package metadata просто ради косметического bump;
-5. сохранить build/runtime behavior неизменным;
-6. проверить package metadata contract/unit tests и полную CI matrix.
+Цель:
 
-После P1.2:
+- сделать историю инженерных решений понятной человеку, а не только registry/evidence системе;
+- раскрыть problem/constraints/decisions/failures;
+- отделить narrative от machine-like current state;
+- переиспользовать Project Evidence как factual/current layer, не дублировать его вручную;
+- сохранить static-first authoring и существующие quality gates.
 
-1. P1.3 stronger flagship case-study narrative structure;
-2. additional grounded Notes после cross-repository source verification;
-3. first real Photo Story при genuine material;
-4. minimal EN / analytics / domain позже.
+После P1.3:
+
+1. additional grounded Notes после cross-repository source verification;
+2. first real Photo Story при genuine material;
+3. minimal EN / analytics / domain позже.
 
 ---
 
