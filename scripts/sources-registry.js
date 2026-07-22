@@ -296,6 +296,22 @@ ${cards}
 </section>`;
 }
 
+function injectNoJavaScriptFallback(html, content) {
+  if (/data-tr-sources-noscript/i.test(html)) return html;
+  const rootMarker = /<div\s+id=["']root["']\s*>\s*<\/div>/i;
+  if (!rootMarker.test(html)) {
+    throw new Error('Sources Knowledge Base could not place the no-JavaScript fallback: #root host not found.');
+  }
+  const fallback = `<noscript data-tr-sources-noscript>
+  <main class="tr-sources-noscript">
+    <h1>Список изученных источников</h1>
+    <p>Материалы, к которым я возвращаюсь в работе и обучении.</p>
+    ${content}
+  </main>
+</noscript>`;
+  return html.replace(rootMarker, (rootHost) => `${rootHost}\n${fallback}`);
+}
+
 export function applySourcesKnowledgeBase(outputDir, sources) {
   const relativePath = path.join('landing', 'bibliography.html');
   const htmlPath = path.join(outputDir, relativePath);
@@ -313,6 +329,9 @@ export function applySourcesKnowledgeBase(outputDir, sources) {
   if (!transformed.source) {
     throw new Error('Sources Knowledge Base placeholder not found in rendered DOM or Diplodoc state payload.');
   }
-  fs.writeFileSync(htmlPath, transformed.html, 'utf8');
+  const finalHtml = transformed.source === 'diplodoc-state'
+    ? injectNoJavaScriptFallback(transformed.html, content)
+    : transformed.html;
+  fs.writeFileSync(htmlPath, finalHtml, 'utf8');
   return relativePath.replaceAll(path.sep, '/');
 }
