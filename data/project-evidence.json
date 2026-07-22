@@ -19,7 +19,7 @@
         "label": "LivingWorld CI run 29736858315",
         "state": "green",
         "observedAt": "2026-07-20",
-        "scope": "Exact-head CI for the world-perception milestone passed Java 21 and pinned dependency checks, unit/storage/migration/perception/trust/package/reproducibility tests, the RC resilience scenario, Fabric GameTest, release artifact staging and JAR artifact upload. This does not prove human two-client microphone or spatial-audio acceptance."
+        "scope": "Exact-head CI для milestone world perception прошёл проверки Java 21 и pinned dependencies, unit/storage/migration/perception/trust/package/reproducibility tests, отдельный RC resilience scenario, Fabric GameTest, staging release artifact и загрузку JAR artifact. Это не подтверждает ручную приёмку двух реальных клиентов, микрофона или spatial audio."
       },
       {
         "kind": "pr",
@@ -27,7 +27,7 @@
         "label": "World perception milestone PR #6",
         "state": "merged",
         "observedAt": "2026-07-20",
-        "scope": "The server-observed world-perception and trusted-knowledge milestone was merged after its documented exact-head verification. This evidence covers that milestone, not complete multiplayer release acceptance."
+        "scope": "Milestone server-observed world perception и trusted knowledge был merged после documented exact-head verification. Это подтверждает именно этот milestone, а не полную готовность multiplayer release."
       }
     ]
   },
@@ -48,7 +48,7 @@
         "label": "Unity production foundation acceptance",
         "state": "accepted",
         "observedAt": "2026-07-14",
-        "scope": "The production foundation was verified with Unity 6000.3.0f1: setup and validation completed, EditMode and PlayMode tests passed, a Windows x86_64 IL2CPP development build was created and launched, Bootstrap reached Frontend, and the full gate was reproduced from a fresh clone. This evidence applies to the foundation milestone only."
+        "scope": "Production foundation был проверен на Unity 6000.3.0f1: setup и validation завершились успешно, EditMode и PlayMode tests прошли, Windows x86_64 IL2CPP development build был собран и запущен, Bootstrap дошёл до Frontend, а полный gate был воспроизведён из fresh clone. Это доказательство относится только к foundation milestone."
       },
       {
         "kind": "pr",
@@ -56,7 +56,7 @@
         "label": "Player foundation PR #9",
         "state": "pending",
         "observedAt": "2026-07-22",
-        "scope": "The current player-foundation work remains a draft milestone. Its own documented executable gates for Unity validation, EditMode and PlayMode execution, Windows IL2CPP build and graybox launch, gameplay acceptance, allocation checks and fresh-clone reproduction were not yet claimed as verified."
+        "scope": "Текущий player-foundation остаётся draft milestone. Для него пока не заявлены как проверенные executable gates: Unity validation, EditMode и PlayMode execution, Windows IL2CPP build и graybox launch, gameplay acceptance, allocation checks и воспроизведение из fresh clone."
       }
     ]
   }
