@@ -39,7 +39,7 @@ Initial deterministic rules:
 - external repository observation newer than latest recorded evidence observation создаёт repository-drift finding;
 - registry/timeline/evidence contradictions определяются только по explicit structured facts, без NLP/guessing по narrative prose;
 - timeline с несколькими `current` entries или без `current` при наличии timeline reference получает deterministic structure finding;
-- evidence `lastVerified` не может быть новее всех recorded signal observations без отдельного manual signal на ту же или более позднюю дату;
+- `verified` snapshot с recorded signal, чей `observedAt` новее `lastVerified`, получает re-review finding: после controlled verification появилось новое состояние;
 - stale/unverified state сам по себе не является ошибкой и не вызывает auto-mutation.
 
 Guard **не требует evidence snapshot для каждого active/public project**: текущий Project Evidence Layer имеет намеренно ограниченный controlled scope, и отсутствие snapshot вне этого scope не считается freshness defect.
@@ -108,7 +108,7 @@ TDD coverage:
 - unreachable evidence URL observation;
 - repository newer-than-evidence drift;
 - timeline structure contradictions;
-- `lastVerified` / signal chronology contradiction;
+- verified snapshot with a signal newer than `lastVerified`;
 - deterministic ordering/output;
 - no finding for fresh verified snapshot;
 - stale/unverified states remain valid maintenance states;
