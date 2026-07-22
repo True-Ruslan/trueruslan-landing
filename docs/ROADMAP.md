@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-07-22**, после merge P1.2 Project Metadata Cleanup PR #31.
+> Обновлено: **2026-07-22**, после merge P1.3 Stronger Flagship Case-Study Format PR #34.
 >
 > Roadmap отвечает на вопрос **«что делать дальше, в каком порядке и зачем?»**.
 > Фактическое текущее состояние — `docs/PROJECT_STATE.md`, история — `docs/CHANGELOG.md`.
@@ -19,6 +19,7 @@
 - maintenance signals не переписывают public truth автоматически;
 - сначала реальные data/evidence, потом presentation;
 - evidence не говорит больше, чем доказывает bounded scope;
+- narrative не дублирует canonical machine-like current/trust facts;
 - shared infrastructure не скрывает focused domain ownership;
 - quality gates не ослабляются ради refactor/feature velocity.
 
@@ -84,10 +85,6 @@ PR #27 / squash:
 
 `33770983789fbde5c59a94972709360286a06ad5`
 
-Exact head:
-
-`4b50dd78a41b3cbe2fce327e6c752508134862d0`
-
 Build #269 / run `29947803201`: **fully green**.
 
 Guard проверяет age/link/repository/release/timeline/signal drift и создаёт maintenance report/issue, но никогда автоматически не меняет public registries/trust state.
@@ -110,9 +107,7 @@ Exact implementation head:
 
 Build #293 / run `29951464481`: **fully green по полной configured matrix**.
 
-Создан `scripts/quality-harness/` с shared infrastructure primitives для paths, tools/browser launch, static server, context/page lifecycle, diagnostics, overflow/Axe, evidence и common scenarios.
-
-Focused runners остались focused; giant monolithic runner/DSL не создавался. `visual-regression.cjs` намеренно оставлен отдельным.
+Создан `scripts/quality-harness/` с shared infrastructure primitives. Focused runners остались focused; giant monolithic runner/DSL не создавался. `visual-regression.cjs` намеренно оставлен отдельным.
 
 ## P1.2 Project metadata cleanup — DONE
 
@@ -126,122 +121,146 @@ Exact implementation head:
 
 Build #296 / run `29954043887`: **fully green по полной configured matrix**.
 
+Реализовано:
+
+- package identity → engineering portfolio / knowledge platform;
+- `private: true`;
+- canonical repository/bugs URLs;
+- modern keywords;
+- metadata contract test;
+- `version: 0.2.0` оставлен намеренно до explicit package-release contract.
+
+## P1.3 Stronger flagship case-study format — DONE
+
+PR #34 / squash:
+
+`107b69311f6eed408de5306406d9ff41f0e32ea2`
+
+Exact implementation head:
+
+`edda2fbbf94b808f8955a2efb00e885dbb964040`
+
+Build #301 / run `29958607263`: **fully green по полной configured matrix**.
+
 ### Реализовано
 
-`package.json` identity приведён к фактическому продукту:
-
-- description → `TrueRuslan engineering portfolio and knowledge platform`;
-- `private: true`;
-- keywords → engineering portfolio / knowledge platform / backend engineering / software architecture / Engineering Notes;
-- удалён obsolete primary keyword `landing`;
-- repository/bugs URLs нормализованы на `True-Ruslan`;
-- working GitHub Pages homepage сохранён без изменений.
-
-Добавлен `scripts/package-metadata.test.js`, защищающий canonical metadata, URL identity, `private: true`, version decision и package-lock consistency.
-
-### Deliberate version decision
-
-`version: 0.2.0` оставлен **намеренно**.
-
-Причина:
-
-- сайт не публикуется как npm package;
-- package semver contract отсутствует;
-- product milestones не равны npm releases;
-- bump до `0.4.0`/`1.0.0` был бы декоративным claim.
-
-Будущий version bump требует отдельного explicit versioning/release contract.
-
-`package-lock.json` не менялся: dependency graph и root name/version unchanged.
-
-### TDD trail
-
-- Build #295 / run `29953964548` — expected RED на stale metadata;
-- Build #296 / run `29954043887` — final exact-head full matrix GREEN.
-
-Design:
-
-`docs/superpowers/specs/2026-07-22-project-metadata-cleanup-design.md`
-
-Plan:
-
-`docs/superpowers/plans/2026-07-22-project-metadata-cleanup.md`
-
----
-
-## P1.3 Stronger flagship case-study format — NEXT
-
-### Почему сейчас
-
-Infrastructure, evidence, freshness, content grounding и package identity уже стабилизированы. Следующий максимальный product-value шаг — сделать два flagship case studies сильнее как человеческие инженерные истории, а не только как набор registry/timeline/evidence blocks.
-
-Controlled scope первой итерации:
-
-- LivingWorld;
-- NODE ZERO.
-
-### Narrative structure
-
-Каждый flagship постепенно привести к структуре:
+LivingWorld и NODE ZERO переведены на общий Markdown-first narrative contract:
 
 1. Problem
 2. Constraints
 3. Decisions
-4. What failed
+4. What failed / corrected assumptions
 5. Current state
 6. Evidence
 7. What I would change now
 
-### Critical boundary
+### Critical source-of-truth boundary
 
-Project Evidence уже владеет machine-like current/evidence facts.
+Существующие owners сохранены:
 
-Narrative **не должен**:
+- `data/projects.json` — identity/status/summary/links/tags;
+- `data/project-history/*.json` — structured evolution;
+- `data/project-evidence.json` — trust/current verification;
+- Markdown — human-authored reasoning и retrospective.
 
-- вручную дублировать canonical status/trust facts;
-- обещать больше, чем подтверждает Evidence Layer;
-- превращаться в маркетинговый case study с invented impact metrics;
-- создавать второй источник истины по current project state.
+Не создан новый case-study registry/renderer/CMS/schema.
 
-Narrative должен объяснять reasoning:
+### Contract protection
 
-- зачем проект существует;
-- какие реальные ограничения определяли решения;
-- какие архитектурные решения были приняты и почему;
-- что не сработало/сломалось;
-- чему это научило;
-- что бы автор изменил сейчас.
+`scripts/flagship-case-study.test.js` проверяет:
+
+- семь stable section markers;
+- canonical order;
+- timeline placeholder ровно один раз;
+- Project Evidence placeholder ровно один раз;
+- architecture diagram ровно один раз;
+- controlled flagship set `livingworld`, `node-zero`.
+
+### TDD trail
+
+- Build #299 / run `29958395678` — RED до миграции;
+- Build #300 / run `29958496645` — промежуточный RED после LivingWorld;
+- Build #301 / run `29958607263` — final full matrix GREEN.
+
+### Что не менялось
+
+- project/timeline/evidence registries;
+- CSS;
+- build/postprocess renderers;
+- routes;
+- visual baselines/thresholds;
+- CI workflow order/budgets.
+
+Design:
+
+`docs/superpowers/specs/2026-07-22-flagship-case-study-format-design.md`
+
+Plan:
+
+`docs/superpowers/plans/2026-07-22-flagship-case-study-format.md`
+
+---
+
+## P1.4 Additional grounded Engineering Notes — NEXT
+
+### Почему сейчас
+
+После P1.3 основные flagship pages уже объясняют человеческий engineering reasoning, а infrastructure/evidence/freshness/quality layers стабилизированы.
+
+Следующий низкорисковый high-value шаг — добавить ещё 1–2 сильных Engineering Notes на основе реальных repository incidents/decisions, а не SEO-контента ради количества.
+
+### Обязательная первая стадия — source verification
+
+До написания note:
+
+1. определить candidate incident/decision;
+2. открыть соответствующий repository/docs/PR/commits/tests;
+3. отделить факты от памяти/интерпретации;
+4. проверить, что тема не дублирует существующие 6 notes;
+5. только после этого фиксировать narrative.
+
+### Candidate A — malformed / almost-correct LLM JSON
+
+Предпочтительный первый кандидат для проверки.
+
+Потенциальный engineering lesson:
+
+- structured LLM output — внешний protocol boundary;
+- «почти валидный JSON» не должен просачиваться в user-visible response/state;
+- parsing/validation/fallback должны быть explicit;
+- provider success ≠ contract success;
+- malformed fields/null content/JSON tails требуют bounded recovery rather than unchecked casts/string concatenation.
+
+Важно: конкретные incidents и claims писать только после проверки исходного repository history.
+
+### Candidate B — Minecraft NPC voice pipeline
+
+Проверять только если новая note даст самостоятельный lesson и не станет пересказом существующей:
+
+`server-authoritative-ai-npcs`
+
+Возможный уникальный angle — end-to-end voice degradation/latency/identity/acceptance boundary, но решение принимать только после source verification.
 
 ### Implementation direction
 
-Предпочтительный путь:
+Сохранить существующую Notes architecture:
 
-- сохранить ordinary Diplodoc Markdown authoring;
-- использовать существующие timeline/evidence registries там, где уже есть canonical structured facts;
-- улучшать semantic page structure без нового frontend framework/CMS;
-- при необходимости добавить лёгкие build-time conventions/components только если они уменьшают duplication между двумя flagship pages;
-- не строить универсальный case-study engine заранее без реальной повторяемой необходимости.
+- Markdown source в `docs/landing/notes/*.md`;
+- canonical metadata/relations в `data/notes.json`;
+- existing Diplodoc/build-time postprocess;
+- Atom feed;
+- TOC/search/sitemap/SEO integration;
+- no second renderer/search index/CMS.
 
 ### Definition of Done
 
-- LivingWorld и NODE ZERO имеют понятную narrative hierarchy;
-- Problem/Constraints/Decisions/Failures явно читаются;
-- current state/evidence не расходятся с canonical registries;
-- first-person calm engineering diary tone сохранён;
-- no invented metrics/claims;
-- mobile/no-JS/search/SEO behavior сохранён;
+- 1–2 новые notes основаны на реально проверенных repository facts;
+- у каждой есть конкретный problem/failure/decision/takeaway;
+- нет invented incidents/metrics;
+- нет смыслового дубля существующих notes;
+- metadata/relations/feed/search/SEO integrated;
+- content contract updated;
 - full exact-head quality matrix green.
-
-## P1.4 Additional grounded Notes
-
-Только после source verification соответствующих repositories.
-
-Candidates:
-
-- Minecraft NPC voice AI pipeline;
-- malformed/almost-correct LLM JSON handling.
-
-Не писать абстрактные SEO-статьи ради количества.
 
 ---
 
@@ -294,6 +313,7 @@ Candidates:
 - infinite scroll;
 - automatic public-state mutation из CI/release/freshness signals;
 - giant QA runner, скрывающий domain-specific tests;
+- универсальный case-study engine без repeated need;
 - декоративные version bumps без release semantics.
 
 ---
@@ -301,13 +321,14 @@ Candidates:
 # Оптимальная последовательность следующих действий
 
 ```text
-1. P1.3 Stronger flagship case-study narrative structure
+1. P1.4 Additional grounded Engineering Notes
+   └─ сначала cross-repository source verification
         ↓
-2. Additional grounded Notes after source verification
+2. First real Photo Story whenever genuine material is ready (non-blocking)
         ↓
-3. First real Photo Story whenever genuine material is ready (non-blocking)
+3. Minimal EN / privacy analytics / custom domain later
         ↓
-4. Minimal EN / privacy analytics / custom domain later
+4. Richer architecture explorer only when real artifacts justify it
 ```
 
 Operational side-check, не блокирующий feature roadmap:
