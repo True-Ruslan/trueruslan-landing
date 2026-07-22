@@ -56,6 +56,12 @@ LivingWorld довольно быстро показал мне, что «под
 
 [Читать заметку →](notes/server-authoritative-ai-npcs.md)
 
+### Почему успешный ответ LLM ещё не означает успешный контракт
+
+HTTP 200 или успешный вызов provider ещё не означает, что модель вернула допустимое решение для приложения. Здесь я разбираю strict structured output как внешний protocol boundary: trailing tokens, неверные типы, `null`, coercion, schema validation и bounded fallback.
+
+[Читать заметку →](notes/llm-output-is-a-protocol-boundary.md)
+
 ---
 
 {% note info %}
