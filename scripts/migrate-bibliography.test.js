@@ -1,7 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
 
 async function loadMigrationModule() {
   try {
@@ -50,9 +48,5 @@ test('current bibliography migrates all 31 real records without losing represent
   assert.equal(blog?.sourceType, 'blog');
   assert.equal(last?.title, 'Axelix. Cпецназ для Вашей Spring Boot экосистемы');
 
-  if (process.env.CI) {
-    const artifactsDir = path.join(process.cwd(), 'quality-artifacts');
-    fs.mkdirSync(artifactsDir, {recursive: true});
-    fs.writeFileSync(path.join(artifactsDir, 'sources-migration.json'), `${JSON.stringify(registry, null, 2)}\n`);
-  }
+  console.log(`SOURCES_MIGRATION_JSON_BEGIN${JSON.stringify(registry)}SOURCES_MIGRATION_JSON_END`);
 });
