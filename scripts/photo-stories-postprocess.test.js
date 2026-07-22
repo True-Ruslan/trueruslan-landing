@@ -54,7 +54,16 @@ test('postprocessOutput generates canonical photo archive, legacy bridge and sit
     writing: ['Photo stories'],
   });
   writeJson(path.join(dataDir, 'notes.json'), []);
-  writeJson(path.join(dataDir, 'page-meta.json'), []);
+  writeJson(path.join(dataDir, 'page-meta.json'), [{
+    path: 'index.html',
+    card: 'home',
+    title: 'Test portfolio',
+    description: 'Test portfolio description.',
+    displayTitle: 'TEST PORTFOLIO',
+    kicker: 'BACKEND ENGINEER',
+    tags: ['TEST'],
+    accent: 'cyan',
+  }]);
   writeJson(path.join(dataDir, 'engineering-graph.json'), {
     filters: [{id: 'backend', label: 'Backend'}],
     nodes: [
