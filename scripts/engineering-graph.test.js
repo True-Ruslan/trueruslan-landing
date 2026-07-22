@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {
   injectEngineeringGraph,
   renderEngineeringGraphFallback,
+  resolveEngineeringGraphProjects,
   validateEngineeringGraph,
 } from './engineering-graph.js';
 
@@ -15,6 +16,13 @@ const graph = {
   ],
   edges: [{from:'java',to:'system',label:'builds'}],
 };
+
+const projectRegistry = [{
+  slug: 'livingworld',
+  name: 'LivingWorld',
+  summary: 'Canonical project summary.',
+  href: 'landing/projects/livingworld.html',
+}];
 
 test('validateEngineeringGraph accepts a connected graph', () => {
   assert.deepEqual(validateEngineeringGraph(graph), graph);
@@ -53,6 +61,40 @@ test('validateEngineeringGraph rejects missing endpoints, self edges, duplicates
     nodes:[...graph.nodes, {id:'orphan',label:'Orphan',kind:'note',description:'None',column:3,row:3,tags:['backend']}],
   };
   assert.throws(() => validateEngineeringGraph(orphanGraph), /Orphan engineering graph node/);
+});
+
+test('resolveEngineeringGraphProjects derives project identity and href from canonical registry', () => {
+  const raw = {
+    filters: graph.filters,
+    nodes: [
+      graph.nodes[0],
+      {id:'livingworld',kind:'project',projectRef:'livingworld',column:2,row:2,tags:['backend']},
+    ],
+    edges: [{from:'java',to:'livingworld',label:'used in'}],
+  };
+  const resolved = resolveEngineeringGraphProjects(raw, projectRegistry);
+  const project = resolved.nodes[1];
+
+  assert.equal(project.label, 'LivingWorld');
+  assert.equal(project.description, 'Canonical project summary.');
+  assert.equal(project.href, 'landing/projects/livingworld.html');
+  assert.equal(validateEngineeringGraph(resolved).nodes[1].href, 'landing/projects/livingworld.html');
+});
+
+test('resolveEngineeringGraphProjects rejects unknown refs and duplicated identity fields', () => {
+  const base = {
+    filters: graph.filters,
+    nodes: [graph.nodes[0], {id:'livingworld',kind:'project',projectRef:'livingworld',column:2,row:2,tags:['backend']}],
+    edges: [{from:'java',to:'livingworld',label:'used in'}],
+  };
+  assert.throws(
+    () => resolveEngineeringGraphProjects(base, []),
+    /unknown project/,
+  );
+  assert.throws(
+    () => resolveEngineeringGraphProjects({...base, nodes:[graph.nodes[0], {...base.nodes[1], label:'Duplicate'}]}, projectRegistry),
+    /duplicates canonical registry identity fields/,
+  );
 });
 
 test('renderEngineeringGraphFallback is deterministic and escapes content', () => {
