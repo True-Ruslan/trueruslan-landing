@@ -36,11 +36,13 @@ Initial deterministic rules:
 
 - verified/stale snapshot с `lastVerified`, старше threshold, получает maintenance finding;
 - evidence signal URL, который external probe пометил unreachable/broken, получает finding;
-- public active project без evidence snapshot получает coverage finding;
-- evidence snapshot с project status `verified`, когда project registry показывает lifecycle, который external repository observation явно опередил, получает drift finding;
-- timeline current state и registry lifecycle проверяются только на явные contradictions, без попытки автоматически вывести product status из prose;
 - external repository observation newer than latest recorded evidence observation создаёт repository-drift finding;
-- stale/unverified public status сам по себе не считается build failure.
+- registry/timeline/evidence contradictions определяются только по explicit structured facts, без NLP/guessing по narrative prose;
+- timeline с несколькими `current` entries или без `current` при наличии timeline reference получает deterministic structure finding;
+- `verified` snapshot с recorded signal, чей `observedAt` новее `lastVerified`, получает re-review finding: после controlled verification появилось новое состояние;
+- stale/unverified state сам по себе не является ошибкой и не вызывает auto-mutation.
+
+Guard **не требует evidence snapshot для каждого active/public project**: текущий Project Evidence Layer имеет намеренно ограниченный controlled scope, и отсутствие snapshot вне этого scope не считается freshness defect.
 
 Default `lastVerified` threshold: 30 days. Threshold configurable через CLI/workflow input.
 
@@ -59,16 +61,27 @@ Default `lastVerified` threshold: 30 days. Threshold configurable через CLI
 
 Freshness findings не должны ломать обычный site build.
 
-### 4. Scheduled GitHub Action
+### 4. External probe adapter
+
+`scripts/content-freshness-probe.js` выполняется только как maintenance tooling.
+
+Он:
+
+- берёт только явно настроенные `project.links.github`;
+- для GitHub repository URL получает bounded metadata (`pushed_at`, optional latest release);
+- проверяет только явно записанные evidence signal URLs;
+- нормализует network/HTTP failures в observations, а не изменяет canonical data;
+- пропускает проекты без публичного GitHub URL вместо догадок о repository identity.
+
+### 5. Scheduled GitHub Action
 
 `.github/workflows/content-freshness.yml`:
 
 - `schedule`: daily;
 - `workflow_dispatch` для ручного запуска;
 - checkout + Node 24 + `npm ci`;
-- собирает bounded GitHub repository observations только для projects с public GitHub link;
-- проверяет configured evidence URLs по HTTP;
-- запускает maintenance command;
+- запускает external probe;
+- запускает maintenance report command;
 - сохраняет JSON/Markdown artifacts;
 - создаёт или обновляет один issue с marker `<!-- content-freshness-guard -->`, если findings есть;
 - закрывает существующий guard issue, когда findings исчезли;
@@ -76,7 +89,7 @@ Freshness findings не должны ломать обычный site build.
 
 Workflow permissions минимальные: `contents: read`, `issues: write`.
 
-### 5. Trust boundary
+### 6. Trust boundary
 
 Guard никогда:
 
@@ -92,13 +105,16 @@ Guard никогда:
 TDD coverage:
 
 - age threshold boundary;
-- missing evidence coverage;
 - unreachable evidence URL observation;
 - repository newer-than-evidence drift;
+- timeline structure contradictions;
+- verified snapshot with a signal newer than `lastVerified`;
 - deterministic ordering/output;
 - no finding for fresh verified snapshot;
 - stale/unverified states remain valid maintenance states;
-- CLI report generation from fixture observations.
+- no false-positive coverage requirement for projects outside controlled evidence scope;
+- CLI report generation from fixture observations;
+- probe normalization through injected fetch.
 
 Existing full `Build` workflow remains unchanged except that new unit tests run under `npm test`.
 
@@ -106,6 +122,7 @@ Existing full `Build` workflow remains unchanged except that new unit tests run 
 
 - deterministic detector and unit tests;
 - local maintenance/report command;
+- bounded external probe adapter;
 - daily/manual thin workflow;
 - JSON + Markdown report artifacts;
 - idempotent issue create/update/close behavior;

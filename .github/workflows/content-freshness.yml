@@ -1,0 +1,117 @@
+name: Content Freshness
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+    inputs:
+      max_age_days:
+        description: Maximum age of lastVerified before a maintenance finding
+        required: false
+        default: '30'
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: content-freshness-guard
+  cancel-in-progress: false
+
+jobs:
+  freshness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Collect bounded external observations
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          node scripts/content-freshness-probe.js
+          --output quality-artifacts/content-freshness-observations.json
+
+      - name: Build deterministic freshness report
+        shell: bash
+        run: |
+          MAX_AGE_DAYS="${{ github.event.inputs.max_age_days || '30' }}"
+          node scripts/content-freshness-report.js \
+            --observations quality-artifacts/content-freshness-observations.json \
+            --output-dir quality-artifacts \
+            --max-age-days "$MAX_AGE_DAYS"
+
+      - name: Upload freshness evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-freshness-report
+          path: |
+            quality-artifacts/content-freshness-observations.json
+            quality-artifacts/content-freshness-report.json
+            quality-artifacts/content-freshness-report.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Create, update or close freshness issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- content-freshness-guard -->';
+            const report = JSON.parse(fs.readFileSync('quality-artifacts/content-freshness-report.json', 'utf8'));
+            const markdown = fs.readFileSync('quality-artifacts/content-freshness-report.md', 'utf8').trim();
+            const {owner, repo} = context.repo;
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'all',
+              per_page: 100,
+            });
+            const existing = issues.find((issue) => !issue.pull_request && (issue.body || '').includes(marker));
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const body = `${markdown}\n\nWorkflow run: ${runUrl}\n`;
+
+            if (report.summary.total > 0) {
+              if (existing) {
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: existing.number,
+                  title: 'Content Freshness Guard findings',
+                  body,
+                  state: 'open',
+                });
+              } else {
+                await github.rest.issues.create({
+                  owner,
+                  repo,
+                  title: 'Content Freshness Guard findings',
+                  body,
+                });
+              }
+              return;
+            }
+
+            if (existing?.state === 'open') {
+              await github.rest.issues.update({
+                owner,
+                repo,
+                issue_number: existing.number,
+                title: 'Content Freshness Guard — clean',
+                body,
+                state: 'closed',
+                state_reason: 'completed',
+              });
+            }
