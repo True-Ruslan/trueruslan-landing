@@ -17,6 +17,7 @@
 - Green CI/release/repository activity is only a bounded maintenance signal, never automatic product verification.
 - Default `lastVerified` age threshold is 30 days and configurable.
 - Freshness findings do not fail the ordinary site build; invalid inputs/execution failures do.
+- Evidence coverage remains intentionally scoped; projects outside `data/project-evidence.json` are not freshness failures by omission alone.
 
 ---
 
@@ -30,7 +31,8 @@
 - Produces: `analyzeContentFreshness({projects, evidence, timelines, observations, now, maxVerifiedAgeDays}) -> {generatedAt, summary, findings}`
 - Produces: `renderFreshnessMarkdown(report) -> string`
 
-- [ ] Write failing tests for fresh snapshots, age boundary, missing evidence coverage, unreachable evidence URL observations, repository drift, deterministic ordering, and stale/unverified validity.
+- [ ] Write failing tests for fresh snapshots, age boundary, unreachable evidence URL observations, repository drift, timeline structure contradictions, signal chronology contradictions, deterministic ordering, and stale/unverified validity.
+- [ ] Add an explicit no-false-positive test proving that projects outside controlled evidence scope are ignored by omission alone.
 - [ ] Run `npm test` in PR CI and confirm RED because detector exports/behavior are missing.
 - [ ] Implement minimal pure detector and deterministic Markdown rendering.
 - [ ] Re-run `npm test` until GREEN.
