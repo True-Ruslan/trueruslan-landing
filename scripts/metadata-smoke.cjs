@@ -1,19 +1,11 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const express = require('express');
+const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cjs');
+const {startStaticServer} = require('./quality-harness/static-server.cjs');
+const {createScenarioPage} = require('./quality-harness/browser.cjs');
+const {writeJsonArtifact} = require('./quality-harness/evidence.cjs');
 
-const ROOT = path.resolve(__dirname, '..');
-const OUTPUT_DIR = path.join(ROOT, 'docs-html');
-const TOOLS_DIR = path.join(ROOT, '.quality-tools', 'node_modules');
 const PORT = Number(process.env.METADATA_SMOKE_PORT || 4175);
-const BASE_URL = `http://127.0.0.1:${PORT}`;
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-
-function requireTool(name) {
-  return require(path.join(TOOLS_DIR, ...name.split('/')));
-}
-
-const {chromium} = requireTool('playwright');
+const {chromium} = requireQualityTool('playwright');
 
 const pages = [
   {path: '/index.html', title: 'Руслан Немыкин — Backend Engineer', card: 'home'},
@@ -25,22 +17,8 @@ const pages = [
   {path: '/landing/notes.html', title: 'Engineering Notes — Руслан Немыкин', card: 'notes'},
 ];
 
-function startServer() {
-  const app = express();
-  app.disable('x-powered-by');
-  app.use(express.static(OUTPUT_DIR, {extensions: ['html'], fallthrough: false}));
-  return new Promise((resolve, reject) => {
-    const server = app.listen(PORT, '127.0.0.1', () => resolve(server));
-    server.on('error', reject);
-  });
-}
-
-function stopServer(server) {
-  return new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
-}
-
-async function assertMetadata(page, context, expected) {
-  const response = await page.goto(`${BASE_URL}${expected.path}`, {waitUntil: 'networkidle'});
+async function assertMetadata(page, context, baseUrl, expected) {
+  const response = await page.goto(`${baseUrl}${expected.path}`, {waitUntil: 'networkidle'});
   if (!response?.ok()) throw new Error(`${expected.path} returned HTTP ${response?.status() ?? 'no response'}`);
 
   const actualTitle = await page.title();
@@ -66,7 +44,7 @@ async function assertMetadata(page, context, expected) {
   if (twitterCard !== 'summary_large_image') throw new Error(`${expected.path}: wrong twitter:card`);
   if (!canonical?.startsWith('http')) throw new Error(`${expected.path}: canonical must be absolute`);
 
-  const imageResponse = await context.request.get(`${BASE_URL}${ogLocalPath}`);
+  const imageResponse = await context.request.get(`${baseUrl}${ogLocalPath}`);
   if (!imageResponse.ok()) throw new Error(`${expected.path}: OG image HTTP ${imageResponse.status()}`);
   const body = Buffer.from(await imageResponse.body());
   if (!body.subarray(0, 8).equals(PNG_SIGNATURE)) throw new Error(`${expected.path}: OG image is not PNG`);
@@ -75,26 +53,24 @@ async function assertMetadata(page, context, expected) {
 }
 
 async function main() {
-  if (!fs.existsSync(OUTPUT_DIR)) throw new Error('docs-html does not exist. Run npm run build:docs first.');
-  const server = await startServer();
+  const serverRuntime = await startStaticServer({port: PORT});
   let browser;
+  let runtime;
 
   try {
-    browser = await chromium.launch({channel: 'chrome', headless: true, args: ['--no-sandbox']});
-    const context = await browser.newContext();
-    const page = await context.newPage();
+    browser = await launchChromium(chromium);
+    runtime = await createScenarioPage(browser, {colorScheme: 'light'});
     const summary = [];
     for (const expected of pages) {
       console.log(`Metadata smoke: ${expected.path}`);
-      summary.push(await assertMetadata(page, context, expected));
+      summary.push(await assertMetadata(runtime.page, runtime.context, serverRuntime.baseUrl, expected));
     }
-    fs.mkdirSync(path.join(ROOT, 'quality-artifacts'), {recursive: true});
-    fs.writeFileSync(path.join(ROOT, 'quality-artifacts', 'metadata-summary.json'), JSON.stringify(summary, null, 2));
-    await context.close();
+    writeJsonArtifact('metadata-summary.json', summary);
     console.log(`Metadata smoke passed for ${summary.length} page(s).`);
   } finally {
+    if (runtime) await runtime.close();
     if (browser) await browser.close();
-    await stopServer(server);
+    await serverRuntime.stop();
   }
 }
 

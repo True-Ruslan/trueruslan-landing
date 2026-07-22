@@ -1,117 +1,19 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const zlib = require('node:zlib');
-const {execFileSync, spawn} = require('node:child_process');
+const {spawn} = require('node:child_process');
 
-const express = require('express');
+const {ROOT, TOOLS_DIR, ARTIFACTS_DIR} = require('./quality-harness/paths.cjs');
+const {requireQualityTool, findChrome, launchChromium} = require('./quality-harness/tools.cjs');
+const {startStaticServer} = require('./quality-harness/static-server.cjs');
+const {createScenarioPage} = require('./quality-harness/browser.cjs');
+const {installPageDiagnostics} = require('./quality-harness/diagnostics.cjs');
+const {assertNoHorizontalOverflow, assertNoBlockingAxe} = require('./quality-harness/assertions.cjs');
+const {ensureArtifactsDir, artifactPath, captureScreenshot, writeJsonArtifact} = require('./quality-harness/evidence.cjs');
+const {VIEWPORTS, CORE_SCENARIOS} = require('./quality-harness/scenarios.cjs');
 
-const ROOT = path.resolve(__dirname, '..');
-const OUTPUT_DIR = path.join(ROOT, 'docs-html');
-const TOOLS_DIR = path.join(ROOT, '.quality-tools', 'node_modules');
-const ARTIFACTS_DIR = path.join(ROOT, 'quality-artifacts');
 const PORT = Number(process.env.QUALITY_PORT || 4173);
-const BASE_URL = `http://127.0.0.1:${PORT}`;
-const COMPRESSIBLE_EXTENSIONS = new Set(['.html', '.css', '.js', '.json', '.svg', '.xml', '.txt']);
-
-function requireTool(name) {
-  const toolPath = path.join(TOOLS_DIR, ...name.split('/'));
-  try {
-    return require(toolPath);
-  } catch (error) {
-    throw new Error(`Quality tool ${name} is not installed in .quality-tools: ${error.message}`);
-  }
-}
-
-const {chromium} = requireTool('playwright');
-const AxeBuilder = requireTool('@axe-core/playwright').default;
-
-function findChrome() {
-  const explicit = process.env.CHROME_PATH;
-  if (explicit && fs.existsSync(explicit)) return explicit;
-
-  const commands = ['google-chrome-stable', 'google-chrome', 'chromium', 'chromium-browser'];
-  for (const command of commands) {
-    try {
-      const resolved = execFileSync('which', [command], {encoding: 'utf8'}).trim();
-      if (resolved) return resolved;
-    } catch {
-      // Try the next known browser executable.
-    }
-  }
-
-  throw new Error('Chrome/Chromium executable was not found on the CI runner.');
-}
-
-function resolveQualityServerFile(requestUrl) {
-  let pathname;
-  try {
-    pathname = decodeURIComponent(new URL(requestUrl, BASE_URL).pathname);
-  } catch {
-    return null;
-  }
-
-  if (pathname.endsWith('/')) {
-    pathname += 'index.html';
-  }
-
-  let candidate = path.resolve(OUTPUT_DIR, `.${pathname}`);
-  const insideOutput = candidate === OUTPUT_DIR || candidate.startsWith(`${OUTPUT_DIR}${path.sep}`);
-  if (!insideOutput) return null;
-
-  if (!fs.existsSync(candidate) && !path.extname(candidate)) {
-    const htmlCandidate = `${candidate}.html`;
-    if (fs.existsSync(htmlCandidate)) candidate = htmlCandidate;
-  }
-
-  if (!fs.existsSync(candidate) || !fs.statSync(candidate).isFile()) {
-    return null;
-  }
-
-  return candidate;
-}
-
-function startServer() {
-  if (!fs.existsSync(OUTPUT_DIR)) {
-    throw new Error('docs-html does not exist. Run npm run build:docs first.');
-  }
-
-  const app = express();
-  app.disable('x-powered-by');
-
-  // Model the production nginx/GitHub Pages transport more faithfully. Without
-  // compression Lighthouse measures multi-megabyte framework bundles over its
-  // throttled mobile network as if production served them raw.
-  app.use((req, res, next) => {
-    const accepted = req.headers['accept-encoding'] || '';
-    if (!accepted.includes('gzip')) return next();
-
-    const filePath = resolveQualityServerFile(req.originalUrl || req.url);
-    if (!filePath || !COMPRESSIBLE_EXTENSIONS.has(path.extname(filePath).toLowerCase())) {
-      return next();
-    }
-
-    res.type(path.extname(filePath));
-    res.setHeader('Content-Encoding', 'gzip');
-    res.setHeader('Vary', 'Accept-Encoding');
-
-    const stream = fs.createReadStream(filePath);
-    stream.on('error', next);
-    stream.pipe(zlib.createGzip({level: 6})).pipe(res);
-  });
-
-  app.use(express.static(OUTPUT_DIR, {extensions: ['html'], fallthrough: false}));
-
-  return new Promise((resolve, reject) => {
-    const server = app.listen(PORT, '127.0.0.1', () => resolve(server));
-    server.on('error', reject);
-  });
-}
-
-function stopServer(server) {
-  return new Promise((resolve, reject) => {
-    server.close((error) => error ? reject(error) : resolve());
-  });
-}
+const {chromium} = requireQualityTool('playwright');
+const AxeBuilder = requireQualityTool('@axe-core/playwright').default;
 
 function runCommand(command, args, env = {}) {
   return new Promise((resolve, reject) => {
@@ -127,14 +29,6 @@ function runCommand(command, args, env = {}) {
       else reject(new Error(`${command} exited with code ${code}`));
     });
   });
-}
-
-function sameOrigin(url) {
-  try {
-    return new URL(url).origin === new URL(BASE_URL).origin;
-  } catch {
-    return false;
-  }
 }
 
 async function assertResumePdf(page, context) {
@@ -160,31 +54,20 @@ async function assertResumePdf(page, context) {
   }
 }
 
-async function checkScenario(browser, scenario, summary) {
-  const context = await browser.newContext({
+async function checkScenario(browser, baseUrl, scenario, summary) {
+  const runtime = await createScenarioPage(browser, {
     viewport: scenario.viewport,
     colorScheme: 'dark',
     reducedMotion: 'reduce',
   });
-  const page = await context.newPage();
-  const errors = [];
-  const failedResponses = [];
-
-  page.on('pageerror', (error) => errors.push(error.message));
-  page.on('requestfailed', (request) => {
-    if (!sameOrigin(request.url())) return;
-    const reason = request.failure()?.errorText || 'unknown failure';
-    if (reason.includes('ERR_ABORTED')) return;
-    failedResponses.push(`${request.method()} ${request.url()} -> ${reason}`);
-  });
-  page.on('response', (response) => {
-    if (sameOrigin(response.url()) && response.status() >= 400) {
-      failedResponses.push(`${response.status()} ${response.url()}`);
-    }
+  const {context, page} = runtime;
+  const diagnostics = installPageDiagnostics(page, {
+    baseUrl,
+    ignoredRequestFailureReasons: ['ERR_ABORTED'],
   });
 
   try {
-    const response = await page.goto(`${BASE_URL}${scenario.path}`, {waitUntil: 'networkidle'});
+    const response = await page.goto(`${baseUrl}${scenario.path}`, {waitUntil: 'networkidle'});
     if (!response || !response.ok()) {
       throw new Error(`Navigation failed for ${scenario.path}: HTTP ${response?.status() ?? 'no response'}`);
     }
@@ -199,47 +82,24 @@ async function checkScenario(browser, scenario, summary) {
       throw new Error(`Custom visual layer did not initialize on ${scenario.path}`);
     }
 
-    const layout = await page.evaluate(() => ({
-      viewportWidth: window.innerWidth,
-      bodyWidth: Math.max(document.body.scrollWidth, document.documentElement.scrollWidth),
-    }));
-    if (layout.bodyWidth > layout.viewportWidth + 2) {
-      throw new Error(`Horizontal overflow on ${scenario.slug}: ${layout.bodyWidth}px > ${layout.viewportWidth}px`);
-    }
+    await assertNoHorizontalOverflow(page, `Browser quality ${scenario.slug}`);
 
     if (scenario.path.includes('/resume')) {
       await assertResumePdf(page, context);
     }
 
     if (scenario.accessibility) {
-      let builder = new AxeBuilder({page});
-      if (scenario.path.includes('/resume')) {
-        builder = builder.exclude('[data-tr-resume-pdf]');
-      }
-      const axe = await builder.analyze();
-      const blocking = axe.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact));
-      fs.writeFileSync(
-        path.join(ARTIFACTS_DIR, `axe-${scenario.slug}.json`),
-        JSON.stringify({violations: axe.violations}, null, 2),
-      );
-      if (blocking.length) {
-        const details = blocking.map((violation) => `${violation.id} (${violation.impact}): ${violation.help}`).join('; ');
-        throw new Error(`Accessibility violations on ${scenario.slug}: ${details}`);
-      }
+      await assertNoBlockingAxe({
+        page,
+        label: `Browser quality ${scenario.slug}`,
+        AxeBuilder,
+        exclude: scenario.path.includes('/resume') ? '[data-tr-resume-pdf]' : undefined,
+        artifactName: `axe-${scenario.slug}.json`,
+      });
     }
 
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, `${scenario.slug}.png`),
-      fullPage: true,
-      animations: 'disabled',
-    });
-
-    if (errors.length) {
-      throw new Error(`Browser page errors on ${scenario.slug}: ${errors.join('; ')}`);
-    }
-    if (failedResponses.length) {
-      throw new Error(`Failed same-origin requests on ${scenario.slug}: ${[...new Set(failedResponses)].join('; ')}`);
-    }
+    await captureScreenshot(page, `${scenario.slug}.png`);
+    diagnostics.assertClean(`Browser quality ${scenario.slug}`);
 
     summary.push({
       slug: scenario.slug,
@@ -249,20 +109,20 @@ async function checkScenario(browser, scenario, summary) {
       accessibilityChecked: Boolean(scenario.accessibility),
     });
   } finally {
-    await context.close();
+    await runtime.close();
   }
 }
 
-async function runLighthouse(chromePath) {
+async function runLighthouse(chromePath, baseUrl) {
   const lighthouseBin = path.join(TOOLS_DIR, '.bin', process.platform === 'win32' ? 'lighthouse.cmd' : 'lighthouse');
-  const reportPath = path.join(ARTIFACTS_DIR, 'lighthouse-home.json');
+  const reportPath = artifactPath('lighthouse-home.json');
 
   if (!fs.existsSync(lighthouseBin)) {
     throw new Error('Lighthouse binary is not installed in .quality-tools.');
   }
 
   await runCommand(lighthouseBin, [
-    `${BASE_URL}/index.html`,
+    `${baseUrl}/index.html`,
     '--quiet',
     '--output=json',
     `--output-path=${reportPath}`,
@@ -275,44 +135,40 @@ async function runLighthouse(chromePath) {
 
 async function main() {
   fs.rmSync(ARTIFACTS_DIR, {recursive: true, force: true});
-  fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
+  ensureArtifactsDir();
 
   const scenarios = [
-    {slug: 'home-desktop', path: '/index.html', heading: 'Руслан Немыкин', viewport: {width: 1440, height: 1000}, accessibility: true},
-    {slug: 'projects-desktop', path: '/landing/projects.html', heading: 'Проекты', viewport: {width: 1440, height: 1000}, accessibility: true},
-    {slug: 'resume-desktop', path: '/landing/resume.html', heading: 'Резюме', viewport: {width: 1440, height: 1000}, accessibility: true},
-    {slug: 'home-mobile', path: '/index.html', heading: 'Руслан Немыкин', viewport: {width: 390, height: 844}, accessibility: false},
-    {slug: 'projects-mobile', path: '/landing/projects.html', heading: 'Проекты', viewport: {width: 390, height: 844}, accessibility: false},
-    {slug: 'resume-mobile', path: '/landing/resume.html', heading: 'Резюме', viewport: {width: 390, height: 844}, accessibility: false},
+    {...CORE_SCENARIOS.home, slug: 'home-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
+    {...CORE_SCENARIOS.projects, slug: 'projects-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
+    {...CORE_SCENARIOS.resume, slug: 'resume-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
+    {...CORE_SCENARIOS.home, slug: 'home-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
+    {...CORE_SCENARIOS.projects, slug: 'projects-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
+    {...CORE_SCENARIOS.resume, slug: 'resume-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
   ];
 
-  const server = await startServer();
+  const serverRuntime = await startStaticServer({port: PORT, gzip: true});
   const chromePath = findChrome();
   let browser;
 
   try {
-    try {
-      browser = await chromium.launch({channel: 'chrome', headless: true, args: ['--no-sandbox']});
-    } catch {
-      browser = await chromium.launch({executablePath: chromePath, headless: true, args: ['--no-sandbox']});
-    }
+    browser = await launchChromium(chromium, {executablePath: chromePath});
 
     const summary = [];
     for (const scenario of scenarios) {
       console.log(`Browser quality: ${scenario.slug}`);
-      await checkScenario(browser, scenario, summary);
+      await checkScenario(browser, serverRuntime.baseUrl, scenario, summary);
     }
 
-    fs.writeFileSync(path.join(ARTIFACTS_DIR, 'browser-summary.json'), JSON.stringify(summary, null, 2));
+    writeJsonArtifact('browser-summary.json', summary);
     await browser.close();
     browser = null;
 
     console.log('Running Lighthouse quality budget...');
-    await runLighthouse(chromePath);
+    await runLighthouse(chromePath, serverRuntime.baseUrl);
     console.log('Browser, accessibility, screenshot and Lighthouse quality checks passed.');
   } finally {
     if (browser) await browser.close();
-    await stopServer(server);
+    await serverRuntime.stop();
   }
 }
 

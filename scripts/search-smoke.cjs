@@ -1,73 +1,32 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const express = require('express');
+const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cjs');
+const {startStaticServer} = require('./quality-harness/static-server.cjs');
+const {createScenarioPage} = require('./quality-harness/browser.cjs');
+const {installPageDiagnostics} = require('./quality-harness/diagnostics.cjs');
+const {assertNoHorizontalOverflow, blockingAxeViolations} = require('./quality-harness/assertions.cjs');
+const {captureScreenshot, writeJsonArtifact, writeTextArtifact} = require('./quality-harness/evidence.cjs');
+const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 
-const ROOT = path.resolve(__dirname, '..');
-const OUTPUT_DIR = path.join(ROOT, 'docs-html');
-const TOOLS_DIR = path.join(ROOT, '.quality-tools', 'node_modules');
-const ARTIFACTS_DIR = path.join(ROOT, 'quality-artifacts');
 const PORT = Number(process.env.SEARCH_SMOKE_PORT || 4174);
-const BASE_URL = `http://127.0.0.1:${PORT}`;
+const {chromium} = requireQualityTool('playwright');
+const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright');
 
-function requireTool(name) {
-  return require(path.join(TOOLS_DIR, ...name.split('/')));
-}
-
-const {chromium} = requireTool('playwright');
-const {default: AxeBuilder} = requireTool('@axe-core/playwright');
-
-function startServer() {
-  const app = express();
-  app.disable('x-powered-by');
-  app.use(express.static(OUTPUT_DIR, {extensions: ['html'], fallthrough: false}));
-  return new Promise((resolve, reject) => {
-    const server = app.listen(PORT, '127.0.0.1', () => resolve(server));
-    server.on('error', reject);
-  });
-}
-
-function stopServer(server) {
-  return new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
-}
-
-function sameOrigin(url) {
-  try {
-    return new URL(url).origin === new URL(BASE_URL).origin;
-  } catch {
-    return false;
-  }
-}
-
-async function runScenario(browser, name, viewport) {
-  const context = await browser.newContext({viewport, colorScheme: 'dark'});
-  const page = await context.newPage();
-  const failures = [];
-  const pageErrors = [];
-
-  page.on('pageerror', (error) => pageErrors.push(error.message));
-  page.on('requestfailed', (request) => {
-    if (!sameOrigin(request.url())) return;
-    const reason = request.failure()?.errorText || 'unknown failure';
-    if (!reason.includes('ERR_ABORTED')) failures.push(`${request.url()} -> ${reason}`);
-  });
-  page.on('response', (response) => {
-    if (sameOrigin(response.url()) && response.status() >= 400) failures.push(`${response.status()} ${response.url()}`);
+async function runScenario(browser, baseUrl, name, viewport) {
+  const runtime = await createScenarioPage(browser, {viewport, colorScheme: 'dark'});
+  const {page} = runtime;
+  const diagnostics = installPageDiagnostics(page, {
+    baseUrl,
+    ignoredRequestFailureReasons: ['ERR_ABORTED'],
   });
 
   try {
-    const response = await page.goto(`${BASE_URL}/_search/ru/index.html`, {waitUntil: 'networkidle'});
+    const response = await page.goto(`${baseUrl}/_search/ru/index.html`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`${name}: search navigation HTTP ${response?.status() ?? 'none'}`);
 
     await page.waitForTimeout(700);
-    fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, `search-${name}.png`),
-      fullPage: true,
-      animations: 'disabled',
-    });
+    await captureScreenshot(page, `search-${name}.png`);
 
     const rootHtml = await page.locator('#root').innerHTML().catch(() => '');
-    fs.writeFileSync(path.join(ARTIFACTS_DIR, `search-${name}-root.html`), rootHtml);
+    writeTextArtifact(`search-${name}-root.html`, rootHtml);
 
     const bodyText = (await page.locator('body').innerText()).trim();
     if (!bodyText) throw new Error(`${name}: generated search page rendered an empty body`);
@@ -77,7 +36,7 @@ async function runScenario(browser, name, viewport) {
 
     const marker = await page.locator('html').getAttribute('data-tr-search-enhanced');
     if (marker !== 'true') {
-      throw new Error(`${name}: progressive search enhancement marker missing; pageErrors=${pageErrors.join(' | ') || 'none'}`);
+      throw new Error(`${name}: progressive search enhancement marker missing; pageErrors=${diagnostics.pageErrors.join(' | ') || 'none'}`);
     }
 
     const stylesheetCount = await page.locator('link[href$="_assets/style/search.css"]').count();
@@ -91,15 +50,13 @@ async function runScenario(browser, name, viewport) {
     const focused = await searchInput.evaluate((input) => document.activeElement === input);
     if (!focused) throw new Error(`${name}: / keyboard shortcut did not focus search input`);
 
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    if (overflow > 2) throw new Error(`${name}: horizontal overflow ${overflow}px`);
+    const overflow = (await assertNoHorizontalOverflow(page, name)).overflow;
 
     const axe = await new AxeBuilder({page}).analyze();
-    const serious = axe.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact));
+    const serious = blockingAxeViolations(axe);
     if (serious.length) throw new Error(`${name}: Axe serious/critical violations: ${serious.map((item) => item.id).join(', ')}`);
 
-    if (pageErrors.length) throw new Error(`${name}: search page errors: ${pageErrors.join('; ')}`);
-    if (failures.length) throw new Error(`${name}: search resource failures: ${[...new Set(failures)].join('; ')}`);
+    diagnostics.assertClean(name);
 
     return {
       name,
@@ -110,25 +67,24 @@ async function runScenario(browser, name, viewport) {
       enhanced: marker === 'true',
     };
   } finally {
-    await context.close();
+    await runtime.close();
   }
 }
 
 async function main() {
-  fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
-  const server = await startServer();
+  const serverRuntime = await startStaticServer({port: PORT});
   let browser;
 
   try {
-    browser = await chromium.launch({channel: 'chrome', headless: true, args: ['--no-sandbox']});
+    browser = await launchChromium(chromium);
     const results = [];
-    results.push(await runScenario(browser, 'desktop', {width: 1280, height: 900}));
-    results.push(await runScenario(browser, 'mobile', {width: 390, height: 844}));
-    fs.writeFileSync(path.join(ARTIFACTS_DIR, 'search-summary.json'), JSON.stringify(results, null, 2));
+    results.push(await runScenario(browser, serverRuntime.baseUrl, 'desktop', {width: 1280, height: 900}));
+    results.push(await runScenario(browser, serverRuntime.baseUrl, 'mobile', VIEWPORTS.mobile));
+    writeJsonArtifact('search-summary.json', results);
     console.log(`Generated local-search browser smoke passed for ${results.length} scenario(s).`);
   } finally {
     if (browser) await browser.close();
-    await stopServer(server);
+    await serverRuntime.stop();
   }
 }
 
