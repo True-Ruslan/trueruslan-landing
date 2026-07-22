@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {createRequire} from 'node:module';
 import test from 'node:test';
@@ -6,6 +8,9 @@ import test from 'node:test';
 const require = createRequire(import.meta.url);
 
 const {ROOT, OUTPUT_DIR, TOOLS_DIR, ARTIFACTS_DIR} = require('./quality-harness/paths.cjs');
+const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cjs');
+const {startStaticServer} = require('./quality-harness/static-server.cjs');
+const {createScenarioPage} = require('./quality-harness/browser.cjs');
 const {sameOrigin, shouldIgnoreRequestFailure, dedupeDiagnostics} = require('./quality-harness/diagnostics.cjs');
 const {
   measureHorizontalOverflow,
@@ -21,6 +26,75 @@ test('quality paths resolve from repository root', () => {
   assert.equal(OUTPUT_DIR, path.join(ROOT, 'docs-html'));
   assert.equal(TOOLS_DIR, path.join(ROOT, '.quality-tools', 'node_modules'));
   assert.equal(ARTIFACTS_DIR, path.join(ROOT, 'quality-artifacts'));
+});
+
+test('quality tool loader produces actionable missing-tool diagnostics', () => {
+  assert.throws(
+    () => requireQualityTool('__definitely_missing_quality_tool__', 'Harness test tool'),
+    /Harness test tool.*is not installed in \.quality-tools/i,
+  );
+});
+
+test('launchChromium uses channel first and explicit executable fallback', async () => {
+  const calls = [];
+  const chromium = {
+    launch: async (options) => {
+      calls.push(options);
+      if (options.channel) throw new Error('channel unavailable');
+      return {kind: 'browser', options};
+    },
+  };
+
+  const browser = await launchChromium(chromium, {executablePath: '/tmp/fake-chrome'});
+  assert.equal(browser.kind, 'browser');
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].channel, 'chrome');
+  assert.equal(calls[1].executablePath, '/tmp/fake-chrome');
+  assert.deepEqual(calls[1].args, ['--no-sandbox']);
+});
+
+test('static server serves extensionless HTML and exposes stoppable lifecycle', async () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'quality-harness-'));
+  fs.writeFileSync(path.join(outputDir, 'index.html'), '<h1>home</h1>');
+  fs.writeFileSync(path.join(outputDir, 'page.html'), '<h1>page</h1>');
+
+  const runtime = await startStaticServer({port: 0, outputDir});
+  try {
+    const response = await fetch(`${runtime.baseUrl}/page`);
+    assert.equal(response.status, 200);
+    assert.match(await response.text(), /<h1>page<\/h1>/);
+  } finally {
+    await runtime.stop();
+    fs.rmSync(outputDir, {recursive: true, force: true});
+  }
+});
+
+test('scenario page factory applies dark default without hiding caller options', async () => {
+  let receivedOptions;
+  let closed = false;
+  const page = {id: 'page'};
+  const browser = {
+    newContext: async (options) => {
+      receivedOptions = options;
+      return {
+        newPage: async () => page,
+        close: async () => { closed = true; },
+      };
+    },
+  };
+
+  const runtime = await createScenarioPage(browser, {
+    viewport: {width: 390, height: 844},
+    javaScriptEnabled: false,
+  });
+  assert.equal(runtime.page, page);
+  assert.deepEqual(receivedOptions, {
+    viewport: {width: 390, height: 844},
+    javaScriptEnabled: false,
+    colorScheme: 'dark',
+  });
+  await runtime.close();
+  assert.equal(closed, true);
 });
 
 test('sameOrigin is bounded to the configured quality server origin', () => {
