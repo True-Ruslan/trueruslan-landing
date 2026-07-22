@@ -4,7 +4,7 @@ const {createScenarioPage} = require('./quality-harness/browser.cjs');
 const {installPageDiagnostics} = require('./quality-harness/diagnostics.cjs');
 const {assertNoHorizontalOverflow} = require('./quality-harness/assertions.cjs');
 const {ensureArtifactsDir, captureScreenshot, writeJsonArtifact, writeTextArtifact} = require('./quality-harness/evidence.cjs');
-const {VIEWPORTS, CORE_SCENARIOS} = require('./quality-harness/scenarios.cjs');
+const {CORE_SCENARIOS} = require('./quality-harness/scenarios.cjs');
 
 const PORT = Number(process.env.CROSS_BROWSER_PORT || 4176);
 const {firefox, webkit} = requireQualityTool('playwright');
@@ -59,7 +59,7 @@ async function main() {
   ensureArtifactsDir();
   const serverRuntime = await startStaticServer({port: PORT});
   const scenarios = [
-    {...CORE_SCENARIOS.home},
+    {...CORE_SCENARIOS.home, path: '/'},
     {...CORE_SCENARIOS.projects},
     {...CORE_SCENARIOS.resume, resume: true},
   ];
