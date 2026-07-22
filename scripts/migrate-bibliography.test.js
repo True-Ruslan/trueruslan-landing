@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 
 async function loadMigrationModule() {
   try {
@@ -31,4 +33,26 @@ test('bibliography migration rejects malformed data rows instead of silently dro
   const markdown = `| ID | Название | Источник | Ссылка | Теги | Резюме |\n| --- | --- | --- | --- | --- | --- |\n| 1 | Broken | #Habr | not-a-link | #AI | Summary |\n`;
 
   assert.throws(() => parseBibliographyMarkdown(markdown), /invalid bibliography link/i);
+});
+
+test('current bibliography migrates all 31 real records without losing representative content', async () => {
+  const {migrateBibliographyFile} = await loadMigrationModule();
+  const registry = migrateBibliographyFile();
+
+  assert.equal(registry.sources.length, 31);
+  const first = registry.sources.find((source) => source.url === 'https://habr.com/ru/companies/kts/articles/988510/');
+  const blog = registry.sources.find((source) => source.url === 'https://360.yandex.ru/roadtohighload/');
+  const last = registry.sources.find((source) => source.url === 'https://habr.com/ru/companies/spring_aio/articles/1041836/');
+
+  assert.ok(first);
+  assert.match(first.title, /Postgres → ClickHouse/);
+  assert.ok(first.summary.some((item) => item.includes('2 ТБ')));
+  assert.equal(blog?.sourceType, 'blog');
+  assert.equal(last?.title, 'Axelix. Cпецназ для Вашей Spring Boot экосистемы');
+
+  if (process.env.CI) {
+    const artifactsDir = path.join(process.cwd(), 'quality-artifacts');
+    fs.mkdirSync(artifactsDir, {recursive: true});
+    fs.writeFileSync(path.join(artifactsDir, 'sources-migration.json'), `${JSON.stringify(registry, null, 2)}\n`);
+  }
 });
