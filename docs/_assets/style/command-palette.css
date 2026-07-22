@@ -1,6 +1,8 @@
 .tr-command-trigger {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
+  justify-content: center;
   gap: .55rem;
   min-height: 34px;
   padding: .35rem .55rem;
@@ -9,7 +11,24 @@
   background: rgba(15, 23, 42, .5);
   color: inherit;
   font: inherit;
+  line-height: 1;
   cursor: pointer;
+}
+
+.tr-command-trigger:hover,
+.tr-command-trigger:focus-visible {
+  border-color: rgba(103, 232, 249, .45);
+  background: rgba(103, 232, 249, .08);
+  outline: none;
+}
+
+.tr-command-trigger--floating {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 8500;
+  background: rgba(9, 11, 16, .94);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .32);
 }
 
 .tr-command-trigger span {
@@ -178,6 +197,11 @@ html.tr-command-open body {
 @media (max-width: 720px) {
   .tr-command-trigger {
     padding-inline: .45rem;
+  }
+
+  .tr-command-trigger--floating {
+    right: .75rem;
+    bottom: .75rem;
   }
 
   .tr-command-palette {
