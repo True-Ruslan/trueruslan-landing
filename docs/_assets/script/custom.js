@@ -41,6 +41,10 @@
       && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
+  function getRevealObserverOptions() {
+    return {threshold: 0, rootMargin: '0px 0px -7% 0px'};
+  }
+
   function afterApplicationHydration(callback) {
     const schedule = () => {
       const afterFrames = () => {
@@ -271,7 +275,7 @@
         entry.target.classList.add('is-visible');
         observer.unobserve(entry.target);
       }
-    }, {threshold: .08, rootMargin: '0px 0px -7% 0px'});
+    }, getRevealObserverOptions());
 
     nodes.forEach((node, index) => {
       node.style.setProperty('--tr-reveal-delay', `${Math.min(index % 5, 4) * 45}ms`);
@@ -318,6 +322,7 @@
   root.TrueRuslanVisual = Object.freeze({
     getPageKind,
     getResumePdfUrl,
+    getRevealObserverOptions,
     getTerminalLines,
     init,
   });
