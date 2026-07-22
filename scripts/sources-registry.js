@@ -302,19 +302,17 @@ export function applySourcesKnowledgeBase(outputDir, sources) {
   if (!fs.existsSync(htmlPath)) throw new Error('generated bibliography page not found: landing/bibliography.html');
 
   const html = fs.readFileSync(htmlPath, 'utf8');
-  let replaced = false;
+  const marker = /<div[^>]*data-tr-sources-placeholder(?:=["'][^"']*["'])?[^>]*>\s*<\/div>/i;
+  const content = renderSourcesKnowledgeBase(sources);
   const transformed = transformGeneratedContent(
     html,
-    (contentHtml) => {
-      const marker = /<div[^>]*data-tr-sources-placeholder(?:=["'][^"']*["'])?[^>]*>\s*<\/div>/i;
-      if (!marker.test(contentHtml)) throw new Error('Sources Knowledge Base placeholder not found in bibliography content.');
-      replaced = true;
-      return contentHtml.replace(marker, renderSourcesKnowledgeBase(sources));
-    },
+    (contentHtml) => marker.test(contentHtml) ? contentHtml.replace(marker, content) : contentHtml,
     'Sources Knowledge Base',
   );
 
-  if (!replaced) throw new Error('Sources Knowledge Base placeholder was not replaced.');
+  if (!transformed.source) {
+    throw new Error('Sources Knowledge Base placeholder not found in rendered DOM or Diplodoc state payload.');
+  }
   fs.writeFileSync(htmlPath, transformed.html, 'utf8');
   return relativePath.replaceAll(path.sep, '/');
 }
