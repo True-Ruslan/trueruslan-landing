@@ -1,50 +1,18 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const express = require('express');
+const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cjs');
+const {startStaticServer} = require('./quality-harness/static-server.cjs');
+const {createScenarioPage} = require('./quality-harness/browser.cjs');
+const {assertNoHorizontalOverflow, blockingAxeViolations} = require('./quality-harness/assertions.cjs');
+const {writeJsonArtifact} = require('./quality-harness/evidence.cjs');
+const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 
-const ROOT = path.resolve(__dirname, '..');
-const OUTPUT_DIR = path.join(ROOT, 'docs-html');
-const TOOLS_DIR = path.join(ROOT, '.quality-tools', 'node_modules');
-const ARTIFACTS_DIR = path.join(ROOT, 'quality-artifacts');
 const PORT = Number(process.env.PROJECT_EVIDENCE_SMOKE_PORT || 4183);
-const BASE_URL = `http://127.0.0.1:${PORT}`;
+const {chromium} = requireQualityTool('playwright', 'Project Evidence smoke tool');
+const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Project Evidence smoke tool');
 
 const PROJECTS = [
   {project: 'livingworld', route: '/landing/projects/livingworld.html', status: 'verified', label: 'ПРОВЕРЕНО', borderStyle: 'solid'},
   {project: 'node-zero', route: '/landing/projects/node-zero.html', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
 ];
-
-function requireTool(name) {
-  try {
-    return require(path.join(TOOLS_DIR, ...name.split('/')));
-  } catch (error) {
-    throw new Error(`Project Evidence smoke tool ${name} is not installed in .quality-tools: ${error.message}`);
-  }
-}
-
-const {chromium} = requireTool('playwright');
-const {default: AxeBuilder} = requireTool('@axe-core/playwright');
-
-function startServer() {
-  if (!fs.existsSync(OUTPUT_DIR)) throw new Error('docs-html does not exist. Run npm run build:docs first.');
-  const app = express();
-  app.disable('x-powered-by');
-  app.use(express.static(OUTPUT_DIR, {extensions: ['html'], fallthrough: false}));
-  return new Promise((resolve, reject) => {
-    const server = app.listen(PORT, '127.0.0.1', () => resolve(server));
-    server.on('error', reject);
-  });
-}
-
-function stopServer(server) {
-  return new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
-}
-
-async function assertNoOverflow(page, label) {
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  if (overflow > 2) throw new Error(`${label}: horizontal overflow ${overflow}px`);
-  return overflow;
-}
 
 async function assertEvidence(page, expected, prefix) {
   const root = page.locator(`[data-project-evidence="${expected.project}"]`);
@@ -85,9 +53,9 @@ async function assertEvidence(page, expected, prefix) {
   };
 }
 
-async function runEnhanced(browser) {
-  const context = await browser.newContext({viewport: {width: 390, height: 844}, colorScheme: 'dark', reducedMotion: 'reduce'});
-  const page = await context.newPage();
+async function runEnhanced(browser, baseUrl) {
+  const runtime = await createScenarioPage(browser, {viewport: VIEWPORTS.mobile, colorScheme: 'dark', reducedMotion: 'reduce'});
+  const {page} = runtime;
   const results = {};
 
   try {
@@ -95,62 +63,63 @@ async function runEnhanced(browser) {
       const pageErrors = [];
       page.removeAllListeners('pageerror');
       page.on('pageerror', (error) => pageErrors.push(error.message));
-      const response = await page.goto(`${BASE_URL}${expected.route}`, {waitUntil: 'networkidle'});
+      const response = await page.goto(`${baseUrl}${expected.route}`, {waitUntil: 'networkidle'});
       if (!response?.ok()) throw new Error(`enhanced:${expected.project}: navigation HTTP ${response?.status() ?? 'none'}`);
       await page.waitForSelector(`[data-project-evidence="${expected.project}"]`, {timeout: 5000});
 
       const evidence = await assertEvidence(page, expected, `enhanced:${expected.project}`);
-      const overflow = await assertNoOverflow(page, `enhanced:${expected.project}:mobile`);
+      const overflow = (await assertNoHorizontalOverflow(page, `enhanced:${expected.project}:mobile`)).overflow;
       const axe = await new AxeBuilder({page}).include(`[data-project-evidence="${expected.project}"]`).analyze();
-      const serious = axe.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact));
+      const serious = blockingAxeViolations(axe);
       if (serious.length) throw new Error(`enhanced:${expected.project}: Axe serious/critical violations: ${serious.map((violation) => violation.id).join(', ')}`);
       if (pageErrors.length) throw new Error(`enhanced:${expected.project}: page errors: ${pageErrors.join('; ')}`);
 
-      fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
-      await page.screenshot({path: path.join(ARTIFACTS_DIR, `project-evidence-${expected.project}-mobile.png`), fullPage: true, animations: 'disabled'});
+      await page.screenshot({
+        path: require('./quality-harness/evidence.cjs').artifactPath(`project-evidence-${expected.project}-mobile.png`),
+        fullPage: true,
+        animations: 'disabled',
+      });
       results[expected.project] = {...evidence, overflow, seriousAxeViolations: serious.length};
     }
     return results;
   } finally {
-    await context.close();
+    await runtime.close();
   }
 }
 
-async function runNoJavaScript(browser) {
-  const context = await browser.newContext({viewport: {width: 1280, height: 800}, colorScheme: 'dark', javaScriptEnabled: false});
-  const page = await context.newPage();
+async function runNoJavaScript(browser, baseUrl) {
+  const runtime = await createScenarioPage(browser, {viewport: {width: 1280, height: 800}, colorScheme: 'dark', javaScriptEnabled: false});
+  const {page} = runtime;
   const results = {};
 
   try {
     for (const expected of PROJECTS) {
-      const response = await page.goto(`${BASE_URL}${expected.route}`, {waitUntil: 'load'});
+      const response = await page.goto(`${baseUrl}${expected.route}`, {waitUntil: 'load'});
       if (!response?.ok()) throw new Error(`no-js:${expected.project}: navigation HTTP ${response?.status() ?? 'none'}`);
       const evidence = await assertEvidence(page, expected, `no-js:${expected.project}`);
-      const overflow = await assertNoOverflow(page, `no-js:${expected.project}:desktop`);
+      const overflow = (await assertNoHorizontalOverflow(page, `no-js:${expected.project}:desktop`)).overflow;
       results[expected.project] = {...evidence, overflow};
     }
     return results;
   } finally {
-    await context.close();
+    await runtime.close();
   }
 }
 
 async function main() {
-  fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
-  const server = await startServer();
+  const serverRuntime = await startStaticServer({port: PORT});
   let browser;
   try {
-    try {
-      browser = await chromium.launch({channel: 'chrome', headless: true, args: ['--no-sandbox']});
-    } catch {
-      browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
-    }
-    const summary = {enhanced: await runEnhanced(browser), noJavaScript: await runNoJavaScript(browser)};
-    fs.writeFileSync(path.join(ARTIFACTS_DIR, 'project-evidence-summary.json'), JSON.stringify(summary, null, 2));
+    browser = await launchChromium(chromium);
+    const summary = {
+      enhanced: await runEnhanced(browser, serverRuntime.baseUrl),
+      noJavaScript: await runNoJavaScript(browser, serverRuntime.baseUrl),
+    };
+    writeJsonArtifact('project-evidence-summary.json', summary);
     console.log(`Project Evidence browser smoke passed: ${JSON.stringify(summary)}`);
   } finally {
     if (browser) await browser.close();
-    await stopServer(server);
+    await serverRuntime.stop();
   }
 }
 
