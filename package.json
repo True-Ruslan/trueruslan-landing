@@ -1,15 +1,16 @@
 {
   "name": "@true-ruslan/trueruslan-landing",
   "version": "0.2.0",
-  "description": "Многостраничный лендинг TrueRuslan",
+  "private": true,
+  "description": "TrueRuslan engineering portfolio and knowledge platform",
   "type": "module",
   "homepage": "https://true-ruslan.github.io/trueruslan-landing/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/true-ruslan/trueruslan-landing.git"
+    "url": "https://github.com/True-Ruslan/trueruslan-landing.git"
   },
   "bugs": {
-    "url": "https://github.com/true-ruslan/trueruslan-landing/issues",
+    "url": "https://github.com/True-Ruslan/trueruslan-landing/issues",
     "email": "ruslan.nemikin@gmail.com"
   },
   "author": {
@@ -18,11 +19,13 @@
     "url": "https://github.com/True-Ruslan"
   },
   "keywords": [
+    "engineering-portfolio",
+    "knowledge-platform",
+    "backend-engineering",
+    "software-architecture",
+    "engineering-notes",
     "diplodoc",
-    "landing",
-    "personal-site",
-    "documentation",
-    "markdown"
+    "personal-site"
   ],
   "license": "MIT",
   "engines": {
