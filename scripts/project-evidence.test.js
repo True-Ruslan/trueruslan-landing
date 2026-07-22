@@ -7,6 +7,7 @@ import test from 'node:test';
 import {
   DEFAULT_PROJECT_EVIDENCE_PATH,
   loadProjectEvidence,
+  renderProjectEvidence,
   validateProjectEvidence,
 } from './project-evidence.js';
 
@@ -215,4 +216,75 @@ test('fails clearly when the evidence manifest is missing', () => {
 
 test('exports the canonical default evidence path', () => {
   assert.match(DEFAULT_PROJECT_EVIDENCE_PATH, /data[\\/]project-evidence\.json$/);
+});
+
+test('renders verified evidence with bounded trust language', () => {
+  const html = renderProjectEvidence(validVerified);
+  assert.match(html, /data-project-evidence="livingworld"/);
+  assert.match(html, /data-evidence-status="verified"/);
+  assert.match(html, /tr-project-evidence--verified/);
+  assert.match(html, /ПРОВЕРЕНО/);
+  assert.match(html, /2026-07-22/);
+  assert.match(html, /Minecraft/);
+  assert.match(html, /1\.21\.1/);
+  assert.match(html, /data-evidence-kind="ci"/);
+  assert.match(html, /data-evidence-mode="automated"/);
+  assert.match(html, /Automated contracts covered by this run\./);
+  assert.match(html, /target="_blank"/);
+  assert.match(html, /rel="noopener noreferrer"/);
+  assert.doesNotMatch(html, /production-ready|fully tested|fully verified/i);
+});
+
+test('renders stale evidence as visibly distinct from verified', () => {
+  const snapshot = clone(validVerified);
+  snapshot.status = 'stale';
+  const html = renderProjectEvidence(snapshot);
+  assert.match(html, /data-evidence-status="stale"/);
+  assert.match(html, /tr-project-evidence--stale/);
+  assert.match(html, /ТРЕБУЕТ ПЕРЕПРОВЕРКИ/);
+  assert.doesNotMatch(html, /data-evidence-status="verified"/);
+});
+
+test('renders unverified evidence without confirmed trust language', () => {
+  const snapshot = {
+    project: 'node-zero',
+    status: 'unverified',
+    versions: [],
+    signals: [],
+  };
+  const html = renderProjectEvidence(snapshot);
+  assert.match(html, /data-evidence-status="unverified"/);
+  assert.match(html, /tr-project-evidence--unverified/);
+  assert.match(html, /НЕ ПРОВЕРЕНО/);
+  assert.doesNotMatch(html, /ПРОВЕРЕНО/);
+});
+
+test('distinguishes automated and manual evidence semantically', () => {
+  const snapshot = clone(validVerified);
+  snapshot.signals.push({
+    kind: 'manual',
+    mode: 'manual',
+    label: 'Voice acceptance',
+    state: 'accepted',
+    observedAt: '2026-07-21',
+    scope: 'A real microphone-to-visible-response path was exercised.',
+  });
+  const html = renderProjectEvidence(snapshot);
+  assert.match(html, /data-evidence-mode="automated"/);
+  assert.match(html, /data-evidence-mode="manual"/);
+  assert.match(html, /Автоматическое доказательство/);
+  assert.match(html, /Ручная проверка/);
+});
+
+test('escapes all user-controlled evidence text', () => {
+  const snapshot = clone(validVerified);
+  snapshot.versions[0] = {label: '<script>alert(1)</script>', value: '1 & "2"'};
+  snapshot.signals[0].label = '<b>CI</b>';
+  snapshot.signals[0].scope = 'A <script>bad()</script> & "quoted" scope.';
+  const html = renderProjectEvidence(snapshot);
+  assert.doesNotMatch(html, /<script>/);
+  assert.doesNotMatch(html, /<b>CI<\/b>/);
+  assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.match(html, /1 &amp; &quot;2&quot;/);
+  assert.match(html, /A &lt;script&gt;bad\(\)&lt;\/script&gt; &amp; &quot;quoted&quot; scope\./);
 });
