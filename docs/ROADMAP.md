@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-07-22**, после merge P0.6 Content Freshness Guard PR #27.
+> Обновлено: **2026-07-22**, после merge P1.1 Consolidated Browser Quality Harness PR #29.
 >
 > Roadmap отвечает на вопрос **«что делать дальше, в каком порядке и зачем?»**.
 > Фактическое текущее состояние — `docs/PROJECT_STATE.md`, история — `docs/CHANGELOG.md`.
@@ -15,12 +15,12 @@
 - core content доступен без runtime API и, где применимо, без JavaScript;
 - no backend/CMS/database без реальной необходимости;
 - no runtime GitHub API для core content;
-- no build-time GitHub API dependency в основном site build;
 - no duplicate sources of truth;
 - maintenance signals не переписывают public truth автоматически;
 - сначала реальные data/evidence, потом presentation;
 - evidence не говорит больше, чем доказывает bounded scope;
-- новые quality gates не ослабляют существующие.
+- shared infrastructure не скрывает focused domain ownership;
+- quality gates не ослабляются ради refactor/feature velocity.
 
 Главная продуктовая формула:
 
@@ -28,34 +28,17 @@
 
 ---
 
-# P0 — завершённый foundation layer
+# P0 — foundation layer завершён
 
 ## P0.1 Photo Stories platform — DONE
 
-Реализованы PR #15 + QA polish PR #17:
+PR #15 + QA polish PR #17.
 
-- canonical `/photos/`;
-- album/archive registries;
-- cinematic/editorial story pages;
-- fullscreen lightbox;
-- keyboard/touch/hash navigation;
-- responsive/browser QA.
-
-Первая настоящая Photo Story остаётся content-dependent и не блокирует roadmap.
+Готовы canonical `/photos/`, registries, cinematic/editorial routes, fullscreen lightbox, keyboard/touch/hash navigation и browser QA.
 
 ## P0.2 First real Photo Story — CONTENT DEPENDENT
 
-Добавлять только при genuine material:
-
-- 8–20 осмысленно отобранных кадров;
-- cover;
-- intro от первого лица;
-- место/дата/category;
-- meaningful alt;
-- editorial sequence;
-- hero/OG/deep-links/lightbox/lazy/LCP verification.
-
-Fake/demo albums не добавлять.
+Добавлять только при genuine material. Fake/demo albums не добавлять.
 
 ## P0.3 Sources Registry / Knowledge Base — DONE
 
@@ -63,19 +46,7 @@ PR #20 / squash:
 
 `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`
 
-Готово:
-
-- canonical `data/sources.json`;
-- 31 migrated real records;
-- strict validation;
-- deterministic semantic rendering;
-- page-local filtering;
-- stable anchors/related materials;
-- responsive UI;
-- semantic no-JS fallback;
-- dedicated browser/Axe/no-JS gate.
-
-Sources filter не является вторым global search engine.
+31 real records, strict validation, semantic deterministic rendering, page-local filters, stable anchors, responsive/no-JS behavior и dedicated QA.
 
 ## P0.4 Project Evidence Layer — DONE
 
@@ -89,21 +60,9 @@ Exact head:
 
 Build #247 / run `29935334882`: **fully green**.
 
-Готово:
+Canonical evidence, `verified / stale / unverified`, bounded automated/manual signals, no-JS rendering и trust-aware QA.
 
-- canonical `data/project-evidence.json`;
-- controlled scope LivingWorld + NODE ZERO;
-- `verified / stale / unverified`;
-- bounded automated/manual signals;
-- strict validation;
-- build-time semantic rendering;
-- no-JS fallback;
-- trust-state visual semantics;
-- dedicated browser/Axe/no-JS quality gate.
-
-Ключевая граница:
-
-**green CI/release/PR никогда автоматически не делает project `verified`.**
+**Green CI/release/PR никогда автоматически не делает project `verified`.**
 
 ## P0.5 Grounded Engineering Notes — DONE
 
@@ -117,18 +76,7 @@ Exact head:
 
 Build #257 / run `29943616448`: **fully green**.
 
-Добавлены 3 repository-grounded notes:
-
-1. `intersection-observer-giant-table`;
-2. `static-first-sources-no-js`;
-3. `green-ci-is-not-product-verification`.
-
-Всего Engineering Notes: 6.
-
-Будущие candidates после отдельной source verification:
-
-- Minecraft voice AI pipeline;
-- malformed/almost-correct LLM JSON protocol failures.
+Добавлены 3 repository-grounded notes; всего Engineering Notes — 6.
 
 ## P0.6 Content Freshness Guard — DONE
 
@@ -136,146 +84,132 @@ PR #27 / squash:
 
 `33770983789fbde5c59a94972709360286a06ad5`
 
-Exact implementation head:
+Exact head:
 
 `4b50dd78a41b3cbe2fce327e6c752508134862d0`
 
 Build #269 / run `29947803201`: **fully green**.
 
-### Что реализовано
+Guard проверяет age/link/repository/release/timeline/signal drift и создаёт maintenance report/issue, но никогда автоматически не меняет public registries/trust state.
 
-Deterministic detector:
+Operational follow-up: первый реальный post-merge scheduled/manual run наблюдать отдельно.
 
-`scripts/content-freshness.js`
+---
 
-Local report command:
+# P1 — maintainability и глубина
 
-`scripts/content-freshness-report.js`
+## P1.1 Consolidated Browser Quality Harness — DONE
 
-Bounded external probe:
+PR #29 / squash:
 
-`scripts/content-freshness-probe.js`
+`06e60425e31ef19ddae0c3ac8b0991808b45837e`
 
-Scheduled/manual orchestration:
+Exact implementation head:
 
-`.github/workflows/content-freshness.yml`
+`00633c69e56354cbb8821c34a1b772cf259c3e18`
 
-Maintenance rules:
+Build #293 / run `29951464481`: **fully green по полной configured matrix**.
 
-- `lastVerified` age threshold, default 30 days;
-- evidence-link reachability;
-- repository activity drift;
-- newer release while registry remains release-candidate;
-- timeline structured-state contradictions;
-- verified snapshot with newer recorded signal requires review.
+### Реализовано
 
-Output:
+Создан `scripts/quality-harness/`:
 
-- deterministic JSON report;
-- human-readable Markdown report;
-- workflow artifacts;
-- one idempotent GitHub issue with stable marker;
-- issue closes when findings disappear.
+- paths;
+- quality-tool/browser discovery;
+- static-server lifecycle;
+- context/page factory;
+- page/request/HTTP diagnostics;
+- overflow/real-scroll helpers;
+- Axe helpers;
+- screenshots/JSON/text evidence helpers;
+- immutable common viewports/core scenarios.
 
-### Critical trust boundary
+На него переведены focused browser runners:
 
-Guard **никогда автоматически**:
+- browser-quality;
+- Sources Knowledge Base;
+- Project Evidence;
+- Photo Stories;
+- Portfolio v0.3;
+- cross-browser;
+- generated search;
+- metadata/OpenGraph;
+- Engineering Map;
+- layout overflow.
 
-- не меняет Project Registry;
-- не меняет Project Evidence;
-- не меняет timelines;
-- не переводит `verified / stale / unverified`;
-- не превращает external repository/release/CI signal в public verification claim.
+### Critical design boundary
 
-Evidence coverage остаётся scoped: отсутствие snapshot у project вне controlled Evidence Layer scope само по себе не finding.
+**Focused runners остались focused.**
 
-Workflow permissions:
+Не создан giant monolithic runner/DSL. Domain-specific interactions/assertions остались в своих scripts.
 
-- `contents: read`;
-- `issues: write`;
-- `persist-credentials: false`;
-- no commit/push path.
+Не изменены:
+
+- CSS/public content;
+- visual baselines/thresholds;
+- Lighthouse budget;
+- workflow ordering;
+- feature trust/content semantics.
+
+`visual-regression.cjs` намеренно не переписан под browser harness.
 
 ### TDD trail
 
-- Build #259 — detector RED;
-- Build #260 — detector GREEN;
-- Build #261/#262 — probe/report RED;
-- Build #265 — probe/report GREEN;
-- Build #266 — workflow contract RED;
-- Build #267 — workflow contract GREEN;
-- Build #269 — full exact-head matrix GREEN.
+- Build #271 — RED shared-harness contracts;
+- Build #280 — shared primitives GREEN;
+- Build #284 — core migration slice GREEN;
+- Build #293 — final exact-head full matrix GREEN.
 
-### Operational follow-up
+Design:
 
-Первый реальный post-merge scheduled/manual Content Freshness run нужно наблюдать отдельно.
+`docs/superpowers/specs/2026-07-22-consolidated-browser-quality-harness-design.md`
 
-До появления concrete workflow-run evidence не считать production issue lifecycle фактически проверенным только из PR CI.
+Plan:
+
+`docs/superpowers/plans/2026-07-22-consolidated-browser-quality-harness.md`
 
 ---
 
-# P1 — актуальный technical priority
+## P1.2 Project metadata cleanup — NEXT
 
-## P1.1 Consolidated Browser Quality Harness — NEXT
+### Почему сейчас
 
-Сейчас quality suite намеренно состоит из focused runners:
+Product evolved from «многостраничный лендинг» в engineering portfolio / knowledge platform, но `package.json` всё ещё несёт раннюю identity:
 
-- browser-quality;
-- Sources Knowledge Base smoke;
-- Project Evidence smoke;
-- Photo Stories smoke;
-- Portfolio v0.3 smoke;
-- cross-browser;
-- search;
-- metadata;
-- Engineering Map;
-- visual regression;
-- layout overflow.
+- `version: 0.2.0`;
+- description: `Многостраничный лендинг TrueRuslan`;
+- keywords сильнее описывают Diplodoc/landing phase, чем текущий scope.
 
-Проблема: повторяются infrastructure primitives.
+Это небольшой controlled milestone с низким product risk после завершения большой quality-infrastructure работы.
 
-### Цель
+### Что сделать
 
-Создать модульный `quality-harness/`:
-
-- shared static-server lifecycle;
-- browser/context factories;
-- request/page-error diagnostics;
-- Axe helpers;
-- overflow helpers;
-- screenshot/evidence helpers;
-- declarative route/scenario definitions.
-
-### Ограничение
-
-**Не превращать это в один giant monolithic runner.**
-
-Focused scenario ownership должен сохраниться.
+1. Зафиксировать современное package identity:
+   - name/repository/homepage проверить на canonical spelling/URLs;
+   - description обновить под engineering portfolio / knowledge platform;
+   - keywords пересмотреть под backend engineering, knowledge platform, portfolio, architecture/engineering notes.
+2. Отдельно принять deliberate decision по version:
+   - не bump автоматически;
+   - проверить смысл existing `0.2.0` и milestone history;
+   - выбрать новую version только если она честно обозначает package/project milestone.
+3. Добавить/обновить metadata contract test, чтобы старое «landing-only» описание не вернулось незаметно.
+4. Не менять runtime/build/product behavior.
+5. Прогнать полную existing CI matrix.
 
 ### Definition of Done
 
-- общие primitives вынесены без ослабления assertions;
-- existing runners остаются понятными и focused;
-- lifecycle/browser/context duplication уменьшена;
-- failures сохраняют route/scenario-level diagnostics;
-- full existing matrix green;
-- visual baselines не обновляются без реального визуального изменения.
+- `package.json` identity соответствует фактическому продукту;
+- version decision явно объяснён;
+- no accidental URL/name drift;
+- metadata contract защищён test;
+- build/runtime output функционально не изменён;
+- full exact-head matrix green.
 
 ---
 
-## P1.2 Project metadata cleanup
-
-Исторический debt:
-
-- `package.json` version не отражает текущий maturity/milestone;
-- description всё ещё говорит «Многостраничный лендинг»;
-- keywords нужно пересмотреть после evolution в engineering portfolio / knowledge platform.
-
-Версию менять только как осознанное milestone/release решение.
-
 ## P1.3 Stronger flagship case-study format
 
-LivingWorld и NODE ZERO постепенно привести к структуре:
+LivingWorld и NODE ZERO постепенно привести к narrative structure:
 
 1. Problem
 2. Constraints
@@ -285,15 +219,15 @@ LivingWorld и NODE ZERO постепенно привести к структу
 6. Evidence
 7. What I would change now
 
-Project Evidence уже владеет machine-like current/evidence facts; narrative не должен вручную дублировать registry state.
+Project Evidence владеет machine-like current/evidence facts; narrative не должен вручную дублировать registry state.
 
 ## P1.4 Additional grounded Notes
 
-Публиковать только после source verification соответствующих repositories.
+Только после source verification соответствующих repositories.
 
 Candidates:
 
-- voice AI pipeline Minecraft NPC;
+- Minecraft NPC voice AI pipeline;
 - malformed/almost-correct LLM JSON handling.
 
 Не писать абстрактные SEO-статьи ради количества.
@@ -347,27 +281,29 @@ Candidates:
 - второй site-wide search engine;
 - social feed;
 - infinite scroll;
-- automatic public-state mutation из CI/release/freshness signals.
+- automatic public-state mutation из CI/release/freshness signals;
+- giant QA runner, скрывающий domain-specific tests.
 
 ---
 
 # Оптимальная последовательность следующих действий
 
 ```text
-1. Observe first real post-merge Content Freshness workflow run when available
+1. P1.2 Project metadata cleanup
         ↓
-2. P1.1 Consolidate shared browser-quality primitives
+2. P1.3 Stronger flagship case-study narrative structure
         ↓
-3. Metadata/version cleanup
+3. Additional grounded Notes after source verification
         ↓
-4. Strengthen flagship case-study narrative structure
+4. First real Photo Story whenever genuine material is ready (non-blocking)
         ↓
-5. Add additional grounded Notes after source verification
-        ↓
-6. Add first real Photo Story whenever genuine material is ready (non-blocking)
-        ↓
-7. Minimal EN / privacy analytics / custom domain later
+5. Minimal EN / privacy analytics / custom domain later
 ```
+
+Operational side-check, не блокирующий feature roadmap:
+
+- при наличии evidence проверить первый реальный post-merge Content Freshness workflow run;
+- при вопросах production отдельно проверить фактический GitHub Pages deployment.
 
 ## Правило при новом чате
 
