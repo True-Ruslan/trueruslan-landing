@@ -4,34 +4,13 @@
     "status": "verified",
     "lastVerified": "2026-07-22",
     "versions": [
-      {
-        "label": "Minecraft Java",
-        "value": "1.21.1"
-      },
-      {
-        "label": "Java",
-        "value": "21"
-      },
-      {
-        "label": "Fabric Loader",
-        "value": "0.19.3"
-      },
-      {
-        "label": "Fabric API",
-        "value": "0.116.14+1.21.1"
-      },
-      {
-        "label": "MCA Reborn",
-        "value": "7.7.22+1.21.1"
-      },
-      {
-        "label": "Simple Voice Chat",
-        "value": "1.21.1-2.6.20"
-      },
-      {
-        "label": "LivingWorld",
-        "value": "0.1.0"
-      }
+      {"label": "Minecraft Java", "value": "1.21.1"},
+      {"label": "Java", "value": "21"},
+      {"label": "Fabric Loader", "value": "0.19.3"},
+      {"label": "Fabric API", "value": "0.116.14+1.21.1"},
+      {"label": "MCA Reborn", "value": "7.7.22+1.21.1"},
+      {"label": "Simple Voice Chat", "value": "1.21.1-2.6.20"},
+      {"label": "LivingWorld", "value": "0.1.0"}
     ],
     "signals": [
       {
@@ -57,22 +36,10 @@
     "status": "stale",
     "lastVerified": "2026-07-14",
     "versions": [
-      {
-        "label": "Unity",
-        "value": "6000.3.0f1"
-      },
-      {
-        "label": "URP",
-        "value": "17.3.0"
-      },
-      {
-        "label": "Input System",
-        "value": "1.16.0"
-      },
-      {
-        "label": "Target build",
-        "value": "Windows x86_64 IL2CPP"
-      }
+      {"label": "Unity", "value": "6000.3.0f1"},
+      {"label": "URP", "value": "17.3.0"},
+      {"label": "Input System", "value": "1.16.0"},
+      {"label": "Target build", "value": "Windows x86_64 IL2CPP"}
     ],
     "signals": [
       {
@@ -88,7 +55,7 @@
         "mode": "automated",
         "label": "Player foundation PR #9",
         "state": "pending",
-        "observedAt": "2026-07-15",
+        "observedAt": "2026-07-22",
         "scope": "The current player-foundation work remains a draft milestone. Its own documented executable gates for Unity validation, EditMode and PlayMode execution, Windows IL2CPP build and graybox launch, gameplay acceptance, allocation checks and fresh-clone reproduction were not yet claimed as verified."
       }
     ]
