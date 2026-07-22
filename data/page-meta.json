@@ -138,5 +138,15 @@
     "kicker": "ENGINEERING NOTE",
     "tags": ["CI", "EVIDENCE", "RELIABILITY"],
     "accent": "green"
+  },
+  {
+    "path": "landing/notes/llm-output-is-a-protocol-boundary.html",
+    "card": "note-llm-protocol-boundary",
+    "title": "Почему успешный ответ LLM ещё не означает успешный контракт",
+    "description": "Structured LLM output как внешний protocol boundary: strict JSON, type validation, coercion, bounded fallback и отдельная authorization граница.",
+    "displayTitle": "LLM PROTOCOL BOUNDARY",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["AI", "PROTOCOLS", "VALIDATION"],
+    "accent": "violet"
   }
 ]
