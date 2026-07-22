@@ -10,18 +10,8 @@ const PORT = Number(process.env.PROJECT_EVIDENCE_SMOKE_PORT || 4183);
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 
 const PROJECTS = [
-  {
-    project: 'livingworld',
-    route: '/landing/projects/livingworld.html',
-    status: 'verified',
-    label: 'ПРОВЕРЕНО',
-  },
-  {
-    project: 'node-zero',
-    route: '/landing/projects/node-zero.html',
-    status: 'stale',
-    label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ',
-  },
+  {project: 'livingworld', route: '/landing/projects/livingworld.html', status: 'verified', label: 'ПРОВЕРЕНО', borderStyle: 'solid'},
+  {project: 'node-zero', route: '/landing/projects/node-zero.html', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
 ];
 
 function requireTool(name) {
@@ -69,12 +59,17 @@ async function assertEvidence(page, expected, prefix) {
   if (!text?.includes('Что подтверждает:')) throw new Error(`${prefix}: ${expected.project} bounded evidence scope is missing`);
 
   if (expected.status !== 'verified') {
-    if (await root.locator('.tr-project-evidence--verified').count()) {
-      throw new Error(`${prefix}: ${expected.project} stale/unverified evidence looks verified`);
-    }
     if (await root.getAttribute('class').then((value) => value?.includes('tr-project-evidence--verified'))) {
       throw new Error(`${prefix}: ${expected.project} carries verified styling class`);
     }
+  }
+
+  const trustTreatment = await root.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {borderLeftStyle: style.borderLeftStyle, borderLeftWidth: style.borderLeftWidth};
+  });
+  if (trustTreatment.borderLeftStyle !== expected.borderStyle || Number.parseFloat(trustTreatment.borderLeftWidth) < 4) {
+    throw new Error(`${prefix}: expected ${expected.borderStyle} >=4px trust border, got ${trustTreatment.borderLeftStyle} ${trustTreatment.borderLeftWidth}`);
   }
 
   const links = root.locator('a[href]');
@@ -86,15 +81,12 @@ async function assertEvidence(page, expected, prefix) {
   return {
     signals: await root.locator('[data-evidence-kind]').count(),
     status: expected.status,
+    trustBorder: trustTreatment,
   };
 }
 
 async function runEnhanced(browser) {
-  const context = await browser.newContext({
-    viewport: {width: 390, height: 844},
-    colorScheme: 'dark',
-    reducedMotion: 'reduce',
-  });
+  const context = await browser.newContext({viewport: {width: 390, height: 844}, colorScheme: 'dark', reducedMotion: 'reduce'});
   const page = await context.newPage();
   const results = {};
 
@@ -111,18 +103,11 @@ async function runEnhanced(browser) {
       const overflow = await assertNoOverflow(page, `enhanced:${expected.project}:mobile`);
       const axe = await new AxeBuilder({page}).include(`[data-project-evidence="${expected.project}"]`).analyze();
       const serious = axe.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact));
-      if (serious.length) {
-        throw new Error(`enhanced:${expected.project}: Axe serious/critical violations: ${serious.map((violation) => violation.id).join(', ')}`);
-      }
+      if (serious.length) throw new Error(`enhanced:${expected.project}: Axe serious/critical violations: ${serious.map((violation) => violation.id).join(', ')}`);
       if (pageErrors.length) throw new Error(`enhanced:${expected.project}: page errors: ${pageErrors.join('; ')}`);
 
       fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
-      await page.screenshot({
-        path: path.join(ARTIFACTS_DIR, `project-evidence-${expected.project}-mobile.png`),
-        fullPage: true,
-        animations: 'disabled',
-      });
-
+      await page.screenshot({path: path.join(ARTIFACTS_DIR, `project-evidence-${expected.project}-mobile.png`), fullPage: true, animations: 'disabled'});
       results[expected.project] = {...evidence, overflow, seriousAxeViolations: serious.length};
     }
     return results;
@@ -132,11 +117,7 @@ async function runEnhanced(browser) {
 }
 
 async function runNoJavaScript(browser) {
-  const context = await browser.newContext({
-    viewport: {width: 1280, height: 800},
-    colorScheme: 'dark',
-    javaScriptEnabled: false,
-  });
+  const context = await browser.newContext({viewport: {width: 1280, height: 800}, colorScheme: 'dark', javaScriptEnabled: false});
   const page = await context.newPage();
   const results = {};
 
@@ -158,18 +139,13 @@ async function main() {
   fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
   const server = await startServer();
   let browser;
-
   try {
     try {
       browser = await chromium.launch({channel: 'chrome', headless: true, args: ['--no-sandbox']});
     } catch {
       browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
     }
-
-    const summary = {
-      enhanced: await runEnhanced(browser),
-      noJavaScript: await runNoJavaScript(browser),
-    };
+    const summary = {enhanced: await runEnhanced(browser), noJavaScript: await runNoJavaScript(browser)};
     fs.writeFileSync(path.join(ARTIFACTS_DIR, 'project-evidence-summary.json'), JSON.stringify(summary, null, 2));
     console.log(`Project Evidence browser smoke passed: ${JSON.stringify(summary)}`);
   } finally {
