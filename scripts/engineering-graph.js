@@ -37,6 +37,32 @@ function assertSafeHref(href) {
   if (normalized !== value || normalized.startsWith('../')) throw new Error(`Unsafe engineering graph href: ${value}`);
 }
 
+export function resolveEngineeringGraphProjects(raw, projects) {
+  if (!raw || !Array.isArray(raw.nodes)) throw new Error('Engineering graph must contain nodes before project resolution.');
+  if (!Array.isArray(projects)) throw new Error('Project registry must be provided to resolve Engineering Map project references.');
+
+  const bySlug = new Map(projects.map((project) => [project.slug, project]));
+  const nodes = raw.nodes.map((node) => {
+    if (node.kind !== 'project' || node.projectRef === undefined) return node;
+
+    const projectRef = requireText(node.projectRef, `projectRef for ${node.id ?? 'project node'}`);
+    const project = bySlug.get(projectRef);
+    if (!project) throw new Error(`Engineering graph references unknown project: ${projectRef}`);
+    if (node.label !== undefined || node.description !== undefined || node.href !== undefined) {
+      throw new Error(`Engineering graph project ${projectRef} duplicates canonical registry identity fields.`);
+    }
+
+    return {
+      ...node,
+      label: project.name,
+      description: project.summary,
+      href: project.href,
+    };
+  });
+
+  return {...raw, nodes};
+}
+
 export function validateEngineeringGraph(raw) {
   if (!raw || !Array.isArray(raw.nodes) || raw.nodes.length < 2) throw new Error('Engineering graph must contain at least two nodes.');
   if (!Array.isArray(raw.edges) || raw.edges.length === 0) throw new Error('Engineering graph must contain edges.');
@@ -98,8 +124,10 @@ export function validateEngineeringGraph(raw) {
   return {filters, nodes, edges};
 }
 
-export function loadEngineeringGraph(manifestPath = DEFAULT_MANIFEST) {
-  return validateEngineeringGraph(JSON.parse(fs.readFileSync(manifestPath, 'utf8')));
+export function loadEngineeringGraph(manifestPath = DEFAULT_MANIFEST, {projects} = {}) {
+  const raw = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const resolved = projects ? resolveEngineeringGraphProjects(raw, projects) : raw;
+  return validateEngineeringGraph(resolved);
 }
 
 export function renderEngineeringGraphFallback(graph) {
