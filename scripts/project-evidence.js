@@ -29,6 +29,28 @@ const SAFE_EXTERNAL = /^https:\/\/[a-zA-Z0-9.-]+(?:[/:?#][^\s]*)?$/;
 const SLUG = /^[a-z0-9-]+$/;
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 
+const STATUS_COPY = Object.freeze({
+  verified: 'ПРОВЕРЕНО',
+  stale: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ',
+  unverified: 'НЕ ПРОВЕРЕНО',
+});
+
+const MODE_COPY = Object.freeze({
+  automated: 'Автоматическое доказательство',
+  manual: 'Ручная проверка',
+});
+
+const STATE_COPY = Object.freeze({
+  green: 'green',
+  published: 'published',
+  merged: 'merged',
+  passed: 'passed',
+  accepted: 'accepted',
+  pending: 'pending',
+  failed: 'failed',
+  unavailable: 'unavailable',
+});
+
 function requireObject(value, label) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error(`${label} must be an object`);
@@ -58,6 +80,15 @@ function isValidIsoCalendarDate(value) {
 
 function normalizeKey(value) {
   return value.trim().toLocaleLowerCase('en-US');
+}
+
+export function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 function validateVersionFacts(snapshot) {
@@ -181,4 +212,59 @@ export function loadProjectEvidence(manifestPath = DEFAULT_PROJECT_EVIDENCE_PATH
 
   const snapshots = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   return validateProjectEvidence(snapshots, {projects});
+}
+
+function renderVersions(versions) {
+  if (versions.length === 0) return '';
+  const rows = versions.map((version) => `<div class="tr-project-evidence__version">
+    <dt>${escapeHtml(version.label)}</dt>
+    <dd>${escapeHtml(version.value)}</dd>
+  </div>`).join('\n');
+  return `<dl class="tr-project-evidence__versions" aria-label="Проверенные версии и параметры">
+${rows}
+  </dl>`;
+}
+
+function renderSignal(signal) {
+  const link = signal.url
+    ? `<a class="tr-project-evidence__link" href="${escapeHtml(signal.url)}" target="_blank" rel="noopener noreferrer">Открыть доказательство ↗</a>`
+    : '';
+
+  return `<article class="tr-project-evidence__signal" data-evidence-kind="${signal.kind}" data-evidence-mode="${signal.mode}">
+    <div class="tr-project-evidence__signal-head">
+      <span class="tr-project-evidence__mode">${MODE_COPY[signal.mode]}</span>
+      <time datetime="${signal.observedAt}">${signal.observedAt}</time>
+    </div>
+    <h4>${escapeHtml(signal.label)}</h4>
+    <p class="tr-project-evidence__signal-state"><strong>Состояние:</strong> ${STATE_COPY[signal.state]}</p>
+    <p class="tr-project-evidence__scope"><strong>Что подтверждает:</strong> ${escapeHtml(signal.scope)}</p>
+    ${link}
+  </article>`;
+}
+
+export function renderProjectEvidence(snapshot) {
+  const project = escapeHtml(snapshot.project);
+  const status = snapshot.status;
+  const lastVerified = snapshot.lastVerified
+    ? `<p class="tr-project-evidence__checked">Последняя проверка: <time datetime="${snapshot.lastVerified}">${snapshot.lastVerified}</time></p>`
+    : '<p class="tr-project-evidence__checked">Дата текущей проверки не зафиксирована.</p>';
+  const versions = renderVersions(snapshot.versions);
+  const signals = snapshot.signals.length > 0
+    ? `<div class="tr-project-evidence__signals" aria-label="Доказательства состояния проекта">
+${snapshot.signals.map(renderSignal).join('\n')}
+  </div>`
+    : '<p class="tr-project-evidence__empty">Текущие доказательства состояния проекта не зафиксированы.</p>';
+
+  return `<section class="tr-project-evidence tr-project-evidence--${status}" data-project-evidence="${project}" data-evidence-status="${status}" aria-labelledby="project-evidence-${project}-title">
+  <header class="tr-project-evidence__header">
+    <div>
+      <p class="tr-project-evidence__eyebrow">Project Evidence</p>
+      <h2 id="project-evidence-${project}-title">Проверяемое состояние проекта</h2>
+    </div>
+    <span class="tr-project-evidence__status">${STATUS_COPY[status]}</span>
+  </header>
+  ${lastVerified}
+  ${versions}
+  ${signals}
+</section>`;
 }
