@@ -90,6 +90,12 @@ items:
         href: ./landing/notes/static-site-quality-gates.md
       - name: Server-authoritative AI NPCs
         href: ./landing/notes/server-authoritative-ai-npcs.md
+      - name: IntersectionObserver regression
+        href: ./landing/notes/intersection-observer-giant-table.md
+      - name: Sources / no-JS
+        href: ./landing/notes/static-first-sources-no-js.md
+      - name: CI vs product verification
+        href: ./landing/notes/green-ci-is-not-product-verification.md
   - name: Обо мне
     href: ./landing/about.md
   - name: Резюме

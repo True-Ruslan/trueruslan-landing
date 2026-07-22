@@ -108,5 +108,35 @@
     "kicker": "ENGINEERING NOTE",
     "tags": ["AI AGENTS", "VOICE", "SECURITY"],
     "accent": "cyan"
+  },
+  {
+    "path": "landing/notes/intersection-observer-giant-table.html",
+    "card": "note-intersection-observer",
+    "title": "Как IntersectionObserver спрятал огромную таблицу",
+    "description": "Разбор UI-регрессии: reveal threshold, геометрия очень высокого элемента, misleading fullscreen symptom и browser regression test.",
+    "displayTitle": "INTERSECTION REGRESSION",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["BROWSER", "REGRESSION", "UI"],
+    "accent": "violet"
+  },
+  {
+    "path": "landing/notes/static-first-sources-no-js.html",
+    "card": "note-sources-no-js",
+    "title": "Почему build-time data недостаточно без no-JS representation",
+    "description": "Sources Registry, Diplodoc hydration state и semantic no-JS fallback как практическая граница static-first architecture.",
+    "displayTitle": "STATIC-FIRST SOURCES",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["STATIC-FIRST", "NO-JS", "DIPLODOC"],
+    "accent": "cyan"
+  },
+  {
+    "path": "landing/notes/green-ci-is-not-product-verification.html",
+    "card": "note-product-verification",
+    "title": "Почему green CI не означает verified product",
+    "description": "Bounded evidence scope, automated/manual proof и freshness: почему зелёный pipeline не должен автоматически становиться широким product claim.",
+    "displayTitle": "CI IS NOT VERIFICATION",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["CI", "EVIDENCE", "RELIABILITY"],
+    "accent": "green"
   }
 ]

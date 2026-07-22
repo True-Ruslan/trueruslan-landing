@@ -24,6 +24,28 @@
 
 [Читать заметку →](notes/static-site-quality-gates.md)
 
+### Как IntersectionObserver спрятал огромную таблицу
+
+Обычная reveal-анимация с `threshold: 0.08` неожиданно сделала гигантскую bibliography table невидимой в нормальном viewport. Разбираю, почему высокий элемент сломал привычное предположение про intersection ratio, как fullscreen маскировал симптом и зачем после локального фикса всё равно понадобилась более сильная data model.
+
+[Читать заметку →](notes/intersection-observer-giant-table.md)
+
+### Почему green CI не означает verified product
+
+Зелёный pipeline — сильный сигнал, но только в границах того, что он реально проверяет. Здесь я разбираю, почему Project Evidence Layer получил bounded scope, состояния `verified / stale / unverified` и отдельное различие между automated и manual proof.
+
+[Читать заметку →](notes/green-ci-is-not-product-verification.md)
+
+---
+
+## Static-first и доставка контента
+
+### Почему build-time data недостаточно без no-JS representation
+
+Во время migration Sources Registry оказалось, что данные могут присутствовать в generated artifact и при этом оставаться недоступными пользователю без JavaScript. Эта заметка — про Diplodoc hydration state, semantic `<noscript>` fallback и более строгий смысл static-first architecture.
+
+[Читать заметку →](notes/static-first-sources-no-js.md)
+
 ---
 
 ## AI systems

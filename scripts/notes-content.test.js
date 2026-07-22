@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  loadNotesManifest,
   renderAtomFeed,
   renderNoteMeta,
   renderNoteNavigation,
@@ -64,4 +65,20 @@ test('renderAtomFeed is deterministic, ordered by update date and XML-safe', () 
   assert.match(first, /First &amp; note/);
   assert.match(first, /A &lt;useful&gt; note\./);
   assert.doesNotMatch(first, /First & note/);
+});
+
+test('canonical notes include the grounded Engineering Notes milestone', () => {
+  const requiredGroundedNotes = [
+    'intersection-observer-giant-table',
+    'static-first-sources-no-js',
+    'green-ci-is-not-product-verification',
+  ];
+  const canonicalNotes = loadNotesManifest();
+
+  for (const slug of requiredGroundedNotes) {
+    assert.ok(
+      canonicalNotes.some((note) => note.slug === slug),
+      `missing grounded Engineering Note: ${slug}`,
+    );
+  }
 });
