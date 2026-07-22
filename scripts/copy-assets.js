@@ -170,7 +170,7 @@ export function postprocessOutput({
   const noteTargets = applyNoteEnhancements(outputDir, notes);
   const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
 
-  const engineeringGraph = loadEngineeringGraph(engineeringGraphPath);
+  const engineeringGraph = loadEngineeringGraph(engineeringGraphPath, {projects});
   const engineeringGraphTarget = applyEngineeringGraph(outputDir, engineeringGraph);
 
   const pageMeta = loadPageMeta(pageMetaPath);
