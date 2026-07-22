@@ -7,7 +7,7 @@
     "updated": "2026-07-21",
     "readingMinutes": 6,
     "tags": ["Performance", "Hydration", "Diplodoc"],
-    "related": ["static-site-quality-gates"]
+    "related": ["static-site-quality-gates", "static-first-sources-no-js"]
   },
   {
     "slug": "static-site-quality-gates",
@@ -17,7 +17,13 @@
     "updated": "2026-07-21",
     "readingMinutes": 7,
     "tags": ["CI", "Reliability", "Playwright", "Lighthouse"],
-    "related": ["portfolio-runtime-boundary", "server-authoritative-ai-npcs"]
+    "related": [
+      "portfolio-runtime-boundary",
+      "server-authoritative-ai-npcs",
+      "intersection-observer-giant-table",
+      "static-first-sources-no-js",
+      "green-ci-is-not-product-verification"
+    ]
   },
   {
     "slug": "server-authoritative-ai-npcs",
@@ -27,6 +33,40 @@
     "updated": "2026-07-21",
     "readingMinutes": 8,
     "tags": ["AI agents", "Voice", "Security", "Architecture"],
+    "related": ["static-site-quality-gates"]
+  },
+  {
+    "slug": "intersection-observer-giant-table",
+    "title": "Как IntersectionObserver спрятал огромную таблицу",
+    "description": "Разбор реальной UI-регрессии: почему reveal-анимация с threshold 0.08 не срабатывала на очень высокой bibliography table и как этот баг привёл к более сильной архитектуре.",
+    "published": "2026-07-22",
+    "updated": "2026-07-22",
+    "readingMinutes": 6,
+    "tags": ["Browser", "IntersectionObserver", "Regression", "UI"],
+    "related": ["static-site-quality-gates", "static-first-sources-no-js"]
+  },
+  {
+    "slug": "static-first-sources-no-js",
+    "title": "Почему build-time data недостаточно без no-JS representation",
+    "description": "Как migration Sources Registry обнаружила пустой React root без JavaScript и почему semantic fallback стал частью static-first architecture.",
+    "published": "2026-07-22",
+    "updated": "2026-07-22",
+    "readingMinutes": 7,
+    "tags": ["Static-first", "No-JS", "Diplodoc", "Architecture"],
+    "related": [
+      "portfolio-runtime-boundary",
+      "static-site-quality-gates",
+      "intersection-observer-giant-table"
+    ]
+  },
+  {
+    "slug": "green-ci-is-not-product-verification",
+    "title": "Почему green CI не означает verified product",
+    "description": "Как Project Evidence Layer разделил automated и manual proof, bounded scope и freshness, чтобы зелёный pipeline не превращался в слишком широкий product claim.",
+    "published": "2026-07-22",
+    "updated": "2026-07-22",
+    "readingMinutes": 8,
+    "tags": ["CI", "Evidence", "Reliability", "Verification"],
     "related": ["static-site-quality-gates"]
   }
 ]
