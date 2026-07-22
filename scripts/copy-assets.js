@@ -50,6 +50,7 @@ const SOURCES_MANIFEST = path.join(ROOT, 'data', 'sources.json');
 const PHOTO_ALBUMS_MANIFEST = path.join(ROOT, 'data', 'photo-albums.json');
 const PHOTO_ARCHIVE_MANIFEST = path.join(ROOT, 'data', 'photo-archive.json');
 const REQUIRED_PROJECT_EVIDENCE = Object.freeze(['livingworld', 'node-zero']);
+const PROJECT_EVIDENCE_STYLESHEET = '_assets/style/project-evidence.css';
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
 const SEARCH_RESOURCES = [
@@ -159,6 +160,24 @@ export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSi
   return true;
 }
 
+export function applyProjectEvidenceStylesheet(outputDir, targetPaths) {
+  const updated = [];
+  for (const relativePath of targetPaths) {
+    const htmlPath = path.join(outputDir, relativePath);
+    if (!fs.existsSync(htmlPath)) throw new Error(`Project Evidence stylesheet target not found: ${relativePath}`);
+    const html = fs.readFileSync(htmlPath, 'utf8');
+    if (/data-tr-project-evidence-stylesheet/i.test(html)) continue;
+    if (!/<\/head>/i.test(html)) continue;
+
+    const normalizedTarget = relativePath.replaceAll(path.sep, '/');
+    const href = path.posix.relative(path.posix.dirname(normalizedTarget), PROJECT_EVIDENCE_STYLESHEET);
+    const link = `<link rel="stylesheet" href="${href}" data-tr-project-evidence-stylesheet>`;
+    fs.writeFileSync(htmlPath, html.replace(/<\/head>/i, `${link}</head>`), 'utf8');
+    updated.push(normalizedTarget);
+  }
+  return updated;
+}
+
 function loadPhotoRegistries(photoAlbumsPath, photoArchivePath, docsDir) {
   const rawAlbums = JSON.parse(fs.readFileSync(photoAlbumsPath, 'utf8'));
   const rawArchive = JSON.parse(fs.readFileSync(photoArchivePath, 'utf8'));
@@ -228,6 +247,7 @@ export function postprocessOutput({
   const projectEvidenceTargets = projectEvidence
     ? applyProjectEvidence(outputDir, projectEvidence, {requiredProjects: REQUIRED_PROJECT_EVIDENCE})
     : [];
+  const projectEvidenceStylesheetTargets = applyProjectEvidenceStylesheet(outputDir, projectEvidenceTargets);
   const noteTargets = applyNoteEnhancements(outputDir, notes);
   const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
   const sourcesKnowledgeBaseTarget = sources
@@ -262,6 +282,7 @@ export function postprocessOutput({
     nowPageTarget,
     timelineTargets,
     projectEvidenceTargets,
+    projectEvidenceStylesheetTargets,
     noteTargets,
     feedPath,
     feedDiscoveryUpdated,
@@ -287,6 +308,7 @@ function main() {
     console.log(`Now page injected: ${result.nowPageTarget}`);
     console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
     if (result.projectEvidenceTargets.length) console.log(`Injected ${result.projectEvidenceTargets.length} Project Evidence block(s).`);
+    if (result.projectEvidenceStylesheetTargets.length) console.log(`Wired Project Evidence stylesheet into ${result.projectEvidenceStylesheetTargets.length} page(s).`);
     console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
     console.log(`Atom feed written: ${result.feedPath}`);
     if (result.sourcesKnowledgeBaseTarget) console.log(`Sources Knowledge Base injected: ${result.sourcesKnowledgeBaseTarget}`);
