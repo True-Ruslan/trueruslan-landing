@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-07-22**, после merge P1.1 Consolidated Browser Quality Harness PR #29.
+> Обновлено: **2026-07-22**, после merge P1.2 Project Metadata Cleanup PR #31.
 >
 > Roadmap отвечает на вопрос **«что делать дальше, в каком порядке и зачем?»**.
 > Фактическое текущее состояние — `docs/PROJECT_STATE.md`, история — `docs/CHANGELOG.md`.
@@ -110,106 +110,79 @@ Exact implementation head:
 
 Build #293 / run `29951464481`: **fully green по полной configured matrix**.
 
+Создан `scripts/quality-harness/` с shared infrastructure primitives для paths, tools/browser launch, static server, context/page lifecycle, diagnostics, overflow/Axe, evidence и common scenarios.
+
+Focused runners остались focused; giant monolithic runner/DSL не создавался. `visual-regression.cjs` намеренно оставлен отдельным.
+
+## P1.2 Project metadata cleanup — DONE
+
+PR #31 / squash:
+
+`1df2a2905ef2eb4b52173271f9012defc33b25ab`
+
+Exact implementation head:
+
+`12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`
+
+Build #296 / run `29954043887`: **fully green по полной configured matrix**.
+
 ### Реализовано
 
-Создан `scripts/quality-harness/`:
+`package.json` identity приведён к фактическому продукту:
 
-- paths;
-- quality-tool/browser discovery;
-- static-server lifecycle;
-- context/page factory;
-- page/request/HTTP diagnostics;
-- overflow/real-scroll helpers;
-- Axe helpers;
-- screenshots/JSON/text evidence helpers;
-- immutable common viewports/core scenarios.
+- description → `TrueRuslan engineering portfolio and knowledge platform`;
+- `private: true`;
+- keywords → engineering portfolio / knowledge platform / backend engineering / software architecture / Engineering Notes;
+- удалён obsolete primary keyword `landing`;
+- repository/bugs URLs нормализованы на `True-Ruslan`;
+- working GitHub Pages homepage сохранён без изменений.
 
-На него переведены focused browser runners:
+Добавлен `scripts/package-metadata.test.js`, защищающий canonical metadata, URL identity, `private: true`, version decision и package-lock consistency.
 
-- browser-quality;
-- Sources Knowledge Base;
-- Project Evidence;
-- Photo Stories;
-- Portfolio v0.3;
-- cross-browser;
-- generated search;
-- metadata/OpenGraph;
-- Engineering Map;
-- layout overflow.
+### Deliberate version decision
 
-### Critical design boundary
+`version: 0.2.0` оставлен **намеренно**.
 
-**Focused runners остались focused.**
+Причина:
 
-Не создан giant monolithic runner/DSL. Domain-specific interactions/assertions остались в своих scripts.
+- сайт не публикуется как npm package;
+- package semver contract отсутствует;
+- product milestones не равны npm releases;
+- bump до `0.4.0`/`1.0.0` был бы декоративным claim.
 
-Не изменены:
+Будущий version bump требует отдельного explicit versioning/release contract.
 
-- CSS/public content;
-- visual baselines/thresholds;
-- Lighthouse budget;
-- workflow ordering;
-- feature trust/content semantics.
-
-`visual-regression.cjs` намеренно не переписан под browser harness.
+`package-lock.json` не менялся: dependency graph и root name/version unchanged.
 
 ### TDD trail
 
-- Build #271 — RED shared-harness contracts;
-- Build #280 — shared primitives GREEN;
-- Build #284 — core migration slice GREEN;
-- Build #293 — final exact-head full matrix GREEN.
+- Build #295 / run `29953964548` — expected RED на stale metadata;
+- Build #296 / run `29954043887` — final exact-head full matrix GREEN.
 
 Design:
 
-`docs/superpowers/specs/2026-07-22-consolidated-browser-quality-harness-design.md`
+`docs/superpowers/specs/2026-07-22-project-metadata-cleanup-design.md`
 
 Plan:
 
-`docs/superpowers/plans/2026-07-22-consolidated-browser-quality-harness.md`
+`docs/superpowers/plans/2026-07-22-project-metadata-cleanup.md`
 
 ---
 
-## P1.2 Project metadata cleanup — NEXT
+## P1.3 Stronger flagship case-study format — NEXT
 
 ### Почему сейчас
 
-Product evolved from «многостраничный лендинг» в engineering portfolio / knowledge platform, но `package.json` всё ещё несёт раннюю identity:
+Infrastructure, evidence, freshness, content grounding и package identity уже стабилизированы. Следующий максимальный product-value шаг — сделать два flagship case studies сильнее как человеческие инженерные истории, а не только как набор registry/timeline/evidence blocks.
 
-- `version: 0.2.0`;
-- description: `Многостраничный лендинг TrueRuslan`;
-- keywords сильнее описывают Diplodoc/landing phase, чем текущий scope.
+Controlled scope первой итерации:
 
-Это небольшой controlled milestone с низким product risk после завершения большой quality-infrastructure работы.
+- LivingWorld;
+- NODE ZERO.
 
-### Что сделать
+### Narrative structure
 
-1. Зафиксировать современное package identity:
-   - name/repository/homepage проверить на canonical spelling/URLs;
-   - description обновить под engineering portfolio / knowledge platform;
-   - keywords пересмотреть под backend engineering, knowledge platform, portfolio, architecture/engineering notes.
-2. Отдельно принять deliberate decision по version:
-   - не bump автоматически;
-   - проверить смысл existing `0.2.0` и milestone history;
-   - выбрать новую version только если она честно обозначает package/project milestone.
-3. Добавить/обновить metadata contract test, чтобы старое «landing-only» описание не вернулось незаметно.
-4. Не менять runtime/build/product behavior.
-5. Прогнать полную existing CI matrix.
-
-### Definition of Done
-
-- `package.json` identity соответствует фактическому продукту;
-- version decision явно объяснён;
-- no accidental URL/name drift;
-- metadata contract защищён test;
-- build/runtime output функционально не изменён;
-- full exact-head matrix green.
-
----
-
-## P1.3 Stronger flagship case-study format
-
-LivingWorld и NODE ZERO постепенно привести к narrative structure:
+Каждый flagship постепенно привести к структуре:
 
 1. Problem
 2. Constraints
@@ -219,7 +192,45 @@ LivingWorld и NODE ZERO постепенно привести к narrative stru
 6. Evidence
 7. What I would change now
 
-Project Evidence владеет machine-like current/evidence facts; narrative не должен вручную дублировать registry state.
+### Critical boundary
+
+Project Evidence уже владеет machine-like current/evidence facts.
+
+Narrative **не должен**:
+
+- вручную дублировать canonical status/trust facts;
+- обещать больше, чем подтверждает Evidence Layer;
+- превращаться в маркетинговый case study с invented impact metrics;
+- создавать второй источник истины по current project state.
+
+Narrative должен объяснять reasoning:
+
+- зачем проект существует;
+- какие реальные ограничения определяли решения;
+- какие архитектурные решения были приняты и почему;
+- что не сработало/сломалось;
+- чему это научило;
+- что бы автор изменил сейчас.
+
+### Implementation direction
+
+Предпочтительный путь:
+
+- сохранить ordinary Diplodoc Markdown authoring;
+- использовать существующие timeline/evidence registries там, где уже есть canonical structured facts;
+- улучшать semantic page structure без нового frontend framework/CMS;
+- при необходимости добавить лёгкие build-time conventions/components только если они уменьшают duplication между двумя flagship pages;
+- не строить универсальный case-study engine заранее без реальной повторяемой необходимости.
+
+### Definition of Done
+
+- LivingWorld и NODE ZERO имеют понятную narrative hierarchy;
+- Problem/Constraints/Decisions/Failures явно читаются;
+- current state/evidence не расходятся с canonical registries;
+- first-person calm engineering diary tone сохранён;
+- no invented metrics/claims;
+- mobile/no-JS/search/SEO behavior сохранён;
+- full exact-head quality matrix green.
 
 ## P1.4 Additional grounded Notes
 
@@ -282,22 +293,21 @@ Candidates:
 - social feed;
 - infinite scroll;
 - automatic public-state mutation из CI/release/freshness signals;
-- giant QA runner, скрывающий domain-specific tests.
+- giant QA runner, скрывающий domain-specific tests;
+- декоративные version bumps без release semantics.
 
 ---
 
 # Оптимальная последовательность следующих действий
 
 ```text
-1. P1.2 Project metadata cleanup
+1. P1.3 Stronger flagship case-study narrative structure
         ↓
-2. P1.3 Stronger flagship case-study narrative structure
+2. Additional grounded Notes after source verification
         ↓
-3. Additional grounded Notes after source verification
+3. First real Photo Story whenever genuine material is ready (non-blocking)
         ↓
-4. First real Photo Story whenever genuine material is ready (non-blocking)
-        ↓
-5. Minimal EN / privacy analytics / custom domain later
+4. Minimal EN / privacy analytics / custom domain later
 ```
 
 Operational side-check, не блокирующий feature roadmap:
