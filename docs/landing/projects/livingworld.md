@@ -78,35 +78,11 @@ LLM не получает прямой доступ к игровому миру
 
 Для меня смысл такой схемы в том, чтобы prompt injection, отказ provider или устаревший async-ответ не могли сами по себе изменить игровой мир.
 
-## Текущая версия
+## Текущее состояние и доказательства
 
-- Minecraft Java `1.21.1`;
-- Java `21`;
-- Fabric Loader `0.19.3`;
-- Fabric API `0.116.14+1.21.1`;
-- MCA Reborn `7.7.22+1.21.1`;
-- Simple Voice Chat `1.21.1-2.6.20` / API `2.6.20`;
-- LivingWorld `0.1.0` common JAR для клиента и сервера.
+<div data-tr-project-evidence="livingworld"></div>
 
-Сейчас проект находится в состоянии **local release candidate**, а не опубликованного server release.
-
-## Что я проверяю автоматически
-
-CI использует Java 21 и pinned artifacts MCA Reborn / Simple Voice Chat. Сейчас он проверяет:
-
-- unit и package tests;
-- reproducibility;
-- Fabric game tests;
-- multi-actor resilience scenarios;
-- persistence и restart behavior;
-- action/injection rejection;
-- cancellation и fallback paths;
-- server lifecycle;
-- synthetic PCM и provider contracts;
-- Simple Voice Chat runtime binding;
-- multi-session ownership.
-
-Успешная сборка публикует временный JAR artifact и SHA-256 checksum. Version tags могут публиковать тот же проверенный JAR в GitHub Releases.
+Сейчас проект находится в состоянии **local release candidate**, а не опубликованного server release. Версии и конкретные автоматизированные доказательства выше берутся из отдельного controlled snapshot, чтобы не выдавать общий зелёный CI за более широкий уровень готовности.
 
 ## Что автоматическими тестами пока не доказать
 
