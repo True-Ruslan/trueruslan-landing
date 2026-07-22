@@ -67,11 +67,12 @@ test('renderAtomFeed is deterministic, ordered by update date and XML-safe', () 
   assert.doesNotMatch(first, /First & note/);
 });
 
-test('canonical notes include the grounded Engineering Notes milestone', () => {
+test('canonical notes include the grounded Engineering Notes milestones', () => {
   const requiredGroundedNotes = [
     'intersection-observer-giant-table',
     'static-first-sources-no-js',
     'green-ci-is-not-product-verification',
+    'llm-output-is-a-protocol-boundary',
   ];
   const canonicalNotes = loadNotesManifest();
 
