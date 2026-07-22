@@ -1,132 +1,144 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-07-22**.
+> Обновлено: **2026-07-22**, после merge PR #20.
 >
-> Этот roadmap отвечает на вопрос **«что делать дальше, в каком порядке и зачем?»**. Текущее фактическое состояние — в `docs/PROJECT_STATE.md`, история изменений — в `docs/CHANGELOG.md`.
+> Roadmap отвечает на вопрос **«что делать дальше, в каком порядке и зачем?»**.
+> Фактическое текущее состояние — `docs/PROJECT_STATE.md`, история — `docs/CHANGELOG.md`.
 
 ## Принципы roadmap
 
-Любое новое развитие должно сохранять текущие архитектурные границы:
+Любое развитие должно сохранять:
 
 - **static-first**;
 - **build-time intelligence**;
 - **progressive enhancement**;
-- core content доступен без JavaScript;
+- core content доступен без runtime API и, где применимо, без JavaScript;
 - no backend/CMS/database без реальной необходимости;
-- no runtime GitHub API для базового контента;
+- no runtime GitHub API для core content;
 - no duplicate sources of truth;
-- сначала реальные данные/evidence, потом визуальная оболочка;
+- сначала реальные data/evidence, потом декоративная оболочка;
 - новые quality gates не ослабляют существующие.
 
-Главная продуктовая формула следующего этапа:
+Главная формула v0.4:
 
 **что я создаю → что я изучаю → какие инженерные выводы делаю → чем это подтверждено**.
 
 ---
 
-## P0 — завершить текущее состояние
+# P0 — актуальный приоритет
 
-### 0.1 Завершить Photo Stories polish
+## P0.1 Photo Stories platform polish — DONE
 
-**Статус:** в работе, draft PR #17.
+Реализовано и merged:
 
-Нужно:
+- Photo Stories platform — PR #15;
+- post-merge QA polish — PR #17.
 
-1. проверить visual artifacts PR #17;
-2. убедиться, что mobile hero title не выходит за viewport;
-3. убедиться, что archive images загружены до screenshot evidence;
-4. сохранить все существующие overflow/accessibility gates;
-5. merge только при полном green CI и визуально корректном результате.
+Repository-side architecture и browser QA готовы.
 
-После merge:
+### Осталось как эксплуатационный follow-up
 
-- проверить публичный `/photos/` на фактическом GitHub Pages deployment;
-- убедиться, что legacy `/landing/photos.html` корректно переводит на новый archive;
-- проверить lightbox на desktop/mobile в production.
+- отдельно подтверждать actual GitHub Pages deployment после значимых merge;
+- первая настоящая Photo Story добавляется только при наличии реальной связной серии.
 
-### 0.2 Добавить первую настоящую Photo Story
+Первая история **не блокирует v0.4**.
 
-Архитектура уже готова, но `data/photo-albums.json` намеренно пуст.
+---
 
-Первый album должен быть реальной связной историей:
+## P0.2 Первая настоящая Photo Story — CONTENT DEPENDENT
+
+Когда будет подходящий материал:
 
 - 8–20 осмысленно отобранных кадров;
-- одна cover-фотография;
+- cover;
 - короткий intro от первого лица;
 - место/дата/category;
 - осмысленные `alt`;
 - editorial layout sequence;
-- никаких fake/demo фотографий.
+- никаких fake/demo фото.
 
-После первой истории отдельно проверить:
+Проверить:
 
 - generated `/photos/<slug>/`;
-- cinematic hero;
-- OpenGraph cover;
-- hash deep links;
+- hero/cover;
+- OpenGraph;
+- deep links;
 - keyboard/touch lightbox;
-- lazy loading и LCP.
+- lazy loading/LCP.
 
 ---
 
 # Portfolio v0.4 — Knowledge & Evidence
 
-Это следующий крупный продуктовый этап после стабилизации Photo Stories.
+## P0.3 Sources Registry / Knowledge Base — DONE
 
-## P0.3 Sources Registry + Knowledge Base
+Merged PR #20:
 
-### Зачем
+`feat: build Sources Registry knowledge base`
 
-Сейчас `Список изученных источников` — большая Markdown-таблица. Она хранит полезный материал, но плохо масштабируется и воспринимается как рабочий список, а не как карта знаний.
+Squash commit:
 
-### Что сделать
+`4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`
 
-Создать canonical registry, например:
+### Реализовано
 
-`data/sources.json`
-
-Build-time генерировать knowledge base с:
-
-- поиском по title/summary;
-- tag filters: Java, AI, DB, Architecture, DevOps и т. п.;
-- source filters: Habr, книги, документация, статьи и другие типы;
-- сортировкой по дате добавления;
-- compact list/cards;
-- expandable summary;
-- related materials;
+- canonical `data/sources.json`;
+- 31 migrated real bibliography records;
+- strict build-time validation;
+- deterministic rendering;
+- compact semantic source cards;
 - topic counters;
-- deep links на отдельные источники или устойчивые anchors;
-- semantic no-JS fallback.
+- page-local query/topic/type filtering;
+- stable anchors;
+- related-material model;
+- native `<details>` summaries;
+- no-JS semantic fallback;
+- responsive/mobile presentation;
+- dedicated browser/Axe/no-JS smoke;
+- старый giant Markdown table больше не source of truth;
+- старый table-specific reveal smoke удалён после появления stronger replacement coverage.
 
-### Критерий готовности
+### Важная граница
 
-Bibliography перестаёт быть гигантской вручную поддерживаемой таблицей и становится публичной картой того, что реально изучается.
+Sources filter/search — только page-local progressive UI.
+
+Diplodoc остаётся единственным site-wide full-text search engine.
 
 ---
 
-## P0.4 Project Evidence Layer
+## P0.4 Project Evidence Layer — NEXT
 
 ### Зачем
 
-Case studies уже сильные, но часть статусов всё ещё выглядит как текстовое утверждение. Нужен слой фактического подтверждения.
+Case studies уже сильные, но project status/version/CI часть всё ещё выражается текстовыми claims.
+
+Нужен отдельный validated evidence layer, чтобы ответить:
+
+> чем именно подтверждается текущее состояние проекта?
 
 ### Предлагаемая модель
 
-`data/project-evidence.json` или расширение Project Registry отдельной validated сущностью.
+Создать:
 
-Для flagship-проектов хранить build-time snapshot:
+`data/project-evidence.json`
 
+или отдельную validated сущность, связанную с `data/projects.json`.
+
+Для flagship projects хранить controlled snapshot:
+
+- `project` / registry slug;
 - `lastVerified`;
 - verified version/protocol;
 - latest known release;
 - last green CI/build;
 - relevant PR/release/build links;
 - verification status;
-- краткое пояснение, что доказано автоматически, а что требует manual acceptance.
+- automated/manual evidence distinction;
+- короткое пояснение scope доказательства.
 
 ### UI
 
-На project page компактный блок:
+Компактный Evidence block на case-study page, например:
 
 ```text
 VERIFIED
@@ -136,66 +148,85 @@ Tested version: ...
 Evidence: release / PR / workflow
 ```
 
-### Ограничение
+### Архитектурное ограничение
 
-Не делать runtime GitHub API calls. Snapshot должен обновляться build-time/scheduled workflow/manual controlled process.
+**No runtime GitHub API calls.**
+
+Evidence — build-time/scheduled/manual controlled snapshot.
+
+### Definition of done
+
+- canonical evidence model существует;
+- strict validation;
+- flagship pages используют evidence data, а не дублируют claims вручную;
+- no-JS semantic content;
+- stale/missing evidence видимо отличается от verified;
+- tests/browser/accessibility gates green.
 
 ---
 
-## P0.5 Content Freshness Guard
+## P0.5 Engineering Notes — расширить реальными incidents
+
+Не писать абстрактные SEO-статьи.
+
+Приоритетные grounded темы:
+
+### 1. Как маленькая CSS-анимация спрятала огромную таблицу
+
+- IntersectionObserver threshold;
+- tall element geometry;
+- почему fullscreen «лечил» баг;
+- regression browser test;
+- как этот incident позже повлиял на Sources Knowledge Base/no-JS architecture.
+
+### 2. Как строился voice AI pipeline для Minecraft NPC
+
+- microphone → STT → NPC routing → LLM → memory → TTS;
+- server-authoritative boundaries;
+- реальные failure modes.
+
+### 3. Почему почти правильный JSON от LLM всё равно ошибка
+
+- nullable `content`;
+- malformed typed fields;
+- controlled fallback;
+- parsing boundaries.
+
+### 4. OpenRouter audio/PCM сложнее обычного TTS API
+
+- provider/protocol boundaries;
+- audio formats;
+- validation/observability;
+- provider-specific errors.
+
+Цель v0.4: минимум **3–5 новых grounded Engineering Notes**.
+
+---
+
+## P0.6 Content Freshness Guard
 
 ### Зачем
 
-Главный риск живого portfolio — stale claims: сайт продолжает показывать старый status/version после развития реального проекта.
-
-### Что сделать
-
-Scheduled GitHub Action, который:
-
-- сравнивает hand-maintained state с доступными repository/release signals;
-- проверяет возраст `lastVerified`;
-- выявляет потенциально устаревшие claims;
-- создаёт/обновляет GitHub issue при проблеме;
-- **не переписывает публичный контент автоматически**.
+Главный риск living portfolio — stale claims.
 
 Примеры:
 
-- site говорит `release-candidate`, а уже вышел release;
-- evidence не обновлялось больше заданного периода;
-- ссылка на release/CI умерла;
-- project registry и timeline противоречат друг другу.
+- сайт говорит `release-candidate`, а release уже вышел;
+- evidence давно не проверялось;
+- release/CI link умер;
+- Project Registry, timeline и evidence противоречат друг другу.
 
----
+### Что сделать
 
-## P0.6 Увеличить Engineering Notes реальными историями
+Scheduled GitHub Action:
 
-Не добавлять абстрактные SEO-статьи. Использовать реальные инженерные incidents и решения.
+- сравнивает hand-maintained state с repository/release signals;
+- проверяет возраст `lastVerified`;
+- выявляет stale claims;
+- создаёт/обновляет issue;
+- **не переписывает public content автоматически**.
 
-Приоритетные темы:
-
-1. **Как маленькая CSS-анимация спрятала огромную таблицу на production**
-   - IntersectionObserver threshold;
-   - tall element geometry;
-   - почему fullscreen «лечил» баг;
-   - regression browser test.
-
-2. **Как я строил голосовой AI pipeline для Minecraft NPC**
-   - microphone → STT → NPC routing → LLM → memory → TTS;
-   - server-authoritative boundaries;
-   - реальные failure modes.
-
-3. **Почему почти правильный JSON от LLM всё равно считается ошибкой**
-   - nullable content;
-   - malformed typed fields;
-   - controlled fallback;
-   - parsing boundaries.
-
-4. **OpenRouter audio/PCM оказался сложнее обычного TTS API**
-   - protocol boundaries;
-   - provider-specific behavior;
-   - validation/observability.
-
-Цель v0.4: минимум **3–5 новых grounded Engineering Notes**.
+Evidence Layer должен появиться до Freshness Guard, чтобы guard проверял ясную canonical модель.
 
 ---
 
@@ -203,47 +234,55 @@ Scheduled GitHub Action, который:
 
 ## P1.1 Consolidated Browser Quality Harness
 
-Сейчас quality suite исторически разделён на несколько runner scripts:
+Сейчас quality suite исторически разделён на runners:
 
 - browser-quality;
-- bibliography reveal smoke;
+- Sources Knowledge Base smoke;
 - Photo Stories smoke;
 - v0.3 smoke;
-- cross-browser smoke;
-- search smoke;
-- metadata smoke;
-- Engineering Map smoke;
-- visual regression.
+- cross-browser;
+- search;
+- metadata;
+- Engineering Map;
+- visual regression;
+- layout overflow.
 
 ### Проблема
 
-Каждая новая feature может создавать собственный server/browser lifecycle и дублировать helpers.
+Каждая новая feature может повторять:
+
+- static server lifecycle;
+- browser/context creation;
+- request/page-error diagnostics;
+- Axe setup;
+- overflow helpers;
+- screenshot/evidence setup.
 
 ### Решение
 
-Создать общий `quality-harness/`:
+Создать модульный `quality-harness/`:
 
-- единый static server lifecycle;
+- shared static server lifecycle;
 - browser/context factories;
-- shared request/page-error diagnostics;
-- overflow/assertion helpers;
+- diagnostics;
+- overflow helpers;
 - Axe helpers;
 - screenshot/evidence helpers;
 - declarative route/scenario definitions.
 
-Не объединять всё в один гигантский файл. Нужны небольшие модули с ясными boundaries.
+Не превращать всё в один giant script.
 
 ---
 
 ## P1.2 Project metadata cleanup
 
-Исправить исторический metadata debt:
+Исторический debt:
 
-- `package.json` version больше не должен бессмысленно оставаться `0.2.0`;
-- description заменить с `Многостраничный лендинг TrueRuslan` на описание engineering portfolio / personal knowledge platform;
-- обновить keywords.
+- `package.json` version больше не должен бессмысленно отражать старый milestone;
+- description должен описывать engineering portfolio / personal knowledge platform;
+- keywords обновить.
 
-Версию выбирать осознанно вместе с ближайшим release/milestone, а не просто механически bump.
+Версию выбирать вместе с осознанным milestone/release.
 
 ---
 
@@ -259,25 +298,17 @@ Scheduled GitHub Action, который:
 6. Evidence
 7. What I would change now
 
-Особенно полезно для LivingWorld, где уже есть реальные incidents:
-
-- structured JSON parsing;
-- `content: null`;
-- OpenRouter audio/PCM;
-- provider 402/balance behavior;
-- server/client responsibility;
-- fallback responses;
-- voice pipeline routing.
+После Evidence Layer этот формат можно сделать фактически сильнее без декоративных claims.
 
 ---
 
-# P2 — расширение аудитории и эксплуатация
+# P2 — аудитория и эксплуатация
 
 ## P2.1 Минимальный RU/EN
 
 Не переводить весь сайт сразу.
 
-Начать только с:
+Стартовый слой:
 
 - homepage;
 - About;
@@ -286,52 +317,55 @@ Scheduled GitHub Action, который:
 - LivingWorld;
 - 1–2 лучших Engineering Notes.
 
-Русский остаётся default. Английский — отдельный аккуратный `/en/` слой без дублирования runtime.
+Русский остаётся default, английский — отдельный аккуратный `/en/` слой без runtime duplication.
 
 ---
 
 ## P2.2 Privacy-friendly analytics
 
-Собирать только продуктово полезные сигналы:
+Только продуктово полезные сигналы:
 
 - homepage → destination click;
 - project opens;
 - Notes reads;
 - Resume PDF downloads;
 - Cmd/Ctrl+K usage;
-- Photo Stories opens.
+- Photo Stories opens;
+- Sources interactions при реальной продуктовой необходимости.
 
-Предпочтение — privacy-first/minimal analytics без invasive cookies и advertising profiling.
+Без invasive cookies/ad profiling.
 
 ---
 
 ## P2.3 Custom domain / hosting
 
-Отложено до момента, когда появится реальная причина уходить с текущего GitHub Pages setup.
+Отложено до реальной причины уходить с текущего GitHub Pages setup.
 
-Перед покупкой:
+Перед покупкой сравнить:
 
-- сравнить стоимость домена;
-- продление, а не только первый год;
+- стоимость первого года;
+- стоимость продления;
 - DNS/SSL simplicity;
-- GitHub Pages custom-domain compatibility;
-- необходимость отдельного hosting вообще.
+- GitHub Pages compatibility;
+- нужна ли отдельная hosting platform вообще.
 
-Не менять архитектуру сайта только ради нового домена.
+Не менять architecture только ради домена.
 
 ---
 
 ## P2.4 Richer architecture explorer
 
-Engineering Map уже решает базовую задачу связей. Более сложный architecture explorer имеет смысл только если появится достаточно реальных architecture artifacts.
+Engineering Map уже решает базовую задачу связей.
+
+Расширять только при появлении достаточного количества реальных architecture artifacts.
 
 Не строить 3D/canvas visualization ради эффекта.
 
 ---
 
-# Что сознательно НЕ является roadmap priority
+# Что НЕ является roadmap priority
 
-Не планировать без нового обоснования:
+Без нового обоснования не планировать:
 
 - AI chat поверх резюме;
 - аккаунты;
@@ -339,49 +373,46 @@ Engineering Map уже решает базовую задачу связей. Б
 - likes;
 - CMS;
 - database;
-- backend только ради управления статическим content;
+- backend ради static content;
 - runtime GitHub API;
-- собственный второй search engine;
+- второй site-wide search engine;
 - social feed;
-- бесконечную ленту;
+- infinite scroll;
 - сложные декоративные 3D experiences.
 
-Причина: они увеличивают runtime complexity, cost/privacy surface и риск ошибок сильнее, чем ценность для текущей цели portfolio.
+Они увеличивают runtime complexity/privacy/cost surface сильнее, чем дают ценности текущей цели portfolio.
 
 ---
 
 # Оптимальная последовательность следующих действий
 
 ```text
-1. Finish PR #17 Photo Stories polish
+1. Verify actual production deployment after latest master merge when endpoint evidence is available
         ↓
-2. Verify production /photos
+2. Start Project Evidence Layer
         ↓
-3. Add first real Photo Story when content is ready
+3. Add 3–5 grounded Engineering Notes
         ↓
-4. Start v0.4: Sources Registry / Knowledge Base
+4. Build Content Freshness Guard
         ↓
-5. Project Evidence Layer
+5. Consolidate browser quality harness
         ↓
-6. 3–5 grounded Engineering Notes
+6. Metadata/version cleanup + richer flagship case studies
         ↓
-7. Content Freshness Guard
+7. Add first real Photo Story whenever real content is ready (non-blocking)
         ↓
-8. Consolidate browser quality harness
-        ↓
-9. Metadata/version cleanup + richer case studies
-        ↓
-10. Minimal EN / privacy analytics / domain later
+8. Minimal EN / privacy analytics / custom domain later
 ```
 
 ## Правило при новом чате
 
-Перед выбором следующей задачи обязательно:
+Перед выбором следующей задачи:
 
 1. прочитать `PROJECT_STATE.md`;
 2. проверить open PR;
-3. проверить latest CI;
-4. сравнить фактический state с этим roadmap;
-5. только после этого выбирать следующий пункт.
+3. проверить latest commits;
+4. проверить exact-head CI;
+5. сравнить фактический state с roadmap;
+6. если речь о production — отдельно проверить deployment endpoint.
 
 Roadmap — направление, а не оправдание игнорировать изменившееся состояние репозитория.
