@@ -1,0 +1,106 @@
+.tr-project-timeline {
+  margin: 3rem 0;
+  padding: 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--g-color-line-generic, #4b5563) 70%, transparent);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(17, 24, 39, .72), rgba(9, 11, 16, .9));
+}
+
+.tr-project-timeline__eyebrow {
+  margin: 0 0 .35rem;
+  font-size: .75rem;
+  letter-spacing: .16em;
+  color: #67e8f9;
+}
+
+.tr-project-timeline__head h2 {
+  margin-top: 0;
+}
+
+.tr-project-timeline__list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+}
+
+.tr-project-timeline__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0 0 1.75rem;
+}
+
+.tr-project-timeline__item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 18px;
+  bottom: 0;
+  width: 1px;
+  background: rgba(148, 163, 184, .35);
+}
+
+.tr-project-timeline__marker {
+  width: 17px;
+  height: 17px;
+  margin-top: .2rem;
+  border: 2px solid rgba(148, 163, 184, .7);
+  border-radius: 50%;
+  background: #090b10;
+  box-sizing: border-box;
+}
+
+.tr-project-timeline__item--current .tr-project-timeline__marker {
+  border-color: #67e8f9;
+  box-shadow: 0 0 0 5px rgba(103, 232, 249, .1), 0 0 24px rgba(103, 232, 249, .32);
+}
+
+.tr-project-timeline__item--next {
+  opacity: .8;
+}
+
+.tr-project-timeline__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  margin-bottom: .35rem;
+  font-size: .75rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(203, 213, 225, .72);
+}
+
+.tr-project-timeline__version,
+.tr-project-timeline__item--current .tr-project-timeline__meta span:last-child {
+  color: #67e8f9;
+}
+
+.tr-project-timeline__content h3 {
+  margin: .15rem 0 .45rem;
+}
+
+.tr-project-timeline__content p {
+  margin: 0;
+}
+
+.tr-project-timeline__evidence {
+  display: inline-block;
+  margin-top: .65rem;
+}
+
+@media (max-width: 640px) {
+  .tr-project-timeline {
+    padding: 1.1rem;
+  }
+
+  .tr-project-timeline__item {
+    gap: .75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-project-timeline__marker {
+    box-shadow: none !important;
+  }
+}

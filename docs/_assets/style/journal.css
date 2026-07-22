@@ -1,0 +1,118 @@
+.tr-now {
+  display: grid;
+  gap: 2rem;
+  margin: 1.5rem 0 3rem;
+}
+
+.tr-now__updated {
+  margin: 0;
+  font-size: .75rem;
+  letter-spacing: .14em;
+  color: #67e8f9;
+}
+
+.tr-now__focus {
+  max-width: 78ch;
+  margin: 0;
+  padding: 1.1rem 1.25rem;
+  border-left: 3px solid rgba(103, 232, 249, .75);
+  background: rgba(15, 23, 42, .48);
+  border-radius: 0 12px 12px 0;
+}
+
+.tr-now-block {
+  min-width: 0;
+}
+
+.tr-now-block > h2 {
+  margin-bottom: 1rem;
+}
+
+.tr-now-block > ul {
+  display: grid;
+  gap: .7rem;
+}
+
+.tr-project-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.55rem;
+  padding: .08rem .55rem;
+  border: 1px solid rgba(103, 232, 249, .24);
+  border-radius: 999px;
+  background: rgba(103, 232, 249, .07);
+  color: #a5f3fc;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  vertical-align: middle;
+}
+
+.tr-project-status--pre-production,
+.tr-project-status--prototype {
+  border-color: rgba(196, 181, 253, .28);
+  background: rgba(139, 92, 246, .08);
+  color: #ddd6fe;
+}
+
+.tr-project-status--production,
+.tr-project-status--maintained {
+  border-color: rgba(134, 239, 172, .24);
+  background: rgba(34, 197, 94, .07);
+  color: #bbf7d0;
+}
+
+.tr-note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem .85rem;
+  margin: 1rem 0 2rem;
+  padding: .8rem 1rem;
+  border: 1px solid rgba(148, 163, 184, .18);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, .42);
+  color: rgba(226, 232, 240, .76);
+  font-size: .82rem;
+}
+
+.tr-note-meta__tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+}
+
+.tr-note-meta__tags span {
+  padding: .1rem .45rem;
+  border-radius: 999px;
+  background: rgba(103, 232, 249, .08);
+  color: #a5f3fc;
+}
+
+.tr-note-nav {
+  display: grid;
+  gap: 1rem;
+  margin: 3rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(148, 163, 184, .18);
+}
+
+.tr-note-nav__sequence {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tr-note-nav__related ul {
+  margin-top: .55rem;
+}
+
+@media (max-width: 640px) {
+  .tr-note-meta {
+    display: grid;
+  }
+
+  .tr-note-nav__sequence {
+    display: grid;
+  }
+}

@@ -18,9 +18,9 @@
     {"id":"reliability","label":"Reliability","kind":"domain","description":"Evidence-driven delivery: tests, browser checks, observability, fallbacks и deployment verification.","column":4,"row":3,"tags":["reliability","backend"],"href":"notes/static-site-quality-gates.html"},
     {"id":"game-architecture","label":"Game Architecture","kind":"domain","description":"Reusable gameplay systems, authored sequences, runtime state и production asset discipline.","column":5,"row":3,"tags":["gamedev","ai"]},
 
-    {"id":"taskhub","label":"TaskHub","kind":"project","description":"Backend + AI system: Java/Spring, data infrastructure, messaging и external AI integration.","column":1,"row":5,"tags":["backend","ai","reliability"],"href":"projects/taskhub.html"},
-    {"id":"livingworld","label":"LivingWorld","kind":"project","description":"Server-authoritative AI NPC pipeline: sessions, voice/text ingress, memory и action authorization.","column":3,"row":5,"tags":["ai","backend","gamedev","reliability"],"href":"projects/livingworld.html"},
-    {"id":"node-zero","label":"NODE ZERO","kind":"project","description":"Unity techno-horror: gameplay systems, facility state, authored sequences и MIRROR prediction loop.","column":5,"row":5,"tags":["gamedev","ai","reliability"],"href":"projects/node-zero.html"},
+    {"id":"taskhub","kind":"project","projectRef":"taskhub","column":1,"row":5,"tags":["backend","ai","reliability"]},
+    {"id":"livingworld","kind":"project","projectRef":"livingworld","column":3,"row":5,"tags":["ai","backend","gamedev","reliability"]},
+    {"id":"node-zero","kind":"project","projectRef":"node-zero","column":5,"row":5,"tags":["gamedev","ai","reliability"]},
 
     {"id":"runtime-note","label":"Runtime Boundary","kind":"note","description":"Почему landing page и knowledge runtime выгодно разделять по фактическим обязанностям.","column":1,"row":7,"tags":["reliability","backend"],"href":"notes/portfolio-runtime-boundary.html"},
     {"id":"quality-note","label":"Quality Gates","kind":"note","description":"Слои доказательств от unit tests до production smoke и visual regression.","column":3,"row":7,"tags":["reliability","backend"],"href":"notes/static-site-quality-gates.html"},

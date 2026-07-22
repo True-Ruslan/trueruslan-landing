@@ -1,0 +1,20 @@
+[
+  {
+    "date": "2026-07",
+    "title": "Playable technical foundation",
+    "description": "Unity 6 project foundation, first-person runtime, build pipeline and initial architecture boundaries were established and validated with a Windows build.",
+    "state": "past"
+  },
+  {
+    "date": "2026-07",
+    "title": "Pre-production and vertical-slice design",
+    "description": "The current focus is the smallest coherent slice that can prove the technical-work loop, MIRROR constraint manipulation and authored narrative pacing.",
+    "state": "current"
+  },
+  {
+    "date": "NEXT",
+    "title": "First cohesive vertical slice",
+    "description": "Connect reusable gameplay systems, facility state, authored sequences, audio and narrative evidence into one 15–20 minute playable slice before expanding scope.",
+    "state": "next"
+  }
+]

@@ -14,10 +14,15 @@ resources:
     - _assets/style/standalone.css
     - _assets/style/home.css
     - _assets/style/active-projects.css
+    - _assets/style/journal.css
+    - _assets/style/project-timeline.css
+    - _assets/style/command-palette.css
     - _assets/style/engineering-graph.css
     - _assets/style/resume.css
   script:
     - _assets/script/custom.js
+    - _assets/script/diplodoc-runtime-a11y.js
+    - _assets/script/command-palette.js
     - _assets/script/engineering-graph.js
 
 search:

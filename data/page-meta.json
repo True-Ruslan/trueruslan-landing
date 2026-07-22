@@ -20,6 +20,16 @@
     "accent": "violet"
   },
   {
+    "path": "landing/now.html",
+    "card": "now",
+    "title": "Сейчас — Руслан Немыкин",
+    "description": "Текущий инженерный фокус Руслана Немыкина: активные проекты, темы изучения и технические заметки в работе.",
+    "displayTitle": "NOW",
+    "kicker": "CURRENT FOCUS",
+    "tags": ["BUILDING", "LEARNING", "WRITING"],
+    "accent": "cyan"
+  },
+  {
     "path": "landing/engineering-map.html",
     "card": "engineering-map",
     "title": "Engineering Map — Руслан Немыкин",

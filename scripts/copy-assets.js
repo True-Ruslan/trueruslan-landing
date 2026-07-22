@@ -5,8 +5,21 @@ import {fileURLToPath} from 'node:url';
 import {globSync} from 'glob';
 
 import {applyEngineeringGraph, loadEngineeringGraph} from './engineering-graph.js';
+import {
+  applyFeedDiscovery,
+  applyNoteEnhancements,
+  loadNotesManifest,
+  writeAtomFeed,
+} from './notes-content.js';
+import {applyNowPage, loadNowData} from './now-page.js';
 import {writeOgCards} from './og-image.js';
 import {applyPageMeta, loadPageMeta} from './page-meta.js';
+import {
+  applyProjectRegistryContent,
+  DEFAULT_HISTORY_DIR,
+  loadProjectRegistry,
+} from './project-registry.js';
+import {applyProjectTimelines} from './project-timeline.js';
 import {normalizeSearchPageHtml} from './search-page.js';
 import {
   collectPagesFromToc,
@@ -22,6 +35,9 @@ const OUTPUT_DIR = path.join(ROOT, 'docs-html');
 const STANDALONE_HOME_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 const PAGE_META_MANIFEST = path.join(ROOT, 'data', 'page-meta.json');
 const ENGINEERING_GRAPH_MANIFEST = path.join(ROOT, 'data', 'engineering-graph.json');
+const PROJECTS_MANIFEST = path.join(ROOT, 'data', 'projects.json');
+const NOW_MANIFEST = path.join(ROOT, 'data', 'now.json');
+const NOTES_MANIFEST = path.join(ROOT, 'data', 'notes.json');
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
 const SEARCH_RESOURCES = [
@@ -120,6 +136,10 @@ export function postprocessOutput({
   standaloneTemplatePath = STANDALONE_HOME_TEMPLATE,
   pageMetaPath = PAGE_META_MANIFEST,
   engineeringGraphPath = ENGINEERING_GRAPH_MANIFEST,
+  projectRegistryPath = PROJECTS_MANIFEST,
+  projectHistoryDir = DEFAULT_HISTORY_DIR,
+  nowPath = NOW_MANIFEST,
+  notesPath = NOTES_MANIFEST,
   siteUrl = getSiteUrl(),
   copyAssets = true,
 } = {}) {
@@ -127,6 +147,9 @@ export function postprocessOutput({
     throw new Error('docs-html directory not found. Run build:docs:fast first.');
   }
 
+  const projects = loadProjectRegistry(projectRegistryPath, {historyDir: projectHistoryDir});
+  const nowData = loadNowData(nowPath);
+  const notes = loadNotesManifest(notesPath, {docsDir});
   const copied = copyAssets ? walkAssets(path.join(docsDir, 'assets'), outputDir, docsDir) : [];
   const copiedSearchResources = copyAssets ? copySearchResources(docsDir, outputDir) : [];
 
@@ -138,21 +161,34 @@ export function postprocessOutput({
   const standaloneHomePath = writeStandaloneHome({
     templatePath: standaloneTemplatePath,
     outputPath: path.join(outputDir, 'index.html'),
+    projectRegistryPath,
     siteUrl,
   });
+  const projectStatusTargets = applyProjectRegistryContent(outputDir, projects);
+  const nowPageTarget = applyNowPage(outputDir, nowData, projects);
+  const timelineTargets = applyProjectTimelines(outputDir, projects, projectHistoryDir);
+  const noteTargets = applyNoteEnhancements(outputDir, notes);
+  const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
 
-  const engineeringGraph = loadEngineeringGraph(engineeringGraphPath);
+  const engineeringGraph = loadEngineeringGraph(engineeringGraphPath, {projects});
   const engineeringGraphTarget = applyEngineeringGraph(outputDir, engineeringGraph);
 
   const pageMeta = loadPageMeta(pageMetaPath);
   const ogCards = writeOgCards(outputDir, pageMeta);
   const metadataUpdated = applyPageMeta(outputDir, pageMeta, siteUrl);
   const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
+  const feedDiscoveryUpdated = applyFeedDiscovery(outputDir, siteUrl);
 
   return {
     copied: [...copied, ...copiedSearchResources],
     normalizedSearchPages,
     standaloneHomePath,
+    projectStatusTargets,
+    nowPageTarget,
+    timelineTargets,
+    noteTargets,
+    feedPath,
+    feedDiscoveryUpdated,
     engineeringGraphTarget,
     ogCards,
     metadataUpdated,
@@ -167,9 +203,15 @@ function main() {
     for (const file of result.copied) console.log(`Copied: ${file}`);
     if (result.normalizedSearchPages) console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
     console.log(`Standalone homepage written: ${result.standaloneHomePath}`);
+    console.log(`Injected ${result.projectStatusTargets} registry-derived project status badge(s).`);
+    console.log(`Now page injected: ${result.nowPageTarget}`);
+    console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
+    console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
+    console.log(`Atom feed written: ${result.feedPath}`);
     console.log(`Engineering Map injected: ${result.engineeringGraphTarget}`);
     console.log(`Generated ${result.ogCards.length} OpenGraph PNG card(s).`);
     console.log(`Injected page metadata into ${result.metadataUpdated} HTML page(s).`);
+    if (result.feedDiscoveryUpdated) console.log(`Injected feed discovery into ${result.feedDiscoveryUpdated} page(s).`);
     if (result.personSchemaInjected) console.log('Person schema injected into index.html.');
     console.log('Assets and SEO files created successfully.');
   } catch (error) {
