@@ -33,7 +33,7 @@
     "updated": "2026-07-21",
     "readingMinutes": 8,
     "tags": ["AI agents", "Voice", "Security", "Architecture"],
-    "related": ["static-site-quality-gates"]
+    "related": ["static-site-quality-gates", "llm-output-is-a-protocol-boundary"]
   },
   {
     "slug": "intersection-observer-giant-table",
@@ -68,5 +68,15 @@
     "readingMinutes": 8,
     "tags": ["CI", "Evidence", "Reliability", "Verification"],
     "related": ["static-site-quality-gates"]
+  },
+  {
+    "slug": "llm-output-is-a-protocol-boundary",
+    "title": "Почему успешный ответ LLM ещё не означает успешный контракт",
+    "description": "Почему structured output модели нужно обрабатывать как внешний protocol boundary: strict JSON, type validation, no coercion, bounded fallback и отдельная authorization граница.",
+    "published": "2026-07-23",
+    "updated": "2026-07-23",
+    "readingMinutes": 7,
+    "tags": ["AI", "Protocols", "Validation", "Reliability"],
+    "related": ["server-authoritative-ai-npcs", "green-ci-is-not-product-verification"]
   }
 ]

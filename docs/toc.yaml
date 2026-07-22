@@ -90,6 +90,8 @@ items:
         href: ./landing/notes/static-site-quality-gates.md
       - name: Server-authoritative AI NPCs
         href: ./landing/notes/server-authoritative-ai-npcs.md
+      - name: LLM protocol boundary
+        href: ./landing/notes/llm-output-is-a-protocol-boundary.md
       - name: IntersectionObserver regression
         href: ./landing/notes/intersection-observer-giant-table.md
       - name: Sources / no-JS
