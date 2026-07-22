@@ -1,0 +1,182 @@
+.tr-project-evidence {
+  min-width: 0;
+  margin: 1.5rem 0 2rem;
+  padding: clamp(1rem, 2.6vw, 1.45rem);
+  border: 1px solid var(--tr-border);
+  border-left-width: 4px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, .025), transparent 42%), rgba(17, 21, 28, .76);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .16);
+  overflow-wrap: anywhere;
+}
+
+.tr-project-evidence--verified {
+  border-left-style: solid;
+  border-left-color: var(--tr-green);
+}
+
+.tr-project-evidence--stale {
+  border-left-style: dashed;
+  border-left-color: #f4c95d;
+}
+
+.tr-project-evidence--unverified {
+  border-left-style: dotted;
+  border-left-color: var(--tr-muted);
+}
+
+.tr-project-evidence__header {
+  position: static;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 0;
+  background: transparent !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.tr-project-evidence__header h2 {
+  margin: .15rem 0 0;
+  font-size: clamp(1.2rem, 2.6vw, 1.55rem);
+}
+
+.tr-project-evidence__eyebrow {
+  margin: 0;
+  color: var(--tr-muted);
+  font: .72rem ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.tr-project-evidence__status {
+  flex: 0 0 auto;
+  padding: .38rem .62rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font: 700 .7rem ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: .05em;
+  text-align: center;
+}
+
+.tr-project-evidence--verified .tr-project-evidence__status { color: var(--tr-green); }
+.tr-project-evidence--stale .tr-project-evidence__status { color: #f4c95d; border-style: dashed; }
+.tr-project-evidence--unverified .tr-project-evidence__status { color: var(--tr-muted); border-style: dotted; }
+
+.tr-project-evidence__checked,
+.tr-project-evidence__empty {
+  margin: .9rem 0 0;
+  color: var(--tr-muted);
+  font-size: .88rem;
+}
+
+.tr-project-evidence__versions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: .65rem;
+  min-width: 0;
+  margin: 1rem 0 0;
+}
+
+.tr-project-evidence__version {
+  min-width: 0;
+  padding: .7rem .8rem;
+  border: 1px solid rgba(156, 169, 184, .14);
+  border-radius: 11px;
+  background: rgba(9, 11, 16, .42);
+}
+
+.tr-project-evidence__version dt {
+  color: var(--tr-muted);
+  font-size: .72rem;
+}
+
+.tr-project-evidence__version dd {
+  margin: .2rem 0 0;
+  color: var(--tr-text);
+  font: 650 .88rem ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.tr-project-evidence__signals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr));
+  gap: .75rem;
+  min-width: 0;
+  margin-top: 1rem;
+}
+
+.tr-project-evidence__signal {
+  min-width: 0;
+  padding: .9rem;
+  border: 1px solid rgba(156, 169, 184, .14);
+  border-radius: 12px;
+  background: rgba(9, 11, 16, .5);
+}
+
+.tr-project-evidence__signal-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .4rem .7rem;
+  color: var(--tr-muted);
+  font: .7rem ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.tr-project-evidence__mode {
+  font-weight: 700;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.tr-project-evidence__signal h4 {
+  margin: .65rem 0 .45rem;
+  font-size: 1rem;
+}
+
+.tr-project-evidence__signal-state,
+.tr-project-evidence__scope {
+  margin: .4rem 0 0;
+  color: #c7d1dd;
+  font-size: .86rem;
+  line-height: 1.55;
+}
+
+.tr-project-evidence__signal-state strong,
+.tr-project-evidence__scope strong {
+  color: var(--tr-text);
+}
+
+.tr-project-evidence__link {
+  display: inline-flex;
+  margin-top: .7rem;
+  color: var(--tr-cyan);
+  font-size: .84rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.tr-project-evidence-noscript {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .tr-project-evidence {
+    border-radius: 13px;
+  }
+
+  .tr-project-evidence__header {
+    display: grid;
+  }
+
+  .tr-project-evidence__status {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .tr-project-evidence__versions,
+  .tr-project-evidence__signals {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
