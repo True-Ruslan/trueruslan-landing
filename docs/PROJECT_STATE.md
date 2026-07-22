@@ -1,15 +1,16 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-07-22**, после merge PR #22.
+> Последнее смысловое обновление: **2026-07-22**, после Project Evidence milestone и continuity sync PR #23.
 >
-> Главный источник ответа на вопрос **«что сейчас представляет собой проект и в каком он состоянии?»**.
-> Для восстановления контекста нового чата читать:
+> Главный durable snapshot для ответа на вопрос **«что сейчас представляет собой проект, что уже сделано и что дальше?»**.
+>
+> В новом чате читать по порядку:
 >
 > 1. `docs/PROJECT_STATE.md`
 > 2. `docs/ROADMAP.md`
 > 3. `docs/CHANGELOG.md`
 >
-> После чтения файлов всегда дополнительно проверять актуальные commits, open PR и CI: state-файл — durable snapshot, а не runtime dashboard.
+> После этого всегда дополнительно проверять actual open PR, latest commits и exact-head CI. Public production deployment проверять отдельно.
 
 ## 1. Что это за проект
 
@@ -18,7 +19,7 @@
 Это уже не обычный landing page. Проект объединяет:
 
 - лёгкую standalone-главную;
-- knowledge pages на Diplodoc;
+- Diplodoc knowledge pages;
 - web-CV;
 - project case studies;
 - `/now`;
@@ -26,7 +27,7 @@
 - Engineering Map;
 - локальный полнотекстовый поиск;
 - Cmd/Ctrl+K command palette;
-- Photo Stories / личный визуальный архив;
+- Photo Stories;
 - Sources Knowledge Base;
 - Project Evidence Layer;
 - SEO/OpenGraph/JSON-LD;
@@ -42,41 +43,51 @@
 
 ## 2. Текущее состояние `master`
 
-### Последний крупный milestone
+### Последний крупный product milestone
 
 **Portfolio v0.4 — Project Evidence Layer**.
 
-Merged через PR #22:
+PR #22:
 
-- `feat: add Project Evidence Layer`
-- squash commit: `e3e48ac56b45eddeb872c04b83bff1408da6556f`
+`feat: add Project Evidence Layer`
+
+Squash commit:
+
+`e3e48ac56b45eddeb872c04b83bff1408da6556f`
 
 Exact implementation head:
 
 `7ce0d428327e29436a03fc2be4b94ef7c0f2f15b`
 
-Он полностью прошёл **Build #247 / workflow run `29935334882`**.
+Verification:
 
-### Непосредственно перед ним
+**Build #247 / workflow run `29935334882`: fully green.**
 
-- PR #17 — Photo Stories post-merge QA polish;
-  - merged `7936638bd6473ad4f1ff0b2ef42db2289e937d83`;
-- PR #19 — approved Sources Registry design;
-  - merged `363c79c811748823184a795b8174378fc471f58d`;
-- PR #20 — Sources Registry / Knowledge Base implementation;
-  - merged `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`;
-- PR #21 — continuity docs sync после Sources milestone;
-  - merged `5535948d756585c44550d14f3e2424be82a3b767`;
-- PR #22 — Project Evidence Layer;
-  - merged `e3e48ac56b45eddeb872c04b83bff1408da6556f`.
+### Continuity sync
+
+После feature merge durable docs были синхронизированы через PR #23:
+
+`docs: sync project state after Project Evidence milestone`
+
+Squash commit:
+
+`ac520553cbe38ab022d49abc3b48dd0bd67c76c8`
+
+Exact docs head:
+
+`a57b380c19fd752be2e234462b117ffc9bde1ce0`
+
+Verification:
+
+**Build #248 / workflow run `29936230770`: fully green.**
 
 ### Сейчас в разработке
 
-Feature implementation PR после merge #22 отсутствует.
+На момент этого snapshot **active feature implementation PR отсутствует**.
 
-Текущий docs-only follow-up синхронизирует durable state с фактическим merge SHA и CI evidence.
+Следующий продуктовый приоритет:
 
-Следующий продуктовый приоритет по roadmap: **P0.5 — 3–5 grounded Engineering Notes из реальных incidents**.
+**P0.5 — 3–5 grounded Engineering Notes из реальных engineering incidents**.
 
 Первая настоящая Photo Story остаётся content-dependent/non-blocking задачей.
 
@@ -100,34 +111,20 @@ Feature implementation PR после merge #22 отсутствует.
 - semantic HTML;
 - progressive vanilla JS;
 - существующие quality gates не ослабляются ради новой feature;
-- evidence не должно говорить больше, чем реально доказывает его scope.
-
----
-
-## 4. Основные части системы
-
-### 4.1 Standalone homepage
-
-`templates/index.html`
-
-Корневая страница не тянет тяжёлый Diplodoc/React viewer runtime. Она build-time получает project state из canonical registry и использует собственный лёгкий визуальный слой.
-
-### 4.2 Diplodoc knowledge pages
-
-`docs/landing/**/*.md`
-
-Здесь находятся About, Projects, Resume, `/now`, Engineering Notes, Engineering Map, Sources, Contacts и flagship case studies.
+- evidence не говорит больше, чем реально доказывает его bounded `scope`.
 
 Diplodoc остаётся владельцем единственного site-wide local full-text search index.
 
-### 4.3 Canonical data
+---
 
-Основные version-controlled registries:
+## 4. Canonical data и build architecture
 
-- `data/projects.json` — identity/status/summary/links/tags проектов;
+Основные registries:
+
+- `data/projects.json` — project identity/status/summary/links/tags;
 - `data/project-history/*.json` — structured flagship timelines;
 - `data/project-evidence.json` — controlled evidence snapshots;
-- `data/now.json` — focus/learning/writing без дублирования project state;
+- `data/now.json` — focus/learning/writing;
 - `data/notes.json` — Engineering Notes metadata/relations;
 - `data/engineering-graph.json` — Engineering Map;
 - `data/page-meta.json` — SEO/social metadata;
@@ -136,13 +133,13 @@ Diplodoc остаётся владельцем единственного site-w
 - `data/sources.json` — Sources Knowledge Base;
 - `data/external-links.json` — public endpoints для monitoring.
 
-### 4.4 Build-time post-processing
+Главный build/postprocess orchestrator:
 
-Главный orchestrator — `scripts/copy-assets.js` плюс focused modules.
+`scripts/copy-assets.js`
 
-Ключевые этапы pipeline:
+Ключевые build-time systems:
 
-1. assets/search/UI resources;
+1. assets/UI resources;
 2. standalone homepage;
 3. Project Registry/status badges;
 4. `/now`;
@@ -161,7 +158,7 @@ Diplodoc остаётся владельцем единственного site-w
 
 ## 5. Реализованные продуктовые системы
 
-### 5.1 Projects
+### 5.1 Projects / case studies
 
 Есть Projects hub и canonical `data/projects.json`.
 
@@ -175,9 +172,9 @@ Case studies:
 
 Для flagship проектов есть structured timelines и architecture diagrams.
 
-### 5.2 Project Evidence Layer — PR #22
+### 5.2 Project Evidence Layer — DONE
 
-Canonical source of truth:
+Canonical source:
 
 `data/project-evidence.json`
 
@@ -186,75 +183,71 @@ Canonical source of truth:
 - `livingworld`;
 - `node-zero`.
 
-Модель generic и может расширяться на остальные project slugs без redesign.
+Schema generic для дальнейшего расширения.
 
 #### Trust model
 
-Три явных состояния:
-
-- `verified` — snapshot осознанно проверен и считается текущим в пределах записанного scope;
-- `stale` — доказательства раньше были meaningful, но текущее состояние требует повторной проверки;
+- `verified` — snapshot явно проверен и считается текущим только в пределах записанного scope;
+- `stale` — evidence раньше было meaningful, но текущее состояние требует re-verification;
 - `unverified` — актуальное verification claim не делается.
 
-`stale` и `unverified` — валидные состояния и сами по себе не ломают build.
+`stale`/`unverified` сами по себе не ломают build.
 
-Malformed/inconsistent evidence — ломает build.
+Malformed/inconsistent evidence ломает build.
 
 #### Validation
 
 `scripts/project-evidence.js` проверяет:
 
-- non-empty registry;
-- project slug и связь с `data/projects.json`;
+- registry shape/non-empty state;
+- project reference против `data/projects.json`;
 - duplicate project snapshots;
-- trust status;
+- trust enum;
 - обязательный `lastVerified` для verified/stale;
 - реальные calendar dates;
 - version facts и duplicate labels;
-- controlled signal kind/mode/state;
-- coherence `manual ↔ manual mode` и `ci/release/pr/build ↔ automated mode`;
+- signal kind/mode/state;
+- manual/automated mode coherence;
 - required bounded `scope`;
 - duplicate signals;
-- только HTTPS evidence URLs, если URL указан;
-- наличие signals для verified/stale.
+- HTTPS URL safety;
+- minimum signals для verified/stale.
 
-#### Rendering / static-first
+#### Rendering / no-JS
 
-Case-study Markdown хранит только декларативные placeholders:
+Case-study Markdown содержит только declarative placeholders.
 
-- `data-tr-project-evidence="livingworld"`;
-- `data-tr-project-evidence="node-zero"`.
-
-Build-time renderer генерирует semantic evidence block с:
+Build-time renderer генерирует semantic block с:
 
 - trust state;
 - last checked date;
 - version/protocol facts;
 - automated/manual distinction;
 - signal state;
-- bounded scope — что именно доказано;
-- evidence links, когда существует стабильный допустимый URL.
+- bounded proof scope;
+- evidence links, когда допустимо.
 
-Если Diplodoc держит article body только внутри hydration state, build добавляет semantic `<noscript>` fallback. Core evidence остаётся доступным без JavaScript.
+Если Diplodoc хранит article body только в hydration state, build добавляет semantic `<noscript>` fallback.
 
-#### Initial snapshots
+Runtime fetch не нужен.
+
+#### Initial controlled snapshots
 
 **LivingWorld**:
 
-- status: `verified`;
-- `lastVerified`: `2026-07-22`;
-- versions/protocols зафиксированы для Minecraft 1.21.1 / Java 21 / Fabric / MCA Reborn / Simple Voice Chat / LivingWorld 0.1.0;
+- `verified`;
+- `lastVerified = 2026-07-22`;
 - bounded CI evidence: run `29736858315`;
 - merged world-perception milestone PR #6;
-- scope прямо говорит, что green CI не доказывает human two-client microphone/spatial-audio acceptance.
+- scope прямо исключает false claim о completed human two-client microphone/spatial-audio acceptance.
 
 **NODE ZERO**:
 
-- status: `stale`;
-- last fully verified foundation gate: `2026-07-14`;
-- зафиксирован successful production-foundation acceptance;
-- текущий player-foundation PR #9 наблюдён `2026-07-22` как pending/draft milestone;
-- старый успешный foundation gate намеренно не превращён в claim, что текущий vertical slice проверен целиком.
+- `stale`;
+- last fully verified foundation gate `2026-07-14`;
+- successful production-foundation acceptance сохранён;
+- current player-foundation PR #9 observed `2026-07-22` как pending/draft milestone;
+- старый successful foundation gate не превращён в claim о готовности текущего player/vertical-slice milestone.
 
 #### UI
 
@@ -264,81 +257,72 @@ Trust state различается не только цветом:
 - stale — dashed trust border;
 - unverified — dotted/neutral treatment.
 
-Mobile layout одноколоночный, scopes/versions wrap-safe.
+Mobile layout одноколоночный и wrap-safe.
 
-### 5.3 `/now`
+### 5.3 Sources Registry / Knowledge Base — DONE
 
-- active projects/statuses из Project Registry;
-- focus/learning/writing из `data/now.json`;
-- project state вручную не дублируется.
+PR #20 / squash:
 
-### 5.4 Engineering Notes
+`4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`
 
-Есть dates, reading time, tags, related notes, previous/next и deterministic `feed.xml`.
+Есть:
 
-Опубликованные базовые заметки покрывают:
-
-- runtime boundary standalone landing vs Diplodoc;
-- quality gates статического engineering site;
-- server-authoritative AI NPC architecture.
-
-Контента пока мало относительно количества реальных incidents — это следующий главный продуктовый gap.
-
-### 5.5 Engineering Map
-
-- technologies → domains → projects → notes;
+- canonical `data/sources.json`;
+- 31 migrated real records;
 - strict validation;
-- semantic fallback;
-- filters/highlighting;
-- responsive presentation;
-- dedicated Axe/browser QA.
+- semantic deterministic cards;
+- page-local query/topic/type filtering;
+- stable anchors/related materials;
+- responsive UI;
+- semantic no-JS fallback;
+- dedicated browser/Axe/no-JS gate.
 
-### 5.6 Search/navigation
+Sources filtering — только page-local UI. Diplodoc остаётся global full-text search owner.
 
-- Diplodoc local search — единственный site-wide full-text engine;
-- search page стилизована под проект;
-- Cmd/Ctrl+K command palette не создаёт второй search index.
+### 5.4 Photo Stories — PLATFORM DONE
 
-### 5.7 Resume / SEO / sharing
+Основная implementation:
 
-- first-class web-CV;
-- deployment-safe embedded PDF;
-- sitemap/robots/canonical;
-- OpenGraph/Twitter;
-- JSON-LD;
-- deterministic 1200×630 social cards.
+- PR #15 — `8aa2149fc8aec3751f2da73321c06a89111f9efd`;
+- QA polish PR #17 — `7936638bd6473ad4f1ff0b2ef42db2289e937d83`.
 
-### 5.8 Photo Stories
-
-Static-first фотоархитектура готова:
+Готово:
 
 - canonical `/photos/`;
-- albums/archive registries;
-- `/photos/<slug>/`;
-- cinematic hero/editorial layouts;
+- album/archive registries;
+- story routes;
+- cinematic/editorial layouts;
 - fullscreen lightbox;
 - keyboard/touch/hash deep links;
 - filters;
-- legacy compatibility;
 - sitemap/search/metadata integration;
-- build-time validation;
 - browser smoke.
 
 `photo-albums.json` намеренно пуст до появления первой настоящей связной серии. Fake/demo stories не добавляются.
 
-### 5.9 Sources Registry / Knowledge Base
+### 5.5 `/now`, Engineering Notes, Engineering Map, Search, Resume/SEO
 
-PR #20 создал canonical `data/sources.json` с 31 мигрированной реальной записью.
+Реализованы:
 
-Есть strict validation, deterministic cards, counters, page-local query/topic/type filtering, stable anchors, related materials, `<details>`, responsive UI и semantic no-JS fallback.
+- `/now` с registry-derived active project state;
+- Engineering Notes metadata/relations/feed;
+- Engineering Map technologies → domains → projects → notes;
+- Diplodoc local search;
+- styled search page;
+- command palette без второго search index;
+- first-class web-CV;
+- sitemap/robots/canonical;
+- OpenGraph/Twitter;
+- JSON-LD;
+- deterministic social cards.
 
-Sources filter — только page-local UI. Diplodoc остаётся единственным site-wide full-text search engine.
+Engineering Notes пока мало относительно количества реальных incidents — это следующий главный content gap.
 
 ---
 
 ## 6. Quality gates и доказательства
 
-Проект проверяет финальный generated artifact, а не только source code.
+Проект проверяет final generated artifact, а не только source code.
 
 Основные gates:
 
@@ -349,40 +333,41 @@ Sources filter — только page-local UI. Diplodoc остаётся еди�
 - mobile overflow;
 - Chromium browser smoke;
 - Axe accessibility;
-- Lighthouse budgets;
+- Lighthouse;
 - Sources Knowledge Base smoke;
 - Project Evidence smoke;
 - Photo Stories smoke;
-- Portfolio v0.3 regression smoke;
+- Portfolio v0.3 regression;
 - Firefox/WebKit compatibility;
-- local search smoke;
-- metadata/OpenGraph smoke;
-- Engineering Map smoke;
+- generated search;
+- metadata/OpenGraph;
+- Engineering Map;
 - visual regression.
 
-### Project Evidence milestone verification
+### Project Evidence exact verification
 
-Exact implementation head:
+Exact feature head:
 
 `7ce0d428327e29436a03fc2be4b94ef7c0f2f15b`
 
-**Build #247 / run `29935334882`: success по всей матрице.**
+Build #247 / run `29935334882`:
 
-Dedicated Project Evidence artifact summary:
+**fully green**.
+
+Dedicated evidence summary:
 
 - LivingWorld: `verified`, 2 bounded signals;
-- trust border: solid `4px`;
+- solid `4px` trust treatment;
 - NODE ZERO: `stale`, 2 bounded signals;
-- trust border: dashed `4px`;
-- mobile horizontal overflow: `0` для обоих;
-- serious/critical Axe violations: `0`;
-- JavaScript-disabled: оба evidence block присутствуют;
-- no-JS overflow: `0`;
-- no-JS trust styling также загружается корректно.
+- dashed `4px` trust treatment;
+- mobile overflow `0`;
+- serious/critical Axe violations `0`;
+- JavaScript-disabled: оба evidence block доступны;
+- no-JS overflow `0`.
 
-### Важные TDD/regression incidents milestone
+### Important TDD/regression history
 
-Последовательные RED gates:
+RED gates:
 
 - Build #225 — validator contract;
 - Build #227 — renderer contract;
@@ -390,23 +375,29 @@ Dedicated Project Evidence artifact summary:
 - Build #232 — generated-page/no-JS injection;
 - Build #234 — orchestration;
 - Build #241 — browser trust-style gate;
-- Build #244 — dedicated regression на stylesheet resolution при Diplodoc `<base href>`.
+- Build #244 — stylesheet resolution regression при Diplodoc `<base href>`.
 
-Во время styling обнаружилось, что document-relative `../../_assets/...` конфликтует с generated `<base href="../../">` и site-integrity правильно считал asset broken. Исправление сделано в resource resolution pipeline; integrity gate не ослаблялся.
+Во время styling обнаружилось, что naive document-relative `../../_assets/...` конфликтует с generated `<base href="../../">`.
 
-### Production caveat
+Site integrity корректно поймал broken asset.
 
-Repository implementation и generated artifacts подтверждены CI.
+Fix сделан в resource resolution pipeline; integrity gate не ослаблялся.
 
-**Фактический GitHub Pages deployment после merge `e3e48ac...` в этом snapshot отдельно не подтверждён.**
+### Continuity docs verification
 
-Не считать public endpoint автоматически синхронизированным с `master`, пока это не подтверждено post-deploy smoke или ручной endpoint-проверкой.
+Exact PR #23 docs head:
+
+`a57b380c19fd752be2e234462b117ffc9bde1ce0`
+
+Build #248 / run `29936230770`:
+
+**fully green по полной configured matrix**.
 
 ---
 
 ## 7. Известные незавершённые части / technical debt
 
-### P0 / product
+### P0
 
 1. Engineering Notes пока мало относительно количества реальных incidents.
 2. **Content Freshness Guard** ещё не реализован.
@@ -414,13 +405,15 @@ Repository implementation и generated artifacts подтверждены CI.
 
 ### Quality architecture
 
-Browser QA исторически состоит из нескольких runners. Нужен общий модульный `quality-harness/` с shared server/browser/context/Axe/overflow/screenshot primitives, но без giant monolithic runner.
+Browser QA состоит из нескольких focused runners.
+
+Нужен общий модульный `quality-harness/` с shared server/browser/context/Axe/overflow/screenshot primitives, но без giant monolithic runner.
 
 ### Metadata debt
 
 `package.json` требует отдельной cleanup-задачи:
 
-- version всё ещё историческая;
+- version историческая;
 - description должна отражать engineering portfolio / knowledge platform.
 
 ### Отложено сознательно
@@ -436,23 +429,21 @@ Browser QA исторически состоит из нескольких runne
 
 ### P0.5 — 3–5 grounded Engineering Notes
 
-Следующий шаг — не новая инфраструктура, а превращение уже случившихся инженерных incidents в сильный публичный content layer.
+Приоритетные реальные темы:
 
-Приоритетные темы:
-
-1. как маленькая CSS/reveal логика спрятала огромную bibliography table;
-2. как Sources migration привела к no-JS architecture;
+1. как reveal/IntersectionObserver logic спрятала giant bibliography table;
+2. как Sources migration привела к более строгой no-JS/static-first architecture;
 3. voice AI pipeline Minecraft NPC: microphone → STT → routing → LLM → memory → TTS;
-4. почему почти правильный JSON от LLM всё равно ошибка;
-5. Project Evidence: почему green CI не равен verified product и как bounded scopes защищают от overclaiming.
+4. почему «почти правильный JSON» от LLM всё равно protocol error;
+5. Project Evidence: почему green CI ≠ verified product и зачем bounded scopes.
 
 После Notes:
 
 1. Content Freshness Guard поверх `projects.json` + `project-evidence.json`;
-2. consolidated browser quality harness;
+2. consolidated browser quality primitives;
 3. metadata/version cleanup;
-4. richer flagship case-study structure;
-5. first real Photo Story при появлении реального материала;
+4. stronger flagship case-study structure;
+5. first real Photo Story при появлении genuine material;
 6. minimal EN / analytics / domain позже.
 
 ---
@@ -481,13 +472,23 @@ Browser QA исторически состоит из нескольких runne
 
 ---
 
-## 10. Как восстановить контекст в новом чате
+## 10. Production caveat
+
+Repository implementation и generated artifacts подтверждены CI.
+
+**Фактический GitHub Pages deployment после последних merges отдельно не подтверждён в этом snapshot.**
+
+Не считать public endpoint автоматически синхронизированным с `master`, пока это не подтверждено post-deploy smoke или ручной endpoint-проверкой.
+
+---
+
+## 11. Как восстановить контекст в новом чате
 
 Оптимальный запрос:
 
 > Открой в `True-Ruslan/trueruslan-landing` файлы `docs/PROJECT_STATE.md`, `docs/ROADMAP.md` и `docs/CHANGELOG.md`. Затем проверь актуальные open PR, последние commits и CI. Расскажи, что уже реализовано, что сейчас в работе, что изменилось после последнего state update и что оптимально делать следующим.
 
-State-файл — snapshot на дату обновления.
+State-файл — snapshot.
 
 Для текущего состояния всегда дополнительно проверять:
 
