@@ -80,7 +80,7 @@ jobs:
               per_page: 100,
             });
             const existing = issues.find((issue) => !issue.pull_request && (issue.body || '').includes(marker));
-            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${owner}/${repo}/actions/runs/${context.runId}`;
             const body = `${markdown}\n\nWorkflow run: ${runUrl}\n`;
 
             if (report.summary.total > 0) {
