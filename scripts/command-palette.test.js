@@ -16,10 +16,11 @@ test('command palette exposes deterministic quick destinations and one search ha
   const commands = Array.from(palette.getCommands());
   assert.deepEqual(
     Array.from(commands, (command) => command.id),
-    ['projects', 'now', 'notes', 'map', 'resume', 'search', 'github'],
+    ['projects', 'now', 'notes', 'map', 'photos', 'resume', 'search', 'github'],
   );
   assert.equal(commands.filter((command) => command.kind === 'search').length, 1);
   assert.equal(commands.find((command) => command.kind === 'search').target, '_search/ru/index.html');
+  assert.equal(commands.find((command) => command.id === 'photos').target, 'photos/');
 });
 
 test('resolveCommandHref is safe for root and GitHub Pages subpath deployments', () => {
@@ -34,6 +35,10 @@ test('resolveCommandHref is safe for root and GitHub Pages subpath deployments',
   assert.equal(
     palette.resolveCommandHref('_search/ru/index.html', 'https://example.test/trueruslan-landing/landing/notes/foo.html'),
     'https://example.test/trueruslan-landing/_search/ru/index.html',
+  );
+  assert.equal(
+    palette.resolveCommandHref('photos/', 'https://example.test/trueruslan-landing/photos/karelia-2026/'),
+    'https://example.test/trueruslan-landing/photos/',
   );
 });
 
