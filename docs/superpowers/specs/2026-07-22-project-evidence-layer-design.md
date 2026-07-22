@@ -85,7 +85,7 @@ Canonical shape:
         "mode": "automated",
         "label": "CI",
         "state": "green",
-        "url": "https://github.com/...",
+        "url": "https://github.com/True-Ruslan/example/actions/runs/123",
         "observedAt": "2026-07-22",
         "scope": "Unit, package, game-test and integration contracts covered by this workflow run."
       },
@@ -106,81 +106,51 @@ Canonical shape:
 
 Required:
 
-- `project`: kebab-case slug that exists in `data/projects.json`;
-- `status`: one of `verified | stale | unverified`;
-- `versions`: array of zero or more `{label, value}` facts;
+- `project`: lowercase kebab-case slug that must exist in `data/projects.json`;
+- `status`: one of `verified`, `stale`, `unverified`;
+- `versions`: array of zero or more version facts;
 - `signals`: array of evidence signals.
 
-`lastVerified` rules:
+Conditional:
 
-- required ISO `YYYY-MM-DD` date for `verified`;
-- required ISO `YYYY-MM-DD` date for `stale`, representing the most recent known verification date;
-- optional for `unverified`; when present it is the historical last verification date and must still be valid ISO `YYYY-MM-DD`.
+- `lastVerified`: required for `verified` and `stale`, formatted exactly as `YYYY-MM-DD`; optional for `unverified`.
 
-Signal-count rules:
+For `verified` and `stale`, `signals` must contain at least one signal. `unverified` may contain zero or more signals, but none may be rendered as a project-level verification claim.
 
-- `verified`: at least one signal;
-- `stale`: at least one signal;
-- `unverified`: zero or more signals.
+### 6.2 Version facts
 
-Version facts:
+Each `versions` entry contains exactly:
 
-- `label` and `value` are required non-empty strings;
-- labels must be unique within one project snapshot;
-- the array may be empty when no version/protocol fact can be stated safely.
+- `label`: non-empty human-readable label;
+- `value`: non-empty human-readable value.
 
-### 6.2 Evidence signal fields
+Labels must be unique within one project snapshot after trimming and case normalization.
 
-Required for every signal:
+### 6.3 Signal fields
 
-- `kind`;
-- `mode`;
-- `label`;
-- `state`;
-- `observedAt`;
-- `scope`.
+Each `signals` entry contains:
+
+Required:
+
+- `kind`: one of `ci`, `release`, `pr`, `build`, `manual`;
+- `mode`: one of `automated`, `manual`;
+- `label`: non-empty human-readable label;
+- `state`: one of `green`, `published`, `merged`, `passed`, `accepted`, `pending`, `failed`, `unavailable`;
+- `observedAt`: exact `YYYY-MM-DD` date;
+- `scope`: non-empty text explaining exactly what this evidence proves.
 
 Optional:
 
-- `url`.
+- `url`: HTTPS URL to stable evidence when a public/stable link exists.
 
-Allowed `kind` values:
+Mode coherence rules:
 
-- `ci`;
-- `release`;
-- `pr`;
-- `build`;
-- `manual`;
-- `other`.
-
-Allowed `mode` values:
-
-- `automated`;
-- `manual`.
-
-Allowed `state` values:
-
-- `green`;
-- `published`;
-- `merged`;
-- `passed`;
-- `accepted`;
-- `available`;
-- `failed`;
-- `pending`;
-- `unknown`.
-
-Signal rules:
-
-- `label` and `scope` are required non-empty strings;
-- `observedAt` is required ISO `YYYY-MM-DD`;
-- `url`, when present, must be a safe `https://` external URL;
-- duplicate signals with the same `kind + label + observedAt` are invalid;
 - `kind: manual` requires `mode: manual`;
-- private/manual evidence is allowed without a public URL;
-- every signal scope must describe only what that evidence proves and must not imply broader project readiness.
+- `kind: ci | release | pr | build` requires `mode: automated`.
 
-The broader state enum is intentionally shared across kinds so the registry stays simple. Renderer copy must present the state in context rather than infer semantics beyond the signal scope.
+A private/manual signal does not require a public URL.
+
+Signals must be unique within one project snapshot by normalized tuple `kind + label + observedAt`.
 
 ## 7. Validation rules
 
@@ -190,26 +160,23 @@ Create a focused module:
 
 Validation must fail fast for structural integrity problems, including:
 
-- registry missing, non-array, or empty;
+- registry is missing, empty, or malformed;
 - duplicate project snapshot;
 - project slug not present in `data/projects.json`;
-- invalid project slug format;
 - invalid trust status;
-- missing/invalid `lastVerified` according to status rules;
-- malformed `versions` or duplicate version labels;
-- malformed `signals` or invalid signal count for the trust status;
-- invalid signal kind/mode/state;
-- invalid `observedAt`;
-- unsafe/non-HTTPS URL when URL is present;
+- missing `lastVerified` for `verified`/`stale`;
+- malformed dates or impossible calendar dates;
+- unsafe/non-HTTPS external URLs where URLs are present;
 - empty labels, values, or scopes;
-- duplicate signal key `kind + label + observedAt`;
-- `kind: manual` with non-manual mode;
-- connected flagship placeholder without its required evidence snapshot;
-- evidence snapshot for a project that cannot be linked to the canonical project registry.
+- duplicate version labels;
+- invalid signal kind/mode/state;
+- signal kind/mode mismatch;
+- duplicate signals by normalized identity;
+- `verified`/`stale` snapshot with no signals;
+- connected flagship placeholder without the required evidence snapshot;
+- evidence snapshot targeting a project that cannot be resolved from `data/projects.json`.
 
 Validation must not fail merely because a snapshot is `stale` or `unverified`.
-
-For the first milestone, `livingworld` and `node-zero` are required evidence projects. Other project-registry entries may exist without evidence snapshots until explicitly connected in a later milestone.
 
 ## 8. Rendering and integration
 
@@ -219,55 +186,49 @@ Case-study Markdown remains declarative and contains only an evidence placeholde
 <div data-tr-project-evidence="livingworld"></div>
 ```
 
-Build flow:
+Expected build flow:
 
 `data/project-evidence.json` -> validator -> renderer -> build-time HTML injection -> generated case-study HTML
 
 The renderer must produce semantic, readable HTML without requiring JavaScript.
 
-First integration targets:
+The first integration targets are:
 
 - `docs/landing/projects/livingworld.md`;
 - `docs/landing/projects/node-zero.md`.
 
 The evidence block should appear near the project status/current-state portion of each case study, not as a detached footer.
 
-The build post-processing layer must follow the existing Diplodoc-state transformation pattern used by other generated components. It must correctly handle both directly rendered HTML and content stored inside Diplodoc hydration state.
+Expected module surface:
+
+- `loadProjectEvidence(manifestPath, {projects})` — load JSON and validate against project registry;
+- `validateProjectEvidence(snapshots, {projects})` — validate canonical snapshots;
+- `renderProjectEvidence(snapshot)` — return semantic evidence HTML for one project;
+- `applyProjectEvidence(outputDir, snapshots, {requiredProjects})` — replace evidence placeholders in generated case-study HTML and fail on required missing/mismatched evidence.
+
+`copy-assets.js` remains the build orchestrator and must load/apply the evidence layer after the project registry is loaded.
 
 ## 9. UI behavior
 
-The component is compact and trust-oriented rather than dashboard-like.
+The block is compact and trust-oriented rather than dashboard-like.
 
-It communicates:
+It communicates at a glance:
 
 - trust state;
 - last checked date where available;
-- controlled versions/protocols;
+- verified versions/protocols where relevant;
 - evidence signals;
-- automated/manual distinction;
+- evidence type distinction (`automated` versus `manual`);
 - scope of each signal;
 - stable evidence links where available.
 
-Conceptual presentation:
+Project-level status labels:
 
-```text
-VERIFIED
-Last checked: 2026-07-22
+- `verified` -> `ПРОВЕРЕНО`;
+- `stale` -> `ТРЕБУЕТ ПЕРЕПРОВЕРКИ`;
+- `unverified` -> `НЕ ПРОВЕРЕНО`.
 
-Minecraft: 1.21.1
-LivingWorld: 0.1.x
-
-Automated evidence
-CI: green
-Scope: unit, game-test and integration contracts covered by this run
-[Workflow]
-
-Manual evidence
-Voice conversation acceptance: accepted
-Scope: real microphone -> STT -> NPC -> LLM -> visible response exercised
-```
-
-The implementation may use Russian-facing labels consistent with the page language while keeping canonical registry enums in English.
+Signal states are presented as bounded evidence facts, not as a second project-level trust status.
 
 The component must remain compact on mobile and must not introduce horizontal overflow.
 
@@ -275,16 +236,17 @@ The component must remain compact on mobile and must not introduce horizontal ov
 
 The UI and renderer must not make claims broader than the recorded evidence.
 
-Rules:
+Examples:
 
 - green CI does **not** imply production-ready;
 - a published release does **not** imply successful real-world acceptance;
 - a manual scenario does **not** imply all automated contracts passed;
-- `stale` must be visually and textually distinct from current `verified`;
-- `unverified` must not use green/confirmed trust language;
-- renderer copy must not synthesize readiness claims such as "production ready", "fully tested", or "stable" unless those exact claims are explicitly represented by bounded evidence, which is outside the initial schema.
+- a stale snapshot must not visually resemble a current verified snapshot;
+- an unverified snapshot must not use green/confirmed project-level trust language.
 
 The required `scope` field is the primary guardrail against evidence overstatement.
+
+The renderer must not synthesize phrases such as `production-ready`, `fully tested`, or `fully verified` from signal states.
 
 ## 11. Error handling and degradation
 
@@ -293,12 +255,11 @@ The required `scope` field is the primary guardrail against evidence overstateme
 Fail the build for data-integrity errors:
 
 - bad schema;
-- bad project references;
-- invalid dates/statuses/URLs/enums;
+- bad references;
+- invalid dates/statuses/URLs;
 - missing required scope;
 - required flagship evidence missing;
-- required placeholder missing;
-- placeholder project and evidence project mismatch.
+- placeholder/evidence mismatch.
 
 ### Valid degraded states
 
@@ -324,9 +285,9 @@ Core evidence content must exist in generated HTML at build time and remain read
 
 No runtime fetch is allowed for core evidence.
 
-When Diplodoc keeps primary content inside hydration state, the build must provide the same kind of semantic no-JS fallback pattern already established by the Sources Knowledge Base rather than relying on client hydration.
-
 Any later progressive enhancement must be optional and must not be required to understand status, versions, evidence scope, or links.
+
+If Diplodoc stores the generated page body in hydration state rather than direct `<main>` markup, `applyProjectEvidence` must follow the repository's mature `transformGeneratedContent` pattern and preserve an equivalent semantic no-JS fallback, as done for Sources Knowledge Base where required.
 
 ## 14. Testing strategy
 
@@ -338,14 +299,12 @@ Cover:
 - all trust states;
 - project-registry linkage;
 - duplicate/missing project handling;
-- invalid dates/statuses/URLs/enums;
-- `lastVerified` rules;
-- signal count rules;
+- invalid dates/statuses/URLs;
 - version facts and duplicate labels;
-- automated/manual evidence distinction;
-- duplicate signal keys;
-- manual-kind mode constraint;
+- automated/manual evidence distinction and coherence;
+- signal states/kinds;
 - required scope;
+- duplicate signals;
 - escaping and safe rendering.
 
 ### Renderer contracts
@@ -358,7 +317,7 @@ Cover:
 - evidence links;
 - scope rendering;
 - safe escaping;
-- no misleading readiness language generated by the renderer.
+- no misleading trust language generated by the renderer.
 
 ### Build integration
 
@@ -367,11 +326,9 @@ Verify:
 - LivingWorld placeholder is replaced from canonical evidence data;
 - NODE ZERO placeholder is replaced from canonical evidence data;
 - missing required evidence fails;
-- missing required placeholder fails;
+- placeholder/evidence mismatch fails;
 - existing project timeline injection continues to work;
-- direct HTML and Diplodoc-state representations are handled correctly;
-- generated HTML contains semantic evidence content;
-- no-JS fallback exists where hydration-state output requires it.
+- generated HTML contains semantic evidence content.
 
 ### Browser smoke
 
@@ -382,7 +339,7 @@ Verify both case studies on desktop and mobile:
 - evidence links usable where present;
 - no horizontal overflow;
 - Axe serious/critical violations = 0;
-- no-JS evidence content remains available.
+- no-JS content remains available.
 
 ### Regression matrix
 
@@ -401,9 +358,9 @@ Never fabricate:
 - version compatibility;
 - public URLs for private evidence.
 
-When proof is incomplete, record a narrower `scope` or use `stale`/`unverified` instead of inferring `verified`.
+When available proof is incomplete, record a narrower scope or use `stale`/`unverified` instead of inferring `verified`.
 
-Current external project state must be re-checked immediately before populating the canonical snapshot. Repository/workflow/release information is evidence input, not an automatically trusted claim.
+For private NODE ZERO evidence, it is valid to use manually confirmed local/build facts without a public URL, provided `scope`, `observedAt`, and trust status are honest.
 
 ## 16. Definition of Done
 
@@ -428,7 +385,7 @@ Implementation must follow TDD and existing repository patterns:
 
 1. write failing evidence model/validation contracts;
 2. implement minimal registry module;
-3. re-check current external evidence and add canonical real snapshots;
+3. add canonical real evidence snapshots;
 4. write failing build-integration contracts;
 5. integrate renderer/placeholders;
 6. add scoped styling;
