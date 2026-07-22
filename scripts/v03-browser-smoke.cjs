@@ -163,6 +163,41 @@ async function main() {
       },
     });
 
+    await checkPage(browser, {
+      slug: 'notes',
+      pathname: '/landing/notes.html',
+      heading: 'Engineering Notes',
+      verify: async (page) => {
+        const feedLink = page.locator('a', {hasText: 'Подписаться на Atom feed'}).first();
+        await feedLink.waitFor({state: 'visible'});
+        const rawHref = await feedLink.getAttribute('href');
+        if (rawHref !== 'feed.xml') {
+          throw new Error(`Engineering Notes feed link must stay inside deployment base: ${rawHref || 'missing href'}`);
+        }
+        const feedResponse = await page.request.get(`${BASE_URL}/feed.xml`);
+        if (!feedResponse.ok()) throw new Error(`Atom feed failed to load: HTTP ${feedResponse.status()}`);
+        const feedBody = await feedResponse.text();
+        if (!feedBody.includes('<title>TrueRuslan Engineering Notes</title>')) {
+          throw new Error('Atom feed identity marker is missing.');
+        }
+      },
+    });
+
+    await checkPage(browser, {
+      slug: 'note-metadata',
+      pathname: '/landing/notes/server-authoritative-ai-npcs.html',
+      heading: 'Проектирование server-authoritative AI NPC pipeline',
+      verify: async (page) => {
+        await page.locator('.tr-note-meta').waitFor({state: 'visible'});
+        await page.locator('.tr-note-nav').waitFor({state: 'visible'});
+        const relatedLink = page.locator('.tr-note-nav a').first();
+        const rawHref = await relatedLink.getAttribute('href');
+        if (!rawHref || !rawHref.startsWith('landing/notes/')) {
+          throw new Error(`Note navigation is not deployment-base-safe: ${rawHref || 'missing href'}`);
+        }
+      },
+    });
+
     for (const project of [
       {slug: 'livingworld', heading: 'LivingWorld'},
       {slug: 'node-zero', heading: 'NODE ZERO'},
@@ -186,7 +221,7 @@ async function main() {
       });
     }
 
-    console.log('Portfolio v0.3 browser, accessibility, navigation and timeline smoke passed.');
+    console.log('Portfolio v0.3 browser, accessibility, navigation, notes and timeline smoke passed.');
   } finally {
     if (browser) await browser.close();
     await stopServer(server);
