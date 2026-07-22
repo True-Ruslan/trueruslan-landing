@@ -20,8 +20,12 @@
 
 ## Куда я сейчас веду проект
 
-- Unity `6.3 LTS`;
-- Universal Render Pipeline;
+<div data-tr-project-evidence="node-zero"></div>
+
+Evidence-блок выше намеренно отделяет последний полностью проверенный foundation milestone от более нового player-foundation work, который ещё требует повторного executable gate. Так старый успешный build не превращается в утверждение, что текущий vertical slice уже проверен целиком.
+
+Продуктовое направление остаётся таким:
+
 - C#;
 - Windows / Steam как основная платформа;
 - first-person camera;
