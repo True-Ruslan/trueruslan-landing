@@ -32,6 +32,27 @@
     return new URL('../assets/documents/cv.pdf', currentHref).href;
   }
 
+  function normalizeSourcesQuery(value) {
+    return String(value ?? '')
+      .trim()
+      .toLocaleLowerCase('ru-RU')
+      .replace(/\s+/g, ' ');
+  }
+
+  function sourceMatchesSourcesFilters(source = {}, filters = {}) {
+    const query = normalizeSourcesQuery(filters.query);
+    const searchText = normalizeSourcesQuery(source.searchText);
+    const topic = String(filters.topic ?? '').trim();
+    const sourceType = String(filters.sourceType ?? '').trim();
+    const topics = Array.isArray(source.topics)
+      ? source.topics
+      : String(source.topics ?? '').split('|').map((value) => value.trim()).filter(Boolean);
+
+    return (!query || searchText.includes(query))
+      && (!topic || topics.includes(topic))
+      && (!sourceType || source.sourceType === sourceType);
+  }
+
   function hasDom() {
     return typeof root.document !== 'undefined' && root.document !== null;
   }
@@ -192,6 +213,71 @@
     }
   }
 
+  function setupSourcesKnowledgeBase(document, page) {
+    if (page !== 'bibliography') return;
+    const host = document.querySelector('[data-tr-sources-root]');
+    if (!host || host.dataset.trSourcesEnhanced === 'true') return;
+
+    const queryInput = host.querySelector('[data-tr-sources-query]');
+    const topicSelect = host.querySelector('[data-tr-sources-topic]');
+    const typeSelect = host.querySelector('[data-tr-sources-type]');
+    const clearButton = host.querySelector('[data-tr-sources-clear]');
+    const count = host.querySelector('[data-tr-sources-count]');
+    const cards = [...host.querySelectorAll('[data-tr-source]')];
+    if (!queryInput || !topicSelect || !typeSelect || !clearButton || !count || cards.length === 0) return;
+
+    host.dataset.trSourcesEnhanced = 'true';
+    const total = cards.length;
+
+    const applyFilters = () => {
+      const filters = {
+        query: queryInput.value,
+        topic: topicSelect.value,
+        sourceType: typeSelect.value,
+      };
+      let visible = 0;
+      for (const card of cards) {
+        const matches = sourceMatchesSourcesFilters({
+          searchText: card.dataset.trSourceSearch || '',
+          topics: card.dataset.trSourceTopics || '',
+          sourceType: card.dataset.trSourceType || '',
+        }, filters);
+        card.hidden = !matches;
+        if (matches) visible += 1;
+      }
+      count.textContent = `Показано: ${visible} из ${total}`;
+      return visible;
+    };
+
+    const clearFilters = () => {
+      queryInput.value = '';
+      topicSelect.value = '';
+      typeSelect.value = '';
+      applyFilters();
+      queryInput.focus?.();
+    };
+
+    const revealHashTarget = () => {
+      const hash = root.location?.hash || '';
+      if (!hash.startsWith('#source-')) return;
+      const target = document.getElementById?.(decodeURIComponent(hash.slice(1)));
+      if (!target?.matches?.('[data-tr-source]') || !target.hidden) return;
+      queryInput.value = '';
+      topicSelect.value = '';
+      typeSelect.value = '';
+      applyFilters();
+    };
+
+    queryInput.addEventListener('input', applyFilters);
+    topicSelect.addEventListener('change', applyFilters);
+    typeSelect.addEventListener('change', applyFilters);
+    clearButton.addEventListener('click', clearFilters);
+    root.addEventListener?.('hashchange', revealHashTarget);
+
+    applyFilters();
+    revealHashTarget();
+  }
+
   function createTerminal(document) {
     const terminal = document.createElement('aside');
     terminal.className = 'tr-terminal';
@@ -314,6 +400,7 @@
     setupRuntimeAccessibility(document);
     classifyCards(document);
     classifyCtas(document, page);
+    setupSourcesKnowledgeBase(document, page);
     mountTerminal(document, page);
     setupReveal(document);
     setupPointerGlow(document);
@@ -324,6 +411,8 @@
     getResumePdfUrl,
     getRevealObserverOptions,
     getTerminalLines,
+    normalizeSourcesQuery,
+    sourceMatchesSourcesFilters,
     init,
   });
   if (hasDom()) afterApplicationHydration(init);
