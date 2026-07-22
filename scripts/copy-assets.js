@@ -160,6 +160,23 @@ export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSi
   return true;
 }
 
+function resolveStylesheetHref(html, relativePath) {
+  const normalizedTarget = relativePath.replaceAll(path.sep, '/');
+  const documentDirectory = path.posix.dirname(normalizedTarget);
+  const baseMatch = html.match(/<base\b[^>]*href=["']([^"']+)["'][^>]*>/i);
+  if (!baseMatch) return path.posix.relative(documentDirectory, PROJECT_EVIDENCE_STYLESHEET);
+
+  const baseHref = baseMatch[1].split(/[?#]/, 1)[0];
+  if (!baseHref || /^[a-z][a-z\d+.-]*:/i.test(baseHref) || baseHref.startsWith('//')) {
+    return path.posix.relative(documentDirectory, PROJECT_EVIDENCE_STYLESHEET);
+  }
+
+  const baseDirectory = baseHref.startsWith('/')
+    ? path.posix.dirname(baseHref)
+    : path.posix.normalize(path.posix.join(documentDirectory, baseHref));
+  return path.posix.relative(baseDirectory === '.' ? '' : baseDirectory, PROJECT_EVIDENCE_STYLESHEET);
+}
+
 export function applyProjectEvidenceStylesheet(outputDir, targetPaths) {
   const updated = [];
   for (const relativePath of targetPaths) {
@@ -170,7 +187,7 @@ export function applyProjectEvidenceStylesheet(outputDir, targetPaths) {
     if (!/<\/head>/i.test(html)) continue;
 
     const normalizedTarget = relativePath.replaceAll(path.sep, '/');
-    const href = path.posix.relative(path.posix.dirname(normalizedTarget), PROJECT_EVIDENCE_STYLESHEET);
+    const href = resolveStylesheetHref(html, normalizedTarget);
     const link = `<link rel="stylesheet" href="${href}" data-tr-project-evidence-stylesheet>`;
     fs.writeFileSync(htmlPath, html.replace(/<\/head>/i, `${link}</head>`), 'utf8');
     updated.push(normalizedTarget);
