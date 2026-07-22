@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {transformGeneratedContent} from './diplodoc-state.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 
@@ -267,4 +269,80 @@ ${snapshot.signals.map(renderSignal).join('\n')}
   ${versions}
   ${signals}
 </section>`;
+}
+
+function evidencePlaceholderPattern(project, flags = 'i') {
+  return new RegExp(
+    `<div[^>]*data-tr-project-evidence=["']${project}["'][^>]*>\\s*</div>`,
+    flags,
+  );
+}
+
+function injectNoJavaScriptFallback(html, project, content) {
+  const existing = new RegExp(`data-tr-project-evidence-noscript=["']${project}["']`, 'i');
+  if (existing.test(html)) return html;
+
+  const rootMarker = /<div\s+id=["']root["']\s*>\s*<\/div>/i;
+  if (!rootMarker.test(html)) {
+    throw new Error(`Project Evidence could not place no-JavaScript fallback for ${project}: #root host not found.`);
+  }
+
+  const fallback = `<noscript data-tr-project-evidence-noscript="${project}">
+  <div class="tr-project-evidence-noscript">
+    ${content}
+  </div>
+</noscript>`;
+  return html.replace(rootMarker, (rootHost) => `${rootHost}\n${fallback}`);
+}
+
+export function applyProjectEvidence(outputDir, snapshots, {requiredProjects = []} = {}) {
+  if (!Array.isArray(snapshots)) {
+    throw new Error('project evidence snapshots must be an array');
+  }
+  if (!Array.isArray(requiredProjects) || requiredProjects.some((project) => typeof project !== 'string' || !SLUG.test(project))) {
+    throw new Error('requiredProjects must contain valid project slugs');
+  }
+
+  const byProject = new Map(snapshots.map((snapshot) => [snapshot.project, snapshot]));
+  const targets = [];
+
+  for (const project of requiredProjects) {
+    const snapshot = byProject.get(project);
+    if (!snapshot) throw new Error(`missing required project evidence: ${project}`);
+
+    const relativePath = path.join('landing', 'projects', `${project}.html`);
+    const htmlPath = path.join(outputDir, relativePath);
+    if (!fs.existsSync(htmlPath)) {
+      throw new Error(`generated project page not found for evidence: ${relativePath.replaceAll(path.sep, '/')}`);
+    }
+
+    const html = fs.readFileSync(htmlPath, 'utf8');
+    const content = renderProjectEvidence(snapshot);
+    let replacements = 0;
+    const transformed = transformGeneratedContent(
+      html,
+      (contentHtml) => {
+        const matches = contentHtml.match(evidencePlaceholderPattern(project, 'gi')) ?? [];
+        if (matches.length === 0) return contentHtml;
+        if (matches.length !== 1) {
+          throw new Error(`Project Evidence requires exactly one placeholder for ${project}; found ${matches.length}.`);
+        }
+        replacements += 1;
+        return contentHtml.replace(evidencePlaceholderPattern(project), content);
+      },
+      `Project Evidence for ${project}`,
+    );
+
+    if (!transformed.source || replacements !== 1) {
+      throw new Error(`Project Evidence placeholder not found for required project: ${project}`);
+    }
+
+    const finalHtml = transformed.source === 'diplodoc-state'
+      ? injectNoJavaScriptFallback(transformed.html, project, content)
+      : transformed.html;
+    fs.writeFileSync(htmlPath, finalHtml, 'utf8');
+    targets.push(relativePath.replaceAll(path.sep, '/'));
+  }
+
+  return targets;
 }
