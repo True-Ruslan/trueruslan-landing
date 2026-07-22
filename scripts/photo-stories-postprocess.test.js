@@ -18,14 +18,20 @@ test('postprocessOutput generates canonical photo archive, legacy bridge and sit
   const dataDir = path.join(root, 'data');
   const templatesDir = path.join(root, 'templates');
   const historyDir = path.join(dataDir, 'project-history');
+  const noteSource = path.join(docsDir, 'landing', 'notes', 'test-note.md');
+  const noteOutput = path.join(outputDir, 'landing', 'notes', 'test-note.html');
 
   fs.mkdirSync(path.join(outputDir, 'landing'), {recursive: true});
   fs.mkdirSync(path.join(docsDir, 'landing'), {recursive: true});
+  fs.mkdirSync(path.dirname(noteSource), {recursive: true});
+  fs.mkdirSync(path.dirname(noteOutput), {recursive: true});
   fs.mkdirSync(historyDir, {recursive: true});
   fs.mkdirSync(templatesDir, {recursive: true});
 
   fs.writeFileSync(path.join(docsDir, 'toc.yaml'), 'items:\n  - name: Фото\n    href: ./landing/photos.md\n');
   fs.writeFileSync(path.join(docsDir, 'landing', 'photos.md'), '# Фотографии\n');
+  fs.writeFileSync(noteSource, '# Test note\n');
+  fs.writeFileSync(noteOutput, '<!doctype html><html><head><title>Note</title></head><body><main><h1>Test note</h1><p>Body</p></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'photos.html'), '<html><body>Old photos</body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'engineering-map.html'), '<html><body><div data-tr-engineering-graph-root></div></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'now.html'), '<html><body><div data-tr-now-placeholder></div></body></html>');
@@ -53,7 +59,16 @@ test('postprocessOutput generates canonical photo archive, legacy bridge and sit
     learning: ['Static generation'],
     writing: ['Photo stories'],
   });
-  writeJson(path.join(dataDir, 'notes.json'), []);
+  writeJson(path.join(dataDir, 'notes.json'), [{
+    slug: 'test-note',
+    title: 'Test note',
+    description: 'A valid fixture note.',
+    published: '2026-07-20',
+    updated: '2026-07-22',
+    readingMinutes: 2,
+    tags: ['Testing'],
+    related: [],
+  }]);
   writeJson(path.join(dataDir, 'page-meta.json'), [{
     path: 'index.html',
     card: 'home',
