@@ -2,7 +2,7 @@ const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cj
 const {startStaticServer} = require('./quality-harness/static-server.cjs');
 const {createScenarioPage} = require('./quality-harness/browser.cjs');
 const {assertNoHorizontalOverflow, blockingAxeViolations} = require('./quality-harness/assertions.cjs');
-const {writeJsonArtifact} = require('./quality-harness/evidence.cjs');
+const {captureScreenshot, writeJsonArtifact} = require('./quality-harness/evidence.cjs');
 const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 
 const PORT = Number(process.env.PROJECT_EVIDENCE_SMOKE_PORT || 4183);
@@ -74,11 +74,7 @@ async function runEnhanced(browser, baseUrl) {
       if (serious.length) throw new Error(`enhanced:${expected.project}: Axe serious/critical violations: ${serious.map((violation) => violation.id).join(', ')}`);
       if (pageErrors.length) throw new Error(`enhanced:${expected.project}: page errors: ${pageErrors.join('; ')}`);
 
-      await page.screenshot({
-        path: require('./quality-harness/evidence.cjs').artifactPath(`project-evidence-${expected.project}-mobile.png`),
-        fullPage: true,
-        animations: 'disabled',
-      });
+      await captureScreenshot(page, `project-evidence-${expected.project}-mobile.png`);
       results[expected.project] = {...evidence, overflow, seriousAxeViolations: serious.length};
     }
     return results;
