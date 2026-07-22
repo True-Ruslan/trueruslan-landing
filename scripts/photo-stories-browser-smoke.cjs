@@ -1,84 +1,14 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const {execFileSync} = require('node:child_process');
-const express = require('express');
+const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cjs');
+const {startStaticServer} = require('./quality-harness/static-server.cjs');
+const {createScenarioPage} = require('./quality-harness/browser.cjs');
+const {installPageDiagnostics} = require('./quality-harness/diagnostics.cjs');
+const {assertNoHorizontalOverflow, blockingAxeViolations} = require('./quality-harness/assertions.cjs');
+const {ensureArtifactsDir, artifactPath, captureScreenshot, writeJsonArtifact} = require('./quality-harness/evidence.cjs');
+const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 
-const ROOT = path.resolve(__dirname, '..');
-const OUTPUT_DIR = path.join(ROOT, 'docs-html');
-const TOOLS_DIR = path.join(ROOT, '.quality-tools', 'node_modules');
-const ARTIFACTS_DIR = path.join(ROOT, 'quality-artifacts');
 const PORT = Number(process.env.PHOTO_STORIES_SMOKE_PORT || 4184);
-const BASE_URL = `http://127.0.0.1:${PORT}`;
-
-function requireTool(name) {
-  try {
-    return require(path.join(TOOLS_DIR, ...name.split('/')));
-  } catch (error) {
-    throw new Error(`Photo Stories smoke tool ${name} is not installed in .quality-tools: ${error.message}`);
-  }
-}
-
-const {chromium} = requireTool('playwright');
-const {default: AxeBuilder} = requireTool('@axe-core/playwright');
-
-function findChrome() {
-  const explicit = process.env.CHROME_PATH;
-  if (explicit && fs.existsSync(explicit)) return explicit;
-  for (const command of ['google-chrome-stable', 'google-chrome', 'chromium', 'chromium-browser']) {
-    try {
-      const resolved = execFileSync('which', [command], {encoding: 'utf8'}).trim();
-      if (resolved) return resolved;
-    } catch {
-      // Try the next executable.
-    }
-  }
-  throw new Error('Chrome/Chromium executable was not found on the CI runner.');
-}
-
-function startServer() {
-  if (!fs.existsSync(OUTPUT_DIR)) throw new Error('docs-html does not exist. Run npm run build:docs first.');
-  const app = express();
-  app.disable('x-powered-by');
-  app.use(express.static(OUTPUT_DIR, {extensions: ['html'], fallthrough: false}));
-  return new Promise((resolve, reject) => {
-    const server = app.listen(PORT, '127.0.0.1', () => resolve(server));
-    server.on('error', reject);
-  });
-}
-
-function stopServer(server) {
-  return new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
-}
-
-async function launchBrowser() {
-  const chromePath = findChrome();
-  try {
-    return await chromium.launch({channel: 'chrome', headless: true, args: ['--no-sandbox']});
-  } catch {
-    return chromium.launch({executablePath: chromePath, headless: true, args: ['--no-sandbox']});
-  }
-}
-
-function installDiagnostics(page) {
-  const pageErrors = [];
-  const failedRequests = [];
-  page.on('pageerror', (error) => pageErrors.push(error.message));
-  page.on('requestfailed', (request) => {
-    try {
-      const url = new URL(request.url());
-      if (url.origin === BASE_URL) failedRequests.push(`${request.method()} ${url.pathname}: ${request.failure()?.errorText || 'failed'}`);
-    } catch {
-      // Ignore malformed third-party URLs.
-    }
-  });
-  return {pageErrors, failedRequests};
-}
-
-async function assertNoOverflow(page, name) {
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  if (overflow > 2) throw new Error(`${name}: horizontal overflow ${overflow}px`);
-  return overflow;
-}
+const {chromium} = requireQualityTool('playwright', 'Photo Stories smoke tool');
+const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Photo Stories smoke tool');
 
 async function assertHeroTitleFitsViewport(page, name) {
   const geometry = await page.locator('.tr-photo-index-hero h1').evaluate((node) => {
@@ -96,7 +26,7 @@ async function assertHeroTitleFitsViewport(page, name) {
   return geometry;
 }
 
-async function assertArchiveAndLightbox(page, name) {
+async function assertArchiveAndLightbox(page, name, baseUrl) {
   const albumCards = page.locator('[data-tr-photo-album-card]');
   const archiveItems = page.locator('[data-tr-photo-archive-item]');
   if (await albumCards.count() !== 0) throw new Error(`${name}: fake album cards must not ship while registry is empty`);
@@ -120,7 +50,7 @@ async function assertArchiveAndLightbox(page, name) {
   const focusId = await page.evaluate(() => document.activeElement?.dataset?.photoId || null);
   if (focusId !== 'archive-semihatov') throw new Error(`${name}: focus was not restored to the originating photo link`);
 
-  await page.goto(`${BASE_URL}/photos/#archive-magister`, {waitUntil: 'networkidle'});
+  await page.goto(`${baseUrl}/photos/#archive-magister`, {waitUntil: 'networkidle'});
   await root.waitFor({state: 'visible'});
   const directTitle = await page.locator('[data-tr-photo-lightbox-title]').textContent();
   if (!String(directTitle).includes('Защита магистерской')) throw new Error(`${name}: direct hash did not open the requested archive photo`);
@@ -142,37 +72,39 @@ async function prepareVisualEvidence(page, name) {
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
-async function runScenario(browser, name, viewport, reducedMotion = 'no-preference') {
-  const context = await browser.newContext({viewport, colorScheme: 'dark', reducedMotion});
-  const page = await context.newPage();
-  const diagnostics = installDiagnostics(page);
+async function runScenario(browser, baseUrl, name, viewport, reducedMotion = 'no-preference') {
+  const runtime = await createScenarioPage(browser, {viewport, colorScheme: 'dark', reducedMotion});
+  const {page} = runtime;
+  const diagnostics = installPageDiagnostics(page, {
+    baseUrl,
+    ignoredRequestFailureReasons: [],
+    captureHttpErrors: false,
+  });
+
   try {
-    const response = await page.goto(`${BASE_URL}/photos/`, {waitUntil: 'networkidle'});
+    const response = await page.goto(`${baseUrl}/photos/`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`${name}: navigation HTTP ${response?.status() ?? 'none'}`);
     await page.locator('[data-tr-photo-page="index"]').waitFor({state: 'visible'});
 
-    const overflow = await assertNoOverflow(page, name);
+    const overflow = (await assertNoHorizontalOverflow(page, name)).overflow;
     const titleGeometry = await assertHeroTitleFitsViewport(page, name);
-    await assertArchiveAndLightbox(page, name);
+    await assertArchiveAndLightbox(page, name, baseUrl);
 
     const axe = await new AxeBuilder({page}).analyze();
-    const serious = axe.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact));
+    const serious = blockingAxeViolations(axe);
     if (serious.length) {
-      fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
-      fs.writeFileSync(path.join(ARTIFACTS_DIR, `photo-stories-axe-${name}.json`), JSON.stringify(axe.violations, null, 2));
+      ensureArtifactsDir();
+      require('node:fs').writeFileSync(
+        artifactPath(`photo-stories-axe-${name}.json`),
+        JSON.stringify(axe.violations, null, 2),
+      );
       throw new Error(`${name}: Axe serious/critical violations: ${serious.map((violation) => violation.id).join(', ')}`);
     }
-    if (diagnostics.pageErrors.length) throw new Error(`${name}: page errors: ${diagnostics.pageErrors.join('; ')}`);
-    if (diagnostics.failedRequests.length) throw new Error(`${name}: failed same-origin requests: ${diagnostics.failedRequests.join('; ')}`);
+    diagnostics.assertClean(name);
 
-    await page.goto(`${BASE_URL}/photos/`, {waitUntil: 'networkidle'});
+    await page.goto(`${baseUrl}/photos/`, {waitUntil: 'networkidle'});
     await prepareVisualEvidence(page, name);
-    fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, `photo-stories-${name}.png`),
-      fullPage: true,
-      animations: 'disabled',
-    });
+    await captureScreenshot(page, `photo-stories-${name}.png`);
 
     return {
       name,
@@ -184,25 +116,25 @@ async function runScenario(browser, name, viewport, reducedMotion = 'no-preferen
       seriousAxeViolations: serious.length,
     };
   } finally {
-    await context.close();
+    await runtime.close();
   }
 }
 
 async function main() {
-  fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
-  const server = await startServer();
+  ensureArtifactsDir();
+  const serverRuntime = await startStaticServer({port: PORT});
   let browser;
   try {
-    browser = await launchBrowser();
+    browser = await launchChromium(chromium);
     const results = [];
-    results.push(await runScenario(browser, 'desktop', {width: 1440, height: 1000}));
-    results.push(await runScenario(browser, 'mobile', {width: 390, height: 844}));
-    results.push(await runScenario(browser, 'reduced-motion', {width: 1280, height: 800}, 'reduce'));
-    fs.writeFileSync(path.join(ARTIFACTS_DIR, 'photo-stories-summary.json'), JSON.stringify(results, null, 2));
+    results.push(await runScenario(browser, serverRuntime.baseUrl, 'desktop', VIEWPORTS.desktop));
+    results.push(await runScenario(browser, serverRuntime.baseUrl, 'mobile', VIEWPORTS.mobile));
+    results.push(await runScenario(browser, serverRuntime.baseUrl, 'reduced-motion', {width: 1280, height: 800}, 'reduce'));
+    writeJsonArtifact('photo-stories-summary.json', results);
     console.log(`Photo Stories browser smoke passed for ${results.length} scenario(s).`);
   } finally {
     if (browser) await browser.close();
-    await stopServer(server);
+    await serverRuntime.stop();
   }
 }
 
