@@ -19,6 +19,7 @@ import {
   validatePhotoArchive,
   writePhotoStories,
 } from './photo-stories.js';
+import {applyProjectEvidence, loadProjectEvidence} from './project-evidence.js';
 import {
   applyProjectRegistryContent,
   DEFAULT_HISTORY_DIR,
@@ -42,11 +43,13 @@ const STANDALONE_HOME_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 const PAGE_META_MANIFEST = path.join(ROOT, 'data', 'page-meta.json');
 const ENGINEERING_GRAPH_MANIFEST = path.join(ROOT, 'data', 'engineering-graph.json');
 const PROJECTS_MANIFEST = path.join(ROOT, 'data', 'projects.json');
+const PROJECT_EVIDENCE_MANIFEST = path.join(ROOT, 'data', 'project-evidence.json');
 const NOW_MANIFEST = path.join(ROOT, 'data', 'now.json');
 const NOTES_MANIFEST = path.join(ROOT, 'data', 'notes.json');
 const SOURCES_MANIFEST = path.join(ROOT, 'data', 'sources.json');
 const PHOTO_ALBUMS_MANIFEST = path.join(ROOT, 'data', 'photo-albums.json');
 const PHOTO_ARCHIVE_MANIFEST = path.join(ROOT, 'data', 'photo-archive.json');
+const REQUIRED_PROJECT_EVIDENCE = Object.freeze(['livingworld', 'node-zero']);
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
 const SEARCH_RESOURCES = [
@@ -172,6 +175,7 @@ export function postprocessOutput({
   engineeringGraphPath = ENGINEERING_GRAPH_MANIFEST,
   projectRegistryPath = PROJECTS_MANIFEST,
   projectHistoryDir = DEFAULT_HISTORY_DIR,
+  projectEvidencePath,
   nowPath = NOW_MANIFEST,
   notesPath = NOTES_MANIFEST,
   sourcesPath,
@@ -189,6 +193,10 @@ export function postprocessOutput({
   const notes = loadNotesManifest(notesPath, {docsDir});
 
   const isProductionDocs = path.resolve(docsDir) === path.resolve(DOCS_DIR);
+  const resolvedProjectEvidencePath = projectEvidencePath ?? (isProductionDocs ? PROJECT_EVIDENCE_MANIFEST : null);
+  const projectEvidence = resolvedProjectEvidencePath
+    ? loadProjectEvidence(resolvedProjectEvidencePath, {projects})
+    : null;
   const resolvedSourcesPath = sourcesPath ?? (isProductionDocs ? SOURCES_MANIFEST : null);
   const sources = resolvedSourcesPath ? loadSourcesRegistry(resolvedSourcesPath) : null;
   const resolvedPhotoAlbumsPath = photoAlbumsPath ?? (isProductionDocs ? PHOTO_ALBUMS_MANIFEST : null);
@@ -216,6 +224,9 @@ export function postprocessOutput({
   const projectStatusTargets = applyProjectRegistryContent(outputDir, projects);
   const nowPageTarget = applyNowPage(outputDir, nowData, projects);
   const timelineTargets = applyProjectTimelines(outputDir, projects, projectHistoryDir);
+  const projectEvidenceTargets = projectEvidence
+    ? applyProjectEvidence(outputDir, projectEvidence, {requiredProjects: REQUIRED_PROJECT_EVIDENCE})
+    : [];
   const noteTargets = applyNoteEnhancements(outputDir, notes);
   const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
   const sourcesKnowledgeBaseTarget = sources
@@ -249,6 +260,7 @@ export function postprocessOutput({
     projectStatusTargets,
     nowPageTarget,
     timelineTargets,
+    projectEvidenceTargets,
     noteTargets,
     feedPath,
     feedDiscoveryUpdated,
@@ -273,6 +285,7 @@ function main() {
     console.log(`Injected ${result.projectStatusTargets} registry-derived project status badge(s).`);
     console.log(`Now page injected: ${result.nowPageTarget}`);
     console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
+    if (result.projectEvidenceTargets.length) console.log(`Injected ${result.projectEvidenceTargets.length} Project Evidence block(s).`);
     console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
     console.log(`Atom feed written: ${result.feedPath}`);
     if (result.sourcesKnowledgeBaseTarget) console.log(`Sources Knowledge Base injected: ${result.sourcesKnowledgeBaseTarget}`);
