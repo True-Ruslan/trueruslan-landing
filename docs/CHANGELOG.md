@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-07-22**, после merge PR #22.
+> Обновлено: **2026-07-22**, после merge P0.5 Grounded Engineering Notes PR #25.
 >
 > Это не машинный список коммитов. Здесь фиксируются смысловые этапы проекта: **что сделали, зачем, как именно, какие проблемы нашли и чем подтвердили результат**.
 >
@@ -9,6 +9,178 @@
 ---
 
 # 2026-07-22
+
+## P0.5 — Grounded Engineering Notes
+
+### Design / planning
+
+Design:
+
+`docs/superpowers/specs/2026-07-22-grounded-engineering-notes-design.md`
+
+Implementation plan:
+
+`docs/superpowers/plans/2026-07-22-grounded-engineering-notes.md`
+
+Главное решение milestone: не расширять Notes абстрактными SEO-статьями и не придумывать incidents.
+
+Из roadmap-кандидатов выбраны три темы с самым сильным repository-local evidence trail внутри самого `trueruslan-landing`:
+
+1. bibliography reveal / `IntersectionObserver` regression;
+2. Sources Registry migration и no-JS/static-first boundary;
+3. Project Evidence lesson: green CI ≠ verified product.
+
+Темы про Minecraft voice pipeline и malformed LLM JSON сознательно оставлены на будущий content batch, потому что для них нужна отдельная cross-repository source verification.
+
+### Implementation
+
+**PR #25 — `feat: publish grounded Engineering Notes milestone`**  
+Merged: 2026-07-22  
+Squash commit: `f2775b7c9150281bcb4bcc01a4e021e007e18ca0`
+
+Exact implementation head:
+
+`8a2973961e5ec38e4c8b3e0626460c04e88438a8`
+
+### Что добавлено
+
+#### 1. `intersection-observer-giant-table`
+
+**«Как IntersectionObserver спрятал огромную таблицу»**
+
+Заметка основана на реальном bibliography regression:
+
+- giant bibliography table оставалась `opacity: 0` после hydration;
+- reveal logic использовала `IntersectionObserver threshold: 0.08`;
+- для очень высокого элемента 8% intersection ratio мог быть недостижим в обычном viewport;
+- fullscreen временно менял geometry и мог маскировать симптом;
+- fix снизил threshold до `0` с сохранением root margin;
+- normal-viewport browser regression закрепил поведение;
+- позже giant table как data/presentation model была заменена Sources Registry.
+
+Главный engineering lesson: декоративная reveal-анимация не должна становиться скрытым условием доступности core content, а geometry assumptions нужно проверять на нестандартных размерах элементов.
+
+#### 2. `static-first-sources-no-js`
+
+**«Почему build-time data недостаточно без no-JS representation»**
+
+Заметка выросла из Sources Registry migration:
+
+- giant hand-maintained bibliography table была заменена canonical `data/sources.json`;
+- strict build-time renderer корректно создавал content;
+- первый dedicated browser/no-JS smoke обнаружил, что Diplodoc держит article body в hydration state, а без JavaScript пользователь видит пустой React root;
+- build-time presence данных оказалось недостаточно для static-first user outcome;
+- решение — semantic `<noscript>` fallback только для hydration-state representation;
+- canonical source остаётся один;
+- runtime fetch не добавлялся;
+- page-local query/topic/type filtering остаётся progressive enhancement;
+- Diplodoc сохраняет ownership единственного site-wide full-text search index.
+
+Главный lesson: **данные присутствуют в generated artifact ≠ пользователь может прочитать их без runtime JavaScript**.
+
+#### 3. `green-ci-is-not-product-verification`
+
+**«Почему green CI не означает verified product»**
+
+Заметка фиксирует основные выводы Project Evidence Layer:
+
+- automated signal и manual acceptance доказывают разные вещи;
+- каждый evidence signal должен иметь bounded `scope`;
+- `verified / stale / unverified` — разные trust states, а не декоративные цвета;
+- LivingWorld green CI + merged milestone не доказывают human two-client microphone/spatial-audio acceptance;
+- NODE ZERO accepted foundation milestone не делает автоматически verified более новый player/vertical-slice work;
+- generated `<base href>` stylesheet regression показывает, почему source-level correctness не заменяет final-artifact verification.
+
+Главный lesson: **verification — это claim с scope, freshness и источником доказательства, а не просто зелёный badge**.
+
+### Notes integration
+
+`data/notes.json` расширен с 3 до 6 canonical entries.
+
+Добавлены:
+
+- dates;
+- reading time;
+- tags;
+- related-note graph;
+- reverse relations там, где они полезны для navigation.
+
+Обновлены:
+
+- `docs/landing/notes.md` — human-facing Notes hub;
+- `docs/toc.yaml` — navigation + search/sitemap discovery;
+- `data/page-meta.json` — per-note SEO/OpenGraph metadata.
+
+Atom feed автоматически получает новые entries через существующий canonical notes manifest.
+
+### Content contract
+
+`scripts/notes-content.test.js` теперь требует наличие трёх P0.5 slugs:
+
+- `intersection-observer-giant-table`;
+- `static-first-sources-no-js`;
+- `green-ci-is-not-product-verification`.
+
+Это защищает milestone от незаметной потери canonical note entry/source file в будущих изменениях.
+
+### Architecture preserved
+
+Milestone не добавил:
+
+- backend;
+- CMS;
+- runtime API;
+- второй search index;
+- новый Notes renderer;
+- duplicate content source.
+
+Существующая модель сохранена:
+
+```text
+Markdown narrative
+        +
+data/notes.json canonical metadata/relations
+        ↓
+Diplodoc + build-time postprocessing
+        ↓
+metadata / navigation / related notes / Atom feed / search / SEO
+```
+
+### Verification
+
+Exact feature head:
+
+`8a2973961e5ec38e4c8b3e0626460c04e88438a8`
+
+**Build #257 / workflow run `29943616448`: полностью green.**
+
+Green:
+
+- tests;
+- production Diplodoc build;
+- generated-site integrity;
+- mobile overflow;
+- Chromium browser smoke;
+- Axe;
+- Lighthouse;
+- Sources Knowledge Base smoke;
+- Project Evidence smoke;
+- Photo Stories smoke;
+- Portfolio v0.3 regression;
+- Firefox/WebKit compatibility;
+- generated search;
+- metadata/OpenGraph;
+- Engineering Map;
+- visual regression;
+- quality evidence upload.
+
+### Product result
+
+P0.5 Definition of Done закрыт минимально полным scope: **3 новые grounded notes** из требуемых 3–5.
+
+Engineering Notes теперь содержат 6 материалов, а следующий основной roadmap priority — **P0.6 Content Freshness Guard**.
+
+---
 
 ## Portfolio v0.4 — Project Evidence Layer
 
@@ -24,7 +196,7 @@ Implementation plan:
 
 `docs/superpowers/plans/2026-07-22-project-evidence-layer-implementation.md`
 
-Основные решения были зафиксированы до implementation:
+Основные решения:
 
 - первый scope: `livingworld` + `node-zero`;
 - architecture generic для остальных project slugs;
@@ -50,13 +222,13 @@ Exact implementation head:
 
 До этого project status/version/CI часть case studies частично существовала как hand-written prose.
 
-Проблема такого подхода:
+Проблемы:
 
 - machine-like state дублировался в тексте;
 - не было строгого distinction между automated и manual proof;
-- green CI легко визуально воспринимать шире, чем он реально доказывает;
+- green CI легко воспринимать шире, чем он реально доказывает;
 - historical successful build мог выглядеть как current product verification;
-- невозможно было позже построить честный freshness guard поверх ясной data model.
+- невозможно было построить честный freshness guard поверх ясной data model.
 
 Project Evidence Layer отвечает на вопрос:
 
@@ -64,9 +236,7 @@ Project Evidence Layer отвечает на вопрос:
 
 ### Canonical model
 
-Создан:
-
-`data/project-evidence.json`
+Создан `data/project-evidence.json`.
 
 Project snapshot хранит:
 
@@ -88,100 +258,31 @@ Signal хранит:
 
 ### Trust model
 
-Зафиксированы три состояния:
-
-- `verified` — controlled snapshot явно проверен и считается текущим только в пределах записанного evidence scope;
-- `stale` — evidence раньше было meaningful, но project state требует повторной проверки;
+- `verified` — controlled snapshot явно проверен и считается текущим только в пределах recorded scope;
+- `stale` — evidence раньше было meaningful, но current state требует повторной проверки;
 - `unverified` — актуальное verification claim не делается.
 
-`stale`/`unverified` являются честными valid states и сами по себе не ломают build.
+`stale`/`unverified` — valid states и сами по себе не ломают build.
 
 Malformed/inconsistent evidence ломает build.
 
-### Strict validation
-
-`scripts/project-evidence.js` проверяет:
-
-- registry shape/non-empty state;
-- project reference против `data/projects.json`;
-- duplicate project snapshots;
-- kebab-case slug;
-- trust enum;
-- обязательный `lastVerified` для verified/stale;
-- реальные calendar dates, включая impossible dates;
-- version label/value shape;
-- duplicate normalized version labels;
-- signal kind/mode/state enums;
-- coherence manual/automated mode;
-- bounded non-empty scope;
-- duplicate normalized signals;
-- HTTPS URLs;
-- minimum signal requirements для verified/stale.
-
-### Build-time rendering
-
-Case-study Markdown теперь содержит декларативные placeholders:
-
-- LivingWorld: `data-tr-project-evidence="livingworld"`;
-- NODE ZERO: `data-tr-project-evidence="node-zero"`.
-
-`scripts/project-evidence.js` build-time генерирует semantic HTML:
-
-- trust state;
-- last checked date;
-- version/protocol facts;
-- automated/manual evidence distinction;
-- signal state;
-- bounded proof scope;
-- evidence links, если они существуют и безопасны.
-
-Renderer намеренно не синтезирует claims вроде `production-ready`, `fully tested` или `fully verified` из отдельных signal states.
-
 ### Static-first / no-JavaScript
 
-Diplodoc может хранить article body только внутри hydration state.
+Diplodoc может хранить article body внутри hydration state.
 
 Project Evidence использует mature `transformGeneratedContent` pattern:
 
-- injection работает и с обычным generated DOM, и с `diplodoc-state`;
-- callback не ломается только потому, что первая representation не содержит placeholder;
+- injection работает с обычным generated DOM и `diplodoc-state`;
 - если core content находится в hydration state, build добавляет semantic `<noscript>` fallback;
 - runtime fetch не требуется;
 - canonical evidence source остаётся один.
-
-### Case-study cleanup
-
-LivingWorld:
-
-- duplicate machine-like exact versions/CI list удалён из prose;
-- сохранены narrative limitations;
-- добавлен раздел «Текущее состояние и доказательства»;
-- green CI не подменяет manual multiplayer acceptance.
-
-NODE ZERO:
-
-- evidence block расположен рядом с current-direction section;
-- exact technical version facts вынесены из narrative в registry;
-- case study явно отделяет последний fully accepted foundation milestone от current draft player-foundation work.
 
 ### Initial controlled snapshots
 
 #### LivingWorld
 
-Status:
-
-`verified`
-
+Status: `verified`  
 `lastVerified = 2026-07-22`
-
-Зафиксированы versions/protocol facts для:
-
-- Minecraft Java 1.21.1;
-- Java 21;
-- Fabric Loader/API;
-- MCA Reborn;
-- Simple Voice Chat;
-- LivingWorld 0.1.0.
 
 Signals:
 
@@ -192,135 +293,43 @@ Scopes намеренно ограничены: evidence не утверждае
 
 #### NODE ZERO
 
-Status:
+Status: `stale`
 
-`stale`
-
-Last fully verified foundation gate:
-
-`2026-07-14`
-
-Зафиксированы:
-
-- Unity `6000.3.0f1`;
-- URP `17.3.0`;
-- Input System `1.16.0`;
-- Windows x86_64 IL2CPP target.
+Last fully verified foundation gate: `2026-07-14`.
 
 Signals:
 
 1. manual production-foundation acceptance — accepted;
-2. current player-foundation PR #9 — pending/draft, observed `2026-07-22`.
+2. newer player-foundation work — отдельный более свежий milestone, не покрытый старым foundation verification.
 
 Ключевое trust decision:
 
-**успешный старый foundation gate не превращён в claim, что текущий player/vertical-slice milestone уже verified.**
+**успешный старый foundation gate не превращён в claim, что текущий player/vertical-slice milestone verified.**
 
-Именно для таких случаев нужен отдельный `stale` state.
+### TDD / regression history
 
-### UI / trust presentation
+Milestone строился contract slices:
 
-Добавлен scoped component stylesheet:
-
-`docs/_assets/style/project-evidence.css`
-
-Trust state различается не только цветом:
-
-- verified — solid trust border;
-- stale — dashed trust border;
-- unverified — dotted/neutral treatment.
-
-Также реализованы:
-
-- compact semantic cards;
-- responsive versions/signals grid;
-- mobile single-column layout;
-- long scope/version wrapping;
-- global sticky-header style не протекает в evidence component.
-
-### Browser quality gate
-
-Добавлен:
-
-`scripts/project-evidence-smoke.cjs`
-
-Он проверяет LivingWorld и NODE ZERO в enhanced и JavaScript-disabled режимах:
-
-- один evidence root;
-- correct trust status/label;
-- bounded scope visible;
-- expected computed trust border;
-- safe links;
-- mobile overflow;
-- Axe serious/critical violations;
-- page errors;
-- no-JS semantic availability.
-
-CI сохраняет log, summary JSON, generated pages и representative mobile screenshots.
-
-### TDD / RED-GREEN evidence
-
-Milestone строился последовательными contract slices.
-
-#### Build #225 — validator RED
-
-Test-only commit импортировал ещё не существующий `project-evidence.js`.
-
-Ожидаемо упал `Test`, остальные build/browser stages не выполнялись.
-
-#### Build #227 — renderer RED
-
-Новые renderer contracts падали до появления semantic renderer.
-
-Во время этого среза отдельно исправлен некорректный test assertion: строка `НЕ ПРОВЕРЕНО` естественно содержит substring `ПРОВЕРЕНО`, поэтому negative-check был заменён на проверку status/class/standalone positive label.
-
-#### Build #230 — canonical registry RED
-
-Contract потребовал реальные flagship snapshots до создания `data/project-evidence.json`.
-
-#### Build #232 — generated-page/no-JS injection RED
-
-Contract потребовал `applyProjectEvidence`, обычный generated DOM и Diplodoc hydration-state/no-JS path.
-
-#### Build #234 — orchestration RED
-
-Contract потребовал, чтобы `copy-assets.js` реально загружал canonical evidence и инжектировал оба flagship project target.
-
-#### Build #241 — trust-style browser RED
-
-Все прежние gates до нового smoke были green.
-
-Новый Project Evidence smoke остановился именно на отсутствующем computed trust treatment: component CSS существовал, но ещё не был wired в generated pages.
-
-Это был clean browser-level RED.
+- Build #225 — validator RED;
+- Build #227 — renderer RED;
+- Build #230 — canonical registry RED;
+- Build #232 — generated-page/no-JS injection RED;
+- Build #234 — orchestration RED;
+- Build #241 — trust-style browser RED;
+- Build #244 — `<base href>` stylesheet-resolution regression RED.
 
 ### `<base href>` regression
 
-После wiring stylesheet fresh Build #243 обнаружил новую интеграционную проблему ещё на site integrity.
+После wiring component stylesheet generated Diplodoc pages с `<base href="../../">` показали проблему: naive document-relative stylesheet URL вычислялся относительно физического HTML path, а browser/integrity semantics применяли active document base.
 
-Generated Diplodoc case-study pages содержат:
+Site integrity корректно поймал broken local reference.
 
-`<base href="../../">`
+Fix:
 
-Первоначальный stylesheet href был вычислен физически относительно HTML file:
-
-`../../_assets/style/project-evidence.css`
-
-Но браузер и integrity resolver применяли его уже относительно `<base>`, из-за чего ссылка фактически уходила за пределы `docs-html`.
-
-Site integrity корректно сообщил broken local reference.
-
-#### Regression-first fix
-
-Создан отдельный test:
-
-`scripts/project-evidence-stylesheet.test.js`
-
-Build #244 намеренно RED-воспроизвёл ошибку.
-
-Затем `applyProjectEvidenceStylesheet()` был исправлен так, чтобы вычислять component stylesheet URL относительно **активной document base-directory**, а не только физического расположения HTML-файла.
-
-Integrity checker не ослаблялся и exceptions для broken asset не добавлялись.
+- добавлен отдельный stylesheet resolution test;
+- URL стал вычисляться относительно active document base-directory;
+- integrity checker не ослаблялся;
+- exceptions для broken asset не добавлялись.
 
 ### Exact verification
 
@@ -330,43 +339,13 @@ Final feature head:
 
 **Build #247 / workflow run `29935334882`: полностью green.**
 
-Green:
-
-- unit/model/renderer/integration tests;
-- production Diplodoc build;
-- generated-site integrity;
-- mobile overflow;
-- Chromium browser quality;
-- Axe;
-- Lighthouse;
-- Sources Knowledge Base smoke;
-- Project Evidence smoke;
-- Photo Stories smoke;
-- Portfolio v0.3 regression;
-- Firefox/WebKit;
-- generated search;
-- metadata/OpenGraph;
-- Engineering Map;
-- visual regression;
-- quality artifact upload.
-
-Exact quality artifact digest:
-
-`sha256:9f8b1018616ac745703a0ba637b51bbfd0c9b9333d78769858fa07ae289800d4`
-
-Dedicated Project Evidence summary:
-
-- LivingWorld: `verified`, 2 signals, solid `4px` trust border, overflow `0`, Axe serious/critical `0`;
-- NODE ZERO: `stale`, 2 signals, dashed `4px` trust border, overflow `0`, Axe serious/critical `0`;
-- JavaScript-disabled: оба evidence block доступны, overflow `0`, trust styling работает.
-
-Representative mobile screenshots были визуально проверены: clipping/overflow не обнаружены, trust states читаемы.
+Green вся configured matrix: tests, production build, integrity, mobile/browser/Axe/Lighthouse, Sources, Evidence, Photo Stories, v0.3 regression, Firefox/WebKit, search, metadata/OpenGraph, Engineering Map, visual regression и quality artifact upload.
 
 ### Production caveat
 
-Этот milestone подтверждён repository CI и generated artifacts.
+Repository CI и generated artifacts подтверждены.
 
-**Actual GitHub Pages deployment после merge `e3e48ac...` отдельно не считается подтверждённым без post-deploy endpoint evidence.**
+Actual GitHub Pages deployment после feature merge отдельно не считается подтверждённым без post-deploy endpoint evidence.
 
 ---
 
@@ -412,7 +391,7 @@ Search boundary:
 - один canonical source;
 - no runtime fetch.
 
-Это стало reusable static-first pattern для Project Evidence Layer.
+Этот incident позже стал одной из P0.5 Grounded Engineering Notes.
 
 ### Verification
 
@@ -493,7 +472,9 @@ Fix:
 - threshold снижен до `0` с сохранением root margin;
 - добавлен normal-viewport browser regression.
 
-Позже Sources Registry полностью убрал giant table как data/presentation model, а table-specific smoke был заменён более сильным Sources KB/no-JS coverage.
+Позже Sources Registry полностью убрал giant table как data/presentation model.
+
+Этот incident позже стал одной из P0.5 Grounded Engineering Notes.
 
 ---
 
@@ -519,14 +500,16 @@ Squash commit: `b472aff67d69fb3cd6afa0577864371547f52a5b`
 
 ## Durable continuity updates
 
-После крупных milestones durable state синхронизируется отдельными docs follow-ups, чтобы новый чат мог восстановить контекст не по истории conversation, а по repository truth.
+После крупных milestones durable state синхронизируется отдельными docs follow-ups, чтобы новый чат восстанавливал контекст по repository truth, а не по истории conversation.
 
-После Sources milestone:
+Ключевые continuity merges:
 
-- PR #21;
-- squash commit `5535948d756585c44550d14f3e2424be82a3b767`.
+- после Sources milestone — PR #21, squash `5535948d756585c44550d14f3e2424be82a3b767`;
+- после Project Evidence milestone — PR #23, squash `ac520553cbe38ab022d49abc3b48dd0bd67c76c8`;
+- final Project Evidence state cleanup — PR #24, squash `6e83ab5dcbbc23ae2274fddbd0daed8efa058e23`;
+- после Grounded Engineering Notes milestone — текущий docs-only continuity follow-up.
 
-После Project Evidence milestone актуальными источниками контекста остаются:
+Актуальные источники контекста:
 
 1. `docs/PROJECT_STATE.md`;
 2. `docs/ROADMAP.md`;
