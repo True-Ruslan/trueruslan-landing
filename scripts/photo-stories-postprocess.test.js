@@ -33,6 +33,7 @@ test('postprocessOutput generates canonical photo archive, legacy bridge and sit
   fs.writeFileSync(noteSource, '# Test note\n');
   fs.writeFileSync(noteOutput, '<!doctype html><html><head><title>Note</title></head><body><main><h1>Test note</h1><p>Body</p></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'photos.html'), '<html><body>Old photos</body></html>');
+  fs.writeFileSync(path.join(outputDir, 'landing', 'projects.html'), '<!doctype html><html><head><title>Projects</title></head><body><main><h1>Projects</h1><span data-tr-project-status="test-project"></span></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'engineering-map.html'), '<html><body><div data-tr-engineering-graph-root></div></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'now.html'), '<html><body><div data-tr-now-placeholder></div></body></html>');
   fs.writeFileSync(path.join(outputDir, 'index.html'), '<!doctype html><html><head></head><body></body></html>');
