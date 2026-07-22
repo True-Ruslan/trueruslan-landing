@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-07-22**, после merge P1.2 Project Metadata Cleanup PR #31.
+> Последнее смысловое обновление: **2026-07-22**, после merge P1.2 Project Metadata Cleanup PR #31 и continuity sync PR #32.
 >
 > Главный durable snapshot для ответа на вопрос **«что сейчас представляет собой проект, что уже сделано и что дальше?»**.
 >
@@ -63,6 +63,13 @@ Exact implementation head:
 Verification:
 
 **Build #296 / workflow run `29954043887`: fully green по полной configured matrix.**
+
+Continuity sync:
+
+- PR #32 — `docs: sync state after project metadata milestone`;
+- squash `cadbbe4e04360cfcb8942180a4ce2cc71835dd83`;
+- exact docs head `44c273f1c2252d42e3184914048646562ab2e972`;
+- Build #297 / run `29954626075`: **fully green по полной configured matrix**.
 
 ### Что изменил P1.2
 
@@ -134,7 +141,7 @@ Build #293 / run `29951464481`: **fully green**.
 
 ### Сейчас в разработке
 
-После merge PR #31 active feature implementation PR отсутствует; текущий continuity follow-up — docs-only.
+После merge continuity PR #32 active feature implementation и open PR отсутствуют на момент snapshot; actual repository state всегда перепроверять отдельно.
 
 Следующий оптимальный technical priority:
 
