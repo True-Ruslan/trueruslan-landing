@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-07-22**, после Project Evidence milestone и continuity sync PR #23.
+> Последнее смысловое обновление: **2026-07-22**, после merge P0.5 Grounded Engineering Notes PR #25.
 >
 > Главный durable snapshot для ответа на вопрос **«что сейчас представляет собой проект, что уже сделано и что дальше?»**.
 >
@@ -43,13 +43,54 @@
 
 ## 2. Текущее состояние `master`
 
-### Последний крупный product milestone
+### Последний продуктовый milestone
 
-**Portfolio v0.4 — Project Evidence Layer**.
+**P0.5 — Grounded Engineering Notes**.
 
-PR #22:
+PR #25:
 
-`feat: add Project Evidence Layer`
+`feat: publish grounded Engineering Notes milestone`
+
+Squash commit:
+
+`f2775b7c9150281bcb4bcc01a4e021e007e18ca0`
+
+Exact implementation head:
+
+`8a2973961e5ec38e4c8b3e0626460c04e88438a8`
+
+Verification:
+
+**Build #257 / workflow run `29943616448`: fully green по полной configured matrix.**
+
+Milestone добавил 3 новые repository-grounded заметки и довёл общее количество Engineering Notes до 6.
+
+Новые заметки:
+
+1. `intersection-observer-giant-table` — reveal/`IntersectionObserver` regression на giant bibliography table;
+2. `static-first-sources-no-js` — Sources Registry migration, Diplodoc hydration state и semantic no-JS representation;
+3. `green-ci-is-not-product-verification` — bounded evidence, freshness и граница между green CI и verified product claim.
+
+Интеграция включает:
+
+- canonical metadata/relations в `data/notes.json`;
+- Notes hub;
+- TOC/search/sitemap discovery;
+- page-specific SEO/OpenGraph metadata;
+- Atom feed через существующий manifest pipeline;
+- canonical content contract, требующий присутствия всех трёх P0.5 slugs.
+
+Design:
+
+`docs/superpowers/specs/2026-07-22-grounded-engineering-notes-design.md`
+
+Implementation plan:
+
+`docs/superpowers/plans/2026-07-22-grounded-engineering-notes.md`
+
+### Предыдущий крупный architecture milestone
+
+**Portfolio v0.4 — Project Evidence Layer**, PR #22.
 
 Squash commit:
 
@@ -63,31 +104,15 @@ Verification:
 
 **Build #247 / workflow run `29935334882`: fully green.**
 
-### Continuity sync
-
-После feature merge durable docs были синхронизированы через PR #23:
-
-`docs: sync project state after Project Evidence milestone`
-
-Squash commit:
-
-`ac520553cbe38ab022d49abc3b48dd0bd67c76c8`
-
-Exact docs head:
-
-`a57b380c19fd752be2e234462b117ffc9bde1ce0`
-
-Verification:
-
-**Build #248 / workflow run `29936230770`: fully green.**
-
 ### Сейчас в разработке
 
-На момент этого snapshot **active feature implementation PR отсутствует**.
+После merge PR #25 **active feature implementation PR отсутствует**.
 
-Следующий продуктовый приоритет:
+Этот continuity follow-up — docs-only синхронизация durable state и не является новым product feature milestone.
 
-**P0.5 — 3–5 grounded Engineering Notes из реальных engineering incidents**.
+Следующий продуктовый/technical приоритет:
+
+**P0.6 — Content Freshness Guard поверх Project Registry + Project Evidence Layer.**
 
 Первая настоящая Photo Story остаётся content-dependent/non-blocking задачей.
 
@@ -215,17 +240,9 @@ Malformed/inconsistent evidence ломает build.
 
 #### Rendering / no-JS
 
-Case-study Markdown содержит только declarative placeholders.
+Case-study Markdown содержит declarative placeholders.
 
-Build-time renderer генерирует semantic block с:
-
-- trust state;
-- last checked date;
-- version/protocol facts;
-- automated/manual distinction;
-- signal state;
-- bounded proof scope;
-- evidence links, когда допустимо.
+Build-time renderer генерирует semantic block с trust state, last checked date, version/protocol facts, automated/manual distinction, signal state, bounded proof scope и evidence links.
 
 Если Diplodoc хранит article body только в hydration state, build добавляет semantic `<noscript>` fallback.
 
@@ -246,18 +263,10 @@ Runtime fetch не нужен.
 - `stale`;
 - last fully verified foundation gate `2026-07-14`;
 - successful production-foundation acceptance сохранён;
-- current player-foundation PR #9 observed `2026-07-22` как pending/draft milestone;
+- player-foundation PR #9 был observed `2026-07-22` как pending/draft milestone;
 - старый successful foundation gate не превращён в claim о готовности текущего player/vertical-slice milestone.
 
-#### UI
-
-Trust state различается не только цветом:
-
-- verified — solid trust border;
-- stale — dashed trust border;
-- unverified — dotted/neutral treatment.
-
-Mobile layout одноколоночный и wrap-safe.
+Trust state различается не только цветом: verified — solid, stale — dashed, unverified — dotted/neutral treatment.
 
 ### 5.3 Sources Registry / Knowledge Base — DONE
 
@@ -300,12 +309,38 @@ Sources filtering — только page-local UI. Diplodoc остаётся glob
 
 `photo-albums.json` намеренно пуст до появления первой настоящей связной серии. Fake/demo stories не добавляются.
 
-### 5.5 `/now`, Engineering Notes, Engineering Map, Search, Resume/SEO
+### 5.5 Engineering Notes — P0.5 DONE
+
+Canonical metadata:
+
+`data/notes.json`
+
+Всего опубликовано 6 заметок:
+
+1. `portfolio-runtime-boundary`;
+2. `static-site-quality-gates`;
+3. `server-authoritative-ai-npcs`;
+4. `intersection-observer-giant-table`;
+5. `static-first-sources-no-js`;
+6. `green-ci-is-not-product-verification`.
+
+Работают:
+
+- dates / reading time / tags;
+- previous/next navigation;
+- related-note graph;
+- deterministic Atom feed;
+- TOC/search/sitemap discovery;
+- per-page metadata/OpenGraph;
+- canonical manifest/file validation.
+
+P0.5 специально выбрал 3 incidents с самым сильным repository-local evidence trail. Темы voice AI pipeline и malformed LLM JSON остаются будущими grounded content candidates после отдельной cross-repository source verification.
+
+### 5.6 `/now`, Engineering Map, Search, Resume/SEO
 
 Реализованы:
 
 - `/now` с registry-derived active project state;
-- Engineering Notes metadata/relations/feed;
 - Engineering Map technologies → domains → projects → notes;
 - Diplodoc local search;
 - styled search page;
@@ -315,8 +350,6 @@ Sources filtering — только page-local UI. Diplodoc остаётся glob
 - OpenGraph/Twitter;
 - JSON-LD;
 - deterministic social cards.
-
-Engineering Notes пока мало относительно количества реальных incidents — это следующий главный content gap.
 
 ---
 
@@ -344,32 +377,45 @@ Engineering Notes пока мало относительно количеств�
 - Engineering Map;
 - visual regression.
 
+### P0.5 exact verification
+
+Exact feature head:
+
+`8a2973961e5ec38e4c8b3e0626460c04e88438a8`
+
+Build #257 / run `29943616448`:
+
+**fully green**.
+
+Green:
+
+- tests, включая canonical grounded-note contract;
+- production Diplodoc build;
+- generated-site integrity;
+- mobile overflow;
+- Chromium browser/Axe/Lighthouse;
+- Sources Knowledge Base smoke;
+- Project Evidence smoke;
+- Photo Stories smoke;
+- Portfolio v0.3 regression;
+- Firefox/WebKit compatibility;
+- generated search;
+- metadata/OpenGraph;
+- Engineering Map;
+- visual regression;
+- quality evidence upload.
+
 ### Project Evidence exact verification
 
 Exact feature head:
 
 `7ce0d428327e29436a03fc2be4b94ef7c0f2f15b`
 
-Build #247 / run `29935334882`:
+Build #247 / run `29935334882`: **fully green**.
 
-**fully green**.
+### Important regression history
 
-Dedicated evidence summary:
-
-- LivingWorld: `verified`, 2 bounded signals;
-- solid `4px` trust treatment;
-- NODE ZERO: `stale`, 2 bounded signals;
-- dashed `4px` trust treatment;
-- mobile overflow `0`;
-- serious/critical Axe violations `0`;
-- JavaScript-disabled: оба evidence block доступны;
-- no-JS overflow `0`.
-
-### Important TDD/regression history
-
-RED gates:
-
-- Build #225 — validator contract;
+- Build #225 — Project Evidence validator contract;
 - Build #227 — renderer contract;
 - Build #230 — canonical registry contract;
 - Build #232 — generated-page/no-JS injection;
@@ -377,21 +423,7 @@ RED gates:
 - Build #241 — browser trust-style gate;
 - Build #244 — stylesheet resolution regression при Diplodoc `<base href>`.
 
-Во время styling обнаружилось, что naive document-relative `../../_assets/...` конфликтует с generated `<base href="../../">`.
-
-Site integrity корректно поймал broken asset.
-
-Fix сделан в resource resolution pipeline; integrity gate не ослаблялся.
-
-### Continuity docs verification
-
-Exact PR #23 docs head:
-
-`a57b380c19fd752be2e234462b117ffc9bde1ce0`
-
-Build #248 / run `29936230770`:
-
-**fully green по полной configured matrix**.
+Во время Project Evidence styling naive document-relative stylesheet URL конфликтовал с generated `<base href>`. Site integrity поймал broken asset; fix сделан в resource resolution pipeline без ослабления integrity gate.
 
 ---
 
@@ -399,9 +431,8 @@ Build #248 / run `29936230770`:
 
 ### P0
 
-1. Engineering Notes пока мало относительно количества реальных incidents.
-2. **Content Freshness Guard** ещё не реализован.
-3. Первая настоящая Photo Story отсутствует — платформа готова, нужен настоящий связный материал.
+1. **Content Freshness Guard** ещё не реализован.
+2. Первая настоящая Photo Story отсутствует — платформа готова, нужен настоящий связный материал.
 
 ### Quality architecture
 
@@ -414,7 +445,17 @@ Browser QA состоит из нескольких focused runners.
 `package.json` требует отдельной cleanup-задачи:
 
 - version историческая;
-- description должна отражать engineering portfolio / knowledge platform.
+- description должна отражать engineering portfolio / knowledge platform;
+- keywords нужно пересмотреть после content expansion.
+
+### Content follow-ups
+
+Grounded Notes milestone закрыт минимально полноценным scope из 3 новых notes. Дополнительные реальные темы, которые можно публиковать позже:
+
+- voice AI pipeline Minecraft NPC: microphone → STT → routing → LLM → memory → TTS;
+- почему «почти правильный JSON» от LLM всё равно protocol error.
+
+Не публиковать их без source verification из соответствующих project repositories.
 
 ### Отложено сознательно
 
@@ -427,22 +468,26 @@ Browser QA состоит из нескольких focused runners.
 
 ## 8. Следующий оптимальный этап
 
-### P0.5 — 3–5 grounded Engineering Notes
+### P0.6 — Content Freshness Guard
 
-Приоритетные реальные темы:
+Следующий шаг — построить maintenance layer поверх `data/projects.json` + `data/project-evidence.json`, который обнаруживает устаревшие controlled snapshots, но не переписывает public truth автоматически.
 
-1. как reveal/IntersectionObserver logic спрятала giant bibliography table;
-2. как Sources migration привела к более строгой no-JS/static-first architecture;
-3. voice AI pipeline Minecraft NPC: microphone → STT → routing → LLM → memory → TTS;
-4. почему «почти правильный JSON» от LLM всё равно protocol error;
-5. Project Evidence: почему green CI ≠ verified product и зачем bounded scopes.
+Guard должен:
 
-После Notes:
+- сравнивать hand-maintained state с доступными repository/release signals;
+- проверять возраст `lastVerified`;
+- проверять evidence links;
+- находить contradictions между Project Registry, timelines и Project Evidence;
+- создавать/обновлять actionable issue или report;
+- **не переводить project в `verified` автоматически**;
+- **не переписывать public content автоматически**.
 
-1. Content Freshness Guard поверх `projects.json` + `project-evidence.json`;
-2. consolidated browser quality primitives;
-3. metadata/version cleanup;
-4. stronger flagship case-study structure;
+После Freshness Guard:
+
+1. consolidated browser quality primitives;
+2. metadata/version cleanup;
+3. stronger flagship case-study structure;
+4. additional grounded Notes после source verification;
 5. first real Photo Story при появлении genuine material;
 6. minimal EN / analytics / domain позже.
 
