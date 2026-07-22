@@ -146,12 +146,22 @@ async function runNoJavaScriptScenario(browser) {
     if (!(await first.getByRole('link', {name: /Как мы сократили объем данных/i}).isVisible())) {
       throw new Error('no-js: source title/link is not readable');
     }
+
     const details = first.locator('details');
     if (await details.count()) {
-      await details.locator('summary').click();
-      if (!(await details.locator('li').first().isVisible())) throw new Error('no-js: native summary details cannot reveal content');
-    } else if (!(await first.locator('.tr-source-card__summary').isVisible())) {
-      throw new Error('no-js: source summary is not readable');
+      const summary = details.locator('summary');
+      if (!(await summary.isVisible())) throw new Error('no-js: native summary control is not visible');
+      const staticText = await details.textContent();
+      if (!staticText?.includes('2 ТБ') || !staticText.includes('ClickHouse')) {
+        throw new Error('no-js: full summary content is not present in the static DOM');
+      }
+    } else {
+      const summary = first.locator('.tr-source-card__summary');
+      if (!(await summary.isVisible())) throw new Error('no-js: source summary is not readable');
+      const staticText = await summary.textContent();
+      if (!staticText?.includes('2 ТБ') || !staticText.includes('ClickHouse')) {
+        throw new Error('no-js: representative summary content is missing');
+      }
     }
 
     const overflow = await assertNoOverflow(page, 'no-js-desktop');
