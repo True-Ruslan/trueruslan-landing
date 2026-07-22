@@ -152,6 +152,24 @@ async function main() {
     });
 
     await checkPage(browser, {
+      slug: 'projects-registry-status',
+      pathname: '/landing/projects.html',
+      heading: 'Проекты',
+      verify: async (page) => {
+        const livingWorldStatus = page.locator('[data-project-status="livingworld"]');
+        const nodeZeroStatus = page.locator('[data-project-status="node-zero"]');
+        await livingWorldStatus.waitFor({state: 'visible'});
+        await nodeZeroStatus.waitFor({state: 'visible'});
+        if ((await livingWorldStatus.innerText()).trim() !== 'RELEASE CANDIDATE') {
+          throw new Error('LivingWorld status on Projects hub drifted from Project Registry.');
+        }
+        if ((await nodeZeroStatus.innerText()).trim() !== 'PRE-PRODUCTION') {
+          throw new Error('NODE ZERO status on Projects hub drifted from Project Registry.');
+        }
+      },
+    });
+
+    await checkPage(browser, {
       slug: 'now',
       pathname: '/landing/now.html',
       heading: 'Сейчас',
@@ -159,6 +177,10 @@ async function main() {
         await page.locator('[data-tr-now]').waitFor({state: 'visible'});
         const activeCards = await page.locator('[data-tr-now] .tr-active-card').count();
         if (activeCards < 1) throw new Error('Now page contains no registry-derived active project cards.');
+        const nowText = await page.locator('[data-tr-now]').innerText();
+        if (!nowText.includes('RELEASE CANDIDATE') || !nowText.includes('PRE-PRODUCTION')) {
+          throw new Error('Now page project statuses drifted from Project Registry.');
+        }
         await assertCommandPalette(page);
       },
     });
@@ -221,7 +243,7 @@ async function main() {
       });
     }
 
-    console.log('Portfolio v0.3 browser, accessibility, navigation, notes and timeline smoke passed.');
+    console.log('Portfolio v0.3 browser, accessibility, registry, navigation, notes and timeline smoke passed.');
   } finally {
     if (browser) await browser.close();
     await stopServer(server);
