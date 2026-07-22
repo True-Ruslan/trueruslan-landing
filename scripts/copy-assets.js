@@ -55,6 +55,7 @@ const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.web
 const SEARCH_RESOURCES = [
   ['_assets', 'style', 'search.css'],
   ['_assets', 'script', 'search-ui.js'],
+  ['_assets', 'style', 'project-evidence.css'],
 ];
 
 function copyFile(source, target) {
