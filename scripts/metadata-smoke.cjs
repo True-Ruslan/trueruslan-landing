@@ -59,7 +59,7 @@ async function main() {
 
   try {
     browser = await launchChromium(chromium);
-    runtime = await createScenarioPage(browser, {});
+    runtime = await createScenarioPage(browser, {colorScheme: 'light'});
     const summary = [];
     for (const expected of pages) {
       console.log(`Metadata smoke: ${expected.path}`);
