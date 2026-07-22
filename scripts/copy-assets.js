@@ -19,6 +19,7 @@ import {
   validatePhotoArchive,
   writePhotoStories,
 } from './photo-stories.js';
+import {applyProjectEvidence, loadProjectEvidence} from './project-evidence.js';
 import {
   applyProjectRegistryContent,
   DEFAULT_HISTORY_DIR,
@@ -42,16 +43,20 @@ const STANDALONE_HOME_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 const PAGE_META_MANIFEST = path.join(ROOT, 'data', 'page-meta.json');
 const ENGINEERING_GRAPH_MANIFEST = path.join(ROOT, 'data', 'engineering-graph.json');
 const PROJECTS_MANIFEST = path.join(ROOT, 'data', 'projects.json');
+const PROJECT_EVIDENCE_MANIFEST = path.join(ROOT, 'data', 'project-evidence.json');
 const NOW_MANIFEST = path.join(ROOT, 'data', 'now.json');
 const NOTES_MANIFEST = path.join(ROOT, 'data', 'notes.json');
 const SOURCES_MANIFEST = path.join(ROOT, 'data', 'sources.json');
 const PHOTO_ALBUMS_MANIFEST = path.join(ROOT, 'data', 'photo-albums.json');
 const PHOTO_ARCHIVE_MANIFEST = path.join(ROOT, 'data', 'photo-archive.json');
+const REQUIRED_PROJECT_EVIDENCE = Object.freeze(['livingworld', 'node-zero']);
+const PROJECT_EVIDENCE_STYLESHEET = '_assets/style/project-evidence.css';
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
 const SEARCH_RESOURCES = [
   ['_assets', 'style', 'search.css'],
   ['_assets', 'script', 'search-ui.js'],
+  ['_assets', 'style', 'project-evidence.css'],
 ];
 
 function copyFile(source, target) {
@@ -155,6 +160,41 @@ export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSi
   return true;
 }
 
+function resolveStylesheetHref(html, relativePath) {
+  const normalizedTarget = relativePath.replaceAll(path.sep, '/');
+  const documentDirectory = path.posix.dirname(normalizedTarget);
+  const baseMatch = html.match(/<base\b[^>]*href=["']([^"']+)["'][^>]*>/i);
+  if (!baseMatch) return path.posix.relative(documentDirectory, PROJECT_EVIDENCE_STYLESHEET);
+
+  const baseHref = baseMatch[1].split(/[?#]/, 1)[0];
+  if (!baseHref || /^[a-z][a-z\d+.-]*:/i.test(baseHref) || baseHref.startsWith('//')) {
+    return path.posix.relative(documentDirectory, PROJECT_EVIDENCE_STYLESHEET);
+  }
+
+  const baseDirectory = baseHref.startsWith('/')
+    ? path.posix.dirname(baseHref)
+    : path.posix.normalize(path.posix.join(documentDirectory, baseHref));
+  return path.posix.relative(baseDirectory === '.' ? '' : baseDirectory, PROJECT_EVIDENCE_STYLESHEET);
+}
+
+export function applyProjectEvidenceStylesheet(outputDir, targetPaths) {
+  const updated = [];
+  for (const relativePath of targetPaths) {
+    const htmlPath = path.join(outputDir, relativePath);
+    if (!fs.existsSync(htmlPath)) throw new Error(`Project Evidence stylesheet target not found: ${relativePath}`);
+    const html = fs.readFileSync(htmlPath, 'utf8');
+    if (/data-tr-project-evidence-stylesheet/i.test(html)) continue;
+    if (!/<\/head>/i.test(html)) continue;
+
+    const normalizedTarget = relativePath.replaceAll(path.sep, '/');
+    const href = resolveStylesheetHref(html, normalizedTarget);
+    const link = `<link rel="stylesheet" href="${href}" data-tr-project-evidence-stylesheet>`;
+    fs.writeFileSync(htmlPath, html.replace(/<\/head>/i, `${link}</head>`), 'utf8');
+    updated.push(normalizedTarget);
+  }
+  return updated;
+}
+
 function loadPhotoRegistries(photoAlbumsPath, photoArchivePath, docsDir) {
   const rawAlbums = JSON.parse(fs.readFileSync(photoAlbumsPath, 'utf8'));
   const rawArchive = JSON.parse(fs.readFileSync(photoArchivePath, 'utf8'));
@@ -172,6 +212,7 @@ export function postprocessOutput({
   engineeringGraphPath = ENGINEERING_GRAPH_MANIFEST,
   projectRegistryPath = PROJECTS_MANIFEST,
   projectHistoryDir = DEFAULT_HISTORY_DIR,
+  projectEvidencePath,
   nowPath = NOW_MANIFEST,
   notesPath = NOTES_MANIFEST,
   sourcesPath,
@@ -189,6 +230,10 @@ export function postprocessOutput({
   const notes = loadNotesManifest(notesPath, {docsDir});
 
   const isProductionDocs = path.resolve(docsDir) === path.resolve(DOCS_DIR);
+  const resolvedProjectEvidencePath = projectEvidencePath ?? (isProductionDocs ? PROJECT_EVIDENCE_MANIFEST : null);
+  const projectEvidence = resolvedProjectEvidencePath
+    ? loadProjectEvidence(resolvedProjectEvidencePath, {projects})
+    : null;
   const resolvedSourcesPath = sourcesPath ?? (isProductionDocs ? SOURCES_MANIFEST : null);
   const sources = resolvedSourcesPath ? loadSourcesRegistry(resolvedSourcesPath) : null;
   const resolvedPhotoAlbumsPath = photoAlbumsPath ?? (isProductionDocs ? PHOTO_ALBUMS_MANIFEST : null);
@@ -216,6 +261,10 @@ export function postprocessOutput({
   const projectStatusTargets = applyProjectRegistryContent(outputDir, projects);
   const nowPageTarget = applyNowPage(outputDir, nowData, projects);
   const timelineTargets = applyProjectTimelines(outputDir, projects, projectHistoryDir);
+  const projectEvidenceTargets = projectEvidence
+    ? applyProjectEvidence(outputDir, projectEvidence, {requiredProjects: REQUIRED_PROJECT_EVIDENCE})
+    : [];
+  const projectEvidenceStylesheetTargets = applyProjectEvidenceStylesheet(outputDir, projectEvidenceTargets);
   const noteTargets = applyNoteEnhancements(outputDir, notes);
   const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
   const sourcesKnowledgeBaseTarget = sources
@@ -249,6 +298,8 @@ export function postprocessOutput({
     projectStatusTargets,
     nowPageTarget,
     timelineTargets,
+    projectEvidenceTargets,
+    projectEvidenceStylesheetTargets,
     noteTargets,
     feedPath,
     feedDiscoveryUpdated,
@@ -273,6 +324,8 @@ function main() {
     console.log(`Injected ${result.projectStatusTargets} registry-derived project status badge(s).`);
     console.log(`Now page injected: ${result.nowPageTarget}`);
     console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
+    if (result.projectEvidenceTargets.length) console.log(`Injected ${result.projectEvidenceTargets.length} Project Evidence block(s).`);
+    if (result.projectEvidenceStylesheetTargets.length) console.log(`Wired Project Evidence stylesheet into ${result.projectEvidenceStylesheetTargets.length} page(s).`);
     console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
     console.log(`Atom feed written: ${result.feedPath}`);
     if (result.sourcesKnowledgeBaseTarget) console.log(`Sources Knowledge Base injected: ${result.sourcesKnowledgeBaseTarget}`);

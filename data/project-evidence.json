@@ -1,0 +1,63 @@
+[
+  {
+    "project": "livingworld",
+    "status": "verified",
+    "lastVerified": "2026-07-22",
+    "versions": [
+      {"label": "Minecraft Java", "value": "1.21.1"},
+      {"label": "Java", "value": "21"},
+      {"label": "Fabric Loader", "value": "0.19.3"},
+      {"label": "Fabric API", "value": "0.116.14+1.21.1"},
+      {"label": "MCA Reborn", "value": "7.7.22+1.21.1"},
+      {"label": "Simple Voice Chat", "value": "1.21.1-2.6.20"},
+      {"label": "LivingWorld", "value": "0.1.0"}
+    ],
+    "signals": [
+      {
+        "kind": "ci",
+        "mode": "automated",
+        "label": "LivingWorld CI run 29736858315",
+        "state": "green",
+        "observedAt": "2026-07-20",
+        "scope": "Exact-head CI для milestone world perception прошёл проверки Java 21 и pinned dependencies, unit/storage/migration/perception/trust/package/reproducibility tests, отдельный RC resilience scenario, Fabric GameTest, staging release artifact и загрузку JAR artifact. Это не подтверждает ручную приёмку двух реальных клиентов, микрофона или spatial audio."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "World perception milestone PR #6",
+        "state": "merged",
+        "observedAt": "2026-07-20",
+        "scope": "Milestone server-observed world perception и trusted knowledge был merged после documented exact-head verification. Это подтверждает именно этот milestone, а не полную готовность multiplayer release."
+      }
+    ]
+  },
+  {
+    "project": "node-zero",
+    "status": "stale",
+    "lastVerified": "2026-07-14",
+    "versions": [
+      {"label": "Unity", "value": "6000.3.0f1"},
+      {"label": "URP", "value": "17.3.0"},
+      {"label": "Input System", "value": "1.16.0"},
+      {"label": "Target build", "value": "Windows x86_64 IL2CPP"}
+    ],
+    "signals": [
+      {
+        "kind": "manual",
+        "mode": "manual",
+        "label": "Unity production foundation acceptance",
+        "state": "accepted",
+        "observedAt": "2026-07-14",
+        "scope": "Production foundation был проверен на Unity 6000.3.0f1: setup и validation завершились успешно, EditMode и PlayMode tests прошли, Windows x86_64 IL2CPP development build был собран и запущен, Bootstrap дошёл до Frontend, а полный gate был воспроизведён из fresh clone. Это доказательство относится только к foundation milestone."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Player foundation PR #9",
+        "state": "pending",
+        "observedAt": "2026-07-22",
+        "scope": "Текущий player-foundation остаётся draft milestone. Для него пока не заявлены как проверенные executable gates: Unity validation, EditMode и PlayMode execution, Windows IL2CPP build и graybox launch, gameplay acceptance, allocation checks и воспроизведение из fresh clone."
+      }
+    ]
+  }
+]

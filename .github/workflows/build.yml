@@ -58,6 +58,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/sources-knowledge-base-smoke.cjs 2>&1 | tee sources-knowledge-base-smoke.log
+      - name: Project Evidence browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/project-evidence-smoke.cjs 2>&1 | tee project-evidence-smoke.log
       - name: Photo Stories browser smoke
         shell: bash
         run: |
@@ -104,6 +109,7 @@ jobs:
           cp layout-overflow.log quality-artifacts/layout-overflow.log 2>/dev/null || true
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
           cp sources-knowledge-base-smoke.log quality-artifacts/sources-knowledge-base-smoke.log 2>/dev/null || true
+          cp project-evidence-smoke.log quality-artifacts/project-evidence-smoke.log 2>/dev/null || true
           cp photo-stories-browser-smoke.log quality-artifacts/photo-stories-browser-smoke.log 2>/dev/null || true
           cp v03-browser-smoke.log quality-artifacts/v03-browser-smoke.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
