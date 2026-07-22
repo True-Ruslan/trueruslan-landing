@@ -80,6 +80,22 @@ async function assertNoOverflow(page, name) {
   return overflow;
 }
 
+async function assertHeroTitleFitsViewport(page, name) {
+  const geometry = await page.locator('.tr-photo-index-hero h1').evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return {
+      left: rect.left,
+      right: rect.right,
+      width: rect.width,
+      viewportWidth: window.innerWidth,
+    };
+  });
+  if (geometry.left < -1 || geometry.right > geometry.viewportWidth + 1) {
+    throw new Error(`${name}: photo hero title is clipped by the viewport: ${JSON.stringify(geometry)}`);
+  }
+  return geometry;
+}
+
 async function assertArchiveAndLightbox(page, name) {
   const albumCards = page.locator('[data-tr-photo-album-card]');
   const archiveItems = page.locator('[data-tr-photo-archive-item]');
@@ -112,6 +128,20 @@ async function assertArchiveAndLightbox(page, name) {
   await root.waitFor({state: 'hidden'});
 }
 
+async function prepareVisualEvidence(page, name) {
+  const archive = page.locator('.tr-photo-archive');
+  await archive.scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => {
+    const images = [...document.querySelectorAll('[data-tr-photo-archive-item] img')];
+    return images.length === 3 && images.every((image) => image.complete && image.naturalWidth > 0);
+  }, null, {timeout: 5000});
+  const unloaded = await page.locator('[data-tr-photo-archive-item] img').evaluateAll((images) =>
+    images.filter((image) => !image.complete || image.naturalWidth <= 0).length,
+  );
+  if (unloaded) throw new Error(`${name}: ${unloaded} archive image(s) were not loaded before screenshot evidence`);
+  await page.evaluate(() => window.scrollTo(0, 0));
+}
+
 async function runScenario(browser, name, viewport, reducedMotion = 'no-preference') {
   const context = await browser.newContext({viewport, colorScheme: 'dark', reducedMotion});
   const page = await context.newPage();
@@ -122,6 +152,7 @@ async function runScenario(browser, name, viewport, reducedMotion = 'no-preferen
     await page.locator('[data-tr-photo-page="index"]').waitFor({state: 'visible'});
 
     const overflow = await assertNoOverflow(page, name);
+    const titleGeometry = await assertHeroTitleFitsViewport(page, name);
     await assertArchiveAndLightbox(page, name);
 
     const axe = await new AxeBuilder({page}).analyze();
@@ -135,6 +166,7 @@ async function runScenario(browser, name, viewport, reducedMotion = 'no-preferen
     if (diagnostics.failedRequests.length) throw new Error(`${name}: failed same-origin requests: ${diagnostics.failedRequests.join('; ')}`);
 
     await page.goto(`${BASE_URL}/photos/`, {waitUntil: 'networkidle'});
+    await prepareVisualEvidence(page, name);
     fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
     await page.screenshot({
       path: path.join(ARTIFACTS_DIR, `photo-stories-${name}.png`),
@@ -148,6 +180,7 @@ async function runScenario(browser, name, viewport, reducedMotion = 'no-preferen
       archiveItems: await page.locator('[data-tr-photo-archive-item]').count(),
       albumCards: await page.locator('[data-tr-photo-album-card]').count(),
       overflow,
+      titleGeometry,
       seriousAxeViolations: serious.length,
     };
   } finally {
