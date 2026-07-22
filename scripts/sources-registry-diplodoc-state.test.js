@@ -17,7 +17,7 @@ const source = {
   related: [],
 };
 
-test('applySourcesKnowledgeBase falls back to Diplodoc state when marker is absent from rendered document HTML', () => {
+test('applySourcesKnowledgeBase injects Diplodoc state plus a semantic no-JavaScript fallback', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-sources-state-'));
   const htmlPath = path.join(outputDir, 'landing', 'bibliography.html');
   fs.mkdirSync(path.dirname(htmlPath), {recursive: true});
@@ -30,7 +30,7 @@ test('applySourcesKnowledgeBase falls back to Diplodoc state when marker is abse
 
   fs.writeFileSync(
     htmlPath,
-    `<!doctype html><html><body><main><p>Hydrated shell</p></main><script id="diplodoc-state" type="application/json">${state}</script></body></html>`,
+    `<!doctype html><html><body><div id="root"></div><script id="diplodoc-state" type="application/json">${state}</script></body></html>`,
   );
 
   assert.equal(
@@ -41,4 +41,8 @@ test('applySourcesKnowledgeBase falls back to Diplodoc state when marker is abse
   const html = fs.readFileSync(htmlPath, 'utf8');
   assert.match(html, /State Source/);
   assert.doesNotMatch(html, /data-tr-sources-placeholder/);
+  assert.match(html, /<noscript[^>]*data-tr-sources-noscript/);
+  assert.match(html, /<h1>Список изученных источников<\/h1>/);
+  assert.match(html, /<section class="tr-sources" data-tr-sources-root>/);
+  assert.match(html, /Injected from Diplodoc state/);
 });
