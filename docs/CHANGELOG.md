@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-07-22**, после merge P1.2 Project Metadata Cleanup PR #31.
+> Обновлено: **2026-07-22**, после merge P1.3 Stronger Flagship Case-Study Format PR #34.
 >
 > Это не машинный список коммитов. Здесь фиксируются смысловые этапы проекта: **что сделали, зачем, как именно, какие проблемы нашли и чем подтвердили результат**.
 >
@@ -10,132 +10,175 @@
 
 # 2026-07-22
 
-## P1.2 — Project Metadata Cleanup
+## P1.3 — Stronger Flagship Case-Study Format
 
 ### Зачем
 
-После нескольких product/architecture milestones проект уже давно перестал быть «многостраничным лендингом», но `package.json` всё ещё описывал раннюю фазу:
+LivingWorld и NODE ZERO уже имели architecture diagrams, timelines, registry-derived state и Project Evidence, но читателю приходилось самому собирать инженерную историю из разнородных секций.
 
-- `description: Многостраничный лендинг TrueRuslan`;
-- keyword `landing`;
-- generic `documentation` / `markdown` identity;
-- repository/bugs URLs с неканоничным owner casing;
-- отсутствовал явный запрет на npm publication.
+Цель P1.3 — сделать flagship pages понятными именно как истории принятия решений:
 
-Roadmap отдельно запрещал делать декоративный version bump без осознанной release semantics.
+- какую проблему решает проект;
+- какие ограничения сформировали архитектуру;
+- какие решения были приняты и почему;
+- какие предположения/направления оказались ошибочными или потребовали ограничения;
+- где проект находится broadly;
+- что реально подтверждено;
+- что автор сделал бы иначе сейчас.
 
-### Design / planning
+При этом нельзя было создать второй источник истины по status/trust/evidence.
+
+### Design decision
+
+Выбран **Markdown-first narrative contract**.
 
 Design:
 
-`docs/superpowers/specs/2026-07-22-project-metadata-cleanup-design.md`
+`docs/superpowers/specs/2026-07-22-flagship-case-study-format-design.md`
 
 Implementation plan:
 
-`docs/superpowers/plans/2026-07-22-project-metadata-cleanup.md`
+`docs/superpowers/plans/2026-07-22-flagship-case-study-format.md`
 
-Главное решение:
+Рассматривались три подхода:
 
-**исправить package identity, но не изображать новый npm release.**
+1. ordinary Markdown + shared structural contract — **выбрано**;
+2. новый `case-studies.json` + renderer — отклонён как второй authoring layer/source complexity;
+3. hybrid schema + Markdown fragments — отклонён как YAGNI для двух flagship pages.
 
-Рассматривались варианты:
+Canonical ownership сохранён:
 
-1. сохранить `0.2.0` и сделать package semantics явными — выбрано;
-2. bump до `0.4.0` по аналогии с Portfolio v0.4 — отклонено, потому что product milestone не равен npm semver;
-3. bump до `1.0.0` — отклонено как ложный maturity/release claim.
+- `data/projects.json` — project identity/status/summary/links/tags;
+- `data/project-history/*.json` — structured evolution;
+- `data/project-evidence.json` — trust/current verification facts;
+- Markdown — human-authored reasoning, trade-offs, corrected assumptions/failures и retrospective.
 
 ### Implementation
 
-**PR #31 — `chore: align project metadata identity`**  
+**PR #34 — `content: strengthen flagship case-study narratives`**  
 Merged: 2026-07-22  
-Squash commit: `1df2a2905ef2eb4b52173271f9012defc33b25ab`
+Squash commit: `107b69311f6eed408de5306406d9ff41f0e32ea2`
 
 Exact implementation head:
 
-`12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`
+`edda2fbbf94b808f8955a2efb00e885dbb964040`
 
-### Package identity
+### Shared narrative contract
 
-`package.json` теперь содержит:
+Обе страницы теперь следуют одному порядку:
 
-- `private: true`;
-- description: `TrueRuslan engineering portfolio and knowledge platform`;
-- keywords:
-  - `engineering-portfolio`;
-  - `knowledge-platform`;
-  - `backend-engineering`;
-  - `software-architecture`;
-  - `engineering-notes`;
-  - `diplodoc`;
-  - `personal-site`;
-- repository/bugs URLs с canonical `True-Ruslan` owner spelling.
+1. Problem
+2. Constraints
+3. Decisions
+4. What failed / corrected assumptions
+5. Current state
+6. Evidence
+7. What I would change now
 
-GitHub Pages homepage сохранён без изменений:
+Source-level stable markers:
 
-`https://true-ruslan.github.io/trueruslan-landing/`
+- `case-study:problem`;
+- `case-study:constraints`;
+- `case-study:decisions`;
+- `case-study:failures`;
+- `case-study:current-state`;
+- `case-study:evidence`;
+- `case-study:retrospective`.
 
-`package-lock.json` не менялся: package name/version и dependency graph остались прежними.
+Markers нужны как authoring/test contract и не создают runtime behavior.
 
-### Publication boundary
+### LivingWorld
+
+Страница перестроена вокруг реальной инженерной проблемы: AI NPC должен жить по правилам server-authoritative multiplayer system.
+
+Явно раскрыты:
+
+- session ownership;
+- text/voice convergence;
+- partial STT/LLM/TTS degradation;
+- cancellation как normal control flow;
+- persistent memory отдельно от prompt representation;
+- LLM output как proposal, а не authority;
+- bounded automated evidence vs live multiplayer acceptance.
+
+В `What failed` не придуманы драматические incidents. Зафиксированы реальные corrected assumptions/lessons:
+
+- LLM integration не является центром сложности;
+- transcript не равен memory model;
+- partial provider failure важнее идеального happy path;
+- cancellation нельзя оставлять поздним cleanup concern.
+
+Architecture/request-lifecycle diagrams, timeline и Project Evidence сохранены.
+
+### NODE ZERO
+
+Страница перестроена вокруг продуктово-инженерной проблемы: сделать predictive system MIRROR частью страха через изменение context/constraints, а не через образ разговаривающего злодея.
+
+Явно раскрыты:
+
+- vertical slice как единица proof;
+- no-combat constraint;
+- stable facility baseline before distortion;
+- reusable gameplay systems vs authored sequences;
+- proprietary/public boundary;
+- asset provenance/licensing как production constraint;
+- documentation-driven/agent-assisted continuity.
+
+В `What failed` описаны только grounded corrected directions/risks, а не выдуманные production incidents:
+
+- риск построить data-center simulator вместо игры;
+- риск протащить scene-specific logic в fundamental gameplay systems;
+- unnecessary proceduralization authored moments;
+- потеря architecture/product context между длинными iterations.
+
+Architecture/system-flow diagrams, timeline и Project Evidence сохранены.
+
+### Structural contract test
 
 Добавлен:
 
-`"private": true`
-
-Это фиксирует реальный контракт: repository — deployable site/application workspace, а не npm package для публикации.
-
-### Deliberate version decision
-
-`version: 0.2.0` сохранён намеренно.
-
-Причины:
-
-- npm publication отсутствует;
-- semver lifecycle не определён;
-- product milestones (`v0.3`, `v0.4`, P0/P1) не являются npm releases;
-- новый номер без contract означал бы decorative claim.
-
-Будущий version bump требует отдельного explicit versioning/release decision.
-
-### Metadata contract
-
-Добавлен:
-
-`scripts/package-metadata.test.js`
+`scripts/flagship-case-study.test.js`
 
 Он проверяет:
 
-- package name;
-- `private: true`;
-- current engineering portfolio / knowledge platform identity;
-- отсутствие landing-only metadata;
-- required modern keywords;
-- canonical repository/bugs URLs;
-- неизменный Pages homepage;
-- deliberate `0.2.0` version;
-- package/package-lock root name-version consistency.
+- controlled flagship set = `livingworld`, `node-zero`;
+- семь markers ровно по одному разу;
+- canonical order;
+- timeline placeholder ровно один раз;
+- Project Evidence placeholder ровно один раз;
+- architecture diagram ровно один раз.
+
+Test защищает structure/source boundaries, но не фиксирует exact prose.
 
 ### TDD / verification
 
-#### Build #295 — RED
+#### Build #299 — RED
 
 Run:
 
-`29953964548`
+`29958395678`
 
-Contract test был добавлен до production metadata changes.
+Structural contract добавлен до изменения flagship pages.
 
-`Test` ожидаемо упал на stale package identity; downstream build/browser gates были skipped.
+`Test` ожидаемо упал: страницы ещё не содержали required markers.
 
-#### Build #296 — final GREEN
-
-Exact head:
-
-`12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`
+#### Build #300 — intermediate RED
 
 Run:
 
-`29954043887`
+`29958496645`
+
+После миграции только LivingWorld suite всё ещё ожидаемо оставался RED, потому что NODE ZERO ещё не соответствовал contract.
+
+#### Build #301 — final GREEN
+
+Exact implementation head:
+
+`edda2fbbf94b808f8955a2efb00e885dbb964040`
+
+Run:
+
+`29958607263`
 
 **Полностью green вся configured matrix:**
 
@@ -147,28 +190,29 @@ Run:
 - Sources Knowledge Base;
 - Project Evidence;
 - Photo Stories;
-- Portfolio v0.3;
+- Portfolio v0.3 regression;
 - Firefox/WebKit;
 - generated search;
 - metadata/OpenGraph;
 - Engineering Map;
-- unchanged visual regression;
+- visual regression;
 - diagnostics/evidence upload.
 
 ### Scope proof
 
-Feature PR изменил ровно:
+Feature PR изменил ровно 5 файлов:
 
-- `package.json`;
-- `scripts/package-metadata.test.js`;
-- P1.2 design;
-- P1.2 implementation plan.
+- `docs/landing/projects/livingworld.md`;
+- `docs/landing/projects/node-zero.md`;
+- `scripts/flagship-case-study.test.js`;
+- P1.3 design;
+- P1.3 implementation plan.
 
 Не менялись:
 
-- `package-lock.json`;
-- CSS/public content;
-- data registries;
+- project/timeline/evidence registries;
+- CSS;
+- build/postprocess renderers;
 - routes;
 - visual baselines/thresholds;
 - Lighthouse budget;
@@ -176,11 +220,39 @@ Feature PR изменил ровно:
 
 ### Result
 
-Package identity теперь соответствует реальному продукту и защищён test contract.
+Flagship pages теперь объясняют человеческий engineering/product reasoning, при этом current machine-like truth остаётся в canonical registries/Evidence.
 
 Следующий roadmap priority:
 
-**P1.3 — Stronger flagship case-study format.**
+**P1.4 — Additional grounded Engineering Notes**, обязательно начиная с cross-repository source verification.
+
+---
+
+## P1.2 — Project Metadata Cleanup
+
+**PR #31 — `chore: align project metadata identity`**  
+Squash: `1df2a2905ef2eb4b52173271f9012defc33b25ab`
+
+Exact head:
+
+`12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`
+
+Build #296 / run `29954043887`: **fully green**.
+
+Результат:
+
+- description → engineering portfolio / knowledge platform;
+- `private: true`;
+- canonical repository/bugs URLs;
+- modern keywords;
+- `scripts/package-metadata.test.js`;
+- `version: 0.2.0` оставлен намеренно до explicit release/semver contract;
+- `package-lock.json` не менялся.
+
+TDD:
+
+- Build #295 — expected RED;
+- Build #296 — final exact-head GREEN.
 
 ---
 
@@ -195,25 +267,7 @@ Exact head:
 
 Build #293 / run `29951464481`: **fully green**.
 
-Создан modular `scripts/quality-harness/`:
-
-- paths;
-- quality-tool/browser discovery;
-- static server lifecycle;
-- context/page factory;
-- diagnostics;
-- overflow/Axe helpers;
-- screenshot/evidence helpers;
-- common immutable scenarios.
-
-Focused runners сохранили domain ownership. Giant runner/DSL не создавался. `visual-regression.cjs` оставлен отдельным.
-
-TDD trail:
-
-- Build #271 — RED contracts;
-- Build #280 — shared primitives GREEN;
-- Build #284 — core migration GREEN;
-- Build #293 — exact-head full matrix GREEN.
+Создан modular `scripts/quality-harness/` для shared browser-quality infrastructure. Focused runners сохранили domain ownership; giant runner/DSL не создавался. `visual-regression.cjs` оставлен отдельным.
 
 ---
 
@@ -228,21 +282,21 @@ Exact head:
 
 Build #269 / run `29947803201`: **fully green**.
 
-Ключевые части:
+Реализованы:
 
-- pure deterministic detector;
-- `lastVerified` age threshold;
+- deterministic freshness detector;
+- `lastVerified` age checks;
 - link/repository/release/timeline/signal drift diagnostics;
 - JSON + Markdown report;
 - bounded external probe;
 - daily/manual workflow;
-- idempotent GitHub issue lifecycle.
+- idempotent issue lifecycle.
 
 Trust boundary:
 
-**maintenance signals никогда автоматически не переписывают Project Registry, Project Evidence или `verified / stale / unverified`.**
+**maintenance signals никогда автоматически не переписывают Project Registry, Project Evidence или trust state.**
 
-Operational caveat: первый фактический post-merge scheduled/manual workflow run подтверждать отдельным run evidence.
+Operational caveat: первый реальный post-merge scheduled/manual workflow run подтверждать отдельным evidence.
 
 ### Repository-hygiene incident
 
@@ -284,20 +338,11 @@ Exact head:
 
 Build #247 / run `29935334882`: **fully green**.
 
-Созданы:
-
-- canonical `data/project-evidence.json`;
-- manual controlled snapshots;
-- `verified / stale / unverified`;
-- bounded automated/manual signals;
-- semantic build-time rendering/no-JS fallback;
-- trust-aware browser quality gate.
+Созданы canonical evidence snapshots, `verified / stale / unverified`, bounded signals, semantic rendering/no-JS fallback и trust-aware QA.
 
 Ключевой lesson:
 
 **green CI не равно verified product без bounded scope и current manual interpretation.**
-
-В milestone также был найден и исправлен stylesheet-resolution regression с Diplodoc `<base href>`; integrity gate не ослаблялся.
 
 ---
 
@@ -316,29 +361,16 @@ Squash: `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`
 - responsive UI;
 - no-JS fallback.
 
-Первый no-JS smoke обнаружил, что наличие data в build artifact не гарантирует readable content без hydration. Решение — semantic fallback без второго canonical source и без runtime fetch.
+Первый no-JS smoke показал: data в build artifact ещё не гарантирует readable content без hydration. Решение — semantic fallback без второго canonical source и runtime fetch.
 
 ---
 
 ## Photo Stories — cinematic personal archive
 
-**PR #15** — main platform.  
-Squash: `8aa2149fc8aec3751f2da73321c06a89111f9efd`
+**PR #15** — main platform / squash `8aa2149fc8aec3751f2da73321c06a89111f9efd`.  
+**PR #17** — QA polish / squash `7936638bd6473ad4f1ff0b2ef42db2289e937d83`.
 
-**PR #17** — QA polish.  
-Squash: `7936638bd6473ad4f1ff0b2ef42db2289e937d83`
-
-Готовы:
-
-- canonical `/photos/`;
-- album/archive registries;
-- story routes;
-- cinematic hero/editorial layouts;
-- fullscreen lightbox;
-- keyboard/touch/hash navigation;
-- focus restoration;
-- sitemap/search/meta/OG integration;
-- dedicated browser smoke.
+Готовы canonical `/photos/`, album/archive registries, story routes, cinematic/editorial layouts, fullscreen lightbox, keyboard/touch/hash navigation, sitemap/search/meta/OG integration и dedicated browser smoke.
 
 Fake/demo album не создавался.
 
@@ -354,9 +386,9 @@ Root cause:
 
 Fix:
 
-- threshold снижен до `0` с сохранением root margin;
+- threshold снижен до `0`;
 - добавлен normal-flow fallback;
-- позже giant table как model была заменена Sources Registry.
+- позже giant table как model заменена Sources Registry.
 
 ---
 
@@ -365,7 +397,7 @@ Fix:
 **PR #13 — `feat: evolve portfolio into a living engineering space`**  
 Squash: `b472aff67d69fb3cd6afa0577864371547f52a5b`
 
-Milestone закрепил переход от «landing page» к living engineering portfolio / knowledge platform:
+Milestone закрепил переход от landing page к living engineering portfolio / knowledge platform:
 
 - canonical Project Registry;
 - `/now`;
@@ -381,14 +413,16 @@ Milestone закрепил переход от «landing page» к living engine
 
 После крупных milestones durable state синхронизируется отдельными docs-only follow-ups, чтобы новый чат восстанавливал контекст из repository truth.
 
-Ключевые continuity merges до P1.2:
+Ключевые continuity merges до P1.3:
 
 - Sources — PR #21 / `5535948d756585c44550d14f3e2424be82a3b767`;
 - Project Evidence — PR #23 / `ac520553cbe38ab022d49abc3b48dd0bd67c76c8`;
 - Project Evidence cleanup — PR #24 / `6e83ab5dcbbc23ae2274fddbd0daed8efa058e23`;
 - Grounded Notes — PR #26 / `81a404738dc69bed832080c9f852316a33cedba9`;
 - Content Freshness — PR #28 / `65191a63eb3af8df596a861f16cbe2c926bdca34`;
-- Quality Harness — PR #30 / `56d476234fea471ed700369d1e57f9c39e536bd5`.
+- Quality Harness — PR #30 / `56d476234fea471ed700369d1e57f9c39e536bd5`;
+- Project Metadata — PR #32 / `cadbbe4e04360cfcb8942180a4ce2cc71835dd83`;
+- P1.2 final continuity correction — PR #33 / `ba6cabe3b0ef7ae702a690136c79dcdb5f36e27c`.
 
 Актуальные источники контекста:
 
