@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-07-22**, после merge P0.5 Grounded Engineering Notes PR #25.
+> Последнее смысловое обновление: **2026-07-22**, после merge P0.6 Content Freshness Guard PR #27.
 >
 > Главный durable snapshot для ответа на вопрос **«что сейчас представляет собой проект, что уже сделано и что дальше?»**.
 >
@@ -10,7 +10,7 @@
 > 2. `docs/ROADMAP.md`
 > 3. `docs/CHANGELOG.md`
 >
-> После этого всегда дополнительно проверять actual open PR, latest commits и exact-head CI. Public production deployment проверять отдельно.
+> После этого всегда дополнительно проверять actual open PR, latest commits и exact-head CI. Public production deployment и первый реальный maintenance-workflow run проверять отдельно.
 
 ## 1. Что это за проект
 
@@ -30,6 +30,7 @@
 - Photo Stories;
 - Sources Knowledge Base;
 - Project Evidence Layer;
+- Content Freshness Guard;
 - SEO/OpenGraph/JSON-LD;
 - production-oriented CI, accessibility, browser и visual quality gates.
 
@@ -43,76 +44,104 @@
 
 ## 2. Текущее состояние `master`
 
-### Последний продуктовый milestone
+### Последний technical milestone
 
-**P0.5 — Grounded Engineering Notes**.
+**P0.6 — Content Freshness Guard**.
 
-PR #25:
+PR #27:
 
-`feat: publish grounded Engineering Notes milestone`
+`feat: add Content Freshness Guard`
 
 Squash commit:
+
+`33770983789fbde5c59a94972709360286a06ad5`
+
+Exact implementation head:
+
+`4b50dd78a41b3cbe2fce327e6c752508134862d0`
+
+Verification:
+
+**Build #269 / workflow run `29947803201`: fully green по полной configured matrix.**
+
+P0.6 добавил отдельный maintenance-layer поверх Project Registry + Project Evidence:
+
+- deterministic pure detector `scripts/content-freshness.js`;
+- configurable `lastVerified` age rule, default 30 days;
+- evidence-link reachability diagnostics;
+- repository activity/release drift diagnostics;
+- structured timeline/current-state diagnostics;
+- verified-signal chronology diagnostics;
+- local JSON + Markdown report command;
+- bounded GitHub/HTTP external probe;
+- daily + manual GitHub Actions workflow;
+- idempotent create/update/close одного actionable GitHub issue;
+- report/observation artifacts.
+
+Ключевая trust boundary:
+
+**Freshness Guard обнаруживает, но не переписывает public truth.**
+
+Он никогда автоматически:
+
+- не меняет `data/projects.json`;
+- не меняет `data/project-evidence.json`;
+- не меняет timelines;
+- не переводит `verified / stale / unverified`;
+- не трактует green CI/release/repository activity как full product verification.
+
+Workflow permissions:
+
+- `contents: read`;
+- `issues: write`;
+- checkout `persist-credentials: false`;
+- нет `git commit` / `git push` path.
+
+### Operational caveat P0.6
+
+Implementation и workflow contract подтверждены exact-head CI.
+
+**Первый фактический post-merge scheduled/manual execution `.github/workflows/content-freshness.yml` отдельно ещё не считается наблюдённым в этом snapshot.**
+
+Не утверждать, что issue create/update/close уже выполнялся в production, пока нет конкретного workflow run evidence.
+
+### Предыдущий product milestone
+
+**P0.5 — Grounded Engineering Notes**, PR #25.
+
+Squash:
 
 `f2775b7c9150281bcb4bcc01a4e021e007e18ca0`
 
-Exact implementation head:
+Exact head:
 
 `8a2973961e5ec38e4c8b3e0626460c04e88438a8`
 
-Verification:
+Build #257 / run `29943616448`: **fully green**.
 
-**Build #257 / workflow run `29943616448`: fully green по полной configured matrix.**
+Добавлено 3 repository-grounded notes, всего Engineering Notes стало 6.
 
-Milestone добавил 3 новые repository-grounded заметки и довёл общее количество Engineering Notes до 6.
-
-Новые заметки:
-
-1. `intersection-observer-giant-table` — reveal/`IntersectionObserver` regression на giant bibliography table;
-2. `static-first-sources-no-js` — Sources Registry migration, Diplodoc hydration state и semantic no-JS representation;
-3. `green-ci-is-not-product-verification` — bounded evidence, freshness и граница между green CI и verified product claim.
-
-Интеграция включает:
-
-- canonical metadata/relations в `data/notes.json`;
-- Notes hub;
-- TOC/search/sitemap discovery;
-- page-specific SEO/OpenGraph metadata;
-- Atom feed через существующий manifest pipeline;
-- canonical content contract, требующий присутствия всех трёх P0.5 slugs.
-
-Design:
-
-`docs/superpowers/specs/2026-07-22-grounded-engineering-notes-design.md`
-
-Implementation plan:
-
-`docs/superpowers/plans/2026-07-22-grounded-engineering-notes.md`
-
-### Предыдущий крупный architecture milestone
+### Предыдущий architecture milestone
 
 **Portfolio v0.4 — Project Evidence Layer**, PR #22.
 
-Squash commit:
+Squash:
 
 `e3e48ac56b45eddeb872c04b83bff1408da6556f`
 
-Exact implementation head:
+Exact head:
 
 `7ce0d428327e29436a03fc2be4b94ef7c0f2f15b`
 
-Verification:
-
-**Build #247 / workflow run `29935334882`: fully green.**
+Build #247 / run `29935334882`: **fully green**.
 
 ### Сейчас в разработке
 
-После merge PR #25 **active feature implementation PR отсутствует**.
+После merge PR #27 active feature implementation PR должен отсутствовать; проверять runtime state отдельно.
 
-Этот continuity follow-up — docs-only синхронизация durable state и не является новым product feature milestone.
+Следующий оптимальный technical priority:
 
-Следующий продуктовый/technical приоритет:
-
-**P0.6 — Content Freshness Guard поверх Project Registry + Project Evidence Layer.**
+**P1.1 — Consolidated Browser Quality Harness.**
 
 Первая настоящая Photo Story остаётся content-dependent/non-blocking задачей.
 
@@ -131,6 +160,7 @@ Verification:
 - no backend/CMS/database без реальной необходимости;
 - no runtime GitHub API для core public content;
 - no build-time GitHub API dependency в основном site build;
+- maintenance workflows не становятся источником public truth;
 - один canonical source of truth на сущность;
 - deterministic build-time generation;
 - semantic HTML;
@@ -148,7 +178,7 @@ Diplodoc остаётся владельцем единственного site-w
 
 - `data/projects.json` — project identity/status/summary/links/tags;
 - `data/project-history/*.json` — structured flagship timelines;
-- `data/project-evidence.json` — controlled evidence snapshots;
+- `data/project-evidence.json` — manual controlled evidence snapshots;
 - `data/now.json` — focus/learning/writing;
 - `data/notes.json` — Engineering Notes metadata/relations;
 - `data/engineering-graph.json` — Engineering Map;
@@ -158,26 +188,20 @@ Diplodoc остаётся владельцем единственного site-w
 - `data/sources.json` — Sources Knowledge Base;
 - `data/external-links.json` — public endpoints для monitoring.
 
-Главный build/postprocess orchestrator:
+Главный site build/postprocess orchestrator:
 
 `scripts/copy-assets.js`
 
-Ключевые build-time systems:
+Maintenance tooling P0.6 находится **вне core public site runtime/build truth**:
 
-1. assets/UI resources;
-2. standalone homepage;
-3. Project Registry/status badges;
-4. `/now`;
-5. project timelines;
-6. Project Evidence validation/rendering/injection;
-7. Engineering Notes + Atom feed;
-8. Sources Knowledge Base;
-9. Photo Stories routes;
-10. Engineering Map;
-11. deterministic OpenGraph PNG;
-12. metadata/JSON-LD;
-13. sitemap/robots/.nojekyll;
-14. generated-site integrity + browser quality gates.
+- `scripts/content-freshness.js`;
+- `scripts/content-freshness-report.js`;
+- `scripts/content-freshness-probe.js`;
+- `.github/workflows/content-freshness.yml`.
+
+`npm run check:freshness` создаёт deterministic JSON/Markdown maintenance report.
+
+`npm run probe:freshness` собирает bounded external observations.
 
 ---
 
@@ -203,145 +227,105 @@ Canonical source:
 
 `data/project-evidence.json`
 
-Первый scope:
+Controlled scope сейчас:
 
 - `livingworld`;
 - `node-zero`.
 
-Schema generic для дальнейшего расширения.
-
-#### Trust model
-
-- `verified` — snapshot явно проверен и считается текущим только в пределах записанного scope;
-- `stale` — evidence раньше было meaningful, но текущее состояние требует re-verification;
-- `unverified` — актуальное verification claim не делается.
-
-`stale`/`unverified` сами по себе не ломают build.
-
-Malformed/inconsistent evidence ломает build.
-
-#### Validation
-
-`scripts/project-evidence.js` проверяет:
-
-- registry shape/non-empty state;
-- project reference против `data/projects.json`;
-- duplicate project snapshots;
-- trust enum;
-- обязательный `lastVerified` для verified/stale;
-- реальные calendar dates;
-- version facts и duplicate labels;
-- signal kind/mode/state;
-- manual/automated mode coherence;
-- required bounded `scope`;
-- duplicate signals;
-- HTTPS URL safety;
-- minimum signals для verified/stale.
-
-#### Rendering / no-JS
-
-Case-study Markdown содержит declarative placeholders.
-
-Build-time renderer генерирует semantic block с trust state, last checked date, version/protocol facts, automated/manual distinction, signal state, bounded proof scope и evidence links.
-
-Если Diplodoc хранит article body только в hydration state, build добавляет semantic `<noscript>` fallback.
-
-Runtime fetch не нужен.
-
-#### Initial controlled snapshots
-
-**LivingWorld**:
+Trust states:
 
 - `verified`;
-- `lastVerified = 2026-07-22`;
-- bounded CI evidence: run `29736858315`;
-- merged world-perception milestone PR #6;
-- scope прямо исключает false claim о completed human two-client microphone/spatial-audio acceptance.
-
-**NODE ZERO**:
-
 - `stale`;
-- last fully verified foundation gate `2026-07-14`;
-- successful production-foundation acceptance сохранён;
-- player-foundation PR #9 был observed `2026-07-22` как pending/draft milestone;
-- старый successful foundation gate не превращён в claim о готовности текущего player/vertical-slice milestone.
+- `unverified`.
 
-Trust state различается не только цветом: verified — solid, stale — dashed, unverified — dotted/neutral treatment.
+Каждый signal хранит bounded scope и distinction automated/manual.
 
-### 5.3 Sources Registry / Knowledge Base — DONE
+Green CI/release/PR не может автоматически сделать project `verified`.
+
+Core evidence имеет semantic no-JS fallback и не требует runtime fetch.
+
+Initial trust snapshots:
+
+- LivingWorld — `verified`, `lastVerified = 2026-07-22` с bounded scope;
+- NODE ZERO — `stale`, last fully verified foundation gate `2026-07-14`.
+
+### 5.3 Content Freshness Guard — DONE
+
+Design:
+
+`docs/superpowers/specs/2026-07-22-content-freshness-guard-design.md`
+
+Plan:
+
+`docs/superpowers/plans/2026-07-22-content-freshness-guard.md`
+
+Deterministic findings включают:
+
+- `evidence-too-old`;
+- `evidence-link-unreachable`;
+- `repository-drift`;
+- `release-candidate-has-new-release`;
+- `timeline-missing` / `timeline-current-count`;
+- `verified-signal-after-check`.
+
+Важно:
+
+- exact 30-day boundary остаётся clean; finding появляется после threshold;
+- stale/unverified valid states сами по себе не ошибка;
+- guard не требует evidence snapshot для каждого project, потому что Evidence Layer имеет намеренно ограниченный controlled scope;
+- network/repository observations не превращаются в automatic public claims.
+
+TDD history:
+
+- Build #259 — detector contract RED;
+- Build #260 — detector GREEN;
+- Build #261/#262 — probe/report contracts RED;
+- Build #265 — probe/report GREEN;
+- Build #266 — workflow safety contract RED;
+- Build #267 — workflow contract GREEN;
+- Build #269 — final exact-head full matrix GREEN.
+
+### 5.4 Sources Registry / Knowledge Base — DONE
 
 PR #20 / squash:
 
 `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`
 
-Есть:
+Есть 31 migrated real records, strict validation, deterministic semantic rendering, page-local query/topic/type filters, stable anchors, related materials, responsive UI и semantic no-JS fallback.
 
-- canonical `data/sources.json`;
-- 31 migrated real records;
-- strict validation;
-- semantic deterministic cards;
-- page-local query/topic/type filtering;
-- stable anchors/related materials;
-- responsive UI;
-- semantic no-JS fallback;
-- dedicated browser/Axe/no-JS gate.
+Sources filtering не является вторым site-wide search engine.
 
-Sources filtering — только page-local UI. Diplodoc остаётся global full-text search owner.
+### 5.5 Photo Stories — PLATFORM DONE
 
-### 5.4 Photo Stories — PLATFORM DONE
+- PR #15 — platform;
+- PR #17 — post-merge QA polish.
 
-Основная implementation:
+Есть canonical `/photos/`, album/archive registries, cinematic story routes, fullscreen lightbox, keyboard/touch/hash navigation, filters, sitemap/search/metadata integration и browser smoke.
 
-- PR #15 — `8aa2149fc8aec3751f2da73321c06a89111f9efd`;
-- QA polish PR #17 — `7936638bd6473ad4f1ff0b2ef42db2289e937d83`.
+`photo-albums.json` намеренно пуст до первой genuine связной серии.
 
-Готово:
-
-- canonical `/photos/`;
-- album/archive registries;
-- story routes;
-- cinematic/editorial layouts;
-- fullscreen lightbox;
-- keyboard/touch/hash deep links;
-- filters;
-- sitemap/search/metadata integration;
-- browser smoke.
-
-`photo-albums.json` намеренно пуст до появления первой настоящей связной серии. Fake/demo stories не добавляются.
-
-### 5.5 Engineering Notes — P0.5 DONE
+### 5.6 Engineering Notes — P0.5 DONE
 
 Canonical metadata:
 
 `data/notes.json`
 
-Всего опубликовано 6 заметок:
+Опубликовано 6 notes.
 
-1. `portfolio-runtime-boundary`;
-2. `static-site-quality-gates`;
-3. `server-authoritative-ai-npcs`;
-4. `intersection-observer-giant-table`;
-5. `static-first-sources-no-js`;
-6. `green-ci-is-not-product-verification`.
+P0.5 добавил:
 
-Работают:
+- `intersection-observer-giant-table`;
+- `static-first-sources-no-js`;
+- `green-ci-is-not-product-verification`.
 
-- dates / reading time / tags;
-- previous/next navigation;
-- related-note graph;
-- deterministic Atom feed;
-- TOC/search/sitemap discovery;
-- per-page metadata/OpenGraph;
-- canonical manifest/file validation.
+Работают metadata/relations, previous/next, Atom feed, TOC/search/sitemap discovery и per-page SEO/OpenGraph.
 
-P0.5 специально выбрал 3 incidents с самым сильным repository-local evidence trail. Темы voice AI pipeline и malformed LLM JSON остаются будущими grounded content candidates после отдельной cross-repository source verification.
-
-### 5.6 `/now`, Engineering Map, Search, Resume/SEO
+### 5.7 `/now`, Engineering Map, Search, Resume/SEO
 
 Реализованы:
 
 - `/now` с registry-derived active project state;
-- Engineering Map technologies → domains → projects → notes;
+- Engineering Map;
 - Diplodoc local search;
 - styled search page;
 - command palette без второго search index;
@@ -357,139 +341,133 @@ P0.5 специально выбрал 3 incidents с самым сильным 
 
 Проект проверяет final generated artifact, а не только source code.
 
-Основные gates:
+Основная Build matrix:
 
 - `npm test`;
 - production Diplodoc build;
 - generated-site integrity;
-- broken local links/assets/OG checks;
 - mobile overflow;
 - Chromium browser smoke;
-- Axe accessibility;
+- Axe;
 - Lighthouse;
 - Sources Knowledge Base smoke;
 - Project Evidence smoke;
 - Photo Stories smoke;
 - Portfolio v0.3 regression;
-- Firefox/WebKit compatibility;
-- generated search;
-- metadata/OpenGraph;
-- Engineering Map;
-- visual regression.
-
-### P0.5 exact verification
-
-Exact feature head:
-
-`8a2973961e5ec38e4c8b3e0626460c04e88438a8`
-
-Build #257 / run `29943616448`:
-
-**fully green**.
-
-Green:
-
-- tests, включая canonical grounded-note contract;
-- production Diplodoc build;
-- generated-site integrity;
-- mobile overflow;
-- Chromium browser/Axe/Lighthouse;
-- Sources Knowledge Base smoke;
-- Project Evidence smoke;
-- Photo Stories smoke;
-- Portfolio v0.3 regression;
-- Firefox/WebKit compatibility;
+- Firefox/WebKit;
 - generated search;
 - metadata/OpenGraph;
 - Engineering Map;
 - visual regression;
 - quality evidence upload.
 
-### Project Evidence exact verification
+### P0.6 exact verification
 
-Exact feature head:
+Exact head:
 
-`7ce0d428327e29436a03fc2be4b94ef7c0f2f15b`
+`4b50dd78a41b3cbe2fce327e6c752508134862d0`
 
-Build #247 / run `29935334882`: **fully green**.
+Build #269 / run `29947803201`:
 
-### Important regression history
+**fully green по всей configured matrix**.
 
-- Build #225 — Project Evidence validator contract;
-- Build #227 — renderer contract;
-- Build #230 — canonical registry contract;
-- Build #232 — generated-page/no-JS injection;
-- Build #234 — orchestration;
-- Build #241 — browser trust-style gate;
-- Build #244 — stylesheet resolution regression при Diplodoc `<base href>`.
+Workflow security contract отдельно проверяет:
 
-Во время Project Evidence styling naive document-relative stylesheet URL конфликтовал с generated `<base href>`. Site integrity поймал broken asset; fix сделан в resource resolution pipeline без ослабления integrity gate.
+- schedule + `workflow_dispatch`;
+- `contents: read`;
+- `issues: write`;
+- отсутствие `contents: write`;
+- отсутствие `git commit/push`;
+- report/probe wiring;
+- artifact output;
+- stable issue marker и close path.
 
 ---
 
 ## 7. Известные незавершённые части / technical debt
 
-### P0
-
-1. **Content Freshness Guard** ещё не реализован.
-2. Первая настоящая Photo Story отсутствует — платформа готова, нужен настоящий связный материал.
-
-### Quality architecture
+### P1 — Quality architecture
 
 Browser QA состоит из нескольких focused runners.
 
-Нужен общий модульный `quality-harness/` с shared server/browser/context/Axe/overflow/screenshot primitives, но без giant monolithic runner.
+Повторяются primitives:
+
+- static server lifecycle;
+- browser/context setup;
+- request/page-error diagnostics;
+- Axe helpers;
+- overflow helpers;
+- screenshot/evidence helpers.
+
+Нужен модульный `quality-harness/`, **не giant monolithic runner**.
 
 ### Metadata debt
 
-`package.json` требует отдельной cleanup-задачи:
+`package.json` требует отдельной осознанной cleanup-задачи:
 
 - version историческая;
-- description должна отражать engineering portfolio / knowledge platform;
-- keywords нужно пересмотреть после content expansion.
+- description всё ещё говорит «лендинг»;
+- keywords нужно пересмотреть после расширения platform scope.
+
+Версию менять только как explicit milestone/release decision.
+
+### Flagship narrative debt
+
+LivingWorld и NODE ZERO постепенно привести к структуре:
+
+1. Problem
+2. Constraints
+3. Decisions
+4. What failed
+5. Current state
+6. Evidence
+7. What I would change now
 
 ### Content follow-ups
 
-Grounded Notes milestone закрыт минимально полноценным scope из 3 новых notes. Дополнительные реальные темы, которые можно публиковать позже:
+Дополнительные grounded Notes candidates после отдельной source verification:
 
-- voice AI pipeline Minecraft NPC: microphone → STT → routing → LLM → memory → TTS;
-- почему «почти правильный JSON» от LLM всё равно protocol error.
+- voice AI pipeline Minecraft NPC;
+- malformed / almost-correct LLM JSON protocol failures.
 
-Не публиковать их без source verification из соответствующих project repositories.
+### Content-dependent
+
+Первая настоящая Photo Story отсутствует. Platform готова; fake/demo album не добавлять.
 
 ### Отложено сознательно
 
-- custom domain/paid hosting;
+- minimal RU/EN;
 - privacy-friendly analytics;
-- partial RU/EN;
+- custom domain / paid hosting;
 - richer architecture explorer.
 
 ---
 
 ## 8. Следующий оптимальный этап
 
-### P0.6 — Content Freshness Guard
+### P1.1 — Consolidated Browser Quality Harness
 
-Следующий шаг — построить maintenance layer поверх `data/projects.json` + `data/project-evidence.json`, который обнаруживает устаревшие controlled snapshots, но не переписывает public truth автоматически.
+Следующий шаг — убрать duplication внутри уже зрелого quality suite, не меняя product behavior и не ослабляя gates.
 
-Guard должен:
+Создать модульный `quality-harness/` с shared primitives:
 
-- сравнивать hand-maintained state с доступными repository/release signals;
-- проверять возраст `lastVerified`;
-- проверять evidence links;
-- находить contradictions между Project Registry, timelines и Project Evidence;
-- создавать/обновлять actionable issue или report;
-- **не переводить project в `verified` автоматически**;
-- **не переписывать public content автоматически**.
+- static server lifecycle;
+- browser/context factories;
+- request/page-error diagnostics;
+- Axe helpers;
+- overflow helpers;
+- screenshot/evidence helpers;
+- declarative route/scenario definitions.
 
-После Freshness Guard:
+Не превращать suite в один giant runner.
 
-1. consolidated browser quality primitives;
-2. metadata/version cleanup;
-3. stronger flagship case-study structure;
-4. additional grounded Notes после source verification;
-5. first real Photo Story при появлении genuine material;
-6. minimal EN / analytics / domain позже.
+После P1.1:
+
+1. metadata/version cleanup;
+2. stronger flagship case-study structure;
+3. additional grounded Notes после source verification;
+4. first real Photo Story при genuine material;
+5. minimal EN / analytics / domain позже.
 
 ---
 
@@ -505,7 +483,8 @@ Guard должен:
 - runtime content fetch для core content;
 - второй site-wide full-text search engine;
 - likes/comments/accounts;
-- AI chat поверх резюме как gimmick.
+- AI chat поверх резюме как gimmick;
+- automatic mutation of trust/public project state из maintenance signals.
 
 Предпочитать:
 
@@ -513,17 +492,20 @@ Guard должен:
 - deterministic build-time generation;
 - semantic/no-JS content;
 - progressive vanilla JS;
-- bounded evidence вместо декоративных claims.
+- bounded evidence;
+- maintenance findings вместо automatic truth mutation.
 
 ---
 
-## 10. Production caveat
+## 10. Production caveats
 
 Repository implementation и generated artifacts подтверждены CI.
 
 **Фактический GitHub Pages deployment после последних merges отдельно не подтверждён в этом snapshot.**
 
-Не считать public endpoint автоматически синхронизированным с `master`, пока это не подтверждено post-deploy smoke или ручной endpoint-проверкой.
+**Первый реальный post-merge Content Freshness scheduled/manual run отдельно не подтверждён в этом snapshot.**
+
+Не считать эти operational facts автоматически доказанными только из merge/CI.
 
 ---
 
@@ -535,9 +517,10 @@ Repository implementation и generated artifacts подтверждены CI.
 
 State-файл — snapshot.
 
-Для текущего состояния всегда дополнительно проверять:
+Всегда дополнительно проверять:
 
 - open PR;
 - latest commits;
 - latest exact-head CI;
+- latest Content Freshness workflow runs/issues, если вопрос касается freshness monitoring;
 - actual production deployment, если вопрос касается production.
