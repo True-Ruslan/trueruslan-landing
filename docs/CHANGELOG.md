@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-07-22**, после merge P0.6 Content Freshness Guard PR #27.
+> Обновлено: **2026-07-22**, после merge P1.1 Consolidated Browser Quality Harness PR #29.
 >
 > Это не машинный список коммитов. Здесь фиксируются смысловые этапы проекта: **что сделали, зачем, как именно, какие проблемы нашли и чем подтвердили результат**.
 >
@@ -10,266 +10,276 @@
 
 # 2026-07-22
 
-## P0.6 — Content Freshness Guard
+## P1.1 — Consolidated Browser Quality Harness
 
 ### Design / planning
 
 Design:
 
-`docs/superpowers/specs/2026-07-22-content-freshness-guard-design.md`
+`docs/superpowers/specs/2026-07-22-consolidated-browser-quality-harness-design.md`
 
 Implementation plan:
 
-`docs/superpowers/plans/2026-07-22-content-freshness-guard.md`
+`docs/superpowers/plans/2026-07-22-consolidated-browser-quality-harness.md`
 
-Основное решение:
+Главное решение:
 
-**freshness monitoring является maintenance evidence, а не новым источником public truth.**
+**вынести только стабильные infrastructure primitives и сохранить focused runners владельцами своих domain assertions.**
 
-Выбран modular detector + thin scheduled workflow вместо:
+Рассматривались три формы:
 
-- большого workflow-only inline script;
-- автоматического переписывания registries;
-- auto-PR/auto-verification поведения.
+1. shared primitives + focused runners — выбрано;
+2. один declarative mega-runner/DSL — отклонён из-за blast radius и потери domain ownership;
+3. только server/browser helper — отклонён как недостаточный, потому что diagnostics/Axe/overflow/evidence duplication осталась бы.
 
 ### Implementation
 
-**PR #27 — `feat: add Content Freshness Guard`**  
+**PR #29 — `refactor: consolidate browser quality harness`**  
 Merged: 2026-07-22  
-Squash commit: `33770983789fbde5c59a94972709360286a06ad5`
+Squash commit: `06e60425e31ef19ddae0c3ac8b0991808b45837e`
 
 Exact implementation head:
 
-`4b50dd78a41b3cbe2fce327e6c752508134862d0`
+`00633c69e56354cbb8821c34a1b772cf259c3e18`
 
-### Pure detector
+### Shared harness
 
-Создан:
+Создан `scripts/quality-harness/`.
 
-`scripts/content-freshness.js`
+#### `paths.cjs`
 
-Detector работает без network/filesystem side effects и возвращает deterministic findings.
+Один источник путей для:
 
-Finding model:
+- repository root;
+- `docs-html`;
+- `.quality-tools/node_modules`;
+- `quality-artifacts`.
 
-- stable `code`;
-- `severity`;
-- optional project slug;
-- конкретный `message`;
-- actionable `action`;
-- bounded structured `details`.
+#### `tools.cjs`
 
-Initial rules:
+Общие primitives:
 
-- `evidence-too-old` — `lastVerified` старше configurable threshold;
-- `evidence-link-unreachable` — configured evidence URL external probe считает unavailable/broken;
-- `repository-drift` — repository activity новее latest recorded controlled evidence date;
-- `release-candidate-has-new-release` — новый release появился после evidence, а registry всё ещё `release-candidate`;
-- `timeline-missing` / `timeline-current-count` — structured timeline contradiction;
-- `verified-signal-after-check` — у `verified` snapshot появился recorded signal новее `lastVerified`, значит требуется manual re-review.
+- quality-tool loader;
+- Chrome/Chromium discovery;
+- Chromium channel-first launch;
+- explicit executable fallback.
 
-Default `lastVerified` threshold:
+#### `static-server.cjs`
 
-**30 days**.
+Общий Express lifecycle:
 
-Ровно 30 дней остаётся clean; finding появляется после threshold.
+- extensionless `.html` serving;
+- configurable port;
+- stoppable lifecycle;
+- optional gzip transport для production-like browser-quality/Lighthouse path.
 
-### Controlled-scope decision
+#### `browser.cjs`
 
-Во время design review отдельно предотвращён false-positive:
+Общий context/page lifecycle factory без domain logic.
 
-**Guard не требует evidence snapshot для каждого active/public project.**
+#### `diagnostics.cjs`
 
-Project Evidence Layer намеренно имеет controlled scope (`livingworld` + `node-zero`). Отсутствие snapshot у проекта вне этого scope не является freshness defect само по себе.
+Общие diagnostics:
 
-### Trust chronology correction
+- page errors;
+- same-origin request failures;
+- HTTP >=400 capture;
+- expected abort filtering;
+- deterministic deduplication;
+- caller-provided scenario labels.
 
-Отдельно уточнена семантика `lastVerified`:
+#### `assertions.cjs`
 
-- controlled manual snapshot может быть новее automated signals — это нормально;
-- проблема возникает, когда после `lastVerified` появился более новый recorded signal, а trust state всё ещё `verified` без нового re-review.
+Общие generic assertions:
 
-Именно это проверяет `verified-signal-after-check`.
+- document horizontal overflow;
+- strict real `maxScrollX` measurement для layout smoke;
+- Axe serious/critical filtering;
+- reusable accessibility gate helper.
 
-### Local report command
+#### `evidence.cjs`
 
-Создан:
+Общие artifact helpers:
 
-`scripts/content-freshness-report.js`
+- artifacts directory;
+- stable screenshot defaults;
+- JSON/text output.
 
-Команда:
+#### `scenarios.cjs`
 
-`npm run check:freshness`
+Immutable common viewport/core-route declarations, но не feature assertion DSL.
 
-Она:
+### Migrated focused runners
 
-- повторно использует canonical Project Registry / Evidence validation;
-- загружает structured timelines;
-- читает optional external observations JSON;
-- создаёт deterministic JSON report;
-- создаёт human-readable Markdown report;
-- не возвращает failure exit code только из-за freshness findings;
-- падает только на invalid input/execution failure.
+Shared infrastructure используют:
 
-Default outputs:
+- `browser-quality.cjs`;
+- `sources-knowledge-base-smoke.cjs`;
+- `project-evidence-smoke.cjs`;
+- `photo-stories-browser-smoke.cjs`;
+- `v03-browser-smoke.cjs`;
+- `cross-browser-smoke.cjs`;
+- `search-smoke.cjs`;
+- `metadata-smoke.cjs`;
+- `engineering-graph-smoke.cjs`;
+- `layout-overflow-smoke.cjs`.
 
-- `quality-artifacts/content-freshness-report.json`;
-- `quality-artifacts/content-freshness-report.md`.
+Каждый runner сохранил свою domain responsibility:
 
-### External probe
+- command palette/project status/timeline assertions остаются в v0.3 smoke;
+- Sources filters/no-JS remain in Sources smoke;
+- Evidence trust/border/scope remain in Evidence smoke;
+- Photo lightbox/hash/focus/image-readiness remain in Photo smoke;
+- generated search enhancement/resource/shortcut assertions remain in Search smoke;
+- metadata/canonical/OG PNG contract remain in Metadata smoke;
+- graph filters/detail semantics remain in Engineering Map smoke;
+- Firefox/WebKit behavior remains in cross-browser smoke.
 
-Создан:
+### Intentional non-migration
 
-`scripts/content-freshness-probe.js`
+`visual-regression.cjs` оставлен отдельным.
 
-Команда:
+Причина: он сравнивает PNG samples против baseline model и не является browser orchestration runner. Искусственное включение в общий browser harness не уменьшало бы meaningful duplication и повышало риск изменить comparison semantics.
 
-`npm run probe:freshness`
+### Preservation review
 
-Probe:
+Перед final verification отдельно пойманы и исправлены три subtle drift risk:
 
-- использует только явно configured `project.links.github`;
-- не пытается угадывать repository identity;
-- получает bounded GitHub metadata (`pushed_at`, optional latest release);
-- проверяет только явно configured evidence signal URLs;
-- normalizes HTTP/network failures в observations;
-- не меняет canonical data.
+1. Cross-browser home route сначала унаследовал `/index.html` из common scenario, но исторический runner проверял `/`; route восстановлен как `/`.
+2. Metadata smoke через общий context factory получил бы dark default; явно сохранена прежняя light/default-like browser context semantics.
+3. Project Evidence screenshot path должен быть standalone-safe; переведён на shared `captureScreenshot`, который сам создаёт artifacts directory.
 
-GitHub token используется только для GitHub API requests и не отправляется evidence endpoints.
+Эти исправления сделаны **до** final exact-head verification.
 
-### Scheduled/manual maintenance workflow
+### Что не менялось
 
-Создан:
+P1.1 не изменил:
 
-`.github/workflows/content-freshness.yml`
+- CSS;
+- public content;
+- `tests/visual-baselines.json`;
+- visual regression thresholds;
+- Lighthouse budget;
+- workflow step ordering;
+- product routes/feature assertions;
+- Project Evidence trust semantics;
+- no-JS behavior contracts;
+- screenshot/artifact naming contracts.
 
-Triggers:
+### TDD / verification trail
 
-- daily schedule;
-- `workflow_dispatch`.
+#### Build #271 — RED
 
-Workflow:
+Shared-harness contract tests импортировали ещё не существующие `scripts/quality-harness/*.cjs` modules.
 
-1. checkout;
-2. Node 24;
-3. `npm ci`;
-4. bounded external probe;
-5. deterministic report;
-6. artifact upload;
-7. create/update/close одного GitHub issue.
+`Test` ожидаемо упал; downstream gates были skipped.
 
-Stable issue marker:
+Run:
 
-`<!-- content-freshness-guard -->`
+`29950434704`
 
-Если findings есть:
+#### Build #280 — shared harness GREEN
 
-- существующий guard issue обновляется/reopens;
-- иначе создаётся один issue.
+Pure/shared contracts прошли после минимальной implementation:
 
-Если findings исчезли:
+- paths;
+- tool loader/Chromium fallback;
+- static server;
+- context factory;
+- diagnostics helpers;
+- overflow/Axe helpers;
+- evidence helpers;
+- common scenario constants.
 
-- существующий open guard issue закрывается.
+Run:
 
-### Security / mutation boundary
+`29950664284`
 
-Workflow permissions:
+#### Build #284 — core migration slice GREEN
 
-- `contents: read`;
-- `issues: write`.
+После migration core runners green прошли:
 
-Checkout:
+- layout overflow;
+- Chromium browser/Axe/Lighthouse;
+- v0.3;
+- Firefox/WebKit compatibility.
 
-`persist-credentials: false`
+Run:
 
-Static safety contract проверяет отсутствие:
+`29950951055`
 
-- `contents: write`;
-- `git commit`;
-- `git push`.
+#### Build #293 — final exact-head verification
 
-Guard никогда автоматически:
+Exact head:
 
-- не меняет `data/projects.json`;
-- не меняет `data/project-evidence.json`;
-- не меняет timelines;
-- не переводит project в `verified / stale / unverified`;
-- не выводит full product verification из green CI/release/repository activity.
+`00633c69e56354cbb8821c34a1b772cf259c3e18`
 
-### TDD trail
+Run:
 
-#### Build #259 — detector RED
+`29951464481`
 
-Contract tests импортировали ещё не существующий `content-freshness.js`.
+**Полностью green вся configured matrix:**
 
-`Test` ожидаемо упал, последующие build/browser stages были skipped.
-
-#### Build #260 — detector GREEN
-
-Pure detector implementation удовлетворил contracts; `Test` стал green.
-
-#### Build #261 / #262 — probe/report RED
-
-Следующий test slice потребовал ещё не существующие probe/report modules.
-
-Ожидаемый RED был зафиксирован до production implementation.
-
-#### Build #265 — probe/report GREEN
-
-Probe + report implementation прошли unit contracts; production build/integrity также были green на этом slice.
-
-#### Build #266 — workflow safety RED
-
-Новый test требовал ещё не существующий `.github/workflows/content-freshness.yml` и его safety contract.
-
-`Test` ожидаемо упал.
-
-#### Build #267 — workflow contract GREEN
-
-После добавления workflow test slice стал green.
-
-### Exact verification
-
-Final feature head:
-
-`4b50dd78a41b3cbe2fce327e6c752508134862d0`
-
-**Build #269 / workflow run `29947803201`: fully green.**
-
-Green вся configured matrix:
-
-- unit/contracts;
+- tests;
 - production Diplodoc build;
 - generated-site integrity;
-- mobile overflow;
+- mobile layout overflow;
 - Chromium browser/Axe/Lighthouse;
-- Sources Knowledge Base smoke;
-- Project Evidence smoke;
-- Photo Stories smoke;
-- Portfolio v0.3 regression;
+- Sources Knowledge Base;
+- Project Evidence;
+- Photo Stories;
+- Portfolio v0.3;
 - Firefox/WebKit;
 - generated search;
 - metadata/OpenGraph;
 - Engineering Map;
-- visual regression;
-- quality evidence upload.
+- unchanged visual regression;
+- diagnostics/evidence upload.
 
-### Operational caveat
+### Result
 
-Feature implementation, unit/static workflow contract и repository CI подтверждены.
+Quality suite теперь имеет общий modular infrastructure layer, но остаётся набором читаемых focused tests.
 
-**Первый фактический post-merge scheduled/manual Content Freshness workflow run отдельно пока не считается подтверждённым этим milestone evidence.**
+Следующий roadmap priority:
 
-Не утверждать, что GitHub issue lifecycle уже реально выполнялся в production, пока нет конкретного workflow-run evidence.
+**P1.2 — Project metadata cleanup.**
 
-### Repository hygiene note
+---
 
-Во время tool orchestration временный probe-файл `_never_` случайно был создан отдельным commit и сразу удалён следующим cleanup commit.
+## P0.6 — Content Freshness Guard
 
-- temporary commit: `4f7ec91abc475662692ca31af05a633cfeea0f25`;
-- cleanup commit: `b5ce6e5155d67047eed86921076bbfac8700aa13`.
+**PR #27 — `feat: add Content Freshness Guard`**  
+Squash: `33770983789fbde5c59a94972709360286a06ad5`
 
-Net tree effect: **none**. Product code/data не были затронуты этим probe incident.
+Exact head:
+
+`4b50dd78a41b3cbe2fce327e6c752508134862d0`
+
+Build #269 / run `29947803201`: **fully green**.
+
+Ключевые части:
+
+- pure deterministic detector;
+- `lastVerified` age threshold;
+- link/repository/release/timeline/signal drift diagnostics;
+- JSON + Markdown report;
+- bounded external probe;
+- daily/manual workflow;
+- idempotent GitHub issue lifecycle.
+
+Trust boundary:
+
+**maintenance signals никогда автоматически не переписывают Project Registry, Project Evidence или `verified / stale / unverified`.**
+
+Operational caveat: первый фактический post-merge scheduled/manual workflow run нужно подтверждать отдельным run evidence.
+
+### Repository-hygiene incident
+
+Во время design setup был случайно создан временный `_never_` probe file прямым Contents API commit (`4f7ec91...`). Он был немедленно удалён cleanup commit `b5ce6e5...`.
+
+Net tree effect: **zero**.
+
+Incident сохранён в истории прозрачно; product/runtime data не затрагивались.
 
 ---
 
@@ -284,24 +294,13 @@ Exact head:
 
 Build #257 / run `29943616448`: **fully green**.
 
-Добавлены 3 repository-grounded notes:
+Добавлены repository-grounded notes:
 
 1. `intersection-observer-giant-table`;
 2. `static-first-sources-no-js`;
 3. `green-ci-is-not-product-verification`.
 
 Всего Engineering Notes стало 6.
-
-Интеграция:
-
-- `data/notes.json` metadata/relations;
-- Notes hub;
-- TOC/search/sitemap;
-- per-page SEO/OpenGraph;
-- Atom feed;
-- canonical content contract.
-
-Milestone намеренно ограничен тремя incidents с сильным repository-local evidence trail.
 
 ---
 
@@ -316,40 +315,20 @@ Exact head:
 
 Build #247 / run `29935334882`: **fully green**.
 
-Создан `data/project-evidence.json` с:
+Созданы:
 
+- canonical `data/project-evidence.json`;
 - manual controlled snapshots;
 - `verified / stale / unverified`;
-- bounded scope;
-- automated/manual distinction;
-- strict validation;
-- semantic build-time rendering;
-- no-JS fallback;
-- trust-state UI;
-- dedicated browser/Axe/no-JS smoke.
-
-Initial scope:
-
-- LivingWorld — `verified`;
-- NODE ZERO — `stale`.
+- bounded automated/manual signals;
+- semantic build-time rendering/no-JS fallback;
+- trust-aware browser quality gate.
 
 Ключевой lesson:
 
-**green CI ≠ verified product**.
+**green CI не равно verified product без bounded scope и current manual interpretation.**
 
-Именно этот milestone создал canonical data model, поверх которой позже построен P0.6 Freshness Guard.
-
-Project Evidence TDD/regression history включала:
-
-- validator RED;
-- renderer RED;
-- registry RED;
-- generated-page/no-JS RED;
-- orchestration RED;
-- trust-style browser RED;
-- `<base href>` stylesheet resolution regression.
-
-Integrity gate не ослаблялся ради fixes.
+В milestone также был найден и исправлен stylesheet-resolution regression с Diplodoc `<base href>`; integrity gate не ослаблялся.
 
 ---
 
@@ -358,38 +337,41 @@ Integrity gate не ослаблялся ради fixes.
 **PR #20 — `feat: build Sources Registry knowledge base`**  
 Squash: `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`
 
-Реализовано:
+Старая giant bibliography table заменена на canonical `data/sources.json`:
 
-- canonical `data/sources.json`;
-- 31 migrated real records;
+- 31 real records;
 - strict validation;
-- deterministic rendering;
-- compact cards/counters;
-- query/topic/type page-local filtering;
-- stable anchors;
-- related materials;
+- deterministic semantic cards;
+- page-local filtering;
+- stable anchors/related materials;
 - responsive UI;
-- semantic no-JS fallback.
+- no-JS fallback.
 
-Dedicated browser smoke обнаружил реальный no-JS failure mode Diplodoc hydration state; решение стало reusable static-first pattern для Project Evidence.
+Первый no-JS smoke обнаружил, что наличие data в build artifact не гарантирует readable content без hydration. Решение — semantic fallback без второго canonical source и без runtime fetch.
 
 ---
 
 ## Photo Stories — cinematic personal archive
 
-Main implementation:
+**PR #15** — main platform.  
+Squash: `8aa2149fc8aec3751f2da73321c06a89111f9efd`
 
-- PR #15 — `feat: build cinematic photo stories archive`;
-- squash `8aa2149fc8aec3751f2da73321c06a89111f9efd`.
+**PR #17** — QA polish.  
+Squash: `7936638bd6473ad4f1ff0b2ef42db2289e937d83`
 
-Post-merge QA:
+Готовы:
 
-- PR #17 — `fix: polish Photo Stories mobile hero and QA evidence`;
-- squash `7936638bd6473ad4f1ff0b2ef42db2289e937d83`.
+- canonical `/photos/`;
+- album/archive registries;
+- story routes;
+- cinematic hero/editorial layouts;
+- fullscreen lightbox;
+- keyboard/touch/hash navigation;
+- focus restoration;
+- sitemap/search/meta/OG integration;
+- dedicated browser smoke.
 
-Реализованы canonical `/photos/`, album/archive registries, story routes, cinematic/editorial layout, fullscreen lightbox, keyboard/touch/hash navigation, filters и quality coverage.
-
-Fake/demo album не добавлялся.
+Fake/demo album не создавался.
 
 ---
 
@@ -399,16 +381,14 @@ Fake/demo album не добавлялся.
 
 Root cause:
 
-`IntersectionObserver threshold: 0.08` на очень высокой таблице мог никогда не достигаться в обычном viewport, оставляя content `opacity: 0`.
+`IntersectionObserver threshold: 0.08` требовал видеть 8% очень высокого элемента; условие могло быть недостижимо в обычном viewport.
 
 Fix:
 
-- threshold → `0`;
-- normal-viewport browser regression.
+- threshold снижен до `0` с сохранением root margin;
+- добавлен normal-viewport browser regression.
 
-Позже Sources Registry убрал giant table как data model.
-
-Incident стал одной из P0.5 Grounded Engineering Notes.
+Позже giant table как model была заменена Sources Registry.
 
 ---
 
@@ -417,30 +397,33 @@ Incident стал одной из P0.5 Grounded Engineering Notes.
 **PR #13 — `feat: evolve portfolio into a living engineering space`**  
 Squash: `b472aff67d69fb3cd6afa0577864371547f52a5b`
 
-Ключевые изменения:
+Milestone закрепил переход от «landing page» к living engineering portfolio / knowledge platform:
 
 - canonical Project Registry;
-- registry-derived status;
 - `/now`;
-- structured timelines;
+- structured flagship timelines;
 - Engineering Notes metadata/relations/feed;
 - Engineering Map;
 - command palette;
 - stronger generated-site quality gates.
 
-Этот milestone закрепил переход от landing page к living engineering portfolio / knowledge platform.
-
 ---
 
 ## Durable continuity updates
 
-После крупных milestones durable state синхронизируется отдельными docs-only follow-ups.
+После крупных milestones durable state синхронизируется отдельными docs-only follow-ups, чтобы новый чат восстанавливал контекст из repository truth.
 
-Источники истины для нового чата:
+Ключевые continuity merges до P1.1:
+
+- Sources — PR #21 / `5535948d756585c44550d14f3e2424be82a3b767`;
+- Project Evidence — PR #23 / `ac520553cbe38ab022d49abc3b48dd0bd67c76c8`;
+- Project Evidence cleanup — PR #24 / `6e83ab5dcbbc23ae2274fddbd0daed8efa058e23`;
+- Grounded Notes — PR #26 / `81a404738dc69bed832080c9f852316a33cedba9`;
+- Content Freshness — PR #28 / `65191a63eb3af8df596a861f16cbe2c926bdca34`.
+
+Актуальные источники контекста:
 
 1. `docs/PROJECT_STATE.md`;
 2. `docs/ROADMAP.md`;
 3. `docs/CHANGELOG.md`;
-4. actual open PR/latest commits/exact-head CI;
-5. latest Content Freshness workflow runs/issues, когда вопрос касается freshness;
-6. actual public deployment evidence, когда вопрос касается production.
+4. actual open PR/latest commits/exact-head CI поверх snapshot docs.
