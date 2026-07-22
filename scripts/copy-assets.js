@@ -31,6 +31,7 @@ import {
   getSiteUrl,
   injectPersonSchemaIntoHtml,
 } from './seo.js';
+import {applySourcesKnowledgeBase, loadSourcesRegistry} from './sources-registry.js';
 import {writeStandaloneHome} from './standalone-home.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -43,6 +44,7 @@ const ENGINEERING_GRAPH_MANIFEST = path.join(ROOT, 'data', 'engineering-graph.js
 const PROJECTS_MANIFEST = path.join(ROOT, 'data', 'projects.json');
 const NOW_MANIFEST = path.join(ROOT, 'data', 'now.json');
 const NOTES_MANIFEST = path.join(ROOT, 'data', 'notes.json');
+const SOURCES_MANIFEST = path.join(ROOT, 'data', 'sources.json');
 const PHOTO_ALBUMS_MANIFEST = path.join(ROOT, 'data', 'photo-albums.json');
 const PHOTO_ARCHIVE_MANIFEST = path.join(ROOT, 'data', 'photo-archive.json');
 
@@ -172,6 +174,7 @@ export function postprocessOutput({
   projectHistoryDir = DEFAULT_HISTORY_DIR,
   nowPath = NOW_MANIFEST,
   notesPath = NOTES_MANIFEST,
+  sourcesPath,
   photoAlbumsPath,
   photoArchivePath,
   siteUrl = getSiteUrl(),
@@ -186,6 +189,8 @@ export function postprocessOutput({
   const notes = loadNotesManifest(notesPath, {docsDir});
 
   const isProductionDocs = path.resolve(docsDir) === path.resolve(DOCS_DIR);
+  const resolvedSourcesPath = sourcesPath ?? (isProductionDocs ? SOURCES_MANIFEST : null);
+  const sources = resolvedSourcesPath ? loadSourcesRegistry(resolvedSourcesPath) : null;
   const resolvedPhotoAlbumsPath = photoAlbumsPath ?? (isProductionDocs ? PHOTO_ALBUMS_MANIFEST : null);
   const resolvedPhotoArchivePath = photoArchivePath ?? (isProductionDocs ? PHOTO_ARCHIVE_MANIFEST : null);
   if (Boolean(resolvedPhotoAlbumsPath) !== Boolean(resolvedPhotoArchivePath)) {
@@ -213,6 +218,9 @@ export function postprocessOutput({
   const timelineTargets = applyProjectTimelines(outputDir, projects, projectHistoryDir);
   const noteTargets = applyNoteEnhancements(outputDir, notes);
   const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
+  const sourcesKnowledgeBaseTarget = sources
+    ? applySourcesKnowledgeBase(outputDir, sources)
+    : null;
 
   const photoStories = photoContent
     ? writePhotoStories({
@@ -244,6 +252,7 @@ export function postprocessOutput({
     noteTargets,
     feedPath,
     feedDiscoveryUpdated,
+    sourcesKnowledgeBaseTarget,
     photoStoryRoutes: photoStories.routes,
     photoStoryIndexPath: photoStories.indexPath,
     photoStoryLegacyPath: photoStories.legacyPath,
@@ -266,6 +275,7 @@ function main() {
     console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
     console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
     console.log(`Atom feed written: ${result.feedPath}`);
+    if (result.sourcesKnowledgeBaseTarget) console.log(`Sources Knowledge Base injected: ${result.sourcesKnowledgeBaseTarget}`);
     if (result.photoStoryIndexPath) console.log(`Photo Stories written: ${result.photoStoryIndexPath}`);
     console.log(`Engineering Map injected: ${result.engineeringGraphTarget}`);
     console.log(`Generated ${result.ogCards.length} OpenGraph PNG card(s).`);
