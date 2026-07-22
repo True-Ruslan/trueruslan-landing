@@ -11,10 +11,7 @@ import {
   validateProjectEvidence,
 } from './project-evidence.js';
 
-const projects = [
-  {slug: 'livingworld'},
-  {slug: 'node-zero'},
-];
+const projects = [{slug: 'livingworld'}, {slug: 'node-zero'}];
 
 const validVerified = {
   project: 'livingworld',
@@ -32,32 +29,20 @@ const validVerified = {
   }],
 };
 
-function clone(value) {
-  return structuredClone(value);
-}
-
-function expectInvalid(snapshot, pattern) {
+const clone = (value) => structuredClone(value);
+const expectInvalid = (snapshot, pattern) => {
   assert.throws(() => validateProjectEvidence([snapshot], {projects}), pattern);
-}
+};
 
-test('accepts a canonical verified evidence snapshot', () => {
+test('accepts canonical verified, stale and unverified snapshots', () => {
   assert.deepEqual(validateProjectEvidence([validVerified], {projects}), [validVerified]);
-});
 
-test('accepts stale evidence with a verification date and bounded signal', () => {
-  const snapshot = clone(validVerified);
-  snapshot.status = 'stale';
-  assert.deepEqual(validateProjectEvidence([snapshot], {projects}), [snapshot]);
-});
+  const stale = clone(validVerified);
+  stale.status = 'stale';
+  assert.deepEqual(validateProjectEvidence([stale], {projects}), [stale]);
 
-test('accepts unverified evidence without historical date or signals', () => {
-  const snapshot = {
-    project: 'node-zero',
-    status: 'unverified',
-    versions: [],
-    signals: [],
-  };
-  assert.deepEqual(validateProjectEvidence([snapshot], {projects}), [snapshot]);
+  const unverified = {project: 'node-zero', status: 'unverified', versions: [], signals: []};
+  assert.deepEqual(validateProjectEvidence([unverified], {projects}), [unverified]);
 });
 
 test('accepts private manual evidence without a public URL', () => {
@@ -78,44 +63,33 @@ test('accepts private manual evidence without a public URL', () => {
   assert.deepEqual(validateProjectEvidence([snapshot], {projects}), [snapshot]);
 });
 
-test('rejects an empty registry', () => {
+test('rejects empty registry, duplicate snapshots and invalid project references', () => {
   assert.throws(() => validateProjectEvidence([], {projects}), /non-empty/i);
-});
-
-test('rejects duplicate project snapshots', () => {
   assert.throws(
     () => validateProjectEvidence([validVerified, clone(validVerified)], {projects}),
     /duplicate project/i,
   );
+
+  const unknown = clone(validVerified);
+  unknown.project = 'unknown-project';
+  expectInvalid(unknown, /unknown project/i);
+
+  const malformed = clone(validVerified);
+  malformed.project = 'Living World';
+  expectInvalid(malformed, /project slug/i);
 });
 
-test('rejects unknown project references', () => {
-  const snapshot = clone(validVerified);
-  snapshot.project = 'unknown-project';
-  expectInvalid(snapshot, /unknown project/i);
-});
+test('rejects invalid trust states and missing verification dates', () => {
+  const invalid = clone(validVerified);
+  invalid.status = 'current';
+  expectInvalid(invalid, /status/i);
 
-test('rejects malformed project slugs', () => {
-  const snapshot = clone(validVerified);
-  snapshot.project = 'Living World';
-  expectInvalid(snapshot, /project slug/i);
-});
-
-test('rejects unknown trust states', () => {
-  const snapshot = clone(validVerified);
-  snapshot.status = 'current';
-  expectInvalid(snapshot, /status/i);
-});
-
-test('requires lastVerified for verified and stale snapshots', () => {
-  const verified = clone(validVerified);
-  delete verified.lastVerified;
-  expectInvalid(verified, /lastVerified/i);
-
-  const stale = clone(validVerified);
-  stale.status = 'stale';
-  delete stale.lastVerified;
-  expectInvalid(stale, /lastVerified/i);
+  for (const status of ['verified', 'stale']) {
+    const snapshot = clone(validVerified);
+    snapshot.status = status;
+    delete snapshot.lastVerified;
+    expectInvalid(snapshot, /lastVerified/i);
+  }
 });
 
 test('rejects malformed and impossible calendar dates', () => {
@@ -125,12 +99,12 @@ test('rejects malformed and impossible calendar dates', () => {
     expectInvalid(snapshot, /date|lastVerified/i);
   }
 
-  const snapshot = clone(validVerified);
-  snapshot.signals[0].observedAt = '2026-13-01';
-  expectInvalid(snapshot, /date|observedAt/i);
+  const signalDate = clone(validVerified);
+  signalDate.signals[0].observedAt = '2026-13-01';
+  expectInvalid(signalDate, /date|observedAt/i);
 });
 
-test('rejects non-HTTPS evidence URLs', () => {
+test('rejects unsafe evidence URLs', () => {
   for (const url of ['http://example.com/run', 'javascript:alert(1)', '/local/path']) {
     const snapshot = clone(validVerified);
     snapshot.signals[0].url = url;
@@ -138,23 +112,21 @@ test('rejects non-HTTPS evidence URLs', () => {
   }
 });
 
-test('rejects blank version labels and values', () => {
+test('validates version facts and duplicate normalized labels', () => {
   const blankLabel = clone(validVerified);
   blankLabel.versions[0].label = '   ';
-  expectInvalid(blankLabel, /version.*label|label/i);
+  expectInvalid(blankLabel, /label/i);
 
   const blankValue = clone(validVerified);
   blankValue.versions[0].value = '';
-  expectInvalid(blankValue, /version.*value|value/i);
+  expectInvalid(blankValue, /value/i);
+
+  const duplicate = clone(validVerified);
+  duplicate.versions.push({label: ' minecraft ', value: 'other'});
+  expectInvalid(duplicate, /duplicate version/i);
 });
 
-test('rejects duplicate normalized version labels', () => {
-  const snapshot = clone(validVerified);
-  snapshot.versions.push({label: ' minecraft ', value: 'other'});
-  expectInvalid(snapshot, /duplicate version/i);
-});
-
-test('rejects invalid signal kind mode and state values', () => {
+test('validates signal enums and mode coherence', () => {
   const invalidKind = clone(validVerified);
   invalidKind.signals[0].kind = 'workflow';
   expectInvalid(invalidKind, /kind/i);
@@ -166,9 +138,7 @@ test('rejects invalid signal kind mode and state values', () => {
   const invalidState = clone(validVerified);
   invalidState.signals[0].state = 'perfect';
   expectInvalid(invalidState, /state/i);
-});
 
-test('enforces signal kind and evidence mode coherence', () => {
   const manualAsAutomated = clone(validVerified);
   manualAsAutomated.signals[0].kind = 'manual';
   expectInvalid(manualAsAutomated, /mode|manual/i);
@@ -178,22 +148,15 @@ test('enforces signal kind and evidence mode coherence', () => {
   expectInvalid(ciAsManual, /mode|automated/i);
 });
 
-test('requires a non-empty bounded scope for every signal', () => {
-  const snapshot = clone(validVerified);
-  snapshot.signals[0].scope = '   ';
-  expectInvalid(snapshot, /scope/i);
-});
+test('requires bounded scopes, unique signals and signals for trusted historical states', () => {
+  const blankScope = clone(validVerified);
+  blankScope.signals[0].scope = '   ';
+  expectInvalid(blankScope, /scope/i);
 
-test('rejects duplicate normalized signal identities', () => {
-  const snapshot = clone(validVerified);
-  snapshot.signals.push({
-    ...clone(snapshot.signals[0]),
-    label: ' ci ',
-  });
-  expectInvalid(snapshot, /duplicate signal/i);
-});
+  const duplicate = clone(validVerified);
+  duplicate.signals.push({...clone(duplicate.signals[0]), label: ' ci '});
+  expectInvalid(duplicate, /duplicate signal/i);
 
-test('requires at least one signal for verified and stale snapshots', () => {
   for (const status of ['verified', 'stale']) {
     const snapshot = clone(validVerified);
     snapshot.status = status;
@@ -202,19 +165,14 @@ test('requires at least one signal for verified and stale snapshots', () => {
   }
 });
 
-test('loads and validates evidence from JSON', () => {
+test('loads JSON, reports missing manifests and exposes canonical default path', () => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'project-evidence-'));
   const manifestPath = path.join(tempDir, 'project-evidence.json');
   fs.writeFileSync(manifestPath, JSON.stringify([validVerified]), 'utf8');
   assert.deepEqual(loadProjectEvidence(manifestPath, {projects}), [validVerified]);
-});
 
-test('fails clearly when the evidence manifest is missing', () => {
   const missing = path.join(os.tmpdir(), `missing-project-evidence-${Date.now()}.json`);
   assert.throws(() => loadProjectEvidence(missing, {projects}), /not found/i);
-});
-
-test('exports the canonical default evidence path', () => {
   assert.match(DEFAULT_PROJECT_EVIDENCE_PATH, /data[\\/]project-evidence\.json$/);
 });
 
@@ -223,7 +181,7 @@ test('renders verified evidence with bounded trust language', () => {
   assert.match(html, /data-project-evidence="livingworld"/);
   assert.match(html, /data-evidence-status="verified"/);
   assert.match(html, /tr-project-evidence--verified/);
-  assert.match(html, /ПРОВЕРЕНО/);
+  assert.match(html, />ПРОВЕРЕНО</);
   assert.match(html, /2026-07-22/);
   assert.match(html, /Minecraft/);
   assert.match(html, /1\.21\.1/);
@@ -245,18 +203,13 @@ test('renders stale evidence as visibly distinct from verified', () => {
   assert.doesNotMatch(html, /data-evidence-status="verified"/);
 });
 
-test('renders unverified evidence without confirmed trust language', () => {
-  const snapshot = {
-    project: 'node-zero',
-    status: 'unverified',
-    versions: [],
-    signals: [],
-  };
+test('renders unverified evidence without a positive verified state', () => {
+  const snapshot = {project: 'node-zero', status: 'unverified', versions: [], signals: []};
   const html = renderProjectEvidence(snapshot);
   assert.match(html, /data-evidence-status="unverified"/);
   assert.match(html, /tr-project-evidence--unverified/);
-  assert.match(html, /НЕ ПРОВЕРЕНО/);
-  assert.doesNotMatch(html, /ПРОВЕРЕНО/);
+  assert.match(html, />НЕ ПРОВЕРЕНО</);
+  assert.doesNotMatch(html, /data-evidence-status="verified"|tr-project-evidence--verified|>ПРОВЕРЕНО</);
 });
 
 test('distinguishes automated and manual evidence semantically', () => {
