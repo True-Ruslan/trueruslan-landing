@@ -138,6 +138,14 @@ function setDocumentTitle(head, title) {
   utils.append(head, titleNode);
 }
 
+function canonicalUrl(siteUrl, relativePath) {
+  if (relativePath === 'index.html') return `${siteUrl}/`;
+  if (relativePath.endsWith('/index.html')) {
+    return `${siteUrl}/${relativePath.slice(0, -'index.html'.length)}`;
+  }
+  return `${siteUrl}/${relativePath}`;
+}
+
 export function injectPageMeta(html, entry, siteUrl) {
   const normalizedSiteUrl = siteUrl.trim().replace(/\/$/, '');
   if (!normalizedSiteUrl) throw new Error('siteUrl is required for page metadata injection.');
@@ -149,7 +157,7 @@ export function injectPageMeta(html, entry, siteUrl) {
   head.childNodes = (head.childNodes ?? []).filter((node) => !shouldRemoveMetadataNode(node));
   setDocumentTitle(head, entry.title);
 
-  const canonical = entry.path === 'index.html' ? `${normalizedSiteUrl}/` : `${normalizedSiteUrl}/${entry.path}`;
+  const canonical = canonicalUrl(normalizedSiteUrl, entry.path);
   const localImagePath = `/assets/og/${entry.card}.png`;
   const image = `${normalizedSiteUrl}${localImagePath}`;
 

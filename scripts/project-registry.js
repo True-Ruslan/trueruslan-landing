@@ -22,6 +22,10 @@ const STATUS_SET = new Set(PROJECT_STATUS_VALUES);
 const VISIBILITY_SET = new Set(['public', 'private']);
 const SAFE_LOCAL_HTML = /^(?!\/)(?!.*\.\.)(?!https?:\/\/)[a-zA-Z0-9_./-]+\.html$/;
 const SAFE_EXTERNAL = /^https:\/\/[a-zA-Z0-9.-]+(?:[/:?#][^\s]*)?$/;
+const PROJECT_CARD_COPY = Object.freeze({
+  ru: Object.freeze({tagsLabel: 'Технологии и направления', cta: 'Открыть case study →'}),
+  en: Object.freeze({tagsLabel: 'Technologies and areas', cta: 'Open case study →'}),
+});
 
 export function escapeHtml(value) {
   return String(value)
@@ -131,36 +135,51 @@ export function renderProjectStatus(project) {
   return `<span class="tr-project-status tr-project-status--${escapeHtml(project.status)}" data-project-status="${escapeHtml(project.slug)}">${escapeHtml(project.statusLabel)}</span>`;
 }
 
-export function applyProjectRegistryContent(outputDir, projects) {
-  const htmlPath = path.join(outputDir, 'landing', 'projects.html');
-  if (!fs.existsSync(htmlPath)) throw new Error('generated projects hub not found: landing/projects.html');
-  const html = fs.readFileSync(htmlPath, 'utf8');
+export function applyProjectRegistryContent(outputDir, projects, {targets = ['landing/projects.html']} = {}) {
+  if (!Array.isArray(targets) || targets.length === 0) throw new Error('project registry targets must be a non-empty array');
   let replacements = 0;
 
-  const transformed = transformGeneratedContent(
-    html,
-    (contentHtml) => {
-      let updated = contentHtml;
-      for (const project of projects) {
-        const marker = new RegExp(`<span[^>]*data-tr-project-status=["']${project.slug}["'][^>]*>\\s*</span>`, 'i');
-        if (!marker.test(updated)) continue;
-        updated = updated.replace(marker, renderProjectStatus(project));
-        replacements += 1;
-      }
-      return updated;
-    },
-    'project status badges',
-  );
+  for (const target of targets) {
+    if (!isSafeLocalHtmlHref(target)) throw new Error(`unsafe project registry target: ${target}`);
+    const htmlPath = path.join(outputDir, ...target.split('/'));
+    if (!fs.existsSync(htmlPath)) throw new Error(`generated projects hub not found: ${target}`);
+    const html = fs.readFileSync(htmlPath, 'utf8');
 
-  fs.writeFileSync(htmlPath, transformed.html, 'utf8');
+    const transformed = transformGeneratedContent(
+      html,
+      (contentHtml) => {
+        let updated = contentHtml;
+        for (const project of projects) {
+          const marker = new RegExp(`<span[^>]*data-tr-project-status=["']${project.slug}["'][^>]*>\\s*</span>`, 'i');
+          if (!marker.test(updated)) continue;
+          updated = updated.replace(marker, renderProjectStatus(project));
+          replacements += 1;
+        }
+        return updated;
+      },
+      'project status badges',
+    );
+
+    fs.writeFileSync(htmlPath, transformed.html, 'utf8');
+  }
+
   return replacements;
 }
 
-export function renderProjectCards(projects, {hrefTransform = (href) => href} = {}) {
+export function renderProjectCards(projects, {
+  hrefTransform = (href) => href,
+  ctaTransform = (_project, cta) => cta,
+  locale = 'ru',
+} = {}) {
+  const copy = PROJECT_CARD_COPY[locale];
+  if (!copy) throw new Error(`unsupported project card locale: ${locale}`);
+
   return projects.map((project) => {
     const tags = project.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
-    const href = hrefTransform(project.href);
+    const href = hrefTransform(project.href, project);
     if (!isSafeLocalHtmlHref(href)) throw new Error(`unsafe rendered project href: ${href}`);
+    const cta = ctaTransform(project, copy.cta);
+    if (typeof cta !== 'string' || !cta.trim()) throw new Error(`invalid rendered project CTA for ${project.slug}`);
     return `<a class="tr-active-card" href="${escapeHtml(href)}" data-project="${escapeHtml(project.slug)}">
   <div class="tr-active-card__head">
     <span class="tr-active-card__pulse" aria-hidden="true"></span>
@@ -168,8 +187,8 @@ export function renderProjectCards(projects, {hrefTransform = (href) => href} = 
   </div>
   <h3>${escapeHtml(project.name)}</h3>
   <p>${escapeHtml(project.summary)}</p>
-  <div class="tr-active-card__tags" aria-label="Технологии и направления">${tags}</div>
-  <span class="tr-active-card__cta">Открыть case study →</span>
+  <div class="tr-active-card__tags" aria-label="${escapeHtml(copy.tagsLabel)}">${tags}</div>
+  <span class="tr-active-card__cta">${escapeHtml(cta)}</span>
 </a>`;
   }).join('\n');
 }

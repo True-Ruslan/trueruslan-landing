@@ -83,6 +83,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/search-smoke.cjs 2>&1 | tee search-smoke.log
+      - name: Minimal RU EN browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/i18n-browser-smoke.cjs 2>&1 | tee i18n-browser-smoke.log
       - name: Metadata and OpenGraph browser smoke
         shell: bash
         run: |
@@ -114,11 +119,14 @@ jobs:
           cp v03-browser-smoke.log quality-artifacts/v03-browser-smoke.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke 2>/dev/null || true
+          cp i18n-browser-smoke.log quality-artifacts/i18n-browser-smoke.log 2>/dev/null || true
           cp metadata-smoke.log quality-artifacts/metadata-smoke.log 2>/dev/null || true
           cp engineering-graph-smoke.log quality-artifacts/engineering-graph-smoke.log 2>/dev/null || true
           cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           cp docs-html/landing/resume.html quality-artifacts/resume-generated.html 2>/dev/null || true
+          cp docs-html/en/index.html quality-artifacts/en-home-generated.html 2>/dev/null || true
+          cp docs-html/en/projects/livingworld.html quality-artifacts/en-livingworld-generated.html 2>/dev/null || true
           cp docs-html/landing/now.html quality-artifacts/now-generated.html 2>/dev/null || true
           cp docs-html/landing/bibliography.html quality-artifacts/sources-knowledge-base-generated.html 2>/dev/null || true
           cp docs-html/landing/projects/livingworld.html quality-artifacts/livingworld-generated.html 2>/dev/null || true
