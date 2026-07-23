@@ -108,3 +108,16 @@ items:
     href: ./landing/photos.md
   - name: Контакты
     href: ./landing/contacts.md
+  - name: English
+    href: ./en/projects.md
+    items:
+      - name: About
+        href: ./en/about.md
+      - name: Resume
+        href: ./en/resume.md
+      - name: LivingWorld
+        href: ./en/projects/livingworld.md
+      - name: Server-authoritative AI NPCs
+        href: ./en/notes/server-authoritative-ai-npcs.md
+      - name: LLM protocol boundary
+        href: ./en/notes/llm-output-is-a-protocol-boundary.md
