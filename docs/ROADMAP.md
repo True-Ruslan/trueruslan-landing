@@ -1,9 +1,9 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-07-23**, после merge P1.4 Additional Grounded Engineering Notes PR #36.
+> Обновлено: **2026-07-23**, после merge P2.1 Minimal RU/EN PR #38.
 >
 > Roadmap отвечает на вопрос **«что делать дальше, в каком порядке и зачем?»**.
-> Фактическое текущее состояние — `docs/PROJECT_STATE.md`, история — `docs/CHANGELOG.md`.
+> Текущее состояние — `docs/PROJECT_STATE.md`, история — `docs/CHANGELOG.md`.
 
 ## Принципы roadmap
 
@@ -12,15 +12,16 @@
 - **static-first**;
 - **build-time intelligence**;
 - **progressive enhancement**;
-- core content доступен без runtime API и, где применимо, без JavaScript;
+- core content без runtime API и, где применимо, без JavaScript;
 - no backend/CMS/database без реальной необходимости;
 - no runtime GitHub API для core content;
 - no duplicate sources of truth;
+- один site-wide full-text search owner — Diplodoc;
 - maintenance signals не переписывают public truth автоматически;
 - сначала реальные data/evidence, потом presentation;
-- evidence не говорит больше, чем доказывает bounded scope;
-- shared infrastructure не скрывает focused domain ownership;
-- quality gates не ослабляются ради refactor/feature velocity.
+- evidence не говорит больше bounded scope;
+- shared infrastructure не скрывает domain ownership;
+- quality gates не ослабляются ради velocity.
 
 Главная продуктовая формула:
 
@@ -28,248 +29,259 @@
 
 ---
 
-# P0 — foundation layer завершён
+# P0 — foundation завершён
 
 ## P0.1 Photo Stories platform — DONE
 
-PR #15 + QA polish PR #17.
-
-Готовы canonical `/photos/`, registries, cinematic/editorial routes, fullscreen lightbox, keyboard/touch/hash navigation и browser QA.
+PR #15 + QA polish PR #17. Canonical `/photos/`, registries, story routes, lightbox, keyboard/touch/hash navigation и dedicated QA готовы.
 
 ## P0.2 First real Photo Story — CONTENT DEPENDENT
 
-Добавлять только при genuine material. Fake/demo albums не добавлять.
+Только при genuine material. Fake/demo albums не добавлять.
 
 ## P0.3 Sources Registry / Knowledge Base — DONE
 
-PR #20 / squash:
+PR #20 / squash `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`.
 
-`4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`
-
-31 real records, strict validation, semantic deterministic rendering, page-local filters, stable anchors, responsive/no-JS behavior и dedicated QA.
+31 real records, strict validation, semantic deterministic rendering, page-local filters, stable anchors, responsive/no-JS behavior.
 
 ## P0.4 Project Evidence Layer — DONE
 
-PR #22 / squash:
-
-`e3e48ac56b45eddeb872c04b83bff1408da6556f`
+PR #22 / squash `e3e48ac56b45eddeb872c04b83bff1408da6556f`.
 
 Exact head `7ce0d428327e29436a03fc2be4b94ef7c0f2f15b`, Build #247 / run `29935334882` fully green.
-
-Canonical evidence, `verified / stale / unverified`, bounded automated/manual signals, no-JS rendering и trust-aware QA.
 
 **Green CI/release/PR никогда автоматически не делает project `verified`.**
 
 ## P0.5 Grounded Engineering Notes — DONE
 
-PR #25 / squash:
-
-`f2775b7c9150281bcb4bcc01a4e021e007e18ca0`
-
-Build #257 / run `29943616448` fully green.
-
-Добавлены три repository-grounded notes; после P1.4 всего Engineering Notes стало 7.
+PR #25 / squash `f2775b7c9150281bcb4bcc01a4e021e007e18ca0`, Build #257.
 
 ## P0.6 Content Freshness Guard — DONE
 
-PR #27 / squash:
-
-`33770983789fbde5c59a94972709360286a06ad5`
+PR #27 / squash `33770983789fbde5c59a94972709360286a06ad5`.
 
 Exact head `4b50dd78a41b3cbe2fce327e6c752508134862d0`, Build #269 / run `29947803201` fully green.
 
-Guard проверяет age/link/repository/release/timeline/signal drift и создаёт maintenance report/issue, но никогда автоматически не меняет public registries/trust state.
-
-Operational follow-up: первый реальный post-merge scheduled/manual run наблюдать отдельно.
+Guard создаёт maintenance signals/report/issues, но не меняет public registries/trust state автоматически.
 
 ---
 
-# P1 — maintainability и глубина завершены
+# P1 — maintainability и depth завершены
 
 ## P1.1 Consolidated Browser Quality Harness — DONE
 
-PR #29 / squash:
+PR #29 / squash `06e60425e31ef19ddae0c3ac8b0991808b45837e`, Build #293.
 
-`06e60425e31ef19ddae0c3ac8b0991808b45837e`
-
-Exact head `00633c69e56354cbb8821c34a1b772cf259c3e18`, Build #293 / run `29951464481` fully green.
-
-Создан `scripts/quality-harness/` с shared infrastructure primitives. Focused runners остались focused; giant monolithic runner/DSL не создавался.
+Shared browser primitives вынесены в `scripts/quality-harness/`; focused runners сохранили ownership.
 
 ## P1.2 Project Metadata Cleanup — DONE
 
-PR #31 / squash:
+PR #31 / squash `1df2a2905ef2eb4b52173271f9012defc33b25ab`, Build #296.
 
-`1df2a2905ef2eb4b52173271f9012defc33b25ab`
-
-Exact head `12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`, Build #296 / run `29954043887` fully green.
-
-Package identity соответствует engineering portfolio / knowledge platform; `private: true`; canonical URLs/keywords; `version: 0.2.0` оставлен намеренно до explicit release contract.
+Package identity соответствует engineering portfolio / knowledge platform; `private: true`; `version: 0.2.0` намеренно не используется как product maturity indicator.
 
 ## P1.3 Stronger Flagship Case-Study Format — DONE
 
-PR #34 / squash:
+PR #34 / squash `107b69311f6eed408de5306406d9ff41f0e32ea2`, Build #301.
 
-`107b69311f6eed408de5306406d9ff41f0e32ea2`
+LivingWorld и NODE ZERO используют Markdown-first narrative:
 
-Exact head `edda2fbbf94b808f8955a2efb00e885dbb964040`, Build #301 / run `29958607263` fully green.
+`Problem → Constraints → Decisions → What failed → Current state → Evidence → What I would change now`.
 
-LivingWorld и NODE ZERO используют общий Markdown-first narrative contract:
-
-1. Problem
-2. Constraints
-3. Decisions
-4. What failed / corrected assumptions
-5. Current state
-6. Evidence
-7. What I would change now
-
-Project Registry/timeline/Evidence ownership сохранён; новый universal case-study engine не создан.
+Project Registry/timeline/Evidence ownership не дублируется.
 
 ## P1.4 Additional Grounded Engineering Notes — DONE
 
-PR #36 / squash:
+PR #36 / squash `24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`.
 
-`24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`
+Exact head `ced6ce0208d691fd891e8b8e1cf03be4c40465d5`, Build #308 / run `29961571632` fully green.
 
-Exact implementation head:
-
-`ced6ce0208d691fd891e8b8e1cf03be4c40465d5`
-
-Build #308 / run `29961571632`: **fully green по полной configured matrix**.
-
-### Реализовано
-
-Добавлена note:
-
-`llm-output-is-a-protocol-boundary`
-
-Тема:
-
-**provider success ≠ application contract success**.
-
-Grounded facts проверены по текущему `True-Ruslan/minecraft-botics-ai`:
-
-- strict parser config;
-- trailing-token rejection;
-- unknown fields/actions;
-- scalar type/null rejection;
-- no permissive coercion;
-- bounded domain validation;
-- duplicate/conflicting action rejection;
-- strict JSON validation перед persistence policy/action authorization;
-- bounded provider-degradation fallback.
-
-Старые недоступные MCA-fork incidents не были превращены в неподтверждённые публичные claims.
-
-### TDD trail
-
-- Build #303 / run `29961363873` — expected RED после contract-first требования нового slug;
-- Build #308 / run `29961571632` — final exact-head full matrix GREEN.
-
-### Scope decision
-
-Вторая generic voice-pipeline note не опубликована: она сейчас слишком сильно дублировала бы существующую `server-authoritative-ai-npcs`.
-
-Notes architecture не менялась: Markdown + `data/notes.json` + existing build-time feed/search/sitemap/SEO.
+Добавлена `llm-output-is-a-protocol-boundary`; всего Engineering Notes — 7.
 
 ---
 
-# P2 — аудитория и эксплуатация
+# P2 — audience и эксплуатация
 
-## P2.1 Minimal RU/EN — NEXT
+## P2.1 Minimal RU/EN — DONE
+
+Feature PR #38 / squash:
+
+`00f7513f685b8a8348005d0ab704ce96abe64950`
+
+Exact implementation head:
+
+`d5f2490bbd7beac7343c96edf1fb6e8feb9b51c6`
+
+Build #339 / run `30000373281`: **fully green по полной configured matrix**.
+
+### Реализованный scope
+
+Ровно 7 RU/EN pairs:
+
+1. home;
+2. About;
+3. Resume;
+4. Projects hub;
+5. LivingWorld;
+6. `server-authoritative-ai-npcs`;
+7. `llm-output-is-a-protocol-boundary`.
+
+Русский остаётся default/root. English живёт под `/en/`.
+
+### Architecture decision
+
+**Один build, один site, один search index.**
+
+Сохранено:
+
+- один Diplodoc build;
+- один `_search/ru/` full-text index;
+- один Project Registry;
+- один Project Evidence registry;
+- один набор timelines;
+- один Notes registry;
+- один Atom feed.
+
+`data/i18n.json` хранит только route pairs.
+
+Не создано:
+
+- второго site/build;
+- `_search/en/`;
+- runtime translation API;
+- browser-language redirect;
+- CMS/backend/database для i18n.
+
+### SEO / switch semantics
+
+Для всех 7 pairs:
+
+- self-canonical RU;
+- self-canonical EN;
+- `hreflang=ru`;
+- `hreflang=en`;
+- `hreflang=x-default` → RU;
+- обычный no-JS language switch anchor.
+
+English `en/index.html` canonical → `/en/`.
+
+### Shared truth boundary
+
+English prose — curated manual mirrors.
+
+Shared factual state не копируется. В частности English LivingWorld не имеет отдельного Evidence/timeline source; full generated machine-like evidence остаётся на Russian canonical page из shared registries.
+
+Untranslated project detail pages явно маркируются `(RU)`.
+
+### Accessibility finding from P2.1
+
+Новый bilingual Axe gate обнаружил реальные hydrated Diplodoc gaps:
+
+- icon-only mobile navigation/share controls без accessible names;
+- scrollable code regions без keyboard focus.
+
+Assertions/Axe не ослаблялись. Existing runtime accessibility repair исправлен системно.
+
+### TDD / CI trail
+
+- Build #310 — RED canonical i18n contract;
+- Build #314 — RED locale/multi-target contract;
+- Build #318 — RED fallback/canonical contract;
+- Build #321 — RED homepage CTA contract;
+- Build #332 — production build/integrity GREEN;
+- Build #334 — browser RED, обнаружены реальные a11y defects;
+- Build #339 — final exact-head full matrix GREEN.
+
+Design:
+
+`docs/superpowers/specs/2026-07-23-minimal-ru-en-design.md`
+
+Plan:
+
+`docs/superpowers/plans/2026-07-23-minimal-ru-en.md`
+
+---
+
+## P2.2 Privacy-friendly analytics — NEXT
 
 ### Почему сейчас
 
-Foundation, evidence, freshness, quality infrastructure, flagship narrative и первая волна grounded technical writing уже стабилизированы.
+Portfolio content, quality, evidence, bilingual entry points и SEO уже достаточно зрелые. До дальнейшего expansion полезнее понять **что реально используется**, но только если данные будут менять решения.
 
-Следующий high-value product step — сделать лучшие части portfolio доступными англоязычному читателю **без полного перевода всего knowledge space**.
-
-### Initial scope
-
-Первый EN layer ограничить:
-
-- homepage;
-- About;
-- Resume;
-- Projects hub;
-- LivingWorld;
-- 1–2 лучших Engineering Notes.
-
-Русский остаётся default language.
+Analytics не добавляется «потому что так принято».
 
 ### Design questions до implementation
 
-Отдельный spec должен решить:
+Новый spec должен сначала определить:
 
-1. **URL strategy**
-   - отдельный `/en/` subtree или другой deterministic static routing;
-   - никаких client-only language routes.
+1. **Decision questions**
+   - какие product/content решения мы хотим принимать;
+   - какие metrics действительно влияют на roadmap.
 
-2. **Canonical / hreflang**
-   - explicit RU/EN alternates;
-   - корректные canonical URLs;
-   - не создавать duplicate-content ambiguity.
+2. **Minimal event model**
+   - page views;
+   - route/language split;
+   - selected outbound/portfolio interactions — только если реально нужны;
+   - никаких vanity-event explosions.
 
-3. **Authoring ownership**
-   - shared machine-like registries не дублировать вручную;
-   - language-specific prose хранить явно и version-controlled;
-   - не строить CMS/i18n framework заранее.
+3. **Privacy boundary**
+   - no advertising identifiers;
+   - no cross-site tracking;
+   - no fingerprinting;
+   - no session replay;
+   - минимизация IP/user-agent retention;
+   - оценить, можно ли полностью обойтись без cookies/local IDs.
 
-4. **Navigation / switcher**
-   - понятный language switch;
-   - graceful no-JS behavior;
-   - switch должен вести на semantic counterpart или честный fallback, а не угадывать nonexistent routes.
+4. **Consent / legal surface**
+   - определить, нужен ли consent banner для выбранной технологии/configuration;
+   - не показывать бессмысленный cookie banner, если cookies/tracking реально отсутствуют.
 
-5. **Search**
-   - Diplodoc остаётся владельцем full-text search;
-   - не создавать второй search engine;
-   - определить, нужен ли отдельный EN index или единый supported Diplodoc strategy.
+5. **Provider vs self-hosted**
+   - privacy;
+   - стоимость;
+   - maintenance burden;
+   - доступность из GitHub Pages/static architecture.
 
-6. **SEO/social**
-   - metadata/OpenGraph для EN страниц;
-   - hreflang/canonical/sitemap integration.
+6. **Failure semantics**
+   - сайт полностью работает при блокировке analytics;
+   - ad blocker/DNT/network failure не создают console noise/product errors;
+   - analytics никогда не становится runtime dependency.
 
-7. **Quality gates**
-   - generated route integrity;
-   - language-switch navigation;
-   - no broken alternate links;
-   - mobile/accessibility/cross-browser;
-   - search/metadata regression.
+7. **RU/EN semantics**
+   - locale/route можно измерять из path без user identity;
+   - не создавать отдельные analytics systems для RU и EN.
+
+8. **QA**
+   - deterministic script loading;
+   - privacy contract;
+   - no cookies/identifiers if chosen architecture promises that;
+   - no regressions performance/accessibility/visual.
 
 ### Critical boundary
 
-**Не создавать два независимых вручную расходящихся сайта.**
-
-Shared factual registries должны оставаться canonical там, где смысл language-neutral. Переводимый prose может иметь отдельные RU/EN sources, но ownership должен быть явным.
+**Никакого invasive ad profiling, cross-site tracking, session replay или personal identity graph.**
 
 ### Definition of Done
 
-- initial EN scope полностью определён и реализован;
-- Russian default behavior не сломан;
-- deterministic static URLs;
-- canonical/hreflang корректны;
-- language switcher semantic/no-JS usable;
-- project/evidence/notes data ownership не дублирован без необходимости;
-- search strategy остаётся в границах Diplodoc;
-- SEO/sitemap/social metadata интегрированы;
+- measurement decisions определены до implementation;
+- выбран минимальный privacy-preserving provider/architecture;
+- data collection documented and bounded;
+- site remains fully functional without analytics;
+- no duplicate analytics path for RU/EN;
+- privacy/no-cookie claims защищены tests where technically possible;
+- performance/security/privacy impact measured;
 - full exact-head quality matrix green.
 
-## P2.2 Privacy-friendly analytics
-
-Только product-useful aggregate signals без invasive ad profiling/cookie surface.
-
-Не добавлять аналитику «потому что у сайтов она есть». Сначала определить решения, которые реально будут приниматься по данным.
+---
 
 ## P2.3 Custom domain / hosting
 
-Отложено до реальной причины уходить с текущего GitHub Pages setup.
+Только при реальной operational причине уходить с текущего GitHub Pages setup.
 
 ## P2.4 Richer architecture explorer
 
-Расширять Engineering Map только при достаточном количестве реальных architecture artifacts.
-
-Не строить 3D/canvas experience ради эффекта.
+Только когда накопится достаточно реальных architecture artifacts. Не строить 3D/canvas experience ради эффекта.
 
 ---
 
@@ -278,45 +290,40 @@ Shared factual registries должны оставаться canonical там, г
 Без нового обоснования не планировать:
 
 - полный перевод всего сайта одним milestone;
-- отдельный CMS/i18n backend ради EN;
-- AI chat поверх резюме;
-- accounts;
-- comments/likes;
-- CMS;
-- database;
-- backend ради static content;
-- runtime GitHub API;
+- отдельный EN build/CMS;
 - второй site-wide search engine;
-- social feed;
-- infinite scroll;
+- invasive analytics/ad profiling/cross-site tracking/session replay;
+- AI chat поверх резюме;
+- accounts/comments/likes;
+- backend/database ради static content;
+- runtime GitHub API;
+- social feed/infinite scroll;
 - automatic public-state mutation из CI/release/freshness signals;
-- giant QA runner, скрывающий domain-specific tests;
-- декоративные version bumps без release semantics.
+- giant QA runner;
+- decorative version bumps.
 
 ---
 
-# Оптимальная последовательность следующих действий
+# Оптимальная последовательность
 
 ```text
-1. P2.1 Minimal RU/EN
+1. P2.2 Privacy-friendly analytics design + bounded implementation
         ↓
-2. Privacy-friendly analytics only after a concrete measurement design
+2. P2.3 Custom domain / hosting only if an operational reason appears
         ↓
-3. Custom domain / hosting only when there is a real operational reason
-        ↓
-4. Richer architecture explorer only when real artifacts justify it
+3. P2.4 Richer architecture explorer only when real artifacts justify it
 ```
 
-Независимый content track:
+Independent content track:
 
 ```text
 First real Photo Story whenever genuine material is ready
 ```
 
-Operational side-check, не блокирующий feature roadmap:
+Operational side-check:
 
-- при наличии evidence проверить первый реальный post-merge Content Freshness workflow run;
-- при вопросах production отдельно проверить фактический GitHub Pages deployment.
+- Content Freshness actual scheduled/manual run подтверждать отдельно;
+- production GitHub Pages deployment подтверждать отдельно, не из факта merge.
 
 ## Правило при новом чате
 
@@ -326,5 +333,5 @@ Operational side-check, не блокирующий feature roadmap:
 2. открыть `docs/ROADMAP.md`;
 3. открыть `docs/CHANGELOG.md`;
 4. проверить actual open PR/latest commits/exact-head CI;
-5. если речь о freshness — проверить latest Content Freshness workflow run/issues;
-6. не считать public deployment подтверждённым только потому, что `master` обновился.
+5. если речь о freshness — проверить latest Content Freshness workflow runs/issues;
+6. если речь о production — проверить actual deployed endpoint отдельно.
