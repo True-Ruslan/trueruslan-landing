@@ -97,8 +97,9 @@ async function assertEnglishRoutes(browser, baseUrl) {
       const lang = await page.locator('html').getAttribute('lang');
       if (lang !== 'en') throw new Error(`${pair.id}: expected html lang=en, got ${lang}`);
       if (await page.locator('h1').count() !== 1) throw new Error(`${pair.id}: expected exactly one H1`);
+      await assertSeoPair(page, pair, 'en', `en:${pair.id}`);
       diagnostics.assertClean(`en:${pair.id}`);
-      results[pair.id] = {status: response.status(), lang};
+      results[pair.id] = {status: response.status(), lang, seoPair: true};
     }
     return results;
   } finally {
@@ -106,24 +107,23 @@ async function assertEnglishRoutes(browser, baseUrl) {
   }
 }
 
-async function assertRepresentativePairs(browser, baseUrl) {
+async function assertNoJsPairRoundTrips(browser, baseUrl) {
   const runtime = await createScenarioPage(browser, {viewport: VIEWPORTS.desktop, colorScheme: 'dark', reducedMotion: 'reduce', javaScriptEnabled: false});
   const {page} = runtime;
   const results = {};
-  const representative = PAIRS.filter((pair) => ['home', 'resume', 'livingworld'].includes(pair.id));
 
   try {
-    for (const pair of representative) {
+    for (const pair of PAIRS) {
       let response = await page.goto(`${baseUrl}${pair.en}`, {waitUntil: 'load'});
       if (!response?.ok()) throw new Error(`${pair.id}: no-js English route failed`);
-      const switchHref = await assertSeoPair(page, pair, 'en', `en:${pair.id}`);
+      const switchHref = await assertSeoPair(page, pair, 'en', `en-nojs:${pair.id}`);
       const localRu = localRouteFromPublicHref(switchHref);
 
       response = await page.goto(`${baseUrl}${localRu}`, {waitUntil: 'load'});
       if (!response?.ok()) throw new Error(`${pair.id}: RU counterpart route failed`);
       if (await page.locator('html').getAttribute('lang') !== 'ru') throw new Error(`${pair.id}: RU counterpart missing lang=ru`);
-      await assertSeoPair(page, pair, 'ru', `ru:${pair.id}`);
-      results[pair.id] = {switchTarget: localRu, noJavaScript: true};
+      await assertSeoPair(page, pair, 'ru', `ru-nojs:${pair.id}`);
+      results[pair.id] = {switchTarget: localRu, noJavaScript: true, seoPair: true};
     }
     return results;
   } finally {
@@ -162,14 +162,17 @@ async function assertQuality(browser, baseUrl) {
 }
 
 async function assertSingleSearch(page, baseUrl) {
-  const response = await page.goto(`${baseUrl}/_search/ru/index.html`, {waitUntil: 'networkidle'});
+  let response = await page.goto(`${baseUrl}/_search/ru/index.html`, {waitUntil: 'networkidle'});
   if (!response?.ok()) throw new Error(`single search route HTTP ${response?.status() ?? 'none'}`);
+
+  response = await page.goto(`${baseUrl}/_search/en/index.html`, {waitUntil: 'load'});
+  if (response?.ok()) throw new Error('unexpected second site-wide search index exists at _search/en/index.html');
 
   const homeResponse = await page.goto(`${baseUrl}/en/index.html`, {waitUntil: 'networkidle'});
   if (!homeResponse?.ok()) throw new Error('English home unavailable for search-link assertion');
   const searchHref = await page.locator('a[href*="_search/ru/index.html"]').first().getAttribute('href');
   if (!searchHref?.includes('_search/ru/index.html')) throw new Error(`English UI does not point to the single RU search index: ${searchHref}`);
-  return {route: '/_search/ru/index.html', englishUiHref: searchHref};
+  return {route: '/_search/ru/index.html', englishSearchAbsent: true, englishUiHref: searchHref};
 }
 
 async function main() {
@@ -187,7 +190,7 @@ async function main() {
 
     const summary = {
       routes: await assertEnglishRoutes(browser, serverRuntime.baseUrl),
-      pairs: await assertRepresentativePairs(browser, serverRuntime.baseUrl),
+      pairs: await assertNoJsPairRoundTrips(browser, serverRuntime.baseUrl),
       quality: await assertQuality(browser, serverRuntime.baseUrl),
       search,
     };
