@@ -48,3 +48,20 @@ test('renderStandaloneHome injects site URL and active project cards without Dip
   assert.doesNotMatch(html, /\{\{SITE_URL\}\}|\{\{CURRENTLY_BUILDING\}\}/);
   assert.doesNotMatch(html, /_bundle\//);
 });
+
+test('renderStandaloneHome supports English UI copy and transformed active-project links', () => {
+  const template = `<!doctype html><html lang="en"><head>
+    <link rel="canonical" href="{{SITE_URL}}/en/">
+  </head><body><h1>Ruslan Nemykin</h1><section>{{CURRENTLY_BUILDING}}</section></body></html>`;
+
+  const html = renderStandaloneHome(template, 'https://example.test/', validProjects, {
+    locale: 'en',
+    hrefTransform: () => 'projects/livingworld.html',
+  });
+
+  assert.match(html, /LivingWorld/);
+  assert.match(html, /Technologies and areas/);
+  assert.match(html, /Open case study →/);
+  assert.match(html, /href="projects\/livingworld\.html"/);
+  assert.doesNotMatch(html, /Открыть case study/);
+});
