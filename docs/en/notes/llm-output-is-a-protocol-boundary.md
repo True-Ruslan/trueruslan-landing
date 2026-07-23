@@ -165,7 +165,7 @@ invalid external response
         ↓
 controlled rejection
         ↓
-sanitzed bounded fallback
+sanitized bounded fallback
         ↓
 no unsafe state/world mutation
         ↓
