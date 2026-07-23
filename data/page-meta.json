@@ -148,5 +148,75 @@
     "kicker": "ENGINEERING NOTE",
     "tags": ["AI", "PROTOCOLS", "VALIDATION"],
     "accent": "violet"
+  },
+  {
+    "path": "en/index.html",
+    "card": "home-en",
+    "title": "Ruslan Nemykin — Backend Engineer",
+    "description": "Engineering portfolio of Ruslan Nemykin: Java backend, distributed systems, DevOps, AI engineering, projects and technical notes.",
+    "displayTitle": "RUSLAN NEMYKIN",
+    "kicker": "BACKEND ENGINEER",
+    "tags": ["JAVA", "DISTRIBUTED SYSTEMS", "AI ENGINEERING"],
+    "accent": "cyan"
+  },
+  {
+    "path": "en/about.html",
+    "card": "about-en",
+    "title": "About — Ruslan Nemykin",
+    "description": "How Ruslan Nemykin approaches backend engineering, distributed systems, reliability, AI tools, teaching and personal projects.",
+    "displayTitle": "ABOUT",
+    "kicker": "ENGINEERING PROFILE",
+    "tags": ["BACKEND", "SYSTEMS", "AI"],
+    "accent": "violet"
+  },
+  {
+    "path": "en/resume.html",
+    "card": "resume-en",
+    "title": "Resume — Ruslan Nemykin",
+    "description": "Java backend engineer with 3+ years of commercial experience across backend systems, integrations, data, DevOps and AI engineering.",
+    "displayTitle": "ENGINEERING RESUME",
+    "kicker": "RUSLAN NEMYKIN",
+    "tags": ["JAVA", "SPRING", "DEVOPS"],
+    "accent": "cyan"
+  },
+  {
+    "path": "en/projects.html",
+    "card": "projects-en",
+    "title": "Engineering Projects — Ruslan Nemykin",
+    "description": "Engineering projects and case studies across backend systems, AI agents, game architecture and production-oriented development.",
+    "displayTitle": "ENGINEERING PROJECTS",
+    "kicker": "CASE STUDIES",
+    "tags": ["BACKEND", "AI", "GAMEDEV"],
+    "accent": "violet"
+  },
+  {
+    "path": "en/projects/livingworld.html",
+    "card": "livingworld-en",
+    "title": "LivingWorld — Server-Authoritative AI NPCs",
+    "description": "English case study of a server-authoritative Minecraft AI NPC system: sessions, voice/text ingress, memory, provider boundaries and action authorization.",
+    "displayTitle": "LIVINGWORLD AI",
+    "kicker": "SERVER-AUTHORITATIVE NPCS",
+    "tags": ["MINECRAFT", "LLM", "VOICE PIPELINE"],
+    "accent": "green"
+  },
+  {
+    "path": "en/notes/server-authoritative-ai-npcs.html",
+    "card": "note-ai-npcs-en",
+    "title": "Designing a Server-Authoritative AI NPC Pipeline",
+    "description": "Session ownership, voice/text convergence, provider orchestration, memory boundaries, cancellation, fallback and authorized actions.",
+    "displayTitle": "AI NPC PIPELINE",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["AI AGENTS", "VOICE", "SECURITY"],
+    "accent": "cyan"
+  },
+  {
+    "path": "en/notes/llm-output-is-a-protocol-boundary.html",
+    "card": "note-llm-protocol-en",
+    "title": "Why Successful LLM Output Still May Violate the Contract",
+    "description": "Structured LLM output as an external protocol boundary: strict parsing, type validation, domain constraints, proposal semantics and bounded fallback.",
+    "displayTitle": "LLM PROTOCOL BOUNDARY",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["AI", "PROTOCOLS", "VALIDATION"],
+    "accent": "violet"
   }
 ]
