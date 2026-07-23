@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-07-23**, после merge P2.1 Minimal RU/EN PR #38.
+> Обновлено: **2026-07-23**, после merge P2.2 Privacy-friendly analytics PR #40.
 >
 > Это не машинный список коммитов. Здесь фиксируются смысловые этапы: **что сделали, зачем, какие решения приняли, какие проблемы обнаружили и чем подтвердили результат**.
 >
@@ -10,202 +10,231 @@
 
 # 2026-07-23
 
-## P2.1 — Minimal RU/EN
+## P2.2 — Privacy-friendly analytics
 
 ### Зачем
 
-После завершения P1 portfolio уже имело сильные case studies, grounded technical writing, evidence/freshness layers и зрелую QA-инфраструктуру. Следующий product step — дать англоязычному читателю небольшой качественный вход в лучшие public surfaces, **не переводя весь knowledge space и не создавая второй расходящийся сайт**.
+После bilingual milestone сайт уже имел достаточно зрелые content, evidence, SEO и quality layers, чтобы следующий шаг был не очередным feature ради roadmap, а попыткой получить минимальный реальный usage/performance signal.
 
-### Design decision
+Цель P2.2 — ответить только на четыре aggregate question:
 
-Выбран вариант:
+1. какие public routes реально используются;
+2. как распределяется usage между default/RU и `/en/`;
+3. какие surfaces могут оправдать дальнейший translation/content investment;
+4. какой real-user performance/Core Web Vitals получают посетители.
 
-**один build + `/en/` namespace + один search index + shared canonical registries**.
+### Provider / design decision
 
-Отклонены:
+Выбран:
 
-1. отдельный `docs-en/` + второй Diplodoc build — создаёт два navigation/search/build мира;
-2. custom EN HTML renderer — создаёт второй rendering system;
-3. полный перевод сайта одним milestone — высокий drift/maintenance cost без доказанной audience value.
+**Cloudflare Web Analytics manual beacon**.
+
+Причины:
+
+- соответствует bounded pageview/RUM scope;
+- не требует нового application backend;
+- не требует отдельной analytics infrastructure;
+- не требует duplicate RU/EN analytics system;
+- позволяет сохранить analytics как optional enhancement.
+
+Отклонены для этого milestone:
+
+- Plausible Cloud — сильный privacy-friendly вариант, но richer/paid functionality была избыточна для текущих decision questions;
+- self-hosted analytics — создаёт server/upgrade/backup/security/availability ownership без достаточной необходимости.
 
 Design:
 
-`docs/superpowers/specs/2026-07-23-minimal-ru-en-design.md`
+`docs/superpowers/specs/2026-07-23-privacy-friendly-analytics-design.md`
 
 Plan:
 
-`docs/superpowers/plans/2026-07-23-minimal-ru-en.md`
+`docs/superpowers/plans/2026-07-23-privacy-friendly-analytics.md`
+
+Operator runbook:
+
+`docs/ANALYTICS.md`
 
 ### Feature implementation
 
-**PR #38 — `feat: add minimal RU EN portfolio layer`**
+**PR #40 — `feat: add privacy-friendly analytics`**
 
 Squash:
 
-`00f7513f685b8a8348005d0ab704ce96abe64950`
+`2dacace5de6b6c1225e82b372faef093850f4c9f`
 
 Exact implementation head:
 
-`d5f2490bbd7beac7343c96edf1fb6e8feb9b51c6`
+`577fe9149988497d954f8ad9316467089ce50286`
 
 Final verification:
 
-**Build #339 / run `30000373281`: fully green по полной configured matrix.**
+**Build #351 / run `30003347268`: fully green по полной configured matrix.**
 
-### Controlled English scope
-
-Созданы ровно семь bilingual pairs:
-
-1. `/` ↔ `/en/`;
-2. About;
-3. Resume;
-4. Projects hub;
-5. LivingWorld;
-6. `server-authoritative-ai-npcs`;
-7. `llm-output-is-a-protocol-boundary`.
-
-Русский остаётся default/root language. Existing Russian URLs не менялись.
-
-English sources:
-
-- `templates/index.en.html`;
-- `docs/en/about.md`;
-- `docs/en/resume.md`;
-- `docs/en/projects.md`;
-- `docs/en/projects/livingworld.md`;
-- `docs/en/notes/server-authoritative-ai-npcs.md`;
-- `docs/en/notes/llm-output-is-a-protocol-boundary.md`.
-
-### Route-pair ownership
+### Canonical privacy policy
 
 Добавлен:
 
-`data/i18n.json`
+`data/analytics.json`
 
-Он владеет только deterministic relationship RU route ↔ EN route.
+Policy фиксирует:
 
-Не владеет:
+- provider: `cloudflare-web-analytics`;
+- measurement: `pageviews-and-rum`;
+- activation: `token-required`;
+- custom events: `false`;
+- cookies: `false`;
+- persistent storage: `false`;
+- cross-site tracking: `false`;
+- session replay: `false`.
 
-- prose;
-- project status;
-- evidence;
-- timelines;
-- Notes identity/relations.
+Policy строго валидируется; unknown/expanded privacy fields не принимаются молча.
 
-Build-time implementation:
+### Build-time integration
 
-`scripts/i18n.js`
+Добавлен:
 
-Он валидирует safe/unique pairs и детерминированно добавляет locale semantics.
+`scripts/analytics.js`
 
-### SEO / no-JS semantics
+Ключевой contract:
 
-Для всех семи пар реализовано:
+**без `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN` analytics полностью отсутствует из generated artifact.**
 
-- self-canonical RU;
-- self-canonical EN;
-- `hreflang=ru`;
-- `hreflang=en`;
-- `hreflang=x-default` → RU;
-- обычный anchor language switch, работающий без JS.
+Tokenless build:
 
-`en/index.html` публично canonicalizes к `/en/`.
+- проходит успешно;
+- HTML остаётся без analytics beacon;
+- CI/PR builds не имеют analytics network capability.
 
-English metadata/OpenGraph использует существующие `data/page-meta.json` и OG generator; отдельной SEO-системы нет.
+Token-enabled build:
 
-### Shared truth boundary
+- использует тот же `scripts/copy-assets.js` orchestrator;
+- внедряет один owned Cloudflare module/defer beacon на HTML page;
+- deterministic;
+- idempotent;
+- malformed configured token приводит к bounded build error.
 
-English project status берётся из того же `data/projects.json`.
+Real production token не коммитился и не выдумывался.
 
-Не создавались English copies:
+### Privacy boundary
 
-- Project Registry;
-- Project Evidence;
-- project timelines;
-- `data/notes.json`.
+TrueRuslan integration не добавляет:
 
-English LivingWorld — curated narrative mirror. Его machine-like Evidence/timeline не копируется: full generated layer остаётся на Russian canonical LivingWorld page из shared registries.
+- custom click/event tracking;
+- user/account IDs;
+- analytics cookies;
+- localStorage/sessionStorage analytics IDs;
+- persistent visitor IDs;
+- fingerprinting;
+- session replay;
+- advertising audiences;
+- cross-site tracking;
+- analytics-driven personalization/product behavior.
 
-English note translations не являются новыми Notes entities и не создают duplicate Atom entries.
+Любое расширение beyond `pageviews-and-rum` требует нового explicit design/privacy review.
 
-Untranslated project detail pages явно помечены `(RU)` / `Russian`.
+### RU/EN semantics
 
-### One-search boundary
+Одна analytics layer для всего сайта.
 
-Сохранён единственный site-wide index:
+Locale уже выражен URL structure:
 
-`_search/ru/index.html`
+- `/en/**` → EN;
+- root/`landing/**` → default/RU.
 
-`_search/en/` не создаётся.
+Не создавались locale cookie, user identity или отдельная EN analytics property/system.
 
-Dedicated browser gate отдельно проверяет отсутствие второго search index и что English UI использует existing search route.
+### Failure behavior
 
-### Standalone English homepage
+Analytics остаётся optional telemetry.
 
-`templates/index.en.html` генерируется через те же `standalone-home` / Project Registry primitives, что и Russian homepage.
+При ad/privacy blocker, network failure или unavailable provider:
 
-Active project cards переиспользуют canonical registry:
+- content не зависит от analytics;
+- navigation не зависит от analytics;
+- search не зависит от analytics;
+- language switching не зависит от analytics;
+- никаких product retry/state semantics вокруг analytics не создаётся.
 
-- LivingWorld → English case study;
-- untranslated details → Russian routes с CTA `Open case study (RU) →`.
+### Dedicated privacy/failure gate
 
-### Accessibility defects, найденные feature gate
+Добавлен:
 
-Первый dedicated bilingual browser run обнаружил два реальных hydrated Diplodoc defect class на mobile English LivingWorld:
+`scripts/analytics-browser-smoke.cjs`
 
-1. icon-only `.dc-sidebar-navigation__button` и `.dc-subnavigation__share-button` без accessible name;
-2. горизонтально scrollable hydrated `pre code` regions без keyboard focusability.
+и обязательный CI step:
 
-Axe rules **не отключались** и smoke не был ослаблен.
+`Privacy-friendly analytics browser smoke`
 
-Root-cause fix внесён в existing progressive `repairRuntimeAccessibility()`:
+Gate:
 
-- locale-aware accessible names для runtime navigation/share controls;
-- `tabindex=0` для реально scrollable code regions.
+1. доказывает 0 analytics beacons в normal CI artifact;
+2. создаёт temporary copy;
+3. внедряет только fixed fake token;
+4. блокирует Cloudflare analytics network endpoints;
+5. проверяет RU, EN и generated search;
+6. проверяет exact bounded beacon config;
+7. проверяет отсутствие analytics-related cookies/storage;
+8. проверяет продукт при blocked analytics;
+9. проверяет overflow + serious/critical Axe.
 
-Таким образом P2.1 улучшил не только EN layer, но и общий hydrated accessibility contract.
+CI никогда не отправляет real analytics через этот gate.
 
-### TDD / verification trail
+### TDD / debugging trail
 
-#### Build #310 — RED
+#### Build #341 — expected RED
 
-Run `29997485306`.
+Run `30002195925`.
 
-Canonical i18n test существовал до `scripts/i18n.js` / `data/i18n.json`; `Test` ожидаемо failed, downstream skipped.
+Policy tests появились до `scripts/analytics.js`; `Test` failed, downstream skipped.
 
-#### Build #314 — RED
+#### Build #343 — GREEN checkpoint
 
-Locale-aware project-card и multi-target registry contract был добавлен до implementation.
+Strict policy/token contract passed.
 
-#### Build #318 — RED
+#### Build #344 — expected RED
 
-Contracts потребовали explicit RU fallback CTA и nested `/en/` directory canonical до implementation.
+Run `30002327923`.
 
-#### Build #321 — RED
+Deterministic injection contract появился до injection implementation.
 
-Standalone homepage test потребовал `ctaTransform` pass-through до implementation.
+#### Build #345 — GREEN checkpoint
 
-#### Build #332 — integration checkpoint
+Injection tests + production build + integrity passed.
 
-Production Diplodoc build и generated-site integrity GREEN после core bilingual integration.
+#### Build #346 — expected RED
 
-#### Build #334 — browser RED
+Run `30002524534`.
 
-Run `29999035740`.
+`postprocessOutput()` ещё не владел analytics integration contract.
 
-Новый `Minimal RU EN browser smoke` впервые дошёл до hydrated EN pages и обнаружил реальные Axe violations. Existing gates до него были green.
+#### Build #347 — GREEN checkpoint
 
-После exact-node diagnostics исправлена причина, а не тест.
+Single-orchestrator integration passed; tokenless production default preserved.
 
-#### Build #339 — final GREEN
+#### Build #350 — browser RED
+
+Run `30002983283`.
+
+Все старые gates до analytics step были green. Новый analytics smoke упал на generated search, потому что тест ошибочно предполагал наличие `<main>` на каждой generated surface.
+
+Root cause подтверждён preserved log и сравнением с canonical `search-smoke.cjs`: Diplodoc search рендерится через `#root` + search input.
+
+Исправлена модель теста, а не privacy assertions:
+
+- all surfaces требуют non-empty body;
+- normal pages сохраняют `main + H1` contract;
+- search требует visible search input;
+- cookie/storage/blocking/config/overflow/Axe assertions не ослаблены.
+
+#### Build #351 — final GREEN
 
 Exact head:
 
-`d5f2490bbd7beac7343c96edf1fb6e8feb9b51c6`
+`577fe9149988497d954f8ad9316467089ce50286`
 
 Run:
 
-`30000373281`
+`30003347268`
 
 Полностью green:
 
@@ -220,57 +249,80 @@ Run:
 - Portfolio v0.3;
 - Firefox/WebKit;
 - generated search;
-- **Minimal RU EN browser smoke**;
+- Minimal RU EN browser smoke;
+- **Privacy-friendly analytics browser smoke**;
 - Metadata/OpenGraph;
 - Engineering Map;
 - unchanged visual regression;
 - quality evidence upload.
 
-Final bilingual gate проверяет все 7 pairs, canonical/hreflang, no-JS EN↔RU, one-search boundary, H1, overflow, browser diagnostics и Axe.
+### Production activation status
+
+**Implementation завершена; actual production analytics activation не подтверждена.**
+
+Причина: реального Cloudflare Web Analytics site token для actual production hostname в доступном project context нет.
+
+Нельзя считать feature operationally active только по факту merge.
+
+Для activation нужно отдельно:
+
+1. подтвердить actual production deployment mechanism;
+2. создать/configure Cloudflare Web Analytics site;
+3. получить public site token;
+4. передать его production build environment как `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`;
+5. rebuild/redeploy;
+6. проверить generated beacon и actual provider telemetry.
+
+До этого production остаётся analytics-free by design.
 
 ### Architecture preserved
 
+Не изменялись:
+
+- dependency/package-lock graph;
+- visual baselines/thresholds;
+- Lighthouse budgets;
+- Project Evidence/trust semantics;
+- one-search boundary;
+- RU/EN source-of-truth architecture.
+
 Не добавлялись:
 
-- dependency/package-lock changes;
-- second search index;
-- second build;
 - backend/CMS/database;
-- runtime translation API;
-- visual baseline/threshold weakening;
-- duplicated Evidence/timeline/Notes truth.
+- self-hosted analytics infra;
+- custom events;
+- cookie banner без технической необходимости;
+- runtime analytics dependency.
 
 ### Result
 
-P2.1 закрыт.
+P2.2 code milestone закрыт.
 
-Следующий actionable priority:
+Следующий правильный шаг — **P2.2a production activation + observation**, а не автоматический новый feature.
 
-**P2.2 — Privacy-friendly analytics design**.
+После реальных aggregate data следующая product decision должна быть evidence-driven.
 
-Первая genuine Photo Story остаётся independent content-dependent track.
+---
+
+## P2.1 — Minimal RU/EN
+
+**PR #38 — `feat: add minimal RU EN portfolio layer`**
+
+Squash `00f7513f685b8a8348005d0ab704ce96abe64950`.
+
+Exact head `d5f2490bbd7beac7343c96edf1fb6e8feb9b51c6`, Build #339 / run `30000373281` fully green.
+
+Реализованы ровно 7 bilingual pairs при one-build/one-search/shared-truth architecture. Новый bilingual Axe gate также обнаружил и помог исправить hydrated Diplodoc accessible-name/scrollable-code defects без ослабления Axe.
 
 ---
 
 ## P1.4 — Additional Grounded Engineering Notes
 
-**PR #36 — `content: add grounded LLM protocol boundary note`**
-
-Squash `24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`.
+PR #36 / squash `24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`.
 
 Exact head `ced6ce0208d691fd891e8b8e1cf03be4c40465d5`, Build #308 / run `29961571632` fully green.
 
-Добавлена седьмая note:
-
-`llm-output-is-a-protocol-boundary`
-
-Главный lesson:
-
-**provider success ≠ application contract success**.
-
-Source verification выполнена по текущему `True-Ruslan/minecraft-botics-ai`: strict parser/config/tests, architecture и RC degradation contract. Недоступные historical MCA incidents не превращены в independently verified public facts.
-
-TDD: Build #303 RED → Build #308 full GREEN.
+Добавлена `llm-output-is-a-protocol-boundary`. Главный lesson: **provider success ≠ application contract success**.
 
 ---
 
@@ -278,47 +330,39 @@ TDD: Build #303 RED → Build #308 full GREEN.
 
 ## P1.3 — Stronger Flagship Case-Study Format
 
-**PR #34** / squash `107b69311f6eed408de5306406d9ff41f0e32ea2`.
-
-Exact head `edda2fbbf94b808f8955a2efb00e885dbb964040`, Build #301 / run `29958607263` fully green.
+PR #34 / squash `107b69311f6eed408de5306406d9ff41f0e32ea2`, Build #301.
 
 LivingWorld и NODE ZERO получили общий Markdown-first contract:
 
 `Problem → Constraints → Decisions → What failed → Current state → Evidence → What I would change now`.
 
-Canonical Registry/timeline/Evidence ownership сохранён. Added structural contract test.
+Canonical Registry/timeline/Evidence ownership сохранён.
 
 ## P1.2 — Project Metadata Cleanup
 
-**PR #31** / squash `1df2a2905ef2eb4b52173271f9012defc33b25ab`.
+PR #31 / squash `1df2a2905ef2eb4b52173271f9012defc33b25ab`, Build #296.
 
-Exact head `12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`, Build #296 fully green.
-
-Result: `private: true`, truthful engineering portfolio identity, canonical URLs/keywords, metadata contract. `version: 0.2.0` оставлен намеренно до release contract.
+Package identity приведён к engineering portfolio / knowledge platform; `private: true`; version не используется как maturity indicator.
 
 ## P1.1 — Consolidated Browser Quality Harness
 
-**PR #29** / squash `06e60425e31ef19ddae0c3ac8b0991808b45837e`.
-
-Exact head `00633c69e56354cbb8821c34a1b772cf259c3e18`, Build #293 fully green.
+PR #29 / squash `06e60425e31ef19ddae0c3ac8b0991808b45837e`, Build #293.
 
 Создан modular `scripts/quality-harness/`; focused runners сохранили domain ownership.
 
 ## P0.6 — Content Freshness Guard
 
-**PR #27** / squash `33770983789fbde5c59a94972709360286a06ad5`.
+PR #27 / squash `33770983789fbde5c59a94972709360286a06ad5`, Build #269.
 
-Exact head `4b50dd78a41b3cbe2fce327e6c752508134862d0`, Build #269 fully green.
+Guard обнаруживает drift, но не переписывает public truth/trust автоматически.
 
-Guard обнаруживает freshness/link/repository/release/timeline/signal drift, но не переписывает public truth/trust автоматически.
-
-Repository-hygiene note: случайный временный `_never_` probe commit был немедленно удалён; net tree effect zero.
+Repository-hygiene incident: временный `_never_` probe commit `4f7ec91...` был немедленно удалён cleanup `b5ce6e5...`; net tree effect zero.
 
 ## P0.5 — Grounded Engineering Notes
 
-**PR #25** / squash `f2775b7c9150281bcb4bcc01a4e021e007e18ca0`, Build #257.
+PR #25 / squash `f2775b7c9150281bcb4bcc01a4e021e007e18ca0`, Build #257.
 
-Добавлены:
+Добавлены repository-grounded Notes:
 
 - `intersection-observer-giant-table`;
 - `static-first-sources-no-js`;
@@ -326,7 +370,7 @@ Repository-hygiene note: случайный временный `_never_` probe c
 
 ## Portfolio v0.4 — Project Evidence Layer
 
-**PR #22** / squash `e3e48ac56b45eddeb872c04b83bff1408da6556f`, Build #247.
+PR #22 / squash `e3e48ac56b45eddeb872c04b83bff1408da6556f`, Build #247.
 
 Canonical evidence snapshots, `verified / stale / unverified`, bounded signals, trust-aware rendering/QA.
 
@@ -334,9 +378,9 @@ Key lesson: **green CI не равно verified product без bounded scope и 
 
 ## Portfolio v0.4 — Sources Registry / Knowledge Base
 
-**PR #20** / squash `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`.
+PR #20 / squash `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`.
 
-31 real records, canonical `data/sources.json`, strict validation, semantic cards, filters, anchors, responsive/no-JS fallback.
+31 real records, canonical `data/sources.json`, strict validation, semantic cards, filters, stable anchors, responsive/no-JS fallback.
 
 ## Photo Stories
 
@@ -344,13 +388,13 @@ PR #15 platform / squash `8aa2149fc8aec3751f2da73321c06a89111f9efd`.
 
 PR #17 QA / squash `7936638bd6473ad4f1ff0b2ef42db2289e937d83`.
 
-Photo Stories platform готова; fake/demo album не создавался.
+Platform готова; fake/demo album не создавался.
 
 ## Portfolio v0.3 — living engineering space
 
 PR #13 / squash `b472aff67d69fb3cd6afa0577864371547f52a5b`.
 
-Milestone закрепил переход от landing page к living engineering portfolio / knowledge platform: Project Registry, `/now`, timelines, Engineering Notes/feed, Engineering Map, command palette, stronger generated-site QA.
+Закреплён переход от landing page к living engineering portfolio / knowledge platform: Project Registry, `/now`, timelines, Engineering Notes/feed, Engineering Map, command palette и stronger generated-site QA.
 
 ---
 
@@ -362,4 +406,4 @@ Milestone закрепил переход от landing page к living engineerin
 2. `docs/ROADMAP.md`;
 3. `docs/CHANGELOG.md`.
 
-Эти docs — snapshot, не замена actual repository checks. В новом чате поверх них всегда проверять open PR, latest commits и exact-head CI.
+Эти docs — snapshot, не замена actual repository checks. В новом чате поверх них всегда проверять open PR, latest commits, exact-head CI и отдельно operational facts вроде deployment/analytics/freshness runs.
