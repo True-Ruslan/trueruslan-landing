@@ -54,14 +54,22 @@ test('renderStandaloneHome supports English UI copy and transformed active-proje
     <link rel="canonical" href="{{SITE_URL}}/en/">
   </head><body><h1>Ruslan Nemykin</h1><section>{{CURRENTLY_BUILDING}}</section></body></html>`;
 
-  const html = renderStandaloneHome(template, 'https://example.test/', validProjects, {
+  const projects = [
+    validProjects[0],
+    {...validProjects[1], active: true, slug: 'node-zero', name: 'NODE ZERO', href: 'landing/projects/node-zero.html'},
+  ];
+  const html = renderStandaloneHome(template, 'https://example.test/', projects, {
     locale: 'en',
-    hrefTransform: () => 'projects/livingworld.html',
+    hrefTransform: (href, project) => project.slug === 'livingworld' ? 'en/projects/livingworld.html' : href,
+    ctaTransform: (project, defaultCta) => project.slug === 'livingworld' ? defaultCta : 'Open case study (RU) →',
   });
 
   assert.match(html, /LivingWorld/);
   assert.match(html, /Technologies and areas/);
+  assert.match(html, /href="en\/projects\/livingworld\.html"/);
   assert.match(html, /Open case study →/);
-  assert.match(html, /href="projects\/livingworld\.html"/);
+  assert.match(html, /NODE ZERO/);
+  assert.match(html, /href="landing\/projects\/node-zero\.html"/);
+  assert.match(html, /Open case study \(RU\) →/);
   assert.doesNotMatch(html, /Открыть case study/);
 });
