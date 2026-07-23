@@ -87,6 +87,23 @@ test('renderProjectCards localizes bounded UI copy and accepts safe href transfo
   assert.throws(() => renderProjectCards([validProject], {locale: 'de'}), /unsupported project card locale/i);
 });
 
+test('renderProjectCards can explicitly mark untranslated English fallbacks without duplicating project data', () => {
+  const nodeZero = {
+    ...validProject,
+    slug: 'node-zero',
+    name: 'NODE ZERO',
+    href: 'landing/projects/node-zero.html',
+  };
+  const html = renderProjectCards([validProject, nodeZero], {
+    locale: 'en',
+    hrefTransform: (href, project) => project.slug === 'livingworld' ? 'en/projects/livingworld.html' : href,
+    ctaTransform: (project, defaultCta) => project.slug === 'livingworld' ? defaultCta : 'Open case study (RU) →',
+  });
+
+  assert.match(html, /href="en\/projects\/livingworld\.html"[^>]*>[\s\S]*?Open case study →/);
+  assert.match(html, /href="landing\/projects\/node-zero\.html"[^>]*>[\s\S]*?Open case study \(RU\) →/);
+});
+
 test('renderProjectStatus derives the public badge from canonical registry state', () => {
   const html = renderProjectStatus(validProject);
   assert.match(html, /tr-project-status--release-candidate/);
