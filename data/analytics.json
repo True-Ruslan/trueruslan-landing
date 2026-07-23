@@ -1,0 +1,10 @@
+{
+  "provider": "cloudflare-web-analytics",
+  "measurement": "pageviews-and-rum",
+  "activation": "token-required",
+  "customEvents": false,
+  "cookies": false,
+  "persistentStorage": false,
+  "crossSiteTracking": false,
+  "sessionReplay": false
+}

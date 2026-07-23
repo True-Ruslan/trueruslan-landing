@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 
 import {globSync} from 'glob';
 
+import {applyAnalytics, loadAnalyticsPolicy} from './analytics.js';
 import {applyEngineeringGraph, loadEngineeringGraph} from './engineering-graph.js';
 import {applyI18n, loadI18nManifest} from './i18n.js';
 import {
@@ -43,6 +44,7 @@ const OUTPUT_DIR = path.join(ROOT, 'docs-html');
 const STANDALONE_HOME_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 const STANDALONE_HOME_EN_TEMPLATE = path.join(ROOT, 'templates', 'index.en.html');
 const PAGE_META_MANIFEST = path.join(ROOT, 'data', 'page-meta.json');
+const ANALYTICS_POLICY_MANIFEST = path.join(ROOT, 'data', 'analytics.json');
 const I18N_MANIFEST = path.join(ROOT, 'data', 'i18n.json');
 const ENGINEERING_GRAPH_MANIFEST = path.join(ROOT, 'data', 'engineering-graph.json');
 const PROJECTS_MANIFEST = path.join(ROOT, 'data', 'projects.json');
@@ -223,6 +225,8 @@ export function postprocessOutput({
   standaloneTemplatePath = STANDALONE_HOME_TEMPLATE,
   standaloneEnTemplatePath = STANDALONE_HOME_EN_TEMPLATE,
   pageMetaPath = PAGE_META_MANIFEST,
+  analyticsPolicyPath,
+  analyticsToken = process.env.TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN,
   i18nPath,
   engineeringGraphPath = ENGINEERING_GRAPH_MANIFEST,
   projectRegistryPath = PROJECTS_MANIFEST,
@@ -245,6 +249,8 @@ export function postprocessOutput({
   const notes = loadNotesManifest(notesPath, {docsDir});
 
   const isProductionDocs = path.resolve(docsDir) === path.resolve(DOCS_DIR);
+  const resolvedAnalyticsPolicyPath = analyticsPolicyPath ?? (isProductionDocs ? ANALYTICS_POLICY_MANIFEST : null);
+  const analyticsPolicy = resolvedAnalyticsPolicyPath ? loadAnalyticsPolicy(resolvedAnalyticsPolicyPath) : null;
   const resolvedI18nPath = i18nPath ?? (isProductionDocs ? I18N_MANIFEST : null);
   const i18nPairs = resolvedI18nPath ? loadI18nManifest(resolvedI18nPath) : null;
   const resolvedProjectEvidencePath = projectEvidencePath ?? (isProductionDocs ? PROJECT_EVIDENCE_MANIFEST : null);
@@ -331,6 +337,9 @@ export function postprocessOutput({
   const i18nTargets = i18nPairs ? applyI18n(outputDir, i18nPairs, siteUrl) : [];
   const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
   const feedDiscoveryUpdated = applyFeedDiscovery(outputDir, siteUrl);
+  const analytics = analyticsPolicy
+    ? applyAnalytics(outputDir, analyticsPolicy, analyticsToken)
+    : {enabled: false, updated: [], provider: null};
 
   return {
     copied: [...copied, ...copiedSearchResources],
@@ -354,6 +363,7 @@ export function postprocessOutput({
     metadataUpdated,
     i18nTargets,
     personSchemaInjected,
+    analytics,
   };
 }
 
@@ -380,6 +390,11 @@ function main() {
     if (result.i18nTargets.length) console.log(`Injected RU/EN alternates into ${result.i18nTargets.length} localized HTML page(s).`);
     if (result.feedDiscoveryUpdated) console.log(`Injected feed discovery into ${result.feedDiscoveryUpdated} page(s).`);
     if (result.personSchemaInjected) console.log('Person schema injected into index.html.');
+    if (result.analytics.enabled) {
+      console.log(`Analytics: ${result.analytics.provider} enabled on ${result.analytics.updated.length} HTML page(s).`);
+    } else {
+      console.log('Analytics: disabled (no token).');
+    }
     console.log('Assets and SEO files created successfully.');
   } catch (error) {
     console.error(`Post-processing failed: ${error.message}`);

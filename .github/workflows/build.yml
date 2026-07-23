@@ -88,6 +88,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/i18n-browser-smoke.cjs 2>&1 | tee i18n-browser-smoke.log
+      - name: Privacy-friendly analytics browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/analytics-browser-smoke.cjs 2>&1 | tee analytics-browser-smoke.log
       - name: Metadata and OpenGraph browser smoke
         shell: bash
         run: |
@@ -120,6 +125,7 @@ jobs:
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke 2>/dev/null || true
           cp i18n-browser-smoke.log quality-artifacts/i18n-browser-smoke.log 2>/dev/null || true
+          cp analytics-browser-smoke.log quality-artifacts/analytics-browser-smoke.log 2>/dev/null || true
           cp metadata-smoke.log quality-artifacts/metadata-smoke.log 2>/dev/null || true
           cp engineering-graph-smoke.log quality-artifacts/engineering-graph-smoke.log 2>/dev/null || true
           cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
