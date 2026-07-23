@@ -13,6 +13,19 @@ import {
 import {readPngDimensions} from './og-image.js';
 import {injectSseIntoHtml} from './serve.js';
 
+const testAnalyticsPolicy = Object.freeze({
+  provider: 'cloudflare-web-analytics',
+  measurement: 'pageviews-and-rum',
+  activation: 'token-required',
+  customEvents: false,
+  cookies: false,
+  persistentStorage: false,
+  crossSiteTracking: false,
+  sessionReplay: false,
+});
+
+const testAnalyticsToken = 'testAnalyticsToken0123456789ABCDEF';
+
 test('walkAssets copies supported image and PDF files preserving paths', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-assets-'));
   const docsDir = path.join(tempRoot, 'docs');
@@ -66,12 +79,13 @@ test('writeRobotsTxt and writeSitemap create files', () => {
   }
 });
 
-test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card and SEO output', () => {
+test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytics, OG card and SEO output', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-postprocess-'));
   const docsDir = path.join(tempRoot, 'docs');
   const templatePath = path.join(tempRoot, 'templates', 'index.html');
   const dataDir = path.join(tempRoot, 'data');
   const pageMetaPath = path.join(dataDir, 'page-meta.json');
+  const analyticsPolicyPath = path.join(dataDir, 'analytics.json');
   const engineeringGraphPath = path.join(dataDir, 'engineering-graph.json');
   const projectRegistryPath = path.join(dataDir, 'projects.json');
   const nowPath = path.join(dataDir, 'now.json');
@@ -96,6 +110,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card 
     templatePath,
     '<!doctype html><html><head><link rel="canonical" href="{{SITE_URL}}/"></head><body class="g-root"><h1>Руслан Немыкин</h1><section>{{CURRENTLY_BUILDING}}</section></body></html>',
   );
+  fs.writeFileSync(analyticsPolicyPath, JSON.stringify(testAnalyticsPolicy));
   fs.writeFileSync(projectRegistryPath, JSON.stringify([{
     slug: 'test-project',
     name: 'Test Project',
@@ -168,6 +183,8 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card 
     docsDir,
     standaloneTemplatePath: templatePath,
     pageMetaPath,
+    analyticsPolicyPath,
+    analyticsToken: testAnalyticsToken,
     engineeringGraphPath,
     projectRegistryPath,
     projectHistoryDir: historyDir,
@@ -196,6 +213,9 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card 
   assert.equal(result.ogCards.length, 1);
   assert.equal(result.metadataUpdated, 1);
   assert.equal(result.personSchemaInjected, true);
+  assert.equal(result.analytics.enabled, true);
+  assert.equal(result.analytics.provider, 'cloudflare-web-analytics');
+  assert.ok(result.analytics.updated.includes('index.html'));
   assert.match(projectsHtml, /PRODUCTION/);
   assert.match(mapHtml, /data-tr-engineering-graph-build="ready"/);
   assert.match(mapHtml, /data-tr-engineering-graph-data/);
@@ -210,6 +230,8 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, OG card 
   assert.match(html, /https:\/\/example\.test\/assets\/og\/home\.png/);
   assert.match(html, /summary_large_image/);
   assert.match(html, /data-tr-local-path="\/assets\/og\/home\.png"/);
+  assert.match(html, /data-tr-analytics="cloudflare-web-analytics"/);
+  assert.match(html, /testAnalyticsToken0123456789ABCDEF/);
   assert.doesNotMatch(html, /g-root_theme_light/);
   assert.doesNotMatch(html, /_bundle\//);
   assert.match(html, /application\/ld\+json/);
