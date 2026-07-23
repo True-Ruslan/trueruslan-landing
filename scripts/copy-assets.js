@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {globSync} from 'glob';
 
 import {applyEngineeringGraph, loadEngineeringGraph} from './engineering-graph.js';
+import {applyI18n, loadI18nManifest} from './i18n.js';
 import {
   applyFeedDiscovery,
   applyNoteEnhancements,
@@ -40,7 +41,9 @@ const ROOT = path.join(__dirname, '..');
 const DOCS_DIR = path.join(ROOT, 'docs');
 const OUTPUT_DIR = path.join(ROOT, 'docs-html');
 const STANDALONE_HOME_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
+const STANDALONE_HOME_EN_TEMPLATE = path.join(ROOT, 'templates', 'index.en.html');
 const PAGE_META_MANIFEST = path.join(ROOT, 'data', 'page-meta.json');
+const I18N_MANIFEST = path.join(ROOT, 'data', 'i18n.json');
 const ENGINEERING_GRAPH_MANIFEST = path.join(ROOT, 'data', 'engineering-graph.json');
 const PROJECTS_MANIFEST = path.join(ROOT, 'data', 'projects.json');
 const PROJECT_EVIDENCE_MANIFEST = path.join(ROOT, 'data', 'project-evidence.json');
@@ -204,11 +207,23 @@ function loadPhotoRegistries(photoAlbumsPath, photoArchivePath, docsDir) {
   };
 }
 
+function englishProjectHref(href) {
+  if (href === 'landing/projects/livingworld.html') return 'en/projects/livingworld.html';
+  if (href === 'landing/projects.html') return 'en/projects.html';
+  return href;
+}
+
+function englishProjectCta(project, defaultCta) {
+  return englishProjectHref(project.href) === project.href ? 'Open case study (RU) →' : defaultCta;
+}
+
 export function postprocessOutput({
   outputDir = OUTPUT_DIR,
   docsDir = DOCS_DIR,
   standaloneTemplatePath = STANDALONE_HOME_TEMPLATE,
+  standaloneEnTemplatePath = STANDALONE_HOME_EN_TEMPLATE,
   pageMetaPath = PAGE_META_MANIFEST,
+  i18nPath,
   engineeringGraphPath = ENGINEERING_GRAPH_MANIFEST,
   projectRegistryPath = PROJECTS_MANIFEST,
   projectHistoryDir = DEFAULT_HISTORY_DIR,
@@ -230,6 +245,8 @@ export function postprocessOutput({
   const notes = loadNotesManifest(notesPath, {docsDir});
 
   const isProductionDocs = path.resolve(docsDir) === path.resolve(DOCS_DIR);
+  const resolvedI18nPath = i18nPath ?? (isProductionDocs ? I18N_MANIFEST : null);
+  const i18nPairs = resolvedI18nPath ? loadI18nManifest(resolvedI18nPath) : null;
   const resolvedProjectEvidencePath = projectEvidencePath ?? (isProductionDocs ? PROJECT_EVIDENCE_MANIFEST : null);
   const projectEvidence = resolvedProjectEvidencePath
     ? loadProjectEvidence(resolvedProjectEvidencePath, {projects})
@@ -258,7 +275,25 @@ export function postprocessOutput({
     projectRegistryPath,
     siteUrl,
   });
-  const projectStatusTargets = applyProjectRegistryContent(outputDir, projects);
+  const standaloneHomeEnPath = i18nPairs
+    ? writeStandaloneHome({
+      templatePath: standaloneEnTemplatePath,
+      outputPath: path.join(outputDir, 'en', 'index.html'),
+      projectRegistryPath,
+      siteUrl,
+      locale: 'en',
+      hrefTransform: englishProjectHref,
+      ctaTransform: englishProjectCta,
+    })
+    : null;
+
+  const projectStatusTargets = applyProjectRegistryContent(
+    outputDir,
+    projects,
+    i18nPairs
+      ? {targets: ['landing/projects.html', 'en/projects.html', 'en/projects/livingworld.html']}
+      : undefined,
+  );
   const nowPageTarget = applyNowPage(outputDir, nowData, projects);
   const timelineTargets = applyProjectTimelines(outputDir, projects, projectHistoryDir);
   const projectEvidenceTargets = projectEvidence
@@ -280,7 +315,12 @@ export function postprocessOutput({
     })
     : {routes: [], albumRoutes: [], indexPath: null, legacyPath: null};
 
-  writeSitemap(outputDir, siteUrl, path.join(docsDir, 'toc.yaml'), photoStories.routes);
+  writeSitemap(
+    outputDir,
+    siteUrl,
+    path.join(docsDir, 'toc.yaml'),
+    [...photoStories.routes, ...(i18nPairs ? ['en/'] : [])],
+  );
 
   const engineeringGraph = loadEngineeringGraph(engineeringGraphPath, {projects});
   const engineeringGraphTarget = applyEngineeringGraph(outputDir, engineeringGraph);
@@ -288,6 +328,7 @@ export function postprocessOutput({
   const pageMeta = loadPageMeta(pageMetaPath);
   const ogCards = writeOgCards(outputDir, pageMeta);
   const metadataUpdated = applyPageMeta(outputDir, pageMeta, siteUrl);
+  const i18nTargets = i18nPairs ? applyI18n(outputDir, i18nPairs, siteUrl) : [];
   const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
   const feedDiscoveryUpdated = applyFeedDiscovery(outputDir, siteUrl);
 
@@ -295,6 +336,7 @@ export function postprocessOutput({
     copied: [...copied, ...copiedSearchResources],
     normalizedSearchPages,
     standaloneHomePath,
+    standaloneHomeEnPath,
     projectStatusTargets,
     nowPageTarget,
     timelineTargets,
@@ -310,6 +352,7 @@ export function postprocessOutput({
     engineeringGraphTarget,
     ogCards,
     metadataUpdated,
+    i18nTargets,
     personSchemaInjected,
   };
 }
@@ -321,6 +364,7 @@ function main() {
     for (const file of result.copied) console.log(`Copied: ${file}`);
     if (result.normalizedSearchPages) console.log(`Normalized ${result.normalizedSearchPages} local-search HTML page(s).`);
     console.log(`Standalone homepage written: ${result.standaloneHomePath}`);
+    if (result.standaloneHomeEnPath) console.log(`English standalone homepage written: ${result.standaloneHomeEnPath}`);
     console.log(`Injected ${result.projectStatusTargets} registry-derived project status badge(s).`);
     console.log(`Now page injected: ${result.nowPageTarget}`);
     console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
@@ -333,6 +377,7 @@ function main() {
     console.log(`Engineering Map injected: ${result.engineeringGraphTarget}`);
     console.log(`Generated ${result.ogCards.length} OpenGraph PNG card(s).`);
     console.log(`Injected page metadata into ${result.metadataUpdated} HTML page(s).`);
+    if (result.i18nTargets.length) console.log(`Injected RU/EN alternates into ${result.i18nTargets.length} localized HTML page(s).`);
     if (result.feedDiscoveryUpdated) console.log(`Injected feed discovery into ${result.feedDiscoveryUpdated} page(s).`);
     if (result.personSchemaInjected) console.log('Person schema injected into index.html.');
     console.log('Assets and SEO files created successfully.');
