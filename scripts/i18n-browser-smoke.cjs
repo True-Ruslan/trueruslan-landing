@@ -36,6 +36,19 @@ function localRouteFromPublicHref(href) {
   return route === '/' ? '/index.html' : route.endsWith('/') ? `${route}index.html` : route;
 }
 
+function formatAxeViolations(violations) {
+  return violations.map((violation) => ({
+    id: violation.id,
+    impact: violation.impact,
+    help: violation.help,
+    nodes: violation.nodes.map((node) => ({
+      target: node.target,
+      html: node.html,
+      failureSummary: node.failureSummary,
+    })),
+  }));
+}
+
 async function assertSeoPair(page, pair, locale, label) {
   const ownPath = locale === 'en' ? pair.en : pair.ru;
   const counterpartLocale = locale === 'en' ? 'ru' : 'en';
@@ -135,7 +148,9 @@ async function assertQuality(browser, baseUrl) {
       const overflow = (await assertNoHorizontalOverflow(page, `i18n:${scenario.name}`)).overflow;
       const axe = await new AxeBuilder({page}).analyze();
       const serious = blockingAxeViolations(axe);
-      if (serious.length) throw new Error(`${scenario.name}: Axe serious/critical violations: ${serious.map((item) => item.id).join(', ')}`);
+      if (serious.length) {
+        throw new Error(`${scenario.name}: Axe serious/critical violations: ${JSON.stringify(formatAxeViolations(serious))}`);
+      }
       diagnostics.assertClean(`i18n:${scenario.name}`);
       await captureScreenshot(page, `i18n-${scenario.name}.png`);
       results[scenario.name] = {overflow, seriousAxeViolations: serious.length};
