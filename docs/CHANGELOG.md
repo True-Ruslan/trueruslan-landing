@@ -1,8 +1,8 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-07-23**, после merge P1.4 Additional Grounded Engineering Notes PR #36.
+> Обновлено: **2026-07-23**, после merge P2.1 Minimal RU/EN PR #38.
 >
-> Это не машинный список коммитов. Здесь фиксируются смысловые этапы проекта: **что сделали, зачем, как именно, какие проблемы нашли и чем подтвердили результат**.
+> Это не машинный список коммитов. Здесь фиксируются смысловые этапы: **что сделали, зачем, какие решения приняли, какие проблемы обнаружили и чем подтвердили результат**.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`. Следующие шаги — `docs/ROADMAP.md`.
 
@@ -10,212 +10,267 @@
 
 # 2026-07-23
 
-## P1.4 — Additional Grounded Engineering Notes
+## P2.1 — Minimal RU/EN
 
 ### Зачем
 
-После P1.3 flagship case studies уже объясняли engineering reasoning человека, но roadmap оставлял ещё один content-depth шаг: добавить сильную note, основанную не на абстрактном AI-совете, а на реально проверяемом repository contract.
-
-Предпочтительным кандидатом был класс ошибок structured LLM output: malformed / almost-correct JSON, неверные types/null/coercion и разница между provider success и application contract success.
-
-### Обязательная source verification
-
-До написания note был проверен текущий private repository:
-
-`True-Ruslan/minecraft-botics-ai`
-
-Verified source basis:
-
-- `src/main/java/dev/trueruslan/livingworld/ai/AiDecisionParser.java`;
-- `src/test/java/dev/trueruslan/livingworld/ai/AiDecisionParserTest.java`;
-- `docs/ARCHITECTURE.md`;
-- `docs/RC_E2E_RUNBOOK.md`.
-
-Подтверждено кодом/tests/docs:
-
-- `FAIL_ON_UNKNOWN_PROPERTIES`;
-- `FAIL_ON_TRAILING_TOKENS`;
-- `FAIL_ON_NULL_FOR_PRIMITIVES`;
-- disabled float-to-int coercion;
-- disabled scalar coercion;
-- required-field validation;
-- bounded speech/relationship/memory/action limits;
-- exact action whitelist;
-- duplicate/conflicting action rejection;
-- negative tests для trailing tokens, strings/floats/nulls, null array elements и conflicts;
-- architecture flow `LLM proposal -> strict JSON validation -> deterministic persistence policy -> live action authorization`;
-- malformed provider response как explicit degradation scenario с bounded sanitized fallback и no unsafe state/world mutation.
-
-### Evidence boundary
-
-Старый MCA fork, где исторически встречались ранние provider/parser incidents, не был доступен через connected GitHub source во время P1.4.
-
-Поэтому публичная note намеренно **не утверждает конкретные старые stack traces, exact payloads, release numbers или chronology как independently verified facts**.
-
-Это сохранило repository-grounded характер content milestone.
+После завершения P1 portfolio уже имело сильные case studies, grounded technical writing, evidence/freshness layers и зрелую QA-инфраструктуру. Следующий product step — дать англоязычному читателю небольшой качественный вход в лучшие public surfaces, **не переводя весь knowledge space и не создавая второй расходящийся сайт**.
 
 ### Design decision
 
-Рассматривались варианты:
+Выбран вариант:
 
-1. одна глубокая note про structured LLM output как external protocol boundary — **выбрано**;
-2. одновременно добавить отдельную generic voice-pipeline note — отклонено из-за сильного overlap с `server-authoritative-ai-npcs`;
-3. объединить STT/LLM/TTS/timeouts/parsing в одну omnibus provider-reliability note — отклонено как слишком широкий scope.
+**один build + `/en/` namespace + один search index + shared canonical registries**.
+
+Отклонены:
+
+1. отдельный `docs-en/` + второй Diplodoc build — создаёт два navigation/search/build мира;
+2. custom EN HTML renderer — создаёт второй rendering system;
+3. полный перевод сайта одним milestone — высокий drift/maintenance cost без доказанной audience value.
 
 Design:
 
-`docs/superpowers/specs/2026-07-23-llm-output-protocol-boundary-note-design.md`
+`docs/superpowers/specs/2026-07-23-minimal-ru-en-design.md`
 
 Plan:
 
-`docs/superpowers/plans/2026-07-23-llm-output-protocol-boundary-note.md`
+`docs/superpowers/plans/2026-07-23-minimal-ru-en.md`
 
-### Implementation
+### Feature implementation
 
-**PR #36 — `content: add grounded LLM protocol boundary note`**
+**PR #38 — `feat: add minimal RU EN portfolio layer`**
 
-Squash commit:
+Squash:
 
-`24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`
+`00f7513f685b8a8348005d0ab704ce96abe64950`
 
 Exact implementation head:
 
-`ced6ce0208d691fd891e8b8e1cf03be4c40465d5`
+`d5f2490bbd7beac7343c96edf1fb6e8feb9b51c6`
 
-Добавлена note:
+Final verification:
 
-`llm-output-is-a-protocol-boundary`
+**Build #339 / run `30000373281`: fully green по полной configured matrix.**
 
-Публичный заголовок:
+### Controlled English scope
 
-**«Почему успешный ответ LLM ещё не означает успешный контракт»**.
+Созданы ровно семь bilingual pairs:
 
-Главный lesson:
+1. `/` ↔ `/en/`;
+2. About;
+3. Resume;
+4. Projects hub;
+5. LivingWorld;
+6. `server-authoritative-ai-npcs`;
+7. `llm-output-is-a-protocol-boundary`.
 
-> **Provider success не равен contract success.**
+Русский остаётся default/root language. Existing Russian URLs не менялись.
 
-Narrative разделяет уровни:
+English sources:
 
-```text
-transport/provider success
-        ↓
-syntax/schema validity
-        ↓
-domain contract validity
-        ↓
-persistence policy
-        ↓
-live action authorization
-```
+- `templates/index.en.html`;
+- `docs/en/about.md`;
+- `docs/en/resume.md`;
+- `docs/en/projects.md`;
+- `docs/en/projects/livingworld.md`;
+- `docs/en/notes/server-authoritative-ai-npcs.md`;
+- `docs/en/notes/llm-output-is-a-protocol-boundary.md`.
 
-Note объясняет:
+### Route-pair ownership
 
-- почему `200 OK` ещё ничего не говорит о domain validity;
-- почему trailing token делает «почти правильный» JSON invalid;
-- почему `1`, `"1"`, `1.0` и `null` нельзя молча считать одним значением;
-- почему permissive coercion на trust boundary скрывает protocol failure;
-- почему parser — security/trust boundary, а не convenience helper;
-- почему parsed `AiDecision` остаётся proposal;
-- зачем persistence policy и action authorization отдельны;
-- почему malformed response должен уходить в bounded deterministic fallback и не отравлять следующий healthy turn;
-- почему negative contract tests фиксируют то, что система обещает **не интерпретировать**.
+Добавлен:
 
-### Integration
+`data/i18n.json`
 
-Использована только существующая Notes architecture:
+Он владеет только deterministic relationship RU route ↔ EN route.
 
-- Markdown source;
-- `data/notes.json` canonical metadata/relations;
-- Notes hub;
-- `data/page-meta.json`;
-- `docs/toc.yaml`;
-- existing build-derived Atom/search/sitemap/SEO.
+Не владеет:
 
-Relations:
+- prose;
+- project status;
+- evidence;
+- timelines;
+- Notes identity/relations.
 
-- new note → `server-authoritative-ai-npcs`;
-- new note → `green-ci-is-not-product-verification`;
-- `server-authoritative-ai-npcs` → new note backlink.
+Build-time implementation:
 
-Всего Engineering Notes после milestone: **7**.
+`scripts/i18n.js`
 
-### TDD
+Он валидирует safe/unique pairs и детерминированно добавляет locale semantics.
 
-#### Build #303 — RED
+### SEO / no-JS semantics
+
+Для всех семи пар реализовано:
+
+- self-canonical RU;
+- self-canonical EN;
+- `hreflang=ru`;
+- `hreflang=en`;
+- `hreflang=x-default` → RU;
+- обычный anchor language switch, работающий без JS.
+
+`en/index.html` публично canonicalizes к `/en/`.
+
+English metadata/OpenGraph использует существующие `data/page-meta.json` и OG generator; отдельной SEO-системы нет.
+
+### Shared truth boundary
+
+English project status берётся из того же `data/projects.json`.
+
+Не создавались English copies:
+
+- Project Registry;
+- Project Evidence;
+- project timelines;
+- `data/notes.json`.
+
+English LivingWorld — curated narrative mirror. Его machine-like Evidence/timeline не копируется: full generated layer остаётся на Russian canonical LivingWorld page из shared registries.
+
+English note translations не являются новыми Notes entities и не создают duplicate Atom entries.
+
+Untranslated project detail pages явно помечены `(RU)` / `Russian`.
+
+### One-search boundary
+
+Сохранён единственный site-wide index:
+
+`_search/ru/index.html`
+
+`_search/en/` не создаётся.
+
+Dedicated browser gate отдельно проверяет отсутствие второго search index и что English UI использует existing search route.
+
+### Standalone English homepage
+
+`templates/index.en.html` генерируется через те же `standalone-home` / Project Registry primitives, что и Russian homepage.
+
+Active project cards переиспользуют canonical registry:
+
+- LivingWorld → English case study;
+- untranslated details → Russian routes с CTA `Open case study (RU) →`.
+
+### Accessibility defects, найденные feature gate
+
+Первый dedicated bilingual browser run обнаружил два реальных hydrated Diplodoc defect class на mobile English LivingWorld:
+
+1. icon-only `.dc-sidebar-navigation__button` и `.dc-subnavigation__share-button` без accessible name;
+2. горизонтально scrollable hydrated `pre code` regions без keyboard focusability.
+
+Axe rules **не отключались** и smoke не был ослаблен.
+
+Root-cause fix внесён в existing progressive `repairRuntimeAccessibility()`:
+
+- locale-aware accessible names для runtime navigation/share controls;
+- `tabindex=0` для реально scrollable code regions.
+
+Таким образом P2.1 улучшил не только EN layer, но и общий hydrated accessibility contract.
+
+### TDD / verification trail
+
+#### Build #310 — RED
+
+Run `29997485306`.
+
+Canonical i18n test существовал до `scripts/i18n.js` / `data/i18n.json`; `Test` ожидаемо failed, downstream skipped.
+
+#### Build #314 — RED
+
+Locale-aware project-card и multi-target registry contract был добавлен до implementation.
+
+#### Build #318 — RED
+
+Contracts потребовали explicit RU fallback CTA и nested `/en/` directory canonical до implementation.
+
+#### Build #321 — RED
+
+Standalone homepage test потребовал `ctaTransform` pass-through до implementation.
+
+#### Build #332 — integration checkpoint
+
+Production Diplodoc build и generated-site integrity GREEN после core bilingual integration.
+
+#### Build #334 — browser RED
+
+Run `29999035740`.
+
+Новый `Minimal RU EN browser smoke` впервые дошёл до hydrated EN pages и обнаружил реальные Axe violations. Existing gates до него были green.
+
+После exact-node diagnostics исправлена причина, а не тест.
+
+#### Build #339 — final GREEN
 
 Exact head:
 
-`380ed5e267b05eb4a2fad1b7019121c13c0f46f5`
+`d5f2490bbd7beac7343c96edf1fb6e8feb9b51c6`
 
 Run:
 
-`29961363873`
+`30000373281`
 
-Сначала `scripts/notes-content.test.js` был расширен обязательным slug:
-
-`llm-output-is-a-protocol-boundary`
-
-До production content `Test` ожидаемо упал; downstream build/browser gates были skipped.
-
-#### Build #308 — final GREEN
-
-Exact head:
-
-`ced6ce0208d691fd891e8b8e1cf03be4c40465d5`
-
-Run:
-
-`29961571632`
-
-Полностью green вся configured matrix:
+Полностью green:
 
 - tests;
 - production Diplodoc build;
 - generated-site integrity;
 - mobile overflow;
-- Chromium browser/Axe/Lighthouse;
-- Sources Knowledge Base;
+- Chromium/Axe/Lighthouse;
+- Sources KB;
 - Project Evidence;
 - Photo Stories;
 - Portfolio v0.3;
 - Firefox/WebKit;
 - generated search;
-- metadata/OpenGraph;
+- **Minimal RU EN browser smoke**;
+- Metadata/OpenGraph;
 - Engineering Map;
-- visual regression;
-- diagnostics/evidence upload.
+- unchanged visual regression;
+- quality evidence upload.
 
-### Scope proof
+Final bilingual gate проверяет все 7 pairs, canonical/hreflang, no-JS EN↔RU, one-search boundary, H1, overflow, browser diagnostics и Axe.
 
-Feature PR изменил ровно:
+### Architecture preserved
 
-- `data/notes.json`;
-- `data/page-meta.json`;
-- `docs/landing/notes.md`;
-- `docs/landing/notes/llm-output-is-a-protocol-boundary.md`;
-- P1.4 design;
-- P1.4 implementation plan;
-- `docs/toc.yaml`;
-- `scripts/notes-content.test.js`.
+Не добавлялись:
 
-Не менялись:
-
-- CSS;
-- Notes renderer/build architecture;
-- runtime APIs;
-- visual baselines/thresholds;
-- Lighthouse budgets;
-- CI workflow ordering.
+- dependency/package-lock changes;
+- second search index;
+- second build;
+- backend/CMS/database;
+- runtime translation API;
+- visual baseline/threshold weakening;
+- duplicated Evidence/timeline/Notes truth.
 
 ### Result
 
-P1 maintainability/depth sequence завершена.
+P2.1 закрыт.
 
-Следующий actionable roadmap priority:
+Следующий actionable priority:
 
-**P2.1 — Minimal RU/EN**.
+**P2.2 — Privacy-friendly analytics design**.
 
-Первая настоящая Photo Story остаётся content-dependent/non-blocking.
+Первая genuine Photo Story остаётся independent content-dependent track.
+
+---
+
+## P1.4 — Additional Grounded Engineering Notes
+
+**PR #36 — `content: add grounded LLM protocol boundary note`**
+
+Squash `24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`.
+
+Exact head `ced6ce0208d691fd891e8b8e1cf03be4c40465d5`, Build #308 / run `29961571632` fully green.
+
+Добавлена седьмая note:
+
+`llm-output-is-a-protocol-boundary`
+
+Главный lesson:
+
+**provider success ≠ application contract success**.
+
+Source verification выполнена по текущему `True-Ruslan/minecraft-botics-ai`: strict parser/config/tests, architecture и RC degradation contract. Недоступные historical MCA incidents не превращены в independently verified public facts.
+
+TDD: Build #303 RED → Build #308 full GREEN.
 
 ---
 
@@ -223,172 +278,88 @@ P1 maintainability/depth sequence завершена.
 
 ## P1.3 — Stronger Flagship Case-Study Format
 
-**PR #34 — `content: strengthen flagship case-study narratives`**
+**PR #34** / squash `107b69311f6eed408de5306406d9ff41f0e32ea2`.
 
-Squash:
-
-`107b69311f6eed408de5306406d9ff41f0e32ea2`
-
-Exact head:
-
-`edda2fbbf94b808f8955a2efb00e885dbb964040`
-
-Build #301 / run `29958607263`: **fully green**.
+Exact head `edda2fbbf94b808f8955a2efb00e885dbb964040`, Build #301 / run `29958607263` fully green.
 
 LivingWorld и NODE ZERO получили общий Markdown-first contract:
 
 `Problem → Constraints → Decisions → What failed → Current state → Evidence → What I would change now`.
 
-Canonical Project Registry / timeline / Project Evidence ownership сохранён. Добавлен structural contract `scripts/flagship-case-study.test.js`.
-
-TDD trail:
-
-- Build #299 — RED до миграции;
-- Build #300 — intermediate RED после LivingWorld;
-- Build #301 — final full matrix GREEN.
-
----
+Canonical Registry/timeline/Evidence ownership сохранён. Added structural contract test.
 
 ## P1.2 — Project Metadata Cleanup
 
-**PR #31 — `chore: align project metadata identity`**
+**PR #31** / squash `1df2a2905ef2eb4b52173271f9012defc33b25ab`.
 
-Squash:
+Exact head `12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`, Build #296 fully green.
 
-`1df2a2905ef2eb4b52173271f9012defc33b25ab`
-
-Exact head `12eed7ed5a8e56949a5e0cc6e777b0e9258c49ff`, Build #296 / run `29954043887` fully green.
-
-Результат:
-
-- `private: true`;
-- engineering portfolio / knowledge platform package identity;
-- canonical repository/bugs URLs;
-- modern keywords;
-- metadata contract test;
-- `version: 0.2.0` оставлен намеренно до explicit package-release contract.
-
----
+Result: `private: true`, truthful engineering portfolio identity, canonical URLs/keywords, metadata contract. `version: 0.2.0` оставлен намеренно до release contract.
 
 ## P1.1 — Consolidated Browser Quality Harness
 
-**PR #29 — `refactor: consolidate browser quality harness`**
+**PR #29** / squash `06e60425e31ef19ddae0c3ac8b0991808b45837e`.
 
-Squash:
+Exact head `00633c69e56354cbb8821c34a1b772cf259c3e18`, Build #293 fully green.
 
-`06e60425e31ef19ddae0c3ac8b0991808b45837e`
-
-Exact head `00633c69e56354cbb8821c34a1b772cf259c3e18`, Build #293 / run `29951464481` fully green.
-
-Создан modular `scripts/quality-harness/`; focused runners сохранили domain ownership; giant runner/DSL не создан.
-
----
+Создан modular `scripts/quality-harness/`; focused runners сохранили domain ownership.
 
 ## P0.6 — Content Freshness Guard
 
-**PR #27 — `feat: add Content Freshness Guard`**
+**PR #27** / squash `33770983789fbde5c59a94972709360286a06ad5`.
 
-Squash:
+Exact head `4b50dd78a41b3cbe2fce327e6c752508134862d0`, Build #269 fully green.
 
-`33770983789fbde5c59a94972709360286a06ad5`
+Guard обнаруживает freshness/link/repository/release/timeline/signal drift, но не переписывает public truth/trust автоматически.
 
-Exact head `4b50dd78a41b3cbe2fce327e6c752508134862d0`, Build #269 / run `29947803201` fully green.
-
-Guard обнаруживает age/link/repository/release/timeline/signal drift и создаёт maintenance report/issue, но никогда автоматически не переписывает public truth/trust state.
-
-Operational caveat: первый фактический post-merge scheduled/manual run подтверждать отдельным run evidence.
-
-### Repository-hygiene incident
-
-Во время design setup был случайно создан временный `_never_` probe file прямым Contents API commit (`4f7ec91...`). Он был немедленно удалён cleanup commit `b5ce6e5...`.
-
-Net tree effect: **zero**.
-
----
+Repository-hygiene note: случайный временный `_never_` probe commit был немедленно удалён; net tree effect zero.
 
 ## P0.5 — Grounded Engineering Notes
 
-**PR #25 — `feat: publish grounded Engineering Notes milestone`**
-
-Squash:
-
-`f2775b7c9150281bcb4bcc01a4e021e007e18ca0`
-
-Exact head `8a2973961e5ec38e4c8b3e0626460c04e88438a8`, Build #257 / run `29943616448` fully green.
+**PR #25** / squash `f2775b7c9150281bcb4bcc01a4e021e007e18ca0`, Build #257.
 
 Добавлены:
 
-1. `intersection-observer-giant-table`;
-2. `static-first-sources-no-js`;
-3. `green-ci-is-not-product-verification`.
-
----
+- `intersection-observer-giant-table`;
+- `static-first-sources-no-js`;
+- `green-ci-is-not-product-verification`.
 
 ## Portfolio v0.4 — Project Evidence Layer
 
-**PR #22** / squash:
+**PR #22** / squash `e3e48ac56b45eddeb872c04b83bff1408da6556f`, Build #247.
 
-`e3e48ac56b45eddeb872c04b83bff1408da6556f`
+Canonical evidence snapshots, `verified / stale / unverified`, bounded signals, trust-aware rendering/QA.
 
-Exact head `7ce0d428327e29436a03fc2be4b94ef7c0f2f15b`, Build #247 / run `29935334882` fully green.
-
-Созданы canonical evidence snapshots, `verified / stale / unverified`, bounded automated/manual signals и trust-aware rendering/QA.
-
-Ключевой lesson:
-
-**green CI не равно verified product без bounded scope и current manual interpretation.**
-
----
+Key lesson: **green CI не равно verified product без bounded scope и current interpretation**.
 
 ## Portfolio v0.4 — Sources Registry / Knowledge Base
 
-**PR #20** / squash:
+**PR #20** / squash `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`.
 
-`4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`
+31 real records, canonical `data/sources.json`, strict validation, semantic cards, filters, anchors, responsive/no-JS fallback.
 
-Giant bibliography table заменена canonical `data/sources.json`: 31 real records, strict validation, deterministic semantic cards, page-local filtering, stable anchors, responsive/no-JS behavior.
+## Photo Stories
 
-Первый no-JS smoke обнаружил, что data в generated artifact не гарантирует readable content без hydration. Решение — semantic fallback без второго canonical source.
+PR #15 platform / squash `8aa2149fc8aec3751f2da73321c06a89111f9efd`.
 
----
+PR #17 QA / squash `7936638bd6473ad4f1ff0b2ef42db2289e937d83`.
 
-## Photo Stories — cinematic personal archive
-
-**PR #15** — platform, squash `8aa2149fc8aec3751f2da73321c06a89111f9efd`.
-
-**PR #17** — QA polish, squash `7936638bd6473ad4f1ff0b2ef42db2289e937d83`.
-
-Готовы `/photos/`, album/archive registries, story routes, cinematic/editorial layouts, fullscreen lightbox, keyboard/touch/hash navigation, sitemap/search/meta integration и dedicated browser smoke.
-
-Fake/demo album не создавался.
-
----
+Photo Stories platform готова; fake/demo album не создавался.
 
 ## Portfolio v0.3 — living engineering space
 
-**PR #13** / squash:
+PR #13 / squash `b472aff67d69fb3cd6afa0577864371547f52a5b`.
 
-`b472aff67d69fb3cd6afa0577864371547f52a5b`
-
-Milestone закрепил переход от landing page к living engineering portfolio / knowledge platform:
-
-- canonical Project Registry;
-- `/now`;
-- structured flagship timelines;
-- Engineering Notes metadata/relations/feed;
-- Engineering Map;
-- command palette;
-- stronger generated-site quality gates.
+Milestone закрепил переход от landing page к living engineering portfolio / knowledge platform: Project Registry, `/now`, timelines, Engineering Notes/feed, Engineering Map, command palette, stronger generated-site QA.
 
 ---
 
-## Durable continuity updates
+## Durable continuity principle
 
-После крупных milestones durable state синхронизируется отдельными docs-only follow-ups, чтобы новый чат восстанавливал контекст из repository truth.
-
-Актуальные источники контекста:
+После крупных milestones состояние синхронизируется в:
 
 1. `docs/PROJECT_STATE.md`;
 2. `docs/ROADMAP.md`;
-3. `docs/CHANGELOG.md`;
-4. actual open PR/latest commits/exact-head CI поверх snapshot docs.
+3. `docs/CHANGELOG.md`.
+
+Эти docs — snapshot, не замена actual repository checks. В новом чате поверх них всегда проверять open PR, latest commits и exact-head CI.
