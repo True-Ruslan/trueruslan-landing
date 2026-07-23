@@ -166,7 +166,11 @@ export function applyProjectRegistryContent(outputDir, projects, {targets = ['la
   return replacements;
 }
 
-export function renderProjectCards(projects, {hrefTransform = (href) => href, locale = 'ru'} = {}) {
+export function renderProjectCards(projects, {
+  hrefTransform = (href) => href,
+  ctaTransform = (_project, cta) => cta,
+  locale = 'ru',
+} = {}) {
   const copy = PROJECT_CARD_COPY[locale];
   if (!copy) throw new Error(`unsupported project card locale: ${locale}`);
 
@@ -174,6 +178,8 @@ export function renderProjectCards(projects, {hrefTransform = (href) => href, lo
     const tags = project.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
     const href = hrefTransform(project.href, project);
     if (!isSafeLocalHtmlHref(href)) throw new Error(`unsafe rendered project href: ${href}`);
+    const cta = ctaTransform(project, copy.cta);
+    if (typeof cta !== 'string' || !cta.trim()) throw new Error(`invalid rendered project CTA for ${project.slug}`);
     return `<a class="tr-active-card" href="${escapeHtml(href)}" data-project="${escapeHtml(project.slug)}">
   <div class="tr-active-card__head">
     <span class="tr-active-card__pulse" aria-hidden="true"></span>
@@ -182,7 +188,7 @@ export function renderProjectCards(projects, {hrefTransform = (href) => href, lo
   <h3>${escapeHtml(project.name)}</h3>
   <p>${escapeHtml(project.summary)}</p>
   <div class="tr-active-card__tags" aria-label="${escapeHtml(copy.tagsLabel)}">${tags}</div>
-  <span class="tr-active-card__cta">${escapeHtml(copy.cta)}</span>
+  <span class="tr-active-card__cta">${escapeHtml(cta)}</span>
 </a>`;
   }).join('\n');
 }
