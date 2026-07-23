@@ -17,6 +17,7 @@ const DEFAULT_OUTPUT = path.join(ROOT, 'docs-html', 'index.html');
 export function renderStandaloneHome(template, siteUrl, projects = [], {
   locale = 'ru',
   hrefTransform = (href) => href,
+  ctaTransform = (_project, cta) => cta,
 } = {}) {
   const normalizedSiteUrl = siteUrl.trim().replace(/\/$/, '');
   if (!normalizedSiteUrl) {
@@ -24,7 +25,7 @@ export function renderStandaloneHome(template, siteUrl, projects = [], {
   }
 
   const activeProjects = projects.length
-    ? renderProjectCards(getActiveProjects(projects), {locale, hrefTransform})
+    ? renderProjectCards(getActiveProjects(projects), {locale, hrefTransform, ctaTransform})
     : '';
 
   return template
@@ -39,6 +40,7 @@ export function writeStandaloneHome({
   siteUrl,
   locale = 'ru',
   hrefTransform = (href) => href,
+  ctaTransform = (_project, cta) => cta,
 } = {}) {
   if (!fs.existsSync(templatePath)) {
     throw new Error(`Standalone homepage template not found: ${templatePath}`);
@@ -46,7 +48,7 @@ export function writeStandaloneHome({
 
   const template = fs.readFileSync(templatePath, 'utf8');
   const projects = loadProjectRegistry(projectRegistryPath);
-  const html = renderStandaloneHome(template, siteUrl, projects, {locale, hrefTransform});
+  const html = renderStandaloneHome(template, siteUrl, projects, {locale, hrefTransform, ctaTransform});
   fs.mkdirSync(path.dirname(outputPath), {recursive: true});
   fs.writeFileSync(outputPath, html, 'utf8');
   return outputPath;
