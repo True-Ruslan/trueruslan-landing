@@ -93,14 +93,22 @@ async function assertRoute({browser, baseUrl, route, viewport = VIEWPORTS.deskto
     const storage = await page.evaluate(() => ({
       local: Object.keys(localStorage),
       session: Object.keys(sessionStorage),
+      bodyText: document.body?.innerText?.trim() || '',
       mainCount: document.querySelectorAll('main').length,
       h1Count: document.querySelectorAll('h1').length,
     }));
     const analyticsStorage = [...storage.local, ...storage.session]
       .filter((key) => /analytics|cloudflare|cf-beacon|web-analytics/i.test(key));
     if (analyticsStorage.length) throw new Error(`${route}: analytics-related persistent storage keys found: ${analyticsStorage.join(', ')}`);
-    if (storage.mainCount < 1) throw new Error(`${route}: main content disappeared with analytics blocked`);
-    if (!route.startsWith('/_search/') && storage.h1Count < 1) throw new Error(`${route}: H1 disappeared with analytics blocked`);
+    if (!storage.bodyText) throw new Error(`${route}: page body disappeared with analytics blocked`);
+
+    if (route.startsWith('/_search/')) {
+      const searchInput = page.locator('.dc-search-page__search-field input, input[placeholder="Поиск"], input.tr-search-input').first();
+      await searchInput.waitFor({state: 'visible', timeout: 5000});
+    } else {
+      if (storage.mainCount < 1) throw new Error(`${route}: main content disappeared with analytics blocked`);
+      if (storage.h1Count < 1) throw new Error(`${route}: H1 disappeared with analytics blocked`);
+    }
 
     const cookies = await context.cookies();
     const analyticsCookies = cookies.filter((cookie) => /analytics|cloudflare|cf_/i.test(cookie.name));
