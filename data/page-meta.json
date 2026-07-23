@@ -40,6 +40,16 @@
     "accent": "violet"
   },
   {
+    "path": "landing/about.html",
+    "card": "about",
+    "title": "Обо мне — Руслан Немыкин",
+    "description": "Как Руслан Немыкин подходит к backend-разработке, distributed systems, reliability, AI-инструментам, преподаванию и личным инженерным проектам.",
+    "displayTitle": "ABOUT",
+    "kicker": "ENGINEERING PROFILE",
+    "tags": ["BACKEND", "SYSTEMS", "AI"],
+    "accent": "violet"
+  },
+  {
     "path": "landing/resume.html",
     "card": "resume",
     "title": "Резюме — Руслан Немыкин",
