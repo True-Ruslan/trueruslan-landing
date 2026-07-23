@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {globSync} from 'glob';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 export const DEFAULT_ANALYTICS_POLICY_PATH = path.join(ROOT, 'data', 'analytics.json');
@@ -25,6 +27,8 @@ const PRIVACY_FLAGS = Object.freeze([
   ['crossSiteTracking', 'cross-site tracking'],
   ['sessionReplay', 'session replay'],
 ]);
+const ANALYTICS_MARKER = 'data-tr-analytics="cloudflare-web-analytics"';
+const CLOUDFLARE_BEACON_SRC = 'https://static.cloudflareinsights.com/beacon.min.js';
 
 export function validateAnalyticsPolicy(policy) {
   if (!policy || typeof policy !== 'object' || Array.isArray(policy)) {
@@ -78,4 +82,47 @@ export function normalizeAnalyticsToken(token) {
     throw new Error('invalid configured analytics token');
   }
   return normalized;
+}
+
+function analyticsBeaconHtml(token) {
+  const config = JSON.stringify({token, spa: false})
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+  return `<script type="module" defer src="${CLOUDFLARE_BEACON_SRC}" data-cf-beacon="${config}" ${ANALYTICS_MARKER}></script>`;
+}
+
+export function injectAnalyticsIntoHtml(html, policy, token) {
+  validateAnalyticsPolicy(policy);
+  const normalizedToken = normalizeAnalyticsToken(token);
+  if (!normalizedToken) return html;
+  if (html.includes(ANALYTICS_MARKER)) return html;
+  if (!/<\/head>/i.test(html)) {
+    throw new Error('generated HTML head not found for analytics injection');
+  }
+  return html.replace(/<\/head>/i, `${analyticsBeaconHtml(normalizedToken)}</head>`);
+}
+
+export function applyAnalytics(outputDir, policy, token) {
+  const validatedPolicy = validateAnalyticsPolicy(policy);
+  const normalizedToken = normalizeAnalyticsToken(token);
+  const summary = {
+    enabled: Boolean(normalizedToken),
+    updated: [],
+    provider: validatedPolicy.provider,
+  };
+  if (!normalizedToken) return summary;
+  if (!fs.existsSync(outputDir)) throw new Error(`analytics output directory not found: ${outputDir}`);
+
+  const htmlFiles = globSync(path.join(outputDir, '**', '*.html'), {nodir: true}).sort();
+  for (const htmlPath of htmlFiles) {
+    const source = fs.readFileSync(htmlPath, 'utf8');
+    const updated = injectAnalyticsIntoHtml(source, validatedPolicy, normalizedToken);
+    if (updated === source) continue;
+    fs.writeFileSync(htmlPath, updated, 'utf8');
+    summary.updated.push(path.relative(outputDir, htmlPath).replaceAll(path.sep, '/'));
+  }
+  summary.updated.sort();
+  return summary;
 }
