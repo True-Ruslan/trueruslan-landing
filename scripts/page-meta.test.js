@@ -69,3 +69,12 @@ test('injectPageMeta replaces stale metadata idempotently', () => {
   assert.equal((once.match(/property="og:title"/g) ?? []).length, 1);
   assert.equal((once.match(/rel="canonical"/g) ?? []).length, 1);
 });
+
+test('injectPageMeta canonicalizes nested index pages to their public directory URL', () => {
+  const source = '<!doctype html><html><head><title>Old</title></head><body><h1>English home</h1></body></html>';
+  const html = injectPageMeta(source, {...validEntry, path: 'en/index.html', card: 'home-en'}, 'https://example.test/site/');
+
+  assert.match(html, /rel="canonical" href="https:\/\/example\.test\/site\/en\/"/);
+  assert.match(html, /property="og:url" content="https:\/\/example\.test\/site\/en\/"/);
+  assert.doesNotMatch(html, /https:\/\/example\.test\/site\/en\/index\.html/);
+});
