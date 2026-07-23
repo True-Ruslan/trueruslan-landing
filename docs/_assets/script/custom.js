@@ -123,6 +123,26 @@
   }
 
   function repairRuntimeAccessibility(document) {
+    const isEnglish = document.documentElement?.lang?.toLowerCase().startsWith('en');
+    const controlLabels = [
+      ['.dc-sidebar-navigation__button', isEnglish ? 'Open navigation' : 'Открыть навигацию'],
+      ['.dc-subnavigation__share-button', isEnglish ? 'Share page' : 'Поделиться страницей'],
+    ];
+
+    for (const [selector, label] of controlLabels) {
+      for (const button of document.querySelectorAll(selector)) {
+        if (!button.getAttribute('aria-label') && !button.getAttribute('aria-labelledby') && !button.textContent?.trim()) {
+          button.setAttribute('aria-label', label);
+        }
+      }
+    }
+
+    for (const code of document.querySelectorAll('pre code')) {
+      if (code.scrollWidth > code.clientWidth && !code.hasAttribute('tabindex')) {
+        code.setAttribute('tabindex', '0');
+      }
+    }
+
     for (const anchor of document.querySelectorAll('a[aria-hidden="true"].yfm-anchor, a[aria-hidden="true"].yfm-clipboard-anchor')) {
       anchor.setAttribute('tabindex', '-1');
     }
@@ -140,12 +160,14 @@
       }
 
       if (navigation.classList.contains('dc-toc')) {
-        navigation.setAttribute('aria-label', 'Навигация по разделам');
+        navigation.setAttribute('aria-label', isEnglish ? 'Section navigation' : 'Навигация по разделам');
       } else if (navigation.closest('header')) {
-        navigation.setAttribute('aria-label', 'Основная навигация');
+        navigation.setAttribute('aria-label', isEnglish ? 'Main navigation' : 'Основная навигация');
       } else {
         unnamedNavigationIndex += 1;
-        navigation.setAttribute('aria-label', `Навигация страницы ${unnamedNavigationIndex}`);
+        navigation.setAttribute('aria-label', isEnglish
+          ? `Page navigation ${unnamedNavigationIndex}`
+          : `Навигация страницы ${unnamedNavigationIndex}`);
       }
     }
   }
