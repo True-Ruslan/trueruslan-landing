@@ -73,7 +73,10 @@ function escapeRegExp(value) {
 
 function readAttribute(tag, attributeName) {
   const name = escapeRegExp(attributeName);
-  const match = tag.match(new RegExp(`\\s${name}(?:\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+)))?`, 'i'));
+  const match = tag.match(new RegExp(
+    `\\s${name}(?=\\s|=|/|>)(?:\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+)))?`,
+    'i',
+  ));
   if (!match) return {present: false, value: null};
   return {
     present: true,
