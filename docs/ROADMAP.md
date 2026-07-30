@@ -1,29 +1,26 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-07-23**, после merge P2.2 Privacy-friendly analytics PR #40.
+> Обновлено: **2026-07-30**, после merge P2.2a Production analytics activation contract PR #42.
 >
-> Roadmap отвечает на вопрос **«что делать дальше, в каком порядке и зачем?»**.
-> Текущее состояние — `docs/PROJECT_STATE.md`, история — `docs/CHANGELOG.md`.
+> Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`.
 
-## Принципы roadmap
+## Принципы
 
 Любое развитие должно сохранять:
 
-- **static-first**;
-- **build-time intelligence**;
-- **progressive enhancement**;
-- core content без runtime API и, где применимо, без JavaScript;
+- static-first;
+- build-time intelligence;
+- progressive enhancement;
+- core content без runtime API;
 - no backend/CMS/database без реальной необходимости;
-- no runtime GitHub API для core content;
-- no duplicate sources of truth;
-- один site-wide full-text search owner — Diplodoc;
-- maintenance signals не переписывают public truth автоматически;
-- сначала реальные data/evidence, потом presentation;
-- evidence не говорит больше bounded scope;
-- analytics не становится runtime/product dependency;
-- aggregate measurement не расширяется в behavioural tracking без нового explicit design/privacy review;
-- shared infrastructure не скрывает domain ownership;
-- quality gates не ослабляются ради velocity.
+- one canonical source of truth;
+- Diplodoc как единственный site-wide full-text search owner;
+- no automatic public truth mutation;
+- bounded Evidence semantics;
+- one RU/EN site/build/search architecture;
+- analytics как optional aggregate telemetry;
+- no behavioural/user tracking без нового explicit privacy review;
+- quality gates без ослабления.
 
 Главная продуктовая формула:
 
@@ -31,303 +28,166 @@
 
 ---
 
-# P0 — foundation завершён
+# Завершённые milestones
 
-## P0.1 Photo Stories platform — DONE
+## P0 — foundation
 
-PR #15 + QA polish PR #17. Canonical `/photos/`, registries, story routes, lightbox, keyboard/touch/hash navigation и dedicated QA готовы.
+- **P0.1 Photo Stories platform — DONE**: PR #15 + #17.
+- **P0.2 First real Photo Story — CONTENT DEPENDENT**.
+- **P0.3 Sources Registry / KB — DONE**: PR #20.
+- **P0.4 Project Evidence — DONE**: PR #22, Build #247.
+- **P0.5 Grounded Notes — DONE**: PR #25, Build #257.
+- **P0.6 Content Freshness Guard — DONE**: PR #27, Build #269.
 
-## P0.2 First real Photo Story — CONTENT DEPENDENT
+## P1 — maintainability / depth
 
-Только при genuine material. Fake/demo albums не добавлять.
+- **P1.1 Browser Quality Harness — DONE**: PR #29, Build #293.
+- **P1.2 Project Metadata Cleanup — DONE**: PR #31, Build #296.
+- **P1.3 Flagship Case-Study Format — DONE**: PR #34, Build #301.
+- **P1.4 Additional Grounded Note — DONE**: PR #36, Build #308.
 
-## P0.3 Sources Registry / Knowledge Base — DONE
+## P2 — audience / operations
 
-PR #20 / squash `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`.
+### P2.1 Minimal RU/EN — DONE
 
-31 real records, strict validation, semantic deterministic rendering, page-local filters, stable anchors, responsive/no-JS behavior.
+PR #38 / squash `00f7513f685b8a8348005d0ab704ce96abe64950`.
 
-## P0.4 Project Evidence Layer — DONE
+Build #339 / run `30000373281` fully green.
 
-PR #22 / squash `e3e48ac56b45eddeb872c04b83bff1408da6556f`.
+Architecture: one build, one site, one search index, Russian default/root, bounded `/en/` namespace.
 
-Exact head `7ce0d428327e29436a03fc2be4b94ef7c0f2f15b`, Build #247 / run `29935334882` fully green.
+### P2.2 Privacy-friendly analytics — DONE
 
-**Green CI/release/PR никогда автоматически не делает project `verified`.**
+PR #40 / squash `2dacace5de6b6c1225e82b372faef093850f4c9f`.
 
-## P0.5 Grounded Engineering Notes — DONE
+Build #351 / run `30003347268` fully green.
 
-PR #25 / squash `f2775b7c9150281bcb4bcc01a4e021e007e18ca0`, Build #257.
+Implemented:
 
-## P0.6 Content Freshness Guard — DONE
+- Cloudflare Web Analytics manual beacon;
+- pageviews/RUM-only policy;
+- tokenless build = zero analytics capability;
+- no custom events/cookies/persistent identifiers/cross-site tracking/session replay;
+- one analytics layer for RU/EN;
+- dedicated blocked-network privacy browser gate.
 
-PR #27 / squash `33770983789fbde5c59a94972709360286a06ad5`.
+### P2.2a Production analytics activation contract — DONE (repository)
 
-Exact head `4b50dd78a41b3cbe2fce327e6c752508134862d0`, Build #269 / run `29947803201` fully green.
+PR #42 / squash:
 
-Guard создаёт maintenance signals/report/issues, но не меняет public registries/trust state автоматически.
-
----
-
-# P1 — maintainability и depth завершены
-
-## P1.1 Consolidated Browser Quality Harness — DONE
-
-PR #29 / squash `06e60425e31ef19ddae0c3ac8b0991808b45837e`, Build #293.
-
-Shared browser primitives вынесены в `scripts/quality-harness/`; focused runners сохранили ownership.
-
-## P1.2 Project Metadata Cleanup — DONE
-
-PR #31 / squash `1df2a2905ef2eb4b52173271f9012defc33b25ab`, Build #296.
-
-Package identity соответствует engineering portfolio / knowledge platform; `private: true`; `version: 0.2.0` намеренно не используется как product maturity indicator.
-
-## P1.3 Stronger Flagship Case-Study Format — DONE
-
-PR #34 / squash `107b69311f6eed408de5306406d9ff41f0e32ea2`, Build #301.
-
-LivingWorld и NODE ZERO используют Markdown-first narrative:
-
-`Problem → Constraints → Decisions → What failed → Current state → Evidence → What I would change now`.
-
-Project Registry/timeline/Evidence ownership не дублируется.
-
-## P1.4 Additional Grounded Engineering Notes — DONE
-
-PR #36 / squash `24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`.
-
-Exact head `ced6ce0208d691fd891e8b8e1cf03be4c40465d5`, Build #308 / run `29961571632` fully green.
-
-Добавлена `llm-output-is-a-protocol-boundary`; всего Engineering Notes — 7.
-
----
-
-# P2 — audience и эксплуатация
-
-## P2.1 Minimal RU/EN — DONE
-
-Feature PR #38 / squash:
-
-`00f7513f685b8a8348005d0ab704ce96abe64950`
+`522140dda2cab121e6a5c2a099dce9e491f1b49b`
 
 Exact implementation head:
 
-`d5f2490bbd7beac7343c96edf1fb6e8feb9b51c6`
+`21181a30d85d9f68536b266a326f849d4b451959`
 
-Build #339 / run `30000373281`: **fully green по полной configured matrix**.
+Build #367 / run `30560152774`: **fully green по полной configured matrix**.
 
-Реализовано ровно 7 RU/EN pairs при архитектуре **one build / one site / one search index**. Русский остаётся default/root; `/en/` — bounded namespace; shared Registry/Evidence/timelines/Notes truth не дублируется.
+Implemented:
 
-Design:
+- repository variable `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`;
+- deployment modes `auto|required|disabled`;
+- fail-closed preflight;
+- generated RU/EN verification before Pages upload;
+- deployed RU/EN verification after Pages deployment;
+- weekly production-state monitoring;
+- token-free deployment/production/health reports;
+- exact attribute-name verification;
+- operator runbook and emergency kill switch.
 
-`docs/superpowers/specs/2026-07-23-minimal-ru-en-design.md`
+Not changed:
 
-Plan:
-
-`docs/superpowers/plans/2026-07-23-minimal-ru-en.md`
-
----
-
-## P2.2 Privacy-friendly analytics — DONE (implementation)
-
-Feature PR #40 / squash:
-
-`2dacace5de6b6c1225e82b372faef093850f4c9f`
-
-Exact implementation head:
-
-`577fe9149988497d954f8ad9316467089ce50286`
-
-Build #351 / run `30003347268`: **fully green по полной configured matrix**.
-
-### Measurement decision
-
-Выбран минимальный вопрос-first analytics scope:
-
-1. какие public routes реально используются;
-2. как распределяется usage между default/RU и `/en/`;
-3. какие surfaces могут оправдать дальнейший translation/content investment;
-4. какой real-user performance/Core Web Vitals получают посетители.
-
-Analytics не добавлена «потому что так принято» и не используется для user journeys, personalization или advertising attribution.
-
-### Provider / architecture
-
-Выбран:
-
-**Cloudflare Web Analytics manual beacon**.
-
-Canonical policy:
-
-`data/analytics.json`
-
-Implementation:
-
-`scripts/analytics.js`
-
-Production activation env:
-
-`TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`
-
-Ключевой contract:
-
-**no token → successful build + zero analytics beacons + zero analytics network capability.**
-
-`copy-assets.js` остаётся единственным postprocess/build orchestrator.
-
-### Privacy boundary
-
-Policy и tests запрещают:
-
-- custom events;
-- cookies;
-- persistent browser-storage identifiers;
-- cross-site tracking;
-- session replay.
-
-Также integration не добавляет:
-
-- user/account IDs;
-- fingerprinting;
-- advertising audiences;
-- analytics-driven product behavior.
-
-Любое расширение beyond `pageviews-and-rum` требует нового explicit design/privacy review.
-
-### RU/EN semantics
-
-Одна analytics layer для всего сайта.
-
-Locale определяется существующим route structure:
-
-- `/en/**` → EN;
-- root/`landing/**` → default/RU.
-
-Не создавались locale cookies, user identity или отдельная EN analytics system/property path.
-
-### Failure semantics
-
-Analytics является optional enhancement.
-
-При blocker/network/provider failure:
-
-- content работает;
-- navigation работает;
-- search работает;
-- language switching работает;
-- product state не зависит от telemetry.
-
-### Dedicated quality gate
-
-Добавлен обязательный:
-
-`Privacy-friendly analytics browser smoke`
-
-Он:
-
-1. проверяет 0 beacons в normal CI build;
-2. создаёт временный fixture;
-3. внедряет fixed fake token;
-4. блокирует Cloudflare analytics endpoints;
-5. проверяет RU/EN/search surfaces;
-6. проверяет единый bounded config;
-7. проверяет отсутствие analytics-related cookies/storage;
-8. проверяет blocked-network product behavior;
-9. проверяет overflow + Axe.
-
-### TDD / debugging trail
-
-- Build #341 — RED policy contract;
-- Build #343 — policy/token GREEN;
-- Build #344 — RED injection contract;
-- Build #345 — injection/build/integrity GREEN;
-- Build #346 — RED orchestrator integration contract;
-- Build #347 — integration GREEN, tokenless default preserved;
-- Build #350 — browser RED: test model ошибочно ожидал `<main>` на generated search surface;
-- root cause исправлен по existing search contract без ослабления privacy assertions;
-- Build #351 — final exact-head full matrix GREEN.
-
-Design:
-
-`docs/superpowers/specs/2026-07-23-privacy-friendly-analytics-design.md`
-
-Plan:
-
-`docs/superpowers/plans/2026-07-23-privacy-friendly-analytics.md`
-
-Operator runbook:
-
-`docs/ANALYTICS.md`
+- package/dependency/lockfile graph;
+- visual baselines/thresholds;
+- Lighthouse budgets;
+- Project Evidence/trust semantics;
+- analytics privacy boundary;
+- search or RU/EN source ownership.
 
 ---
 
-## P2.2a Production analytics activation — NEXT / EXTERNAL OPERATIONAL DEPENDENCY
+# NEXT — external production activation and observation
 
-Это **не новый code feature**. Implementation уже готова и проверена.
+Это не новый repository feature.
 
-Actual production analytics пока нельзя считать активной или verified.
+## Operational truth model
 
-Нужно:
+1. **Repository ready — YES**
+   - PR #42 merged;
+   - exact-head Build #367 green;
+   - production/rollback/weekly verification code находится в `master`.
 
-1. подтвердить фактический production deployment mechanism;
-2. создать/configure Cloudflare Web Analytics site для actual production hostname;
-3. получить реальный public site token;
-4. передать его production build environment как `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`;
-5. rebuild/redeploy;
-6. проверить generated beacon на deployed artifact;
-7. подтвердить фактическое появление telemetry в provider dashboard.
+2. **Production beacon active — NOT VERIFIED IN CURRENT SNAPSHOT**
+   - automatic push Pages run не был независимо разрешён доступным connector;
+   - нельзя утверждать `enabled` или `disabled` без production report/run evidence.
 
-Fake token нельзя использовать как production evidence.
+3. **Telemetry observed — NOT VERIFIED**
+   - Cloudflare dashboard data не проверялась.
 
-### После activation
+## Следующая последовательность
 
-Сначала собрать реальный aggregate signal, затем принимать следующую product decision.
+Если Cloudflare site/repository variable ещё не существуют:
 
-Не расширять event model заранее и не начинать следующий feature только ради заполнения roadmap.
+1. создать Cloudflare Web Analytics site для actual Pages hostname;
+2. получить public site token;
+3. добавить GitHub Actions repository variable:
+   `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`;
+4. вручную запустить `Deploy static content to Pages` с `analytics_mode=required`;
+5. потребовать green generated RU/EN verification;
+6. потребовать green post-deploy RU/EN verification;
+7. сохранить production reports/run evidence;
+8. отдельно подтвердить telemetry в Cloudflare dashboard.
+
+Если variable уже существует:
+
+1. проверить latest Pages run/report;
+2. подтвердить enabled RU/EN state;
+3. подтвердить dashboard telemetry.
+
+После activation сначала собрать aggregate usage/performance evidence. Не расширять event model заранее.
 
 ---
+
+# Evidence-driven future branches
+
+## Selective RU/EN/content expansion — CONDITIONAL
+
+Только если actual usage показывает ценность конкретных surfaces.
 
 ## P2.3 Custom domain / hosting — CONDITIONAL
 
-Делать только если появится реальная operational причина:
+Только при operational reason:
 
-- cleaner public identity;
-- analytics/deployment need;
-- caching/security/headers/redirects constraints;
+- public identity;
+- deployment/headers/cache/redirect constraints;
 - GitHub Pages перестаёт удовлетворять требованиям.
-
-Сам факт существования roadmap item не является причиной миграции.
 
 ## P2.4 Richer architecture explorer — CONDITIONAL
 
-Только когда накопится достаточно реальных architecture artifacts и есть доказанная audience/content value. Не строить 3D/canvas experience ради эффекта.
+Только при наличии достаточного количества real architecture artifacts и доказанной audience value.
 
-## Further RU/EN expansion — EVIDENCE-DRIVEN
+## First real Photo Story — CONTENT DEPENDENT
 
-Переводить следующие surfaces только при реальном usage/content signal. Не превращать Minimal RU/EN в механический full-site translation backlog.
+Только при genuine material; fake/demo album запрещён.
 
 ---
 
-# Что НЕ является roadmap priority
+# Что не является priority
 
 Без нового обоснования не планировать:
 
-- полный перевод всего сайта одним milestone;
+- полный перевод сайта одним milestone;
 - отдельный EN build/CMS;
 - второй site-wide search engine;
 - advertising analytics;
 - custom-event explosion;
-- cross-site tracking;
-- fingerprinting;
-- session replay;
+- fingerprinting/session replay/cross-site tracking;
 - per-user analytics;
 - AI chat поверх резюме;
 - accounts/comments/likes;
 - backend/database ради static content;
 - runtime GitHub API;
-- social feed/infinite scroll;
-- automatic public-state mutation из CI/release/freshness signals;
+- automatic public-state mutation;
 - giant QA runner;
 - decorative version bumps.
 
@@ -336,41 +196,26 @@ Fake token нельзя использовать как production evidence.
 # Оптимальная последовательность
 
 ```text
-1. P2.2a Activate existing privacy analytics in real production
+P2.2a repository contract DONE
         ↓
-2. Verify actual telemetry and observe aggregate usage/performance
+Resolve real Pages deployment state
         ↓
-3. Choose the next product milestone from evidence, not roadmap inertia
+Cloudflare site + repository variable, if absent
+        ↓
+Manual required deployment + production verification
+        ↓
+Provider telemetry observation
+        ↓
+Choose next milestone from evidence
 ```
 
-Possible evidence-driven branches after observation:
+## Правило для нового чата
 
-```text
-P2.3 Custom domain / hosting       — only with operational reason
-P2.4 Architecture explorer         — only with enough real artifacts/value
-Selective RU/EN/content expansion  — only with audience signal
-```
+Перед любым следующим milestone:
 
-Independent content track:
-
-```text
-First real Photo Story whenever genuine material is ready
-```
-
-Operational side-check:
-
-- actual production deployment подтверждать отдельно от merge;
-- actual analytics activation/first telemetry подтверждать отдельно от implementation;
-- Content Freshness actual scheduled/manual run подтверждать отдельно.
-
-## Правило при новом чате
-
-Перед новым milestone:
-
-1. открыть `docs/PROJECT_STATE.md`;
-2. открыть `docs/ROADMAP.md`;
-3. открыть `docs/CHANGELOG.md`;
-4. проверить actual open PR/latest commits/exact-head CI;
-5. если речь о production — проверить deployed endpoint/deployment mechanism;
-6. если речь об analytics — проверить actual token activation + provider telemetry;
-7. если речь о freshness — проверить latest Content Freshness workflow runs/issues.
+1. открыть `PROJECT_STATE`, `ROADMAP`, `CHANGELOG`;
+2. проверить actual open PR/latest commits/exact-head CI;
+3. отдельно проверить Pages deployment report;
+4. отдельно проверить deployed RU/EN beacon state;
+5. отдельно проверить Cloudflare telemetry;
+6. при freshness-вопросах проверить latest Content Freshness runs/issues.
