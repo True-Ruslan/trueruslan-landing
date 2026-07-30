@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-07-30**, после merge P2.2a Production analytics activation contract PR #42.
+> Последнее смысловое обновление: **2026-07-30**, после первой strict production activation и появления реальных данных в Cloudflare Web Analytics.
 >
 > Главный durable snapshot для ответа на вопрос **«что представляет собой проект, что уже сделано и что дальше?»**.
 >
@@ -9,7 +9,7 @@
 > 2. `docs/ROADMAP.md`
 > 3. `docs/CHANGELOG.md`
 >
-> Затем отдельно проверять actual open PR, latest commits, exact-head CI, Pages deployment, analytics provider state и maintenance workflows.
+> Затем отдельно проверять actual open PR, latest commits, exact-head CI, последний Pages deployment, Cloudflare dashboard и maintenance workflows.
 
 ## 1. Что это за проект
 
@@ -42,74 +42,55 @@
 
 ---
 
-## 2. Текущее состояние `master`
+## 2. Последний завершённый milestone
 
-### Последний milestone
+### P2.2a — Production analytics activation: repository + production + telemetry
 
-**P2.2a — Production analytics activation contract**.
+Repository implementation:
 
-Feature PR:
+- PR #42 — `ci: activate and verify production analytics`;
+- squash `522140dda2cab121e6a5c2a099dce9e491f1b49b`;
+- exact implementation head `21181a30d85d9f68536b266a326f849d4b451959`;
+- Build #367 / run `30560152774` — fully green по полной configured PR matrix.
 
-`#42 — ci: activate and verify production analytics`
+Durable continuity после implementation:
 
-Squash commit:
-
-`522140dda2cab121e6a5c2a099dce9e491f1b49b`
-
-Exact implementation head:
-
-`21181a30d85d9f68536b266a326f849d4b451959`
-
-Verification:
-
-**Build #367 / run `30560152774`: fully green по полной configured PR matrix.**
+- PR #43 — `docs: sync state after analytics activation contract`;
+- squash `5b9bd5b1e022bb8a5f24a53bdf4200613bd2a59e`;
+- exact docs head `3d4f4754c5e92a56aeb99a2439b067e71ec58bab`;
+- Build #368 / run `30561811875` — fully green.
 
 ### Что реализовано
 
-P2.2 уже умел опционально внедрять Cloudflare Web Analytics beacon при наличии `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`.
+Production analytics contract использует GitHub Actions **repository variable**:
 
-P2.2a закрыл deployment gap между этим build-time integration и GitHub Pages.
+`TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`
 
-Добавлен единый production contract:
+Deployment modes:
 
-- GitHub Actions **repository variable** `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`;
 - `auto` — default для push в `master`;
 - `required` — strict manual activation/verification;
-- `disabled` — manual kill switch;
+- `disabled` — manual kill switch.
+
+Гарантии:
+
 - invalid configured token останавливает workflow до build/upload/deploy;
 - absent token в `auto` сохраняет analytics-free deployment;
-- существующий Pages workflow остаётся единственным production build/deploy path.
+- `required` не позволяет принять tokenless deployment за успешную activation;
+- `disabled` принудительно публикует сайт без beacon;
+- Pages workflow остаётся единственным production build/deploy path;
+- diagnostic reports не содержат token или token hash.
 
-### Preflight и state model
-
-Добавлен:
-
-`scripts/analytics-deployment.js`
-
-Он владеет:
-
-- `resolveAnalyticsDeployment({mode, token})`;
-- bounded deployment report;
-- exact HTML beacon inspection;
-- RU/EN generated artifact verification;
-- token masking/wiring через GitHub Actions environment files.
-
-Closed deployment states:
-
-- `configured-token`;
-- `token-not-configured`;
-- `forced-disabled`.
-
-Diagnostic reports не содержат token или token hash.
-
-### Generated artifact verification
+### Generated и deployed verification
 
 До Pages upload проверяются:
 
 - `docs-html/index.html`;
 - `docs-html/en/index.html`.
 
-Для `enabled` требуются:
+После `actions/deploy-pages` проверяются production RU/EN pages и основные публичные endpoints.
+
+Enabled contract требует:
 
 - ровно один owned beacon;
 - official Cloudflare source;
@@ -118,61 +99,114 @@ Diagnostic reports не содержат token или token hash.
 - valid `data-cf-beacon` с только `token` и `spa: false`;
 - token, совпадающий с configured deployment token.
 
-Для `disabled` требуется 0 owned beacons.
+Disabled contract требует 0 owned beacons. Third-party script во время verifier/smoke не исполняется.
 
-Third-party script не исполняется.
+Основные owners:
 
-### Post-deploy verification
+- `scripts/analytics.js` — policy + build injection;
+- `scripts/analytics-deployment.js` — mode resolution + static verification;
+- `scripts/analytics-browser-smoke.cjs` — privacy/failure browser contract;
+- `scripts/production-smoke.js` — deployed availability/identity/analytics state;
+- `.github/workflows/static.yml` — Pages deployment;
+- `.github/workflows/external-health.yml` — weekly production health.
 
-`scripts/production-smoke.js` теперь сохраняет прежние availability/identity checks и дополнительно умеет проверять deployed RU/EN analytics state.
+---
 
-После `actions/deploy-pages` workflow проверяет:
+## 3. Strict production activation evidence
 
-- production homepage;
-- production `/en/index.html`;
-- exact enabled beacon или полное отсутствие beacon в disabled state.
+Первая строгая публикация:
 
-Bounded report:
+- workflow: `Deploy static content to Pages`;
+- run: `30572276691`;
+- source branch: `master`;
+- source SHA: `5b9bd5b1e022bb8a5f24a53bdf4200613bd2a59e`;
+- mode: `required`;
+- result: **success**.
 
-`production-smoke-report.json`
+Deployment contract report:
 
-### Weekly monitoring
+```json
+{
+  "mode": "required",
+  "enabled": true,
+  "expectation": "enabled",
+  "reason": "configured-token"
+}
+```
 
-`.github/workflows/external-health.yml` теперь:
+Production smoke:
 
-1. устанавливает dependencies;
-2. разрешает current analytics contract в `auto`;
-3. выполняет прежний external endpoint health check;
-4. проверяет Pages RU/EN и configured analytics state;
-5. загружает token-free health/production/deployment reports.
+- checked at `2026-07-30T18:52:23.959Z`;
+- base URL: `https://true-ruslan.github.io/trueruslan-landing/`;
+- report `ok: true`;
+- homepage, projects, `/now`, Engineering Map, Notes, Photo Stories, Atom, resume, PDF, OG images, styles, scripts и favicon — healthy;
+- production RU `index.html` — 1 valid beacon;
+- production EN `en/index.html` — 1 valid beacon;
+- identity errors — none.
 
-Weekly monitor не исполняет Cloudflare beacon script.
+Preserved GitHub artifact:
 
-### Operator workflow
+- `production-verification-reports`;
+- artifact id `8771279567`;
+- digest `sha256:65e31cb8d6ea1c4e208bdc488eed19f0a395dcd37feada04f958e92998b63944`.
 
-Полный runbook:
+---
 
-`docs/ANALYTICS.md`
+## 4. Provider telemetry evidence
 
-Он фиксирует:
+Владелец проекта предоставил Cloudflare Web Analytics dashboard snapshot после strict deployment.
 
-- repository variable setup;
-- почему variable, а не Secret/hardcode;
-- first activation через manual `required`;
-- normal `auto`;
-- emergency `disabled`;
-- persistent disable через удаление repository variable;
-- generated/deployed/weekly verification;
-- разницу между repository readiness, deployed beacon и telemetry.
+На snapshot за последние 24 часа:
 
-### Privacy/security boundary
+- Page views: `4`;
+- Visits: `0`;
+- Page load time: `282 ms`;
+- LCP P50: `388 ms`;
+- LCP P75: `740 ms`;
+- LCP P90: `1316 ms`;
+- LCP P99: `1316 ms`;
+- LCP / INP / CLS отображаются в green/good state.
+
+Это подтверждает, что provider получил и отобразил production telemetry.
+
+Ограничение evidence:
+
+- выборка крайне мала;
+- первые просмотры, вероятно, включают owner verification traffic;
+- `0 visits` при `4 page views` на такой выборке не является основанием для bug claim;
+- эти цифры нельзя использовать для product conclusions, аудитории или performance trends;
+- screenshot не содержит долгосрочного observation window.
+
+---
+
+## 5. Operational truth — строго раздельно
+
+### 1. Repository ready — YES
+
+Подтверждено PR #42, exact implementation head и Build #367.
+
+### 2. Production beacon active — YES
+
+Подтверждено strict run `30572276691`, enabled deployment contract и green RU/EN production smoke.
+
+### 3. Telemetry observed — YES
+
+Подтверждено owner-provided Cloudflare dashboard snapshot с ненулевыми page views и Core Web Vitals.
+
+### 4. Достаточно данных для product decisions — NO
+
+Нужен более длинный aggregate observation window и внешний, не только owner-generated traffic.
+
+---
+
+## 6. Privacy/security boundary
 
 Не добавлены:
 
 - Cloudflare account/API credentials;
 - provider provisioning automation;
 - custom events;
-- cookies;
+- analytics cookies;
 - persistent visitor identifiers;
 - fingerprinting;
 - session replay;
@@ -180,79 +214,13 @@ Weekly monitor не исполняет Cloudflare beacon script.
 - cross-site tracking;
 - analytics-driven product behavior.
 
-Public Cloudflare site token при enabled deployment неизбежно присутствует в deployed HTML/Pages artifact. Это intended public disclosure boundary.
+Public Cloudflare site token при enabled deployment находится в public HTML/Pages artifact по назначению. Он не хранится в repository source и исключён из diagnostic reports.
 
-Token не должен присутствовать в:
-
-- repository source;
-- deployment contract report;
-- production smoke report;
-- health reports;
-- PR quality artifacts.
-
-### TDD / debugging trail P2.2a
-
-- Build #353 / run `30538155450` — RED: resolver отсутствовал;
-- Build #354 — resolver/CLI GREEN checkpoint;
-- Build #356 / run `30538461394` — RED: HTML/artifact/production inspection contracts раньше implementation;
-- Build #358 — inspection GREEN checkpoint;
-- Build #359 — RED: workflow ownership contract раньше wiring;
-- Build #361 — debugging RED: weekly monitor не имел explicit fail-closed expectation guard;
-- Build #362 — workflow integration GREEN checkpoint;
-- scope review уточнил repository-only variable и public Pages artifact boundary;
-- Build #366 / run `30560000925` — regression RED: `deferx` ошибочно мог считаться `defer`;
-- parser получил exact attribute-name boundary;
-- Build #367 / run `30560152774` — final full matrix GREEN.
-
-Design:
-
-`docs/superpowers/specs/2026-07-30-production-analytics-activation-design.md`
-
-Authoritative amendment:
-
-`docs/superpowers/specs/2026-07-30-production-analytics-activation-design-amendment.md`
-
-Plan:
-
-`docs/superpowers/plans/2026-07-30-production-analytics-activation.md`
+Любое расширение beyond `pageviews-and-rum` требует нового explicit design/privacy review.
 
 ---
 
-## 3. Operational truth — строго раздельно
-
-### 1. Repository ready — YES
-
-Подтверждено:
-
-- feature PR #42 merged;
-- exact implementation head verified;
-- Build #367 полностью green;
-- production workflow, rollback и weekly checks находятся в `master`.
-
-### 2. Production beacon active — NOT INDEPENDENTLY VERIFIED IN THIS SNAPSHOT
-
-Push-triggered Pages run после merge нельзя подтвердить через доступный connector: его commit-run wrapper возвращает только PR-triggered runs и не предоставляет list-deployments/list-push-runs endpoint.
-
-Поэтому snapshot не утверждает ни `enabled`, ни `disabled` deployed state без production report/run evidence.
-
-### 3. Telemetry observed — NO VERIFIED EVIDENCE
-
-Cloudflare dashboard data не проверялась. Green CI или deployed beacon сами по себе не доказывают provider telemetry.
-
-### External account action
-
-Для первой реальной activation, если repository variable ещё не создана:
-
-1. создать Cloudflare Web Analytics site для actual production hostname;
-2. скопировать public site token;
-3. создать repository variable `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`;
-4. вручную запустить Pages workflow с `analytics_mode=required`;
-5. потребовать green local + post-deploy RU/EN verification;
-6. отдельно подтвердить данные в Cloudflare dashboard.
-
----
-
-## 4. Архитектурные принципы
+## 7. Архитектурные принципы
 
 Главная граница:
 
@@ -277,7 +245,7 @@ Cloudflare dashboard data не проверялась. Green CI или deployed 
 
 ---
 
-## 5. Canonical data и runtime ownership
+## 8. Canonical data и ownership
 
 Registries/configs:
 
@@ -299,18 +267,9 @@ Main build/postprocess orchestrator:
 
 `scripts/copy-assets.js`
 
-Focused analytics production ownership:
-
-- `scripts/analytics.js` — policy + build injection;
-- `scripts/analytics-deployment.js` — deployment resolution + static verification;
-- `scripts/analytics-browser-smoke.cjs` — privacy/failure browser contract;
-- `scripts/production-smoke.js` — deployed availability/identity/analytics state;
-- `.github/workflows/static.yml` — Pages deployment;
-- `.github/workflows/external-health.yml` — weekly production health.
-
 ---
 
-## 6. Milestones
+## 9. Milestones
 
 ### P0 — foundation
 
@@ -332,12 +291,13 @@ Focused analytics production ownership:
 
 - P2.1 Minimal RU/EN — DONE: PR #38, Build #339.
 - P2.2 Privacy-friendly analytics implementation — DONE: PR #40, Build #351.
-- P2.2a Production analytics activation contract — DONE (repository): PR #42, Build #367.
-- First real provider activation/telemetry — EXTERNAL + NOT VERIFIED.
+- P2.2a Production analytics activation contract — DONE: PR #42, Build #367.
+- First strict production activation — DONE: run `30572276691`.
+- First provider telemetry observation — DONE (initial bounded snapshot).
 
 ---
 
-## 7. Current quality matrix
+## 10. Current quality matrix
 
 Configured PR matrix включает:
 
@@ -359,39 +319,41 @@ Configured PR matrix включает:
 - visual regression;
 - diagnostics/evidence upload.
 
-Latest exact feature evidence:
+Latest exact implementation evidence:
 
-`21181a30d85d9f68536b266a326f849d4b451959`
+- head `21181a30d85d9f68536b266a326f849d4b451959`;
+- Build #367 / run `30560152774` — fully green.
 
-Build #367 / run `30560152774`:
+Latest strict production evidence:
 
-**fully green**.
+- master SHA `5b9bd5b1e022bb8a5f24a53bdf4200613bd2a59e`;
+- run `30572276691` — fully green deployment and production verification.
 
 ---
 
-## 8. Следующий оптимальный шаг
+## 11. Следующий оптимальный шаг
 
-Не начинать автоматически P2.3/P2.4.
+Analytics infrastructure больше не является blocker.
 
 Правильная последовательность:
 
-1. выполнить external Cloudflare site/token setup, если его ещё нет;
-2. выполнить manual `required` Pages deployment;
-3. сохранить actual production verification evidence;
-4. подтвердить provider telemetry;
-5. собрать aggregate usage/performance signal;
-6. выбрать следующий milestone по данным.
+1. сохранить текущий snapshot как baseline, но не интерпретировать 4 page views как audience signal;
+2. обеспечить внешний трафик через GitHub profile, project READMEs, резюме, Хабр/Telegram и другие реальные entry points;
+3. наблюдать aggregate routes, RU/EN, referrers и Core Web Vitals не менее 3–4 недель;
+4. параллельно выбрать следующий bounded milestone, который не зависит от ложной статистической уверенности.
 
-После evidence выбирать между:
+Recommended next candidates:
 
-- selective RU/EN/content expansion;
-- P2.3 custom domain/hosting при operational need;
-- P2.4 richer architecture explorer при достаточном количестве real artifacts;
-- first genuine Photo Story при наличии authentic material.
+- **P2.3 Custom domain + public launch** — при готовности выбрать и купить домен;
+- **Real content sprint** — сильные case studies Vlezet/VillAIgence, `/now`, Engineering Notes;
+- **First genuine Photo Story** — при наличии authentic material;
+- selective RU/EN expansion — только по usage/content signal.
+
+Яндекс.Метрика не является immediate priority. Возвращаться к secondary provider стоит только если Cloudflare систематически не даёт достаточного российского signal и проект готов принять отдельный consent/privacy layer.
 
 ---
 
-## 9. Намеренные запреты
+## 12. Намеренные запреты
 
 Без нового обоснования не добавлять:
 
@@ -411,6 +373,6 @@ Build #367 / run `30560152774`:
 
 ---
 
-## 10. Как восстановить контекст
+## 13. Как восстановить контекст
 
-> Открой в `True-Ruslan/trueruslan-landing` файлы `docs/PROJECT_STATE.md`, `docs/ROADMAP.md` и `docs/CHANGELOG.md`. Затем проверь актуальные open PR, последние commits и exact-head CI. Если речь о production или analytics, отдельно проверь Pages deployment report, deployed RU/EN beacon state и Cloudflare telemetry.
+> Открой в `True-Ruslan/trueruslan-landing` файлы `docs/PROJECT_STATE.md`, `docs/ROADMAP.md` и `docs/CHANGELOG.md`. Затем проверь actual open PR, последние commits и exact-head CI. Если речь о production или analytics, отдельно проверь latest Pages run/report, deployed RU/EN beacon state, weekly External health и текущий Cloudflare observation window.
