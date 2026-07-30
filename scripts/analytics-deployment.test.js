@@ -6,11 +6,33 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 
 import {
+  inspectAnalyticsHtml,
   resolveAnalyticsDeployment,
+  verifyAnalyticsArtifact,
   writeAnalyticsDeploymentContract,
 } from './analytics-deployment.js';
+import {injectAnalyticsIntoHtml} from './analytics.js';
 
 const fakeToken = 'testAnalyticsToken0123456789ABCDEF';
+const otherToken = 'otherAnalyticsToken0123456789ABCDE';
+const validPolicy = Object.freeze({
+  provider: 'cloudflare-web-analytics',
+  measurement: 'pageviews-and-rum',
+  activation: 'token-required',
+  customEvents: false,
+  cookies: false,
+  persistentStorage: false,
+  crossSiteTracking: false,
+  sessionReplay: false,
+});
+
+function tokenlessHtml(label = 'Page') {
+  return `<!doctype html><html><head><title>${label}</title></head><body><main><h1>${label}</h1></main></body></html>`;
+}
+
+function enabledHtml(label = 'Page', token = fakeToken) {
+  return injectAnalyticsIntoHtml(tokenlessHtml(label), validPolicy, token);
+}
 
 test('auto mode remains disabled when no token is configured', () => {
   assert.deepEqual(resolveAnalyticsDeployment({mode: 'auto', token: ''}), {
@@ -140,4 +162,92 @@ test('CLI forced-disabled mode clears build token', () => {
   const envText = fs.readFileSync(githubEnv, 'utf8');
   assert.match(envText, /ANALYTICS_EXPECTATION=disabled/);
   assert.match(envText, /TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN=\n/);
+});
+
+test('HTML inspection accepts an analytics-free page only when disabled is expected', () => {
+  assert.deepEqual(inspectAnalyticsHtml(tokenlessHtml(), {expectation: 'disabled'}), {
+    ok: true,
+    beaconCount: 0,
+    errors: [],
+  });
+  const enabledExpectation = inspectAnalyticsHtml(tokenlessHtml(), {
+    expectation: 'enabled',
+    token: fakeToken,
+  });
+  assert.equal(enabledExpectation.ok, false);
+  assert.match(enabledExpectation.errors.join(' '), /expected exactly one analytics beacon/i);
+});
+
+test('HTML inspection validates one bounded enabled beacon without returning token material', () => {
+  const result = inspectAnalyticsHtml(enabledHtml(), {expectation: 'enabled', token: fakeToken});
+  assert.deepEqual(result, {ok: true, beaconCount: 1, errors: []});
+  assert.doesNotMatch(JSON.stringify(result), new RegExp(fakeToken));
+});
+
+test('HTML inspection fails duplicates, unexpected enabled state and wrong token', () => {
+  const html = enabledHtml();
+  const script = html.match(/<script[^>]*data-tr-analytics="cloudflare-web-analytics"[^>]*><\/script>/i)?.[0];
+  assert.ok(script);
+
+  const duplicate = html.replace('</head>', `${script}</head>`);
+  const duplicateResult = inspectAnalyticsHtml(duplicate, {expectation: 'enabled', token: fakeToken});
+  assert.equal(duplicateResult.ok, false);
+  assert.equal(duplicateResult.beaconCount, 2);
+
+  const disabledResult = inspectAnalyticsHtml(html, {expectation: 'disabled'});
+  assert.equal(disabledResult.ok, false);
+  assert.match(disabledResult.errors.join(' '), /expected no analytics beacon/i);
+
+  const wrongTokenResult = inspectAnalyticsHtml(html, {expectation: 'enabled', token: otherToken});
+  assert.equal(wrongTokenResult.ok, false);
+  assert.match(wrongTokenResult.errors.join(' '), /token does not match/i);
+});
+
+test('HTML inspection fails malformed or expanded beacon attributes', () => {
+  const html = enabledHtml();
+  const malformedConfig = html.replace(/data-cf-beacon="[^"]+"/, 'data-cf-beacon="not-json"');
+  const wrongSpa = html.replace(/&quot;spa&quot;:false/, '&quot;spa&quot;:true');
+  const wrongSource = html.replace(
+    'https://static.cloudflareinsights.com/beacon.min.js',
+    'https://example.test/beacon.js',
+  );
+  const wrongType = html.replace('type="module"', 'type="text/javascript"');
+  const missingDefer = html.replace(' defer ', ' ');
+
+  for (const candidate of [malformedConfig, wrongSpa, wrongSource, wrongType, missingDefer]) {
+    const result = inspectAnalyticsHtml(candidate, {expectation: 'enabled', token: fakeToken});
+    assert.equal(result.ok, false);
+    assert.ok(result.errors.length > 0);
+  }
+});
+
+test('artifact verification checks representative RU and EN pages', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-analytics-artifact-'));
+  fs.mkdirSync(path.join(outputDir, 'en'), {recursive: true});
+  fs.writeFileSync(path.join(outputDir, 'index.html'), enabledHtml('RU'));
+  fs.writeFileSync(path.join(outputDir, 'en', 'index.html'), enabledHtml('EN'));
+
+  const result = verifyAnalyticsArtifact(outputDir, {
+    expectation: 'enabled',
+    token: fakeToken,
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.expectation, 'enabled');
+  assert.deepEqual(result.routes.map((entry) => entry.route), ['index.html', 'en/index.html']);
+  assert.ok(result.routes.every((entry) => entry.ok && entry.beaconCount === 1));
+  assert.doesNotMatch(JSON.stringify(result), new RegExp(fakeToken));
+});
+
+test('artifact verification reports missing localized files without throwing', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-analytics-artifact-missing-'));
+  fs.writeFileSync(path.join(outputDir, 'index.html'), tokenlessHtml('RU'));
+
+  const result = verifyAnalyticsArtifact(outputDir, {expectation: 'disabled'});
+  assert.equal(result.ok, false);
+  assert.equal(result.routes.find((entry) => entry.route === 'en/index.html').ok, false);
+  assert.match(
+    result.routes.find((entry) => entry.route === 'en/index.html').errors.join(' '),
+    /file not found/i,
+  );
 });
