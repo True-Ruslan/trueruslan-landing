@@ -221,6 +221,14 @@ test('HTML inspection fails malformed or expanded beacon attributes', () => {
   }
 });
 
+test('HTML inspection requires exact attribute names', () => {
+  const disguisedDefer = enabledHtml().replace(' defer ', ' deferx ');
+  const result = inspectAnalyticsHtml(disguisedDefer, {expectation: 'enabled', token: fakeToken});
+
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join(' '), /must include defer/i);
+});
+
 test('artifact verification checks representative RU and EN pages', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-analytics-artifact-'));
   fs.mkdirSync(path.join(outputDir, 'en'), {recursive: true});
