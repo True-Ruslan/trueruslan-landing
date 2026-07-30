@@ -11,7 +11,7 @@ permissions:
 jobs:
   external-health:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,13 +21,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Resolve analytics deployment contract
+        env:
+          ANALYTICS_DEPLOYMENT_MODE: auto
+          ANALYTICS_SITE_TOKEN: ${{ vars.TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN }}
+        run: node scripts/analytics-deployment.js
       - name: Check public endpoints
         run: node scripts/external-health.js
-      - name: Upload health report
+      - name: Verify production Pages and analytics state
+        env:
+          PRODUCTION_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+        run: node scripts/production-smoke.js "${PRODUCTION_URL}"
+      - name: Upload health and production reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: external-health-report
-          path: health-artifacts/
+          path: |
+            health-artifacts/
+            production-smoke-report.json
+            analytics-deployment-contract.json
           if-no-files-found: warn
           retention-days: 30
