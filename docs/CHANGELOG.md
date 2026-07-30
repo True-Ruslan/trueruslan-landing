@@ -1,242 +1,191 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-07-23**, после merge P2.2 Privacy-friendly analytics PR #40.
+> Обновлено: **2026-07-30**, после merge P2.2a Production analytics activation contract PR #42.
 >
-> Это не машинный список коммитов. Здесь фиксируются смысловые этапы: **что сделали, зачем, какие решения приняли, какие проблемы обнаружили и чем подтвердили результат**.
+> Это смысловая история проекта: что сделали, зачем, какие решения приняли, какие ошибки обнаружили и чем подтвердили результат.
 >
-> Текущее состояние — `docs/PROJECT_STATE.md`. Следующие шаги — `docs/ROADMAP.md`.
+> Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`.
 
 ---
 
-# 2026-07-23
+# 2026-07-30
 
-## P2.2 — Privacy-friendly analytics
+## P2.2a — Production analytics activation contract
 
 ### Зачем
 
-После bilingual milestone сайт уже имел достаточно зрелые content, evidence, SEO и quality layers, чтобы следующий шаг был не очередным feature ради roadmap, а попыткой получить минимальный реальный usage/performance signal.
+P2.2 добавил privacy-friendly build-time analytics, но production GitHub Pages workflow не передавал реальную configuration variable и не проверял deployed beacon state.
 
-Цель P2.2 — ответить только на четыре aggregate question:
+Кодовая готовность, deployed beacon и provider telemetry были разными фактами, но deployment path не умел фиксировать эту разницу автоматически.
 
-1. какие public routes реально используются;
-2. как распределяется usage между default/RU и `/en/`;
-3. какие surfaces могут оправдать дальнейший translation/content investment;
-4. какой real-user performance/Core Web Vitals получают посетители.
+### Design decision
 
-### Provider / design decision
+Выбран GitHub Actions **repository variable**:
 
-Выбран:
+`TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`
 
-**Cloudflare Web Analytics manual beacon**.
+Не Secret, потому что Cloudflare Web Analytics site token является public site identifier и при enabled deployment находится в HTML.
 
-Причины:
+Не hardcode, потому что deployment identity должна изменяться и отключаться без code commit.
 
-- соответствует bounded pageview/RUM scope;
-- не требует нового application backend;
-- не требует отдельной analytics infrastructure;
-- не требует duplicate RU/EN analytics system;
-- позволяет сохранить analytics как optional enhancement.
+Repository scope выбран вместо environment-only scope, поскольку один value должен быть доступен и Pages deployment, и scheduled `External health` workflow.
 
-Отклонены для этого milestone:
+### Deployment modes
 
-- Plausible Cloud — сильный privacy-friendly вариант, но richer/paid functionality была избыточна для текущих decision questions;
-- self-hosted analytics — создаёт server/upgrade/backup/security/availability ownership без достаточной необходимости.
+Добавлены три explicit mode:
 
-Design:
+- `auto` — default для push в `master`;
+- `required` — strict manual activation/verification;
+- `disabled` — manual kill switch.
 
-`docs/superpowers/specs/2026-07-23-privacy-friendly-analytics-design.md`
+Semantics:
 
-Plan:
+- `auto` + valid token → enabled;
+- `auto` + no token → analytics-free deployment;
+- `required` + no/invalid token → fail before build/deploy;
+- `disabled` → force analytics-free artifact независимо от configured token;
+- malformed configured token never silently degrades to disabled.
 
-`docs/superpowers/plans/2026-07-23-privacy-friendly-analytics.md`
+### Implementation
 
-Operator runbook:
-
-`docs/ANALYTICS.md`
-
-### Feature implementation
-
-**PR #40 — `feat: add privacy-friendly analytics`**
+**PR #42 — `ci: activate and verify production analytics`**
 
 Squash:
 
-`2dacace5de6b6c1225e82b372faef093850f4c9f`
+`522140dda2cab121e6a5c2a099dce9e491f1b49b`
 
 Exact implementation head:
 
-`577fe9149988497d954f8ad9316467089ce50286`
+`21181a30d85d9f68536b266a326f849d4b451959`
 
-Final verification:
+Final PR verification:
 
-**Build #351 / run `30003347268`: fully green по полной configured matrix.**
+**Build #367 / run `30560152774`: fully green по полной configured matrix.**
 
-### Canonical privacy policy
+Added:
 
-Добавлен:
+- `scripts/analytics-deployment.js`;
+- `scripts/analytics-deployment.test.js`;
+- `scripts/analytics-workflow.test.js`;
+- production analytics checks in `scripts/production-smoke.js`;
+- production-smoke regression tests;
+- Pages workflow activation/preflight/artifact verification;
+- weekly health production-state verification;
+- design, authoritative amendment, plan and operator runbook.
 
-`data/analytics.json`
+### Preflight contract
 
-Policy фиксирует:
+`scripts/analytics-deployment.js`:
 
-- provider: `cloudflare-web-analytics`;
-- measurement: `pageviews-and-rum`;
-- activation: `token-required`;
-- custom events: `false`;
-- cookies: `false`;
-- persistent storage: `false`;
-- cross-site tracking: `false`;
-- session replay: `false`.
+- validates mode and optional token;
+- derives bounded `mode/enabled/expectation/reason`;
+- masks configured token before ordinary workflow output;
+- writes `ANALYTICS_EXPECTATION` and build token through `GITHUB_ENV`;
+- writes `analytics-deployment-contract.json` without token/hash;
+- fails closed for invalid mode/configuration.
 
-Policy строго валидируется; unknown/expanded privacy fields не принимаются молча.
+### Generated artifact verification
 
-### Build-time integration
+Before Pages upload the workflow verifies:
 
-Добавлен:
+- `docs-html/index.html`;
+- `docs-html/en/index.html`.
 
-`scripts/analytics.js`
+Enabled contract requires:
 
-Ключевой contract:
+- exactly one owned beacon;
+- exact official provider source;
+- exact `type="module"`;
+- exact `defer`;
+- JSON config with only `token` and `spa: false`;
+- exact configured token match.
 
-**без `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN` analytics полностью отсутствует из generated artifact.**
+Disabled contract requires zero owned beacons.
 
-Tokenless build:
+The verifier parses static HTML and never executes provider JavaScript.
 
-- проходит успешно;
-- HTML остаётся без analytics beacon;
-- CI/PR builds не имеют analytics network capability.
+### Production verification
 
-Token-enabled build:
+After `actions/deploy-pages`, `scripts/production-smoke.js` verifies:
 
-- использует тот же `scripts/copy-assets.js` orchestrator;
-- внедряет один owned Cloudflare module/defer beacon на HTML page;
-- deterministic;
-- idempotent;
-- malformed configured token приводит к bounded build error.
+- existing public endpoint health;
+- homepage identity;
+- Atom feed identity;
+- deployed RU analytics state;
+- deployed EN analytics state;
+- exact token match when enabled;
+- zero beacons when disabled.
 
-Real production token не коммитился и не выдумывался.
+`production-smoke-report.json` remains token-free.
 
-### Privacy boundary
+### Weekly monitoring
 
-TrueRuslan integration не добавляет:
+`External health` now:
 
-- custom click/event tracking;
-- user/account IDs;
-- analytics cookies;
-- localStorage/sessionStorage analytics IDs;
-- persistent visitor IDs;
-- fingerprinting;
-- session replay;
-- advertising audiences;
-- cross-site tracking;
-- analytics-driven personalization/product behavior.
+1. runs `npm ci`;
+2. resolves current contract in `auto`;
+3. runs existing external endpoint checks;
+4. checks deployed Pages RU/EN analytics state;
+5. uploads bounded health/production/deployment reports.
 
-Любое расширение beyond `pageviews-and-rum` требует нового explicit design/privacy review.
-
-### RU/EN semantics
-
-Одна analytics layer для всего сайта.
-
-Locale уже выражен URL structure:
-
-- `/en/**` → EN;
-- root/`landing/**` → default/RU.
-
-Не создавались locale cookie, user identity или отдельная EN analytics property/system.
-
-### Failure behavior
-
-Analytics остаётся optional telemetry.
-
-При ad/privacy blocker, network failure или unavailable provider:
-
-- content не зависит от analytics;
-- navigation не зависит от analytics;
-- search не зависит от analytics;
-- language switching не зависит от analytics;
-- никаких product retry/state semantics вокруг analytics не создаётся.
-
-### Dedicated privacy/failure gate
-
-Добавлен:
-
-`scripts/analytics-browser-smoke.cjs`
-
-и обязательный CI step:
-
-`Privacy-friendly analytics browser smoke`
-
-Gate:
-
-1. доказывает 0 analytics beacons в normal CI artifact;
-2. создаёт temporary copy;
-3. внедряет только fixed fake token;
-4. блокирует Cloudflare analytics network endpoints;
-5. проверяет RU, EN и generated search;
-6. проверяет exact bounded beacon config;
-7. проверяет отсутствие analytics-related cookies/storage;
-8. проверяет продукт при blocked analytics;
-9. проверяет overflow + serious/critical Axe.
-
-CI никогда не отправляет real analytics через этот gate.
+It does not execute the Cloudflare script.
 
 ### TDD / debugging trail
 
-#### Build #341 — expected RED
+#### Build #353 — expected RED
 
-Run `30002195925`.
+Run `30538155450`.
 
-Policy tests появились до `scripts/analytics.js`; `Test` failed, downstream skipped.
+Resolver module was absent; `Test` failed and downstream skipped.
 
-#### Build #343 — GREEN checkpoint
+#### Build #354 — GREEN checkpoint
 
-Strict policy/token contract passed.
+Deployment resolver/CLI, production build and integrity passed.
 
-#### Build #344 — expected RED
+#### Build #356 — expected RED
 
-Run `30002327923`.
+Run `30538461394`.
 
-Deterministic injection contract появился до injection implementation.
+HTML/artifact/production inspection contracts existed before implementation.
 
-#### Build #345 — GREEN checkpoint
+#### Build #358 — GREEN checkpoint
 
-Injection tests + production build + integrity passed.
+RU/EN artifact and production inspection passed tests/build/integrity.
 
-#### Build #346 — expected RED
+#### Build #359 — expected RED
 
-Run `30002524534`.
+Workflow ownership/ordering contract preceded Pages and health wiring.
 
-`postprocessOutput()` ещё не владел analytics integration contract.
+#### Build #361 — debugging RED
 
-#### Build #347 — GREEN checkpoint
+Pages contract passed, but weekly workflow lacked an explicit fail-closed guard around dynamic `ANALYTICS_EXPECTATION`.
 
-Single-orchestrator integration passed; tokenless production default preserved.
+The guard was added; privacy semantics were not weakened.
 
-#### Build #350 — browser RED
+#### Build #362 — GREEN checkpoint
 
-Run `30002983283`.
+Workflow integration passed, including existing privacy analytics browser smoke.
 
-Все старые gates до analytics step были green. Новый analytics smoke упал на generated search, потому что тест ошибочно предполагал наличие `<main>` на каждой generated surface.
+#### Scope review amendment
 
-Root cause подтверждён preserved log и сравнением с canonical `search-smoke.cjs`: Diplodoc search рендерится через `#root` + search input.
+Two ambiguities were corrected explicitly:
 
-Исправлена модель теста, а не privacy assertions:
+1. configuration variable is repository-scoped, not environment-only;
+2. enabled Pages site artifact necessarily contains the public site token, while diagnostic/report artifacts must not.
 
-- all surfaces требуют non-empty body;
-- normal pages сохраняют `main + H1` contract;
-- search требует visible search input;
-- cookie/storage/blocking/config/overflow/Axe assertions не ослаблены.
+#### Build #366 — expected regression RED
 
-#### Build #351 — final GREEN
+Run `30560000925`.
 
-Exact head:
+Test proved that `deferx` could be incorrectly accepted as `defer` by a permissive attribute regex.
 
-`577fe9149988497d954f8ad9316467089ce50286`
+Parser was changed to require an exact attribute-name boundary: whitespace, `=`, `/` or `>`.
 
-Run:
+#### Build #367 — final GREEN
 
-`30003347268`
+Run `30560152774`.
 
-Полностью green:
+Fully green:
 
 - tests;
 - production Diplodoc build;
@@ -246,164 +195,130 @@ Run:
 - Sources KB;
 - Project Evidence;
 - Photo Stories;
-- Portfolio v0.3;
+- portfolio regression;
 - Firefox/WebKit;
 - generated search;
-- Minimal RU EN browser smoke;
-- **Privacy-friendly analytics browser smoke**;
+- Minimal RU/EN;
+- privacy analytics browser smoke;
 - Metadata/OpenGraph;
 - Engineering Map;
 - unchanged visual regression;
 - quality evidence upload.
 
-### Production activation status
+### Security/privacy result
 
-**Implementation завершена; actual production analytics activation не подтверждена.**
+Not added:
 
-Причина: реального Cloudflare Web Analytics site token для actual production hostname в доступном project context нет.
-
-Нельзя считать feature operationally active только по факту merge.
-
-Для activation нужно отдельно:
-
-1. подтвердить actual production deployment mechanism;
-2. создать/configure Cloudflare Web Analytics site;
-3. получить public site token;
-4. передать его production build environment как `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`;
-5. rebuild/redeploy;
-6. проверить generated beacon и actual provider telemetry.
-
-До этого production остаётся analytics-free by design.
-
-### Architecture preserved
-
-Не изменялись:
-
-- dependency/package-lock graph;
-- visual baselines/thresholds;
-- Lighthouse budgets;
-- Project Evidence/trust semantics;
-- one-search boundary;
-- RU/EN source-of-truth architecture.
-
-Не добавлялись:
-
-- backend/CMS/database;
-- self-hosted analytics infra;
+- real Cloudflare token in repository;
+- account/API credentials;
+- provisioning automation;
+- token/hash in diagnostic reports;
 - custom events;
-- cookie banner без технической необходимости;
-- runtime analytics dependency.
+- cookies;
+- persistent IDs;
+- fingerprinting;
+- session replay;
+- advertising/cross-site tracking;
+- analytics product dependency.
 
-### Result
+### Operational result
 
-P2.2 code milestone закрыт.
+Three facts remain separate:
 
-Следующий правильный шаг — **P2.2a production activation + observation**, а не автоматический новый feature.
+1. **Repository ready — verified.**
+2. **Production beacon active — not independently verified in this snapshot.**
+3. **Telemetry observed — not verified.**
 
-После реальных aggregate data следующая product decision должна быть evidence-driven.
+The available GitHub connector exposes PR-triggered runs but not list-push-runs/deployments, so the automatic master Pages run after merge was not promoted to a verified fact without report evidence.
+
+The remaining external action is Cloudflare site/token setup plus manual `required` deployment and dashboard verification.
 
 ---
+
+# 2026-07-23
+
+## P2.2 — Privacy-friendly analytics
+
+PR #40 / squash `2dacace5de6b6c1225e82b372faef093850f4c9f`.
+
+Exact head `577fe9149988497d954f8ad9316467089ce50286`, Build #351 / run `30003347268` fully green.
+
+Added bounded Cloudflare Web Analytics manual beacon, tokenless default, strict privacy policy and blocked-network browser gate.
 
 ## P2.1 — Minimal RU/EN
 
-**PR #38 — `feat: add minimal RU EN portfolio layer`**
-
-Squash `00f7513f685b8a8348005d0ab704ce96abe64950`.
+PR #38 / squash `00f7513f685b8a8348005d0ab704ce96abe64950`.
 
 Exact head `d5f2490bbd7beac7343c96edf1fb6e8feb9b51c6`, Build #339 / run `30000373281` fully green.
 
-Реализованы ровно 7 bilingual pairs при one-build/one-search/shared-truth architecture. Новый bilingual Axe gate также обнаружил и помог исправить hydrated Diplodoc accessible-name/scrollable-code defects без ослабления Axe.
+Seven bilingual pairs under one build/site/search architecture.
 
----
+## P1.4 — Additional Grounded Engineering Note
 
-## P1.4 — Additional Grounded Engineering Notes
+PR #36 / squash `24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`, Build #308.
 
-PR #36 / squash `24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`.
-
-Exact head `ced6ce0208d691fd891e8b8e1cf03be4c40465d5`, Build #308 / run `29961571632` fully green.
-
-Добавлена `llm-output-is-a-protocol-boundary`. Главный lesson: **provider success ≠ application contract success**.
+Added `llm-output-is-a-protocol-boundary`: provider success is not application contract success.
 
 ---
 
 # 2026-07-22
 
-## P1.3 — Stronger Flagship Case-Study Format
+## P1.3 — Flagship Case-Study Format
 
 PR #34 / squash `107b69311f6eed408de5306406d9ff41f0e32ea2`, Build #301.
 
-LivingWorld и NODE ZERO получили общий Markdown-first contract:
-
-`Problem → Constraints → Decisions → What failed → Current state → Evidence → What I would change now`.
-
-Canonical Registry/timeline/Evidence ownership сохранён.
+LivingWorld and NODE ZERO received the shared Markdown-first engineering narrative.
 
 ## P1.2 — Project Metadata Cleanup
 
 PR #31 / squash `1df2a2905ef2eb4b52173271f9012defc33b25ab`, Build #296.
 
-Package identity приведён к engineering portfolio / knowledge platform; `private: true`; version не используется как maturity indicator.
+Package identity aligned with engineering portfolio / knowledge platform; `private: true`.
 
-## P1.1 — Consolidated Browser Quality Harness
+## P1.1 — Browser Quality Harness
 
 PR #29 / squash `06e60425e31ef19ddae0c3ac8b0991808b45837e`, Build #293.
 
-Создан modular `scripts/quality-harness/`; focused runners сохранили domain ownership.
+Created modular `scripts/quality-harness/` while preserving focused runner ownership.
 
 ## P0.6 — Content Freshness Guard
 
 PR #27 / squash `33770983789fbde5c59a94972709360286a06ad5`, Build #269.
 
-Guard обнаруживает drift, но не переписывает public truth/trust автоматически.
-
-Repository-hygiene incident: временный `_never_` probe commit `4f7ec91...` был немедленно удалён cleanup `b5ce6e5...`; net tree effect zero.
+Detects drift without automatically rewriting public truth/trust.
 
 ## P0.5 — Grounded Engineering Notes
 
 PR #25 / squash `f2775b7c9150281bcb4bcc01a4e021e007e18ca0`, Build #257.
 
-Добавлены repository-grounded Notes:
+Added repository-grounded Notes and metadata/search/feed integration.
 
-- `intersection-observer-giant-table`;
-- `static-first-sources-no-js`;
-- `green-ci-is-not-product-verification`.
-
-## Portfolio v0.4 — Project Evidence Layer
+## P0.4 — Project Evidence Layer
 
 PR #22 / squash `e3e48ac56b45eddeb872c04b83bff1408da6556f`, Build #247.
 
-Canonical evidence snapshots, `verified / stale / unverified`, bounded signals, trust-aware rendering/QA.
+Added bounded evidence snapshots and `verified/stale/unverified` semantics.
 
-Key lesson: **green CI не равно verified product без bounded scope и current interpretation**.
-
-## Portfolio v0.4 — Sources Registry / Knowledge Base
+## P0.3 — Sources Knowledge Base
 
 PR #20 / squash `4f4e8ff2c0f70ef60d49cdf5f8a708a71aa4ce2d`.
 
-31 real records, canonical `data/sources.json`, strict validation, semantic cards, filters, stable anchors, responsive/no-JS fallback.
+Added 31 real records, strict validation, semantic/no-JS rendering and local filters.
 
-## Photo Stories
+## P0.1 — Photo Stories platform
 
-PR #15 platform / squash `8aa2149fc8aec3751f2da73321c06a89111f9efd`.
+PR #15 + QA PR #17.
 
-PR #17 QA / squash `7936638bd6473ad4f1ff0b2ef42db2289e937d83`.
-
-Platform готова; fake/demo album не создавался.
-
-## Portfolio v0.3 — living engineering space
-
-PR #13 / squash `b472aff67d69fb3cd6afa0577864371547f52a5b`.
-
-Закреплён переход от landing page к living engineering portfolio / knowledge platform: Project Registry, `/now`, timelines, Engineering Notes/feed, Engineering Map, command palette и stronger generated-site QA.
+Platform ready; fake/demo album was not created.
 
 ---
 
 ## Durable continuity principle
 
-После крупных milestones состояние синхронизируется в:
+After major milestones synchronize:
 
 1. `docs/PROJECT_STATE.md`;
 2. `docs/ROADMAP.md`;
 3. `docs/CHANGELOG.md`.
 
-Эти docs — snapshot, не замена actual repository checks. В новом чате поверх них всегда проверять open PR, latest commits, exact-head CI и отдельно operational facts вроде deployment/analytics/freshness runs.
+These files are snapshots, not substitutes for actual repository, CI, Pages deployment and provider checks.
