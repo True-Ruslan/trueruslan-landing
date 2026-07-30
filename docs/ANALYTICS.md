@@ -90,11 +90,11 @@ With a valid token, the existing build pipeline injects exactly one owned beacon
 
 The Cloudflare Web Analytics site token is embedded in deployed public HTML. It is a site identifier, not a Cloudflare account/API credential.
 
-Use a GitHub Actions **configuration variable** because:
+Use a GitHub Actions **repository configuration variable** because:
 
 - it represents non-sensitive deployment configuration;
 - it can be changed or removed without a code commit;
-- the same value can drive build and production verification;
+- the Pages deployment and scheduled weekly health workflow can read the same value;
 - treating it as a secret would not make it confidential after deployment.
 
 The deployment preflight still masks a configured value in Actions logs to reduce accidental disclosure during shell execution.
@@ -113,7 +113,7 @@ In Cloudflare Web Analytics:
 
 Do not copy an account API token or Global API Key.
 
-### 2. Add the GitHub Actions variable
+### 2. Add the GitHub Actions repository variable
 
 Open:
 
@@ -132,7 +132,9 @@ Name:  TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN
 Value: <public site token copied from Cloudflare Web Analytics>
 ```
 
-The variable may also be scoped to the `github-pages` environment if environment-level configuration is preferred. Do not define conflicting repository and environment values.
+Use repository scope. The scheduled `External health` workflow intentionally does not bind itself to the `github-pages` deployment environment, so an environment-only variable would not be visible to weekly monitoring.
+
+Do not create a conflicting environment-scoped value with the same name.
 
 ## Deployment modes
 
@@ -214,7 +216,7 @@ This ignores the configured variable for that deployment and verifies that produ
 
 ### Persistent disable
 
-Remove `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN` from GitHub Actions variables, then trigger or wait for the next `auto` deployment.
+Remove `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN` from GitHub Actions repository variables, then trigger or wait for the next `auto` deployment.
 
 The next artifact and deployed RU/EN pages must contain zero owned analytics beacons.
 
@@ -263,7 +265,7 @@ The report never contains the token.
 
 ### Weekly monitoring
 
-`External health` runs weekly and manually. It resolves the current configuration in `auto`, checks existing public endpoints and reuses the same production analytics verifier.
+`External health` runs weekly and manually. It resolves the current repository configuration in `auto`, checks existing public endpoints and reuses the same production analytics verifier.
 
 This detects:
 
