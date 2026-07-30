@@ -4,6 +4,16 @@ on:
   push:
     branches: ["master"]
   workflow_dispatch:
+    inputs:
+      analytics_mode:
+        description: Analytics deployment mode
+        required: true
+        default: auto
+        type: choice
+        options:
+          - auto
+          - required
+          - disabled
 
 env:
   SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
@@ -40,10 +50,27 @@ jobs:
         run: npm ci
       - name: Test
         run: npm test
+      - name: Resolve analytics deployment contract
+        env:
+          ANALYTICS_DEPLOYMENT_MODE: ${{ inputs.analytics_mode || 'auto' }}
+          ANALYTICS_SITE_TOKEN: ${{ vars.TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN }}
+        run: node scripts/analytics-deployment.js
       - name: Build docs
         run: npm run build:docs
       - name: Check generated site integrity
         run: npm run check:site
+      - name: Verify generated analytics state
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import {verifyAnalyticsArtifact} from './scripts/analytics-deployment.js';
+          const result = verifyAnalyticsArtifact('docs-html', {
+            expectation: process.env.ANALYTICS_EXPECTATION,
+            token: process.env.TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN,
+          });
+          console.log(JSON.stringify(result, null, 2));
+          if (!result.ok) process.exit(1);
+          NODE
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -65,11 +92,13 @@ jobs:
             sleep $((attempt * 5))
           done
           exit 1
-      - name: Upload production smoke report
+      - name: Upload production verification reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: production-smoke-report
-          path: production-smoke-report.json
+          name: production-verification-reports
+          path: |
+            production-smoke-report.json
+            analytics-deployment-contract.json
           if-no-files-found: warn
           retention-days: 14
