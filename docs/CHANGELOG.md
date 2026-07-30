@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-07-30**, после merge P2.2a Production analytics activation contract PR #42.
+> Обновлено: **2026-07-30**, после strict production analytics activation и первого подтверждённого provider telemetry snapshot.
 >
 > Это смысловая история проекта: что сделали, зачем, какие решения приняли, какие ошибки обнаружили и чем подтвердили результат.
 >
@@ -10,228 +10,147 @@
 
 # 2026-07-30
 
-## P2.2a — Production analytics activation contract
+## P2.2a operational closure — production analytics live
 
 ### Зачем
 
-P2.2 добавил privacy-friendly build-time analytics, но production GitHub Pages workflow не передавал реальную configuration variable и не проверял deployed beacon state.
+После merge repository activation contract оставались два непроверенных факта:
 
-Кодовая готовность, deployed beacon и provider telemetry были разными фактами, но deployment path не умел фиксировать эту разницу автоматически.
+1. действительно ли strict GitHub Pages deployment публикует enabled beacon;
+2. действительно ли Cloudflare принимает и отображает production telemetry.
 
-### Design decision
+Ни green PR CI, ни наличие integration code сами по себе этого не доказывали.
 
-Выбран GitHub Actions **repository variable**:
+### Strict production deployment
 
-`TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN`
+Владелец проекта создал реальный Cloudflare Web Analytics site token, сохранил его как GitHub Actions repository variable и вручную запустил:
 
-Не Secret, потому что Cloudflare Web Analytics site token является public site identifier и при enabled deployment находится в HTML.
+- workflow `Deploy static content to Pages`;
+- run `30572276691`;
+- branch `master`;
+- source SHA `5b9bd5b1e022bb8a5f24a53bdf4200613bd2a59e`;
+- `analytics_mode=required`.
 
-Не hardcode, потому что deployment identity должна изменяться и отключаться без code commit.
+Result: **success**.
 
-Repository scope выбран вместо environment-only scope, поскольку один value должен быть доступен и Pages deployment, и scheduled `External health` workflow.
+Green steps включали:
 
-### Deployment modes
+- tests;
+- analytics deployment preflight;
+- production build;
+- generated-site integrity;
+- generated analytics verification;
+- Pages artifact upload;
+- GitHub Pages deployment;
+- deployed Pages smoke;
+- production verification report upload.
 
-Добавлены три explicit mode:
+### Preserved deployment evidence
 
-- `auto` — default для push в `master`;
-- `required` — strict manual activation/verification;
-- `disabled` — manual kill switch.
+`analytics-deployment-contract.json`:
 
-Semantics:
+```json
+{
+  "mode": "required",
+  "enabled": true,
+  "expectation": "enabled",
+  "reason": "configured-token"
+}
+```
 
-- `auto` + valid token → enabled;
-- `auto` + no token → analytics-free deployment;
-- `required` + no/invalid token → fail before build/deploy;
-- `disabled` → force analytics-free artifact независимо от configured token;
-- malformed configured token never silently degrades to disabled.
+`production-smoke-report.json`:
+
+- checked at `2026-07-30T18:52:23.959Z`;
+- base URL `https://true-ruslan.github.io/trueruslan-landing/`;
+- `ok: true`;
+- no identity errors;
+- all monitored public routes/assets healthy;
+- RU `index.html`: 1 valid beacon;
+- EN `en/index.html`: 1 valid beacon.
+
+GitHub artifact:
+
+- name `production-verification-reports`;
+- id `8771279567`;
+- digest `sha256:65e31cb8d6ea1c4e208bdc488eed19f0a395dcd37feada04f958e92998b63944`.
+
+### Provider telemetry observed
+
+Владелец предоставил Cloudflare Web Analytics dashboard snapshot после deployment.
+
+Initial bounded snapshot:
+
+- Page views: 4;
+- Visits: 0;
+- Page load time: 282 ms;
+- LCP P50: 388 ms;
+- LCP P75: 740 ms;
+- LCP P90: 1316 ms;
+- LCP P99: 1316 ms;
+- LCP / INP / CLS shown as good/green.
+
+Это доказывает provider-side telemetry observation, но не даёт достаточной статистической базы для audience или performance decisions. Первые просмотры могли быть owner verification traffic.
+
+### Operational truth after closure
+
+1. **Repository ready — verified.**
+2. **Production beacon active — verified.**
+3. **Telemetry observed — verified.**
+4. **Enough evidence for product decisions — not yet.**
+
+### Product consequence
+
+Analytics infrastructure больше не является blocker.
+
+Следующая фаза — public identity, real content, distribution и 3–4 недели aggregate observation. Secondary analytics, custom events и behavioural tracking не добавляются без доказанной необходимости и нового privacy decision.
+
+---
+
+## P2.2a — Production analytics activation contract
 
 ### Implementation
 
-**PR #42 — `ci: activate and verify production analytics`**
+PR #42 — `ci: activate and verify production analytics`.
 
-Squash:
-
-`522140dda2cab121e6a5c2a099dce9e491f1b49b`
-
-Exact implementation head:
-
-`21181a30d85d9f68536b266a326f849d4b451959`
-
-Final PR verification:
-
-**Build #367 / run `30560152774`: fully green по полной configured matrix.**
+- squash `522140dda2cab121e6a5c2a099dce9e491f1b49b`;
+- exact head `21181a30d85d9f68536b266a326f849d4b451959`;
+- Build #367 / run `30560152774` fully green.
 
 Added:
 
 - `scripts/analytics-deployment.js`;
-- `scripts/analytics-deployment.test.js`;
-- `scripts/analytics-workflow.test.js`;
-- production analytics checks in `scripts/production-smoke.js`;
-- production-smoke regression tests;
-- Pages workflow activation/preflight/artifact verification;
-- weekly health production-state verification;
-- design, authoritative amendment, plan and operator runbook.
+- deployment modes `auto|required|disabled`;
+- fail-closed token/mode preflight;
+- generated RU/EN beacon verification;
+- deployed RU/EN verification;
+- weekly External health verification;
+- token-free bounded reports;
+- operator activation/rollback runbook.
 
-### Preflight contract
+TDD/debugging evidence:
 
-`scripts/analytics-deployment.js`:
+- Build #353 — RED, resolver absent;
+- Build #354 — resolver GREEN;
+- Build #356 — RED, inspection contracts before implementation;
+- Build #358 — inspection GREEN;
+- Build #359 — RED, workflow contract before wiring;
+- Build #361 — debugging RED, missing weekly fail-closed expectation guard;
+- Build #362 — workflow integration GREEN;
+- Build #366 — regression RED, `deferx` could be accepted as `defer`;
+- exact attribute-name boundary added;
+- Build #367 — final full GREEN.
 
-- validates mode and optional token;
-- derives bounded `mode/enabled/expectation/reason`;
-- masks configured token before ordinary workflow output;
-- writes `ANALYTICS_EXPECTATION` and build token through `GITHUB_ENV`;
-- writes `analytics-deployment-contract.json` without token/hash;
-- fails closed for invalid mode/configuration.
+Privacy boundary remained unchanged: no account/API credentials, custom events, cookies, persistent IDs, fingerprinting, session replay, advertising or cross-site tracking.
 
-### Generated artifact verification
+## Durable continuity after P2.2a
 
-Before Pages upload the workflow verifies:
+PR #43 — `docs: sync state after analytics activation contract`.
 
-- `docs-html/index.html`;
-- `docs-html/en/index.html`.
+- squash `5b9bd5b1e022bb8a5f24a53bdf4200613bd2a59e`;
+- exact docs head `3d4f4754c5e92a56aeb99a2439b067e71ec58bab`;
+- Build #368 / run `30561811875` fully green.
 
-Enabled contract requires:
-
-- exactly one owned beacon;
-- exact official provider source;
-- exact `type="module"`;
-- exact `defer`;
-- JSON config with only `token` and `spa: false`;
-- exact configured token match.
-
-Disabled contract requires zero owned beacons.
-
-The verifier parses static HTML and never executes provider JavaScript.
-
-### Production verification
-
-After `actions/deploy-pages`, `scripts/production-smoke.js` verifies:
-
-- existing public endpoint health;
-- homepage identity;
-- Atom feed identity;
-- deployed RU analytics state;
-- deployed EN analytics state;
-- exact token match when enabled;
-- zero beacons when disabled.
-
-`production-smoke-report.json` remains token-free.
-
-### Weekly monitoring
-
-`External health` now:
-
-1. runs `npm ci`;
-2. resolves current contract in `auto`;
-3. runs existing external endpoint checks;
-4. checks deployed Pages RU/EN analytics state;
-5. uploads bounded health/production/deployment reports.
-
-It does not execute the Cloudflare script.
-
-### TDD / debugging trail
-
-#### Build #353 — expected RED
-
-Run `30538155450`.
-
-Resolver module was absent; `Test` failed and downstream skipped.
-
-#### Build #354 — GREEN checkpoint
-
-Deployment resolver/CLI, production build and integrity passed.
-
-#### Build #356 — expected RED
-
-Run `30538461394`.
-
-HTML/artifact/production inspection contracts existed before implementation.
-
-#### Build #358 — GREEN checkpoint
-
-RU/EN artifact and production inspection passed tests/build/integrity.
-
-#### Build #359 — expected RED
-
-Workflow ownership/ordering contract preceded Pages and health wiring.
-
-#### Build #361 — debugging RED
-
-Pages contract passed, but weekly workflow lacked an explicit fail-closed guard around dynamic `ANALYTICS_EXPECTATION`.
-
-The guard was added; privacy semantics were not weakened.
-
-#### Build #362 — GREEN checkpoint
-
-Workflow integration passed, including existing privacy analytics browser smoke.
-
-#### Scope review amendment
-
-Two ambiguities were corrected explicitly:
-
-1. configuration variable is repository-scoped, not environment-only;
-2. enabled Pages site artifact necessarily contains the public site token, while diagnostic/report artifacts must not.
-
-#### Build #366 — expected regression RED
-
-Run `30560000925`.
-
-Test proved that `deferx` could be incorrectly accepted as `defer` by a permissive attribute regex.
-
-Parser was changed to require an exact attribute-name boundary: whitespace, `=`, `/` or `>`.
-
-#### Build #367 — final GREEN
-
-Run `30560152774`.
-
-Fully green:
-
-- tests;
-- production Diplodoc build;
-- generated-site integrity;
-- mobile overflow;
-- Chromium/Axe/Lighthouse;
-- Sources KB;
-- Project Evidence;
-- Photo Stories;
-- portfolio regression;
-- Firefox/WebKit;
-- generated search;
-- Minimal RU/EN;
-- privacy analytics browser smoke;
-- Metadata/OpenGraph;
-- Engineering Map;
-- unchanged visual regression;
-- quality evidence upload.
-
-### Security/privacy result
-
-Not added:
-
-- real Cloudflare token in repository;
-- account/API credentials;
-- provisioning automation;
-- token/hash in diagnostic reports;
-- custom events;
-- cookies;
-- persistent IDs;
-- fingerprinting;
-- session replay;
-- advertising/cross-site tracking;
-- analytics product dependency.
-
-### Operational result
-
-Three facts remain separate:
-
-1. **Repository ready — verified.**
-2. **Production beacon active — not independently verified in this snapshot.**
-3. **Telemetry observed — not verified.**
-
-The available GitHub connector exposes PR-triggered runs but not list-push-runs/deployments, so the automatic master Pages run after merge was not promoted to a verified fact without report evidence.
-
-The remaining external action is Cloudflare site/token setup plus manual `required` deployment and dashboard verification.
+At that snapshot repository readiness was verified, while production beacon and telemetry were intentionally marked unverified. The strict run and provider snapshot above close those facts without rewriting history.
 
 ---
 
@@ -239,25 +158,26 @@ The remaining external action is Cloudflare site/token setup plus manual `requir
 
 ## P2.2 — Privacy-friendly analytics
 
-PR #40 / squash `2dacace5de6b6c1225e82b372faef093850f4c9f`.
+- PR #40 / squash `2dacace5de6b6c1225e82b372faef093850f4c9f`;
+- exact head `577fe9149988497d954f8ad9316467089ce50286`;
+- Build #351 / run `30003347268` fully green.
 
-Exact head `577fe9149988497d954f8ad9316467089ce50286`, Build #351 / run `30003347268` fully green.
-
-Added bounded Cloudflare Web Analytics manual beacon, tokenless default, strict privacy policy and blocked-network browser gate.
+Added bounded Cloudflare Web Analytics manual beacon, tokenless default, strict pageviews/RUM privacy policy and blocked-network browser gate.
 
 ## P2.1 — Minimal RU/EN
 
-PR #38 / squash `00f7513f685b8a8348005d0ab704ce96abe64950`.
+- PR #38 / squash `00f7513f685b8a8348005d0ab704ce96abe64950`;
+- exact head `d5f2490bbd7beac7343c96edf1fb6e8feb9b51c6`;
+- Build #339 / run `30000373281` fully green.
 
-Exact head `d5f2490bbd7beac7343c96edf1fb6e8feb9b51c6`, Build #339 / run `30000373281` fully green.
-
-Seven bilingual pairs under one build/site/search architecture.
+Seven bilingual route pairs under one build/site/search architecture.
 
 ## P1.4 — Additional Grounded Engineering Note
 
-PR #36 / squash `24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`, Build #308.
+- PR #36 / squash `24ad81eb4f8b8a2194430dc7316a95c313d7f3f5`;
+- Build #308.
 
-Added `llm-output-is-a-protocol-boundary`: provider success is not application contract success.
+Added `llm-output-is-a-protocol-boundary`.
 
 ---
 
