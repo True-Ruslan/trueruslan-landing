@@ -92,19 +92,24 @@ test('Diplodoc right-side navigation preserves the canonical utility order witho
   assert.doesNotMatch(rightItems, /type: controls/);
 });
 
-test('shared runtime and styles own header utility enhancement and language menu behavior', () => {
-  const script = read('docs/_assets/script/custom.js');
-  const customCss = read('docs/_assets/style/custom.css');
-  const standaloneCss = read('docs/_assets/style/standalone.css');
+test('dedicated runtime and stylesheet own header utility enhancement and language menu behavior', () => {
+  const script = read('docs/_assets/script/header-utilities.js');
+  const css = read('docs/_assets/style/header-utilities.css');
+  const config = read('docs/.yfm');
 
   assert.match(script, /function setupHeaderUtilities\(/);
   assert.match(script, /function setupLanguageMenu\(/);
   assert.match(script, /https:\/\/habr\.com\/ru\/users\/TrueRuslan\//);
   assert.match(script, /https:\/\/t\.me\/TrueRuslan_Blog/);
   assert.match(script, /data-tr-language-switcher/);
+  assert.match(script, /tr-cta--external/);
 
-  assert.match(customCss, /\.tr-header-utilities/);
-  assert.match(customCss, /\.tr-header-utility/);
-  assert.match(customCss, /\.tr-language-menu/);
-  assert.match(standaloneCss, /\.tr-header-utilities/);
+  assert.match(css, /\.tr-header-utilities/);
+  assert.match(css, /\.tr-header-utility/);
+  assert.match(css, /\.tr-language-menu/);
+  assert.match(css, /min-(?:width|inline-size):\s*40px/);
+  assert.match(css, /min-height:\s*40px/);
+
+  assert.match(config, /_assets\/style\/header-utilities\.css/);
+  assert.match(config, /_assets\/script\/header-utilities\.js/);
 });
