@@ -94,35 +94,6 @@ function publicUrl(siteUrl, relativePath) {
   return `${base}/${relativePath}`;
 }
 
-function createSwitcher(pair, locale, siteUrl) {
-  const counterpartLocale = locale === 'ru' ? 'en' : 'ru';
-  const counterpartPath = pair[counterpartLocale];
-  const nav = utils.createNode('nav');
-  utils.setAttribute(nav, 'class', 'tr-language-switcher');
-  utils.setAttribute(nav, 'aria-label', 'Language');
-  utils.setAttribute(nav, 'data-tr-language-switcher', 'true');
-  utils.setAttribute(nav, 'data-tr-i18n', 'true');
-
-  const anchor = utils.createNode('a');
-  utils.setAttribute(anchor, 'href', publicUrl(siteUrl, counterpartPath));
-  utils.setAttribute(anchor, 'hreflang', counterpartLocale);
-  utils.setAttribute(anchor, 'lang', counterpartLocale);
-  utils.append(anchor, utils.createTextNode(counterpartLocale.toUpperCase()));
-  utils.append(nav, anchor);
-  return nav;
-}
-
-function createSwitcherStyle() {
-  const style = utils.createNode('style');
-  utils.setAttribute(style, 'data-tr-i18n', 'true');
-  utils.append(style, utils.createTextNode(`
-.tr-language-switcher{position:fixed;right:14px;bottom:14px;z-index:10000;font:600 12px/1 system-ui,sans-serif;letter-spacing:.08em}
-.tr-language-switcher a{display:inline-flex;align-items:center;justify-content:center;min-width:42px;min-height:34px;padding:0 10px;border:1px solid rgba(127,127,127,.45);border-radius:999px;background:rgba(12,14,20,.9);color:#fff;text-decoration:none;box-shadow:0 4px 18px rgba(0,0,0,.22)}
-.tr-language-switcher a:focus-visible{outline:2px solid currentColor;outline-offset:3px}
-`));
-  return style;
-}
-
 export function injectI18nLinks(html, {pair, locale, siteUrl}) {
   if (!pair || !['ru', 'en'].includes(locale)) throw new Error('pair and locale ru/en are required for i18n injection');
 
@@ -132,15 +103,19 @@ export function injectI18nLinks(html, {pair, locale, siteUrl}) {
   const body = findNode(document, 'body');
   if (!htmlNode || !head || !body) throw new Error(`HTML document structure missing for i18n pair ${pair.id}`);
 
+  const ruUrl = publicUrl(siteUrl, pair.ru);
+  const enUrl = publicUrl(siteUrl, pair.en);
+
   utils.setAttribute(htmlNode, 'lang', locale);
+  utils.setAttribute(htmlNode, 'data-tr-i18n-locale', locale);
+  utils.setAttribute(htmlNode, 'data-tr-i18n-ru', ruUrl);
+  utils.setAttribute(htmlNode, 'data-tr-i18n-en', enUrl);
   removeGeneratedChildren(head);
   removeGeneratedChildren(body);
 
-  utils.append(head, createLink({rel: 'alternate', hreflang: 'ru', href: publicUrl(siteUrl, pair.ru)}));
-  utils.append(head, createLink({rel: 'alternate', hreflang: 'en', href: publicUrl(siteUrl, pair.en)}));
-  utils.append(head, createLink({rel: 'alternate', hreflang: 'x-default', href: publicUrl(siteUrl, pair.ru)}));
-  utils.append(head, createSwitcherStyle());
-  utils.append(body, createSwitcher(pair, locale, siteUrl));
+  utils.append(head, createLink({rel: 'alternate', hreflang: 'ru', href: ruUrl}));
+  utils.append(head, createLink({rel: 'alternate', hreflang: 'en', href: enUrl}));
+  utils.append(head, createLink({rel: 'alternate', hreflang: 'x-default', href: ruUrl}));
 
   return serialize(document);
 }
