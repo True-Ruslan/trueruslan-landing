@@ -22,6 +22,7 @@
   const SEARCH_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m15.5 15.5 4.1 4.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
   const GLOBE_ICON = '<svg class="tr-language-globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 12h15M12 4c2.2 2.1 3.3 4.8 3.3 8S14.2 17.9 12 20c-2.2-2.1-3.3-4.8-3.3-8S9.8 6.1 12 4Z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
   const CHEVRON_ICON = '<svg class="tr-language-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const ORDER = Object.freeze(['github', 'habr', 'telegram', 'search']);
 
   function hasDom() {
     return typeof root.document !== 'undefined' && root.document !== null;
@@ -47,16 +48,14 @@
     if (kind === 'search') {
       return anchors.find((anchor) => (anchor.getAttribute('href') || '').includes('_search/ru/index.html')) ?? null;
     }
-    const profile = EXTERNAL_PROFILES[kind];
-    return anchors.find((anchor) => matchesHref(anchor, profile.href)) ?? null;
+    return anchors.find((anchor) => matchesHref(anchor, EXTERNAL_PROFILES[kind].href)) ?? null;
   }
 
   function resolveSiteRoot(searchAnchor) {
     const fallback = new URL('/', root.location?.href || 'https://example.invalid/');
     if (!searchAnchor) return fallback;
     const searchUrl = new URL(searchAnchor.href, root.location?.href || fallback.href);
-    const marker = '_search/ru/index.html';
-    const markerIndex = searchUrl.pathname.indexOf(marker);
+    const markerIndex = searchUrl.pathname.indexOf('_search/ru/index.html');
     if (markerIndex < 0) return fallback;
     const pathname = searchUrl.pathname.slice(0, markerIndex);
     return new URL(pathname.endsWith('/') ? pathname : `${pathname}/`, searchUrl.origin);
@@ -81,6 +80,12 @@
     };
   }
 
+  function setIcon(anchor, kind, icon) {
+    if (anchor.dataset.trUtilityIcon === kind) return;
+    anchor.innerHTML = icon;
+    anchor.dataset.trUtilityIcon = kind;
+  }
+
   function configureUtilityAnchor(anchor, kind, document) {
     const english = isEnglish(document);
     anchor.classList.add('tr-header-utility');
@@ -92,7 +97,7 @@
       anchor.setAttribute('title', label);
       anchor.removeAttribute('target');
       anchor.removeAttribute('rel');
-      anchor.innerHTML = SEARCH_ICON;
+      setIcon(anchor, kind, SEARCH_ICON);
       return anchor;
     }
 
@@ -102,7 +107,7 @@
     anchor.rel = 'noopener noreferrer';
     anchor.setAttribute('aria-label', profile.label);
     anchor.setAttribute('title', profile.label);
-    anchor.innerHTML = profile.icon;
+    setIcon(anchor, kind, profile.icon);
     return anchor;
   }
 
@@ -118,9 +123,7 @@
     details.dataset.trLanguage = 'true';
     details.innerHTML = `
       <summary class="tr-language-trigger" data-tr-language-trigger aria-label="${labels.trigger}" title="${labels.trigger}" aria-haspopup="menu" aria-expanded="false">
-        <span class="tr-language-current">${locale.toUpperCase()}</span>
-        ${GLOBE_ICON}
-        ${CHEVRON_ICON}
+        <span class="tr-language-current">${locale.toUpperCase()}</span>${GLOBE_ICON}${CHEVRON_ICON}
       </summary>
       <div class="tr-language-menu" data-tr-language-menu role="menu" aria-label="${labels.menu}">
         <a href="${targets.ru}" hreflang="ru" lang="ru" role="menuitemradio" aria-checked="${locale === 'ru'}"${locale === 'ru' ? ' aria-current="page"' : ''}>Русский</a>
@@ -135,18 +138,21 @@
     const targets = resolveLanguageTargets(document, searchAnchor);
     const trigger = details.querySelector('[data-tr-language-trigger]');
     const current = details.querySelector('.tr-language-current');
-    const ru = details.querySelector('a[hreflang="ru"]');
-    const en = details.querySelector('a[hreflang="en"]');
+    const links = {
+      ru: details.querySelector('a[hreflang="ru"]'),
+      en: details.querySelector('a[hreflang="en"]'),
+    };
 
-    if (current) current.textContent = locale.toUpperCase();
+    if (current && current.textContent !== locale.toUpperCase()) current.textContent = locale.toUpperCase();
     if (trigger) {
       const label = english ? 'Choose language' : 'Выбрать язык';
       trigger.setAttribute('aria-label', label);
       trigger.setAttribute('title', label);
     }
-    for (const [link, code, href] of [[ru, 'ru', targets.ru], [en, 'en', targets.en]]) {
+    for (const code of ['ru', 'en']) {
+      const link = links[code];
       if (!link) continue;
-      link.href = href;
+      link.href = targets[code];
       const active = locale === code;
       link.setAttribute('aria-checked', String(active));
       if (active) link.setAttribute('aria-current', 'page');
@@ -161,13 +167,12 @@
       const links = [...(menu?.querySelectorAll('a[role="menuitemradio"]') ?? [])];
       if (!trigger || !menu || links.length !== 2) continue;
 
-      const searchAnchor = document.querySelector('[data-tr-utility="search"]');
-      updateLanguageControl(document, details, searchAnchor);
+      updateLanguageControl(document, details, details.parentElement?.querySelector('[data-tr-utility="search"]'));
       trigger.setAttribute('aria-expanded', String(details.open));
       if (details.dataset.trLanguageEnhanced === 'true') continue;
       details.dataset.trLanguageEnhanced = 'true';
 
-      const close = ({restoreFocus = false} = {}) => {
+      const close = (restoreFocus = false) => {
         details.open = false;
         trigger.setAttribute('aria-expanded', 'false');
         if (restoreFocus) trigger.focus();
@@ -178,26 +183,21 @@
         links[index].focus();
       };
 
-      details.addEventListener('toggle', () => {
-        trigger.setAttribute('aria-expanded', String(details.open));
-      });
+      details.addEventListener('toggle', () => trigger.setAttribute('aria-expanded', String(details.open)));
       trigger.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowDown') {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
           event.preventDefault();
-          openAndFocus(0);
-        } else if (event.key === 'ArrowUp') {
-          event.preventDefault();
-          openAndFocus(links.length - 1);
+          openAndFocus(event.key === 'ArrowDown' ? 0 : links.length - 1);
         } else if (event.key === 'Escape') {
           event.preventDefault();
-          close({restoreFocus: true});
+          close(true);
         }
       });
       menu.addEventListener('keydown', (event) => {
         const currentIndex = links.indexOf(document.activeElement);
         if (event.key === 'Escape') {
           event.preventDefault();
-          close({restoreFocus: true});
+          close(true);
           return;
         }
         if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
@@ -230,23 +230,26 @@
     }
   }
 
+  function orderUtilityChildren(group, anchors, language) {
+    const expected = [...anchors, language].filter(Boolean);
+    expected.forEach((node, index) => {
+      if (group.children[index] !== node) group.insertBefore(node, group.children[index] || null);
+    });
+  }
+
   function setupHeaderUtilities(document) {
     for (const legacy of document.querySelectorAll('[data-tr-language-switcher]')) legacy.remove();
 
     let group = document.querySelector('[data-tr-header-utilities]');
     const header = document.querySelector('header');
     if (!group && header) {
-      const ordered = ['github', 'habr', 'telegram', 'search'];
-      const anchors = ordered.map((kind) => findHeaderAnchor(header, kind));
+      const anchors = ORDER.map((kind) => findHeaderAnchor(header, kind));
       if (anchors.every(Boolean)) {
         group = document.createElement('div');
         group.className = 'tr-header-utilities';
         group.dataset.trHeaderUtilities = 'true';
-        const first = anchors[0];
-        first.parentElement?.insertBefore(group, first);
-        for (let index = 0; index < ordered.length; index += 1) {
-          group.appendChild(configureUtilityAnchor(anchors[index], ordered[index], document));
-        }
+        anchors[0].parentElement?.insertBefore(group, anchors[0]);
+        ORDER.forEach((kind, index) => group.appendChild(configureUtilityAnchor(anchors[index], kind, document)));
       }
     }
 
@@ -255,21 +258,15 @@
       return null;
     }
 
-    const ordered = ['github', 'habr', 'telegram', 'search'];
-    for (const kind of ordered) {
+    const anchors = ORDER.map((kind) => {
       const anchor = group.querySelector(`[data-tr-utility="${kind}"]`) || findHeaderAnchor(group, kind);
-      if (anchor) group.appendChild(configureUtilityAnchor(anchor, kind, document));
-    }
-
+      return anchor ? configureUtilityAnchor(anchor, kind, document) : null;
+    });
     let language = group.querySelector('[data-tr-language="true"]');
-    const searchAnchor = group.querySelector('[data-tr-utility="search"]');
-    if (!language) {
-      language = createLanguageControl(document, searchAnchor);
-      group.appendChild(language);
-    } else {
-      group.appendChild(language);
-      updateLanguageControl(document, language, searchAnchor);
-    }
+    const searchAnchor = anchors[ORDER.indexOf('search')];
+    if (!language) language = createLanguageControl(document, searchAnchor);
+    updateLanguageControl(document, language, searchAnchor);
+    orderUtilityChildren(group, anchors, language);
 
     setupLanguageMenu(document);
     classifyHeroActions(document);
@@ -277,14 +274,13 @@
   }
 
   function init() {
-    if (!hasDom()) return;
-    setupHeaderUtilities(root.document);
+    if (hasDom()) setupHeaderUtilities(root.document);
   }
 
   function observeHydration() {
     if (!hasDom() || typeof root.MutationObserver !== 'function') return;
     let scheduled = false;
-    const schedule = () => {
+    const observer = new root.MutationObserver(() => {
       if (scheduled) return;
       scheduled = true;
       const run = () => {
@@ -293,8 +289,7 @@
       };
       if (typeof root.requestAnimationFrame === 'function') root.requestAnimationFrame(run);
       else root.setTimeout(run, 0);
-    };
-    const observer = new root.MutationObserver(schedule);
+    });
     observer.observe(root.document.documentElement, {childList: true, subtree: true});
   }
 
