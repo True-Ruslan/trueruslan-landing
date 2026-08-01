@@ -1,12 +1,53 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-01**, после успешного P2.3b HTTPS Production Cutover на `https://trueruslan.ru`.
+> Обновлено: **2026-08-01**, после завершения P2.4a canonical-link rollout и подтверждения первой Cloudflare telemetry на `https://trueruslan.ru`.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
 ---
 
 # 2026-08-01
+
+## P2.4a — Canonical link rollout and first custom-host telemetry
+
+### Cloudflare provider evidence
+
+```text
+last 24 hours, GMT+3, bots excluded
+visits: 7
+page views: 8
+page load time: 656 ms
+LCP P50/P75/P90/P99: 648 / 744 / 829 / 829 ms
+observed LCP sample: 100% Good
+```
+
+The binary provider-observation gate is closed. The sample is not audience validation; 3–4 weeks of aggregate observation remain required.
+
+### Rollout evidence
+
+```text
+planning PR #48: 174c8483be42a9001f790edaa641580c4da5f9c5 → 9bedf491ca035549621147edaea51c02af9a79c1
+Build #393 / 30714283321 — SUCCESS
+
+Landing PR #49: 2ec11652e118dfe89da3daf5b2cb1b34a89612b6 → 8e9f961e558790edfe66e972cef625097d465c6d
+Build #397 / 30714659945 — SUCCESS
+
+Vlezet PR #36 → accbf57a9ef810217f7066d0e9a862b7e5a406a1
+Vlezet continuity PR #37 → 1aa82a39b9f45e401c63e487f35b17a740200f59
+CI: 30714871143 / 30715303395 / 30715303389 — SUCCESS
+
+VillAIgence PR #90 → 62091309f61667ce38a6c60aa9477309093392c5
+VillAIgence continuity PR #91 → 780aea86bcdf68c26436e3e0e8f84dfce56fe6a9
+CI: 30714996167 / 30714996171 / 30714996231 / 30715480021 / 30715480026 / 30715480020 — SUCCESS
+```
+
+PDF verification: three duplicate URI annotations replaced, three pages rendered before/after at 200 DPI, zero changed pages/pixels, no visible layout/content change.
+
+Remaining manual surfaces: GitHub profile Website field, Habr, Telegram and other external professional profiles.
+
+No runtime, dependency, hosting, rollback, analytics-policy, privacy, search or product-authority behavior changed.
+
+---
 
 ## P2.3b — HTTPS Production Cutover
 
@@ -129,9 +170,9 @@ Artifact:
 4. **Custom canonical production origin — verified.**
 5. **RU/EN production identity — verified.**
 6. **Analytics beacon on custom origin — verified.**
-7. **Provider dashboard telemetry for custom hostname — observation pending.**
+7. **Provider dashboard telemetry for custom hostname — verified.**
 
-The pending provider snapshot is an observation follow-up, not a blocker for the completed HTTPS cutover.
+The first custom-host snapshot is recorded in P2.4a. It confirms telemetry delivery but remains too small for audience or product conclusions.
 
 ### Product consequence
 

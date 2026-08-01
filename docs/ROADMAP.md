@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-01**, после успешного P2.3b HTTPS Production Cutover на `https://trueruslan.ru`.
+> Обновлено: **2026-08-01**, после завершения P2.4a canonical-link rollout и подтверждения первой Cloudflare telemetry на `https://trueruslan.ru`.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -117,6 +117,29 @@ Artifact evidence:
 - `production-verification-reports` id `8819800463`;
 - digest `sha256:49bd2a9e40ebda41cc4aa8c925e15392aff9fbcd7739ca01d2934550116b58c0`.
 
+
+### P2.4a Canonical link rollout and first custom-host telemetry — DONE
+
+Completed:
+
+- first Cloudflare dashboard telemetry for `trueruslan.ru` confirmed;
+- Landing README and CV point to `https://trueruslan.ru/`;
+- Vlezet and VillAIgence READMEs point to the canonical portfolio;
+- CV annotation-only edit passed zero-pixel visual comparison;
+- exact-head CI and continuity documentation passed in all three repositories.
+
+First dashboard sample:
+
+```text
+last 24 hours, GMT+3, bots excluded
+7 visits / 8 page views
+page load time 656 ms
+LCP P50/P75/P90/P99 648/744/829/829 ms
+100% Good in the observed LCP sample
+```
+
+This closes provider observation, not audience validation.
+
 ---
 
 # NOW — P2.4 Real Content and Distribution Loop
@@ -125,16 +148,22 @@ Infrastructure is no longer the primary blocker. The site now needs stronger rea
 
 ## Immediate operational follow-up
 
-1. Confirm first Cloudflare page views/RUM for `trueruslan.ru`.
-2. Keep Pages deployment and weekly External health green.
-3. Update external links to the canonical domain:
-   - GitHub profile README;
-   - Vlezet and VillAIgence READMEs;
-   - CV;
+Completed:
+
+- first Cloudflare page views/RUM for `trueruslan.ru` confirmed;
+- Landing README and CV updated;
+- Vlezet and VillAIgence READMEs updated;
+- cross-repository durable state synchronized.
+
+Still required:
+
+1. Keep Pages deployment and weekly External health green.
+2. Manually update surfaces outside current write access:
+   - GitHub profile Website field;
    - Habr profile/articles;
-   - Telegram;
+   - Telegram profile/channel descriptions;
    - other profiles actually used.
-4. Observe aggregate data for at least 3–4 weeks after distribution begins.
+3. Distribute the site and observe aggregate data for at least 3–4 weeks.
 
 Bounded signals:
 
@@ -239,9 +268,9 @@ Only with enough real architecture artifacts and demonstrated audience/content v
 ```text
 P2.3b HTTPS custom-domain cutover DONE
         ↓
-confirm provider telemetry for trueruslan.ru
+P2.4a provider telemetry + repository link rollout DONE
         ↓
-update external links to canonical domain
+manual external-profile updates + distribution
         ↓
 Vlezet + VillAIgence case studies
         ↓

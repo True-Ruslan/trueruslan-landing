@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-01**, после успешного P2.3b HTTPS Production Cutover на `https://trueruslan.ru`.
+> Последнее смысловое обновление: **2026-08-01**, после завершения P2.4a canonical-link rollout и подтверждения первой Cloudflare telemetry для `https://trueruslan.ru`.
 >
 > Главный durable snapshot для ответа на вопрос **«что представляет собой проект, что уже сделано и что дальше?»**.
 >
@@ -43,7 +43,50 @@
 
 ---
 
-## 2. Последний завершённый milestone
+## 2. Последние завершённые operational milestones
+
+### P2.4a — Canonical link rollout and first custom-host telemetry — DONE
+
+Cloudflare Web Analytics dashboard для `trueruslan.ru` подтверждён владельцем:
+
+```text
+window:              last 24 hours
+timezone:            GMT+3
+bots:                excluded
+visits:              7
+page views:          8
+page load time:      656 ms
+LCP P50/P75/P90/P99: 648 / 744 / 829 / 829 ms
+observed LCP sample: 100% Good
+```
+
+Это закрывает binary provider-telemetry observation gate. Выборка пока недостаточна для выводов об аудитории, маршрутах, RU/EN, странах, устройствах или устойчивой производительности; 3–4 недели aggregate observation остаются обязательными.
+
+GitHub-side rollout завершён:
+
+```text
+planning PR:                  landing #48 → 9bedf491ca035549621147edaea51c02af9a79c1
+landing README/CV PR:         #49 → 8e9f961e558790edfe66e972cef625097d465c6d
+landing exact head / CI:      2ec11652e118dfe89da3daf5b2cb1b34a89612b6 / Build #397 / 30714659945 PASS
+Vlezet README PR:             #36 → accbf57a9ef810217f7066d0e9a862b7e5a406a1
+Vlezet exact head / CI:       5ac744cb2966e933375b217c0e250042355921ca / #2318 / 30714871143 PASS
+Vlezet continuity PR:         #37 → 1aa82a39b9f45e401c63e487f35b17a740200f59
+VillAIgence README PR:        #90 → 62091309f61667ce38a6c60aa9477309093392c5
+VillAIgence exact head:       19e397ea3250384d7063e5df46ea3f05f66c9514
+VillAIgence CI / Java / sec:  30714996167 / 30714996171 / 30714996231 PASS
+VillAIgence continuity PR:    #91 → 780aea86bcdf68c26436e3e0e8f84dfce56fe6a9
+```
+
+CV verification:
+
+- одна видимая ссылка `Личный сайт` содержала три duplicate URI annotations;
+- все три переведены на `https://trueruslan.ru/`;
+- legacy public URI отсутствует;
+- 3 страницы отрендерены до и после при 200 DPI;
+- changed pages/pixels: `0`;
+- видимый текст, layout, изображения, glyphs и pagination не изменились.
+
+Остаются ручными только поверхности вне текущего write access: GitHub profile Website field, Habr, Telegram и другие реально используемые внешние профили.
 
 ### P2.3b — HTTPS Production Cutover — DONE
 
@@ -187,11 +230,11 @@ GitHub Pages certificate установлен, `https://trueruslan.ru/` рабо
 
 Подтверждено required analytics contract и production RU/EN smoke: ровно один owned beacon на каждой главной странице.
 
-### 6. Cloudflare provider telemetry for custom hostname — OBSERVATION PENDING
+### 6. Cloudflare provider telemetry for custom hostname — VERIFIED
 
-Deployment доказывает публикацию корректного beacon, но durable state пока не содержит отдельного dashboard snapshot с данными нового hostname.
+В owner-provided dashboard snapshot для `trueruslan.ru` за последние 24 часа (GMT+3, bots excluded) зафиксированы 7 visits, 8 page views, page load time 656 ms и LCP P50/P75/P90/P99 648/744/829/829 ms; наблюдавшаяся LCP-выборка — 100% Good.
 
-Это не блокирует завершение HTTPS cutover. Отдельно нужно подтвердить первые реальные page views/RUM в Cloudflare для `trueruslan.ru`.
+Это подтверждает работу provider telemetry на новом hostname, но не является audience validation. Для продуктовых решений сохраняется 3–4-недельное aggregate observation window.
 
 ---
 
@@ -251,6 +294,7 @@ Rollback remains available through `site_mode=legacy` without weakening verifica
 - P2.2a Legacy analytics operational closure — DONE: run `30572276691` + provider snapshot.
 - P2.3a Custom Domain Readiness — DONE: PR #45, Build #390.
 - **P2.3b HTTPS Production Cutover — DONE: run `30704218399`.**
+- **P2.4a Canonical link rollout and first custom-host telemetry — DONE: PRs #48–#49 plus cross-repository PRs #36/#37/#90/#91.**
 
 ---
 
@@ -282,7 +326,7 @@ Rollback remains available through `site_mode=legacy` without weakening verifica
 
 - Локальный plain-DNS `dig` из российской сети давал ложные `REFUSED`; Google/Cloudflare DoH был надёжнее. Это network diagnostic caveat, не product defect.
 - Legacy GitHub Pages origin сохраняется как transport/rollback compatibility, но canonical public identity теперь `https://trueruslan.ru`.
-- Нужно подтвердить первые Cloudflare telemetry data для нового hostname.
+- Первичная Cloudflare telemetry нового hostname подтверждена; выборка ещё недостаточна для audience/product conclusions.
 - First real Photo Story всё ещё зависит от authentic content.
 - Выборка analytics должна накапливаться 3–4 недели после реального распространения сайта до серьёзных product decisions.
 
@@ -290,19 +334,18 @@ Rollback remains available through `site_mode=legacy` without weakening verifica
 
 ## 8. Следующий оптимальный шаг
 
-Инфраструктурный custom-domain milestone завершён. Следующая фаза — **real content and distribution loop**.
+Custom-domain infrastructure, provider telemetry observation и repository-side canonical-link rollout завершены. Следующая фаза — **real content and distribution loop**.
 
 Приоритет:
 
-1. подтвердить provider telemetry для `trueruslan.ru`;
-2. обновить внешние публичные ссылки на новый домен: GitHub profile, project READMEs, CV, Habr/Telegram и используемые профессиональные профили;
-3. подготовить сильный Vlezet case study;
-4. подготовить flagship VillAIgence case study;
-5. обновить `/now`;
-6. выпустить 1–2 grounded Engineering Notes;
-7. добавить первую genuine Photo Story при готовом материале;
-8. собирать aggregate data 3–4 недели;
-9. выбирать дальнейший RU/EN/content/product milestone по evidence.
+1. подготовить сильный Vlezet flagship case study;
+2. подготовить flagship VillAIgence case study;
+3. вручную обновить GitHub profile Website, Habr, Telegram и другие внешние профили;
+4. обновить `/now`;
+5. выпустить 1–2 grounded Engineering Notes;
+6. добавить первую genuine Photo Story при готовом материале;
+7. распространять сайт и собирать aggregate data 3–4 недели;
+8. выбирать дальнейший RU/EN/content/product milestone по evidence.
 
 Яндекс.Метрика остаётся conditional: только если Cloudflare систематически не даёт достаточного российского signal и оправдан отдельный consent/privacy layer.
 
