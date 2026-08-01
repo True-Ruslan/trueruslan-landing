@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import {
   buildPersonJsonLd,
@@ -38,6 +41,31 @@ test('getSiteUrl prefers SITE_URL env variable', () => {
     } else {
       process.env.SITE_URL = original;
     }
+  }
+});
+
+test('getSiteUrl reads the fallback origin from the canonical site manifest', () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'site-origin-'));
+  const manifestPath = path.join(tempRoot, 'site.json');
+  fs.writeFileSync(manifestPath, JSON.stringify({
+    legacyOrigin: 'https://legacy.example.test/project',
+    customOrigin: 'https://custom.example.test',
+    customHostname: 'custom.example.test',
+    alternateHostname: 'www.custom.example.test',
+  }));
+
+  const originalSiteUrl = process.env.SITE_URL;
+  const originalManifestPath = process.env.SITE_MANIFEST_PATH;
+  delete process.env.SITE_URL;
+  process.env.SITE_MANIFEST_PATH = manifestPath;
+
+  try {
+    assert.equal(getSiteUrl(), 'https://legacy.example.test/project');
+  } finally {
+    if (originalSiteUrl === undefined) delete process.env.SITE_URL;
+    else process.env.SITE_URL = originalSiteUrl;
+    if (originalManifestPath === undefined) delete process.env.SITE_MANIFEST_PATH;
+    else process.env.SITE_MANIFEST_PATH = originalManifestPath;
   }
 });
 
