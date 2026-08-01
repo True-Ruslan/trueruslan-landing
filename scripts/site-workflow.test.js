@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
+const buildWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'build.yml'), 'utf8');
 const staticWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'static.yml'), 'utf8');
 const healthWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'external-health.yml'), 'utf8');
 const packageManifest = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
@@ -64,6 +65,20 @@ test('weekly health resolves the same site contract before analytics and checks'
   assert.match(healthWorkflow, /site-deployment-contract\.json/);
   assert.doesNotMatch(healthWorkflow, /github\.repository_owner[^\n]*github\.io/);
   assert.doesNotMatch(healthWorkflow, /github\.event\.repository\.name/);
+});
+
+test('PR quality workflow verifies a real custom-domain artifact after the legacy browser matrix', () => {
+  assertOrdered(buildWorkflow, [
+    'npm run build:docs',
+    'node scripts/visual-regression.cjs',
+    'Verify custom domain artifact',
+    'SITE_URL=https://trueruslan.ru npm run build:docs',
+    'node scripts/site-artifact.js docs-html https://trueruslan.ru',
+    'Preserve quality diagnostics',
+  ], 'Dual-origin PR verification');
+  assert.match(buildWorkflow, /custom-domain-build\.log/);
+  assert.match(buildWorkflow, /custom-domain-integrity\.log/);
+  assert.match(buildWorkflow, /custom-domain-artifact\.log/);
 });
 
 test('private package metadata does not own a duplicate production homepage', () => {
