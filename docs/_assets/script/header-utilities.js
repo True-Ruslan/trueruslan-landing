@@ -77,11 +77,12 @@
     const sharedParent = anchors.every((anchor) => anchor.parentElement === anchors[0].parentElement)
       ? anchors[0].parentElement
       : null;
-    if (sharedParent) {
+    if (sharedParent && anchors[0].parentElement === sharedParent) {
       sharedParent.insertBefore(group, anchors[0]);
     } else {
       const reference = directChildContaining(scope, anchors[0]);
-      scope.insertBefore(group, reference || null);
+      if (reference && reference.parentElement === scope) scope.insertBefore(group, reference);
+      else scope.appendChild(group);
     }
     return group;
   }
@@ -277,13 +278,15 @@
 
     let group = document.querySelector('[data-tr-header-utilities]');
     if (!group) {
-      const scope = document.querySelector('header') || findHeaderScope(document);
-      if (scope) {
-        const anchors = ORDER.map((kind) => findHeaderAnchor(scope, kind));
-        if (anchors.every(Boolean)) {
-          group = createGroupInScope(document, scope, anchors);
-          ORDER.forEach((kind, index) => group.appendChild(configureUtilityAnchor(anchors[index], kind, document)));
-        }
+      let scope = document.querySelector('header');
+      let anchors = scope ? ORDER.map((kind) => findHeaderAnchor(scope, kind)) : [];
+      if (!scope || !anchors.every(Boolean)) {
+        scope = findHeaderScope(document);
+        anchors = scope ? ORDER.map((kind) => findHeaderAnchor(scope, kind)) : [];
+      }
+      if (scope && anchors.every(Boolean)) {
+        group = createGroupInScope(document, scope, anchors);
+        ORDER.forEach((kind, index) => group.appendChild(configureUtilityAnchor(anchors[index], kind, document)));
       }
     }
 
