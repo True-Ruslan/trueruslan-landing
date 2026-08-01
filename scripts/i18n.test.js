@@ -42,7 +42,7 @@ test('validateI18nManifest rejects duplicate ids, duplicate paths and unsafe pat
   );
 });
 
-test('injectI18nLinks sets lang, hreflang and a no-JS counterpart switcher idempotently', () => {
+test('injectI18nLinks exposes paired-route metadata without rendering a floating language control', () => {
   const source = '<!doctype html><html lang="ru"><head><title>Test</title></head><body><main><h1>Test</h1></main></body></html>';
   const pair = {id: 'about', ru: 'landing/about.html', en: 'en/about.html'};
   const once = injectI18nLinks(source, {pair, locale: 'en', siteUrl: 'https://example.test/site/'});
@@ -50,10 +50,12 @@ test('injectI18nLinks sets lang, hreflang and a no-JS counterpart switcher idemp
 
   assert.equal(once, twice);
   assert.match(once, /<html[^>]*lang="en"/);
+  assert.match(once, /data-tr-i18n-locale="en"/);
+  assert.match(once, /data-tr-i18n-ru="https:\/\/example\.test\/site\/landing\/about\.html"/);
+  assert.match(once, /data-tr-i18n-en="https:\/\/example\.test\/site\/en\/about\.html"/);
   assert.match(once, /hreflang="ru"[^>]*https:\/\/example\.test\/site\/landing\/about\.html/);
   assert.match(once, /hreflang="en"[^>]*https:\/\/example\.test\/site\/en\/about\.html/);
   assert.match(once, /hreflang="x-default"[^>]*https:\/\/example\.test\/site\/landing\/about\.html/);
-  assert.match(once, /data-tr-language-switcher="true"/);
-  assert.match(once, />RU<\/a>/);
-  assert.match(once, /https:\/\/example\.test\/site\/landing\/about\.html/);
+  assert.doesNotMatch(once, /data-tr-language-switcher/);
+  assert.doesNotMatch(once, /position:fixed;right:14px;bottom:14px/);
 });
