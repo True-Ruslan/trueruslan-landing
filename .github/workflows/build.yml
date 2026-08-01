@@ -9,7 +9,7 @@ permissions:
 jobs:
   build-docs:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -108,6 +108,14 @@ jobs:
         run: |
           set -o pipefail
           node scripts/visual-regression.cjs 2>&1 | tee visual-regression.log
+      - name: Verify custom domain artifact
+        shell: bash
+        run: |
+          set -o pipefail
+          rm -rf docs-html
+          SITE_URL=https://trueruslan.ru npm run build:docs 2>&1 | tee custom-domain-build.log
+          npm run check:site 2>&1 | tee custom-domain-integrity.log
+          node scripts/site-artifact.js docs-html https://trueruslan.ru https://true-ruslan.github.io/trueruslan-landing 2>&1 | tee custom-domain-artifact.log
       - name: Preserve quality diagnostics
         if: always()
         shell: bash
@@ -129,6 +137,9 @@ jobs:
           cp metadata-smoke.log quality-artifacts/metadata-smoke.log 2>/dev/null || true
           cp engineering-graph-smoke.log quality-artifacts/engineering-graph-smoke.log 2>/dev/null || true
           cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
+          cp custom-domain-build.log quality-artifacts/custom-domain-build.log 2>/dev/null || true
+          cp custom-domain-integrity.log quality-artifacts/custom-domain-integrity.log 2>/dev/null || true
+          cp custom-domain-artifact.log quality-artifacts/custom-domain-artifact.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           cp docs-html/landing/resume.html quality-artifacts/resume-generated.html 2>/dev/null || true
           cp docs-html/en/index.html quality-artifacts/en-home-generated.html 2>/dev/null || true
