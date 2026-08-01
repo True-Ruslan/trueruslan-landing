@@ -2,6 +2,8 @@
 
 Персональное engineering-портфолио с лёгкой standalone-главной, Diplodoc knowledge pages, web-CV, инженерными case studies, живой страницей `/now`, Engineering Notes, интерактивной Engineering Map и production-oriented quality gates.
 
+**Production:** [trueruslan.ru](https://trueruslan.ru/)
+
 ## Архитектура
 
 Проект сознательно разделён на два слоя:
