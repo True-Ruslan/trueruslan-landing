@@ -21,19 +21,16 @@ const PAIRS = [
   {id: 'note-llm-protocol-boundary', ru: '/landing/notes/llm-output-is-a-protocol-boundary.html', en: '/en/notes/llm-output-is-a-protocol-boundary.html'},
 ];
 
+const EXTERNALS = Object.freeze({
+  github: 'https://github.com/True-Ruslan',
+  habr: 'https://habr.com/ru/users/TrueRuslan/',
+  telegram: 'https://t.me/TrueRuslan_Blog',
+});
+
 function publicPath(pathname) {
   if (pathname === '/index.html') return `${SITE_PATH}/`;
   if (pathname === '/en/index.html') return `${SITE_PATH}/en/`;
   return `${SITE_PATH}${pathname}`;
-}
-
-function localRouteFromPublicHref(href) {
-  const url = new URL(href);
-  if (!url.pathname.startsWith(`${SITE_PATH}/`) && url.pathname !== `${SITE_PATH}`) {
-    throw new Error(`language switcher escaped site path: ${href}`);
-  }
-  const route = url.pathname.slice(SITE_PATH.length) || '/';
-  return route === '/' ? '/index.html' : route.endsWith('/') ? `${route}index.html` : route;
 }
 
 function formatAxeViolations(violations) {
@@ -51,9 +48,6 @@ function formatAxeViolations(violations) {
 
 async function assertSeoPair(page, pair, locale, label) {
   const ownPath = locale === 'en' ? pair.en : pair.ru;
-  const counterpartLocale = locale === 'en' ? 'ru' : 'en';
-  const counterpartPath = pair[counterpartLocale];
-
   const canonical = page.locator('link[rel="canonical"]');
   if (await canonical.count() !== 1) throw new Error(`${label}: expected exactly one canonical`);
   const canonicalHref = await canonical.getAttribute('href');
@@ -71,17 +65,60 @@ async function assertSeoPair(page, pair, locale, label) {
     }
   }
 
-  const switcher = page.locator('[data-tr-language-switcher="true"] a');
-  if (await switcher.count() !== 1) throw new Error(`${label}: expected one language switch anchor`);
-  if (await switcher.getAttribute('hreflang') !== counterpartLocale) {
-    throw new Error(`${label}: language switch hreflang mismatch`);
-  }
-  const switchHref = await switcher.getAttribute('href');
-  if (new URL(switchHref).pathname !== publicPath(counterpartPath)) {
-    throw new Error(`${label}: language switch target mismatch: ${switchHref}`);
+  const metadata = await page.locator('html').evaluate((html) => ({
+    locale: html.dataset.trI18nLocale,
+    ru: html.dataset.trI18nRu,
+    en: html.dataset.trI18nEn,
+  }));
+  if (metadata.locale !== locale) throw new Error(`${label}: metadata locale mismatch`);
+  if (new URL(metadata.ru).pathname !== publicPath(pair.ru)) throw new Error(`${label}: metadata RU mismatch`);
+  if (new URL(metadata.en).pathname !== publicPath(pair.en)) throw new Error(`${label}: metadata EN mismatch`);
+}
+
+async function assertHeaderUtilities(page, pair, locale, label) {
+  const group = page.locator('[data-tr-header-utilities]').first();
+  await group.waitFor({state: 'visible'});
+  const order = await group.evaluate((element) => [...element.children].map((child) => (
+    child.getAttribute('data-tr-utility') || (child.hasAttribute('data-tr-language') ? 'language' : 'unknown')
+  )));
+  if (order.join(',') !== 'github,habr,telegram,search,language') {
+    throw new Error(`${label}: utility order mismatch: ${order.join(',')}`);
   }
 
-  return switchHref;
+  for (const [kind, expected] of Object.entries(EXTERNALS)) {
+    const anchor = group.locator(`[data-tr-utility="${kind}"]`);
+    if (await anchor.count() !== 1) throw new Error(`${label}: expected one ${kind} link`);
+    const href = await anchor.getAttribute('href');
+    const actual = new URL(href);
+    const target = new URL(expected);
+    if (actual.hostname !== target.hostname || actual.pathname.replace(/\/$/, '') !== target.pathname.replace(/\/$/, '')) {
+      throw new Error(`${label}: ${kind} URL mismatch: ${href}`);
+    }
+    if (await anchor.getAttribute('target') !== '_blank') throw new Error(`${label}: ${kind} target mismatch`);
+    const rel = (await anchor.getAttribute('rel') || '').split(/\s+/);
+    if (!rel.includes('noopener') || !rel.includes('noreferrer')) throw new Error(`${label}: ${kind} rel mismatch`);
+  }
+
+  const search = group.locator('[data-tr-utility="search"]');
+  if (await search.count() !== 1) throw new Error(`${label}: expected one search utility`);
+  if (!(await search.getAttribute('href'))?.includes('_search/ru/index.html')) throw new Error(`${label}: search route mismatch`);
+  const expectedSearchLabel = locale === 'en' ? 'Search the site' : 'Поиск по сайту';
+  if (await search.getAttribute('aria-label') !== expectedSearchLabel) throw new Error(`${label}: search label mismatch`);
+
+  const language = group.locator('[data-tr-language="true"]');
+  if (await language.count() !== 1) throw new Error(`${label}: expected one language control`);
+  const current = await language.locator('.tr-language-current').textContent();
+  if (current?.trim() !== locale.toUpperCase()) throw new Error(`${label}: current language mismatch: ${current}`);
+  for (const code of ['ru', 'en']) {
+    const href = await language.locator(`a[hreflang="${code}"]`).getAttribute('href');
+    const expectedPath = publicPath(pair[code]);
+    if (new URL(href).pathname !== expectedPath) throw new Error(`${label}: ${code} language target mismatch: ${href}`);
+  }
+
+  if (await page.locator('[data-tr-language-switcher]').count()) throw new Error(`${label}: legacy floating language switch remains`);
+  const fixedLanguage = await language.evaluate((node) => getComputedStyle(node).position === 'fixed');
+  if (fixedLanguage) throw new Error(`${label}: language control remains fixed/floating`);
+  return {order, locale};
 }
 
 async function assertEnglishRoutes(browser, baseUrl) {
@@ -98,8 +135,9 @@ async function assertEnglishRoutes(browser, baseUrl) {
       if (lang !== 'en') throw new Error(`${pair.id}: expected html lang=en, got ${lang}`);
       if (await page.locator('h1').count() !== 1) throw new Error(`${pair.id}: expected exactly one H1`);
       await assertSeoPair(page, pair, 'en', `en:${pair.id}`);
+      const header = await assertHeaderUtilities(page, pair, 'en', `en:${pair.id}`);
       diagnostics.assertClean(`en:${pair.id}`);
-      results[pair.id] = {status: response.status(), lang, seoPair: true};
+      results[pair.id] = {status: response.status(), lang, seoPair: true, header};
     }
     return results;
   } finally {
@@ -107,28 +145,51 @@ async function assertEnglishRoutes(browser, baseUrl) {
   }
 }
 
-async function assertNoJsPairRoundTrips(browser, baseUrl) {
+async function assertNoJsMetadata(browser, baseUrl) {
   const runtime = await createScenarioPage(browser, {viewport: VIEWPORTS.desktop, colorScheme: 'dark', reducedMotion: 'reduce', javaScriptEnabled: false});
   const {page} = runtime;
   const results = {};
 
   try {
     for (const pair of PAIRS) {
-      let response = await page.goto(`${baseUrl}${pair.en}`, {waitUntil: 'load'});
-      if (!response?.ok()) throw new Error(`${pair.id}: no-js English route failed`);
-      const switchHref = await assertSeoPair(page, pair, 'en', `en-nojs:${pair.id}`);
-      const localRu = localRouteFromPublicHref(switchHref);
-
-      response = await page.goto(`${baseUrl}${localRu}`, {waitUntil: 'load'});
-      if (!response?.ok()) throw new Error(`${pair.id}: RU counterpart route failed`);
-      if (await page.locator('html').getAttribute('lang') !== 'ru') throw new Error(`${pair.id}: RU counterpart missing lang=ru`);
-      await assertSeoPair(page, pair, 'ru', `ru-nojs:${pair.id}`);
-      results[pair.id] = {switchTarget: localRu, noJavaScript: true, seoPair: true};
+      for (const locale of ['en', 'ru']) {
+        const route = locale === 'en' ? pair.en : pair.ru;
+        const response = await page.goto(`${baseUrl}${route}`, {waitUntil: 'load'});
+        if (!response?.ok()) throw new Error(`${pair.id}: no-js ${locale} route failed`);
+        if (await page.locator('html').getAttribute('lang') !== locale) throw new Error(`${pair.id}: no-js lang mismatch`);
+        await assertSeoPair(page, pair, locale, `${locale}-nojs:${pair.id}`);
+      }
+      if (pair.id === 'home') {
+        const language = page.locator('[data-tr-language="true"]');
+        if (await language.count() !== 1) throw new Error('home: no-js language links missing');
+        if (await language.locator('a[hreflang="ru"]').count() !== 1 || await language.locator('a[hreflang="en"]').count() !== 1) {
+          throw new Error('home: no-js language pair incomplete');
+        }
+      }
+      results[pair.id] = {noJavaScript: true, seoPair: true};
     }
     return results;
   } finally {
     await runtime.close();
   }
+}
+
+async function assertLanguageKeyboard(page) {
+  const trigger = page.locator('[data-tr-language-trigger]');
+  await trigger.focus();
+  await trigger.press('ArrowDown');
+  const details = page.locator('[data-tr-language="true"]');
+  if (!await details.evaluate((node) => node.open)) throw new Error('language keyboard: menu did not open');
+  if (await trigger.getAttribute('aria-expanded') !== 'true') throw new Error('language keyboard: aria-expanded not true');
+  const focusedLang = await page.evaluate(() => document.activeElement?.getAttribute('hreflang'));
+  if (focusedLang !== 'ru') throw new Error(`language keyboard: expected RU focus, got ${focusedLang}`);
+  await page.keyboard.press('End');
+  if (await page.evaluate(() => document.activeElement?.getAttribute('hreflang')) !== 'en') {
+    throw new Error('language keyboard: End did not focus English');
+  }
+  await page.keyboard.press('Escape');
+  if (await details.evaluate((node) => node.open)) throw new Error('language keyboard: Escape did not close menu');
+  if (!await trigger.evaluate((node) => node === document.activeElement)) throw new Error('language keyboard: focus not restored');
 }
 
 async function assertQuality(browser, baseUrl) {
@@ -145,6 +206,7 @@ async function assertQuality(browser, baseUrl) {
     try {
       const response = await page.goto(`${baseUrl}${scenario.route}`, {waitUntil: 'networkidle'});
       if (!response?.ok()) throw new Error(`${scenario.name}: HTTP ${response?.status() ?? 'none'}`);
+      if (scenario.name === 'home-desktop') await assertLanguageKeyboard(page);
       const overflow = (await assertNoHorizontalOverflow(page, `i18n:${scenario.name}`)).overflow;
       const axe = await new AxeBuilder({page}).analyze();
       const serious = blockingAxeViolations(axe);
@@ -170,7 +232,7 @@ async function assertSingleSearch(page, baseUrl) {
 
   const homeResponse = await page.goto(`${baseUrl}/en/index.html`, {waitUntil: 'networkidle'});
   if (!homeResponse?.ok()) throw new Error('English home unavailable for search-link assertion');
-  const searchHref = await page.locator('a[href*="_search/ru/index.html"]').first().getAttribute('href');
+  const searchHref = await page.locator('[data-tr-utility="search"]').getAttribute('href');
   if (!searchHref?.includes('_search/ru/index.html')) throw new Error(`English UI does not point to the single RU search index: ${searchHref}`);
   return {route: '/_search/ru/index.html', englishSearchAbsent: true, englishUiHref: searchHref};
 }
@@ -190,7 +252,7 @@ async function main() {
 
     const summary = {
       routes: await assertEnglishRoutes(browser, serverRuntime.baseUrl),
-      pairs: await assertNoJsPairRoundTrips(browser, serverRuntime.baseUrl),
+      pairs: await assertNoJsMetadata(browser, serverRuntime.baseUrl),
       quality: await assertQuality(browser, serverRuntime.baseUrl),
       search,
     };
