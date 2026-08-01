@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-01**, после merge P2.3a Custom Domain Readiness PR #45.
+> Последнее смысловое обновление: **2026-08-01**, после успешного P2.3b HTTPS Production Cutover на `https://trueruslan.ru`.
 >
 > Главный durable snapshot для ответа на вопрос **«что представляет собой проект, что уже сделано и что дальше?»**.
 >
@@ -8,8 +8,9 @@
 > 1. `docs/PROJECT_STATE.md`
 > 2. `docs/ROADMAP.md`
 > 3. `docs/CHANGELOG.md`
+> 4. `docs/CUSTOM_DOMAIN.md`
 >
-> Затем отдельно проверять actual open PR, latest commits, exact-head CI, latest Pages deployment, GitHub Pages DNS/HTTPS state, Cloudflare dashboard и maintenance workflows.
+> Затем отдельно проверять actual open PR, latest commits, exact-head CI, latest Pages deployment reports, production HTTPS/redirects, Cloudflare dashboard и maintenance workflows.
 
 ## 1. Что это за проект
 
@@ -30,7 +31,7 @@
 - Project Evidence Layer;
 - Content Freshness Guard;
 - bounded RU/EN layer;
-- optional privacy-friendly analytics;
+- privacy-friendly Cloudflare Web Analytics;
 - SEO/OpenGraph/JSON-LD;
 - production-oriented CI, accessibility, cross-browser, deployment и visual quality gates.
 
@@ -42,317 +43,189 @@
 
 ---
 
-## 2. Последний завершённый repository milestone
+## 2. Последний завершённый milestone
 
-### P2.3a — Custom Domain Readiness
+### P2.3b — HTTPS Production Cutover — DONE
 
-Feature PR:
+Новый canonical production origin:
 
-`#45 — feat: prepare custom domain deployment`
+`https://trueruslan.ru`
 
-Squash commit в `master`:
+Deployment:
 
-`f2a232e55979ed17014596262abfaf2a70ef2e63`
+- workflow: `Deploy static content to Pages`;
+- run: `30704218399`;
+- branch: `master`;
+- source SHA: `9a92a0bea78ecf7aa471d445fe3513cfadc7d378`;
+- job `deploy`: **success**;
+- `site_mode=custom`;
+- `analytics_mode=required`.
 
-Exact verified feature head:
+Все deployment steps завершились успешно:
 
-`117128fba94ae9c4df787125393a9d08f2b712c5`
-
-Verification:
-
-**Build #390 / run `30700124919`: fully green по полной расширенной matrix.**
-
-P2.3a подготовил репозиторий к `https://trueruslan.ru`, но намеренно не объявляет завершённым внешний DNS/TLS cutover.
-
-### Canonical site identity
-
-Добавлен единственный hand-maintained manifest:
-
-`data/site.json`
-
-Он владеет:
-
-- legacy origin `https://true-ruslan.github.io/trueruslan-landing`;
-- custom origin `https://trueruslan.ru`;
-- apex hostname `trueruslan.ru`;
-- alternate hostname `www.trueruslan.ru`.
-
-Production URL больше не дублируется в `package.json`, Pages/health workflows и `data/external-links.json`.
+- tests;
+- site deployment preflight;
+- analytics deployment preflight;
+- production build;
+- generated-site integrity;
+- generated analytics verification;
+- Pages artifact upload;
+- GitHub Pages deployment;
+- deployed production smoke;
+- production verification reports upload.
 
 ### Site deployment contract
 
-Добавлен:
+Сохранённый `site-deployment-contract.json`:
 
-`scripts/site-deployment.js`
+```json
+{
+  "mode": "custom",
+  "origin": "https://trueruslan.ru",
+  "productionUrl": "https://trueruslan.ru/",
+  "target": "custom",
+  "reason": "forced-custom"
+}
+```
 
-Repository variable:
+Это подтверждает, что опубликован именно custom-origin artifact, а не legacy fallback.
 
-`TR_PRODUCTION_SITE_URL`
+### Analytics deployment contract
 
-Поддерживаемые modes:
+Сохранённый `analytics-deployment-contract.json`:
 
-- `auto` — normal push/default;
-- `legacy` — принудительный rollback/diagnostic mode;
-- `custom` — контролируемый first cutover mode.
+```json
+{
+  "mode": "required",
+  "enabled": true,
+  "expectation": "enabled",
+  "reason": "configured-token"
+}
+```
 
-`auto` semantics:
+Analytics и site identity остаются независимыми fail-closed contracts.
 
-- variable отсутствует → legacy origin;
-- exact legacy value → legacy origin;
-- exact custom value → custom origin;
-- любое другое configured value → fail closed до build/deploy.
+### Production smoke evidence
 
-Resolver экспортирует в workflow:
+`production-smoke-report.json`:
 
-- `SITE_URL`;
-- `PRODUCTION_URL`;
-- `SITE_DEPLOYMENT_TARGET`;
-- `SITE_DEPLOYMENT_REASON`.
+- checked at `2026-08-01T14:39:56.996Z`;
+- base URL `https://trueruslan.ru/`;
+- `ok: true`;
+- identity errors: none;
+- homepage final URL: `https://trueruslan.ru/`;
+- RU canonical: `https://trueruslan.ru/`;
+- EN canonical: `https://trueruslan.ru/en/`;
+- RU analytics beacon count: `1`;
+- EN analytics beacon count: `1`.
 
-Bounded report:
+Healthy production surfaces include:
 
-`site-deployment-contract.json`
-
-### Generated identity и dual-origin verification
-
-SEO, canonical, OpenGraph, JSON-LD, sitemap, robots, Atom и `hreflang` получают resolved `SITE_URL`.
-
-PR quality matrix теперь выполняет:
-
-1. полный legacy-default build и существующие browser/accessibility/visual gates;
-2. отдельную реальную пересборку с `SITE_URL=https://trueruslan.ru`;
-3. generated-site integrity;
-4. `scripts/site-artifact.js` для проверки custom root identity.
-
-Custom artifact gate проверяет:
-
-- RU homepage canonical;
-- EN homepage canonical;
-- RU/EN `hreflang`;
-- `robots.txt` sitemap URL;
-- `sitemap.xml` root/RU/EN identity;
-- Atom self/site links;
-- отсутствие legacy origin на контролируемых public identity surfaces.
-
-### Production и weekly monitoring
-
-Pages workflow теперь:
-
-1. запускает tests;
-2. разрешает site deployment contract;
-3. разрешает независимый analytics contract;
-4. строит сайт с resolved origin;
-5. выполняет integrity и analytics artifact verification;
-6. деплоит Pages;
-7. проверяет deployed endpoints, homepage final URL, RU/EN canonical identity и analytics state.
-
-Weekly `External health` использует тот же `auto` site contract. Production endpoints выводятся из resolved origin, а не хранятся отдельными hardcoded records.
-
-### Operator runbook
-
-Полный activation/verification/rollback runbook:
-
-`docs/CUSTOM_DOMAIN.md`
-
-Design:
-
-`docs/superpowers/specs/2026-08-01-custom-domain-readiness-design.md`
-
-Plan:
-
-`docs/superpowers/plans/2026-08-01-custom-domain-readiness.md`
-
----
-
-## 3. TDD / debugging evidence P2.3a
-
-Expected RED checkpoints:
-
-- Build #370 / run `30699331464` — site resolver отсутствовал;
-- Build #373 / run `30699437392` — canonical manifest fallback отсутствовал;
-- Build #376 / run `30699568089` — origin-derived monitoring и canonical verification отсутствовали;
-- Build #380 / run `30699716353` — workflow ownership отсутствовал;
-- Build #383 / run `30699811320` — старые package tests выявили дублирующего owner `homepage`;
-- Build #387 / run `30699991565` — custom artifact verifier/CI gate отсутствовал.
-
-GREEN checkpoints:
-
-- Build #389 / run `30700066864` — первая complete matrix с реальным custom-domain artifact build;
-- Build #390 / run `30700124919` — final exact-head complete GREEN.
-
-Build #390 подтвердил:
-
-- unit/contract tests;
-- production Diplodoc build;
-- generated-site integrity;
-- mobile overflow;
-- Chromium/Axe/Lighthouse;
-- Sources KB;
-- Project Evidence;
-- Photo Stories;
-- portfolio regression;
-- Firefox/WebKit;
-- generated search;
-- Minimal RU/EN;
-- privacy analytics browser smoke;
-- Metadata/OpenGraph;
+- homepage;
+- Projects;
+- `/now`;
 - Engineering Map;
-- unchanged visual regression;
-- custom-domain build/integrity/artifact verification;
-- quality evidence upload.
+- Engineering Notes;
+- Photo Stories;
+- Atom feed;
+- Resume and PDF;
+- OpenGraph images;
+- CSS and JavaScript assets;
+- favicon.
+
+Production verification artifact:
+
+- name: `production-verification-reports`;
+- artifact id: `8819800463`;
+- digest: `sha256:49bd2a9e40ebda41cc4aa8c925e15392aff9fbcd7739ca01d2934550116b58c0`;
+- expires: `2026-08-15T14:39:57Z`.
+
+### Manual owner acceptance
+
+Владелец подтвердил:
+
+- GitHub Pages DNS check — successful;
+- `Enforce HTTPS` — enabled;
+- HTTPS apex — working;
+- `www` redirects to apex;
+- все проверенные публичные ссылки работают.
 
 ---
 
-## 4. Custom-domain operational truth — строго раздельно
+## 3. Custom-domain operational truth
 
-### 1. Repository custom-domain ready — YES
+### 1. Domain ownership verified — YES
 
-Подтверждено PR #45, exact feature head и Build #390.
+GitHub account-level verification для `trueruslan.ru` успешна. TXT verification record должен сохраняться.
 
-### 2. GitHub account domain ownership verified — YES
+### 2. DNS configured for GitHub Pages — YES
 
-Владелец подтвердил статус:
-
-`Successfully verified trueruslan.ru`
-
-TXT verification record должен сохраняться.
-
-### 3. Apex DNS points to GitHub Pages — YES
-
-Публичные DNS возвращали четыре GitHub Pages IPv4 address:
+Apex:
 
 - `185.199.108.153`;
 - `185.199.109.153`;
 - `185.199.110.153`;
 - `185.199.111.153`.
 
-### 4. HTTP routing to the intended site — OBSERVED
-
-Владелец подтвердил, что `http://trueruslan.ru/` отдаёт нужный Diplodoc/portfolio site.
-
-Это не доказывает TLS readiness или завершённый canonical cutover.
-
-### 5. Repository Pages DNS check — NOT GREEN
-
-GitHub repository `Settings → Pages` показывал:
-
-- `DNS check unsuccessful`;
-- `InvalidDNSError`;
-- `Enforce HTTPS` unavailable.
-
-### 6. Alternate `www` DNS contract — UNRESOLVED
-
-В Timeweb создано:
+Alternate:
 
 `www.trueruslan.ru CNAME true-ruslan.github.io`
 
-Но CNAME-запросы через authoritative Timeweb DNS, `1.1.1.1` и `8.8.8.8` возвращали `REFUSED`, при этом A-запросы раскрывались в GitHub Pages IP.
+Лишняя Timeweb AAAA-запись была удалена; после этого GitHub DNS check стал green.
 
-Поддержка Timeweb рассматривает обращение. Без её ответа нельзя считать стандартный CNAME contract подтверждённым.
+### 3. GitHub Pages TLS / Enforce HTTPS — YES
 
-### 7. HTTPS certificate / Enforce HTTPS — NO
+GitHub Pages certificate установлен, `https://trueruslan.ru/` работает, `Enforce HTTPS` включён.
 
-GitHub Pages certificate ещё не подтверждён, `Enforce HTTPS` недоступен.
+Отдельный SSL-сертификат Timeweb не используется и не нужен.
 
-Не выпускать и не устанавливать отдельный сертификат Timeweb: TLS должен обслуживать GitHub Pages.
+### 4. Canonical custom production deployment — YES
 
-### 8. Custom canonical production deployment — NO VERIFIED EVIDENCE
+Подтверждено run `30704218399`, custom site contract и production smoke.
 
-`https://trueruslan.ru` пока не принят как активный canonical production origin в durable state.
+### 5. Analytics beacon on custom hostname — YES
 
-Repository variable `TR_PRODUCTION_SITE_URL` и manual `site_mode=custom` activation должны выполняться только после green DNS/TLS gate.
+Подтверждено required analytics contract и production RU/EN smoke: ровно один owned beacon на каждой главной странице.
 
-### 9. Cloudflare telemetry for new hostname — NO VERIFIED EVIDENCE
+### 6. Cloudflare provider telemetry for custom hostname — OBSERVATION PENDING
 
-Существующий analytics site/token относится к legacy GitHub Pages hostname. Для `trueruslan.ru` нужен отдельный Cloudflare Web Analytics site/token и новый strict production verification.
+Deployment доказывает публикацию корректного beacon, но durable state пока не содержит отдельного dashboard snapshot с данными нового hostname.
 
----
-
-## 5. Предыдущая production analytics truth
-
-P2.2/P2.2a для legacy production уже закрыты:
-
-- PR #40 — privacy-friendly analytics implementation;
-- PR #42 — production activation contract;
-- strict deployment run `30572276691` — success;
-- legacy RU/EN beacon state — verified;
-- Cloudflare provider telemetry — observed.
-
-Initial dashboard snapshot:
-
-- Page views: `4`;
-- Visits: `0`;
-- Page load time: `282 ms`;
-- LCP P50: `388 ms`;
-- LCP P75: `740 ms`;
-- LCP P90/P99: `1316 ms`;
-- LCP / INP / CLS displayed as good.
-
-Выборка остаётся слишком малой для audience/product conclusions.
+Это не блокирует завершение HTTPS cutover. Отдельно нужно подтвердить первые реальные page views/RUM в Cloudflare для `trueruslan.ru`.
 
 ---
 
-## 6. Архитектурные принципы
+## 4. Repository architecture supporting the cutover
 
-Главная граница:
+P2.3a был завершён до внешнего переключения:
 
-**static-first + build-time intelligence + progressive enhancement**.
+- PR #45 — `feat: prepare custom domain deployment`;
+- squash `f2a232e55979ed17014596262abfaf2a70ef2e63`;
+- exact head `117128fba94ae9c4df787125393a9d08f2b712c5`;
+- Build #390 / run `30700124919` — fully green.
 
-Без нового design decision нельзя ломать:
+Durable readiness sync:
 
-- core content без runtime API;
-- JS как enhancement, а не единственный источник содержания;
-- no backend/CMS/database без необходимости;
-- no runtime/build-time GitHub API dependency в основном site build;
-- один canonical source of truth на сущность;
-- deterministic build-time generation;
-- semantic/no-JS content;
-- Diplodoc как единственный site-wide full-text search owner;
-- no automatic public truth mutation;
-- bounded Evidence semantics;
-- analytics как optional telemetry, не product dependency;
-- one RU/EN site/build/search architecture;
-- no behavioural/user tracking без нового explicit privacy review;
-- no weakening quality gates ради feature velocity.
+- PR #46 — `docs: sync custom domain readiness state`;
+- squash `9a92a0bea78ecf7aa471d445fe3513cfadc7d378`;
+- exact docs head `7ad48f0453e6c8247d07d985af1cba22647cbcc5`;
+- Build #391 / run `30700514596` — fully green.
 
----
+Core ownership:
 
-## 7. Canonical data и ownership
-
-Registries/configs:
-
-- `data/site.json` — public deployment identity;
-- `data/projects.json`;
-- `data/project-history/*.json`;
-- `data/project-evidence.json`;
-- `data/now.json`;
-- `data/notes.json`;
-- `data/engineering-graph.json`;
-- `data/page-meta.json`;
-- `data/i18n.json`;
-- `data/analytics.json`;
-- `data/photo-albums.json`;
-- `data/photo-archive.json`;
-- `data/sources.json`;
-- `data/external-links.json` — только non-production external identities.
-
-Main build/postprocess orchestrator:
-
-`scripts/copy-assets.js`
-
-Focused operations ownership:
-
-- `scripts/site-deployment.js` — site mode/origin resolution;
-- `scripts/site-artifact.js` — generated public identity verification;
-- `scripts/analytics-deployment.js` — analytics mode/token resolution;
-- `scripts/production-smoke.js` — deployed availability/site identity/analytics;
-- `scripts/external-health.js` — resolved-origin production + external health;
+- `data/site.json` — legacy/custom public identity;
+- `scripts/site-deployment.js` — `auto|legacy|custom` resolver;
+- `scripts/site-artifact.js` — generated custom identity verification;
+- `scripts/production-smoke.js` — deployed availability, canonical identity and analytics;
 - `.github/workflows/static.yml` — Pages deployment;
-- `.github/workflows/external-health.yml` — weekly production monitoring.
+- `.github/workflows/external-health.yml` — weekly monitoring;
+- `docs/CUSTOM_DOMAIN.md` — activation/verification/rollback runbook.
+
+Rollback remains available through `site_mode=legacy` without weakening verification.
 
 ---
 
-## 8. Milestones
+## 5. Previous completed milestones
 
 ### P0 — foundation
 
@@ -375,60 +248,66 @@ Focused operations ownership:
 - P2.1 Minimal RU/EN — DONE: PR #38, Build #339.
 - P2.2 Privacy-friendly analytics — DONE: PR #40, Build #351.
 - P2.2a Production analytics activation contract — DONE: PR #42, Build #367.
-- P2.2a Operational closure — DONE: strict run `30572276691` + provider snapshot.
-- **P2.3a Custom Domain Readiness — DONE (repository): PR #45, Build #390.**
-- **P2.3b HTTPS Production Cutover — BLOCKED BY EXTERNAL DNS/TLS STATE.**
+- P2.2a Legacy analytics operational closure — DONE: run `30572276691` + provider snapshot.
+- P2.3a Custom Domain Readiness — DONE: PR #45, Build #390.
+- **P2.3b HTTPS Production Cutover — DONE: run `30704218399`.**
 
 ---
 
-## 9. Следующий оптимальный шаг
+## 6. Architectural boundaries
 
-Не расширять продукт и не менять analytics scope до закрытия внешнего cutover.
+Главная граница:
 
-Правильная последовательность:
+**static-first + build-time intelligence + progressive enhancement**.
 
-1. получить ответ поддержки Timeweb по `www` CNAME / `REFUSED`;
-2. добиться green GitHub repository Pages DNS check;
-3. дождаться валидного GitHub Pages TLS certificate;
-4. включить `Enforce HTTPS`;
-5. создать Cloudflare Web Analytics site/token для `trueruslan.ru`;
-6. установить repository variable:
-   `TR_PRODUCTION_SITE_URL=https://trueruslan.ru`;
-7. обновить `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN` token нового hostname;
-8. вручную запустить Pages:
-   - `site_mode=custom`;
-   - `analytics_mode=required`;
-9. потребовать green generated/deployed RU/EN site identity и analytics verification;
-10. проверить HTTP→HTTPS, `www`→apex, routes/assets/search/feed/sitemap и provider telemetry;
-11. сохранить reports/run evidence и выполнить отдельный durable operational closure.
+Без нового design decision нельзя ломать:
 
-После успешного cutover переходить к real content/distribution и 3–4 неделям aggregate observation.
-
----
-
-## 10. Намеренные запреты
-
-Без нового обоснования не добавлять:
-
-- backend/CMS/database ради static content;
-- runtime GitHub API;
-- DNS/provider account credentials в repository;
-- private TLS key/certificate;
-- repository `CNAME` file для Actions deployment;
-- второй search engine;
-- отдельный EN build/site;
-- automatic translation как public truth;
-- advertising analytics;
-- custom-event explosion;
-- fingerprinting/session replay/cross-site tracking;
-- accounts/comments/likes;
-- AI chat поверх резюме;
-- automatic mutation public trust state;
-- giant QA runner;
-- decorative version bumps.
+- core content без runtime API;
+- JS как enhancement;
+- no backend/CMS/database без необходимости;
+- one canonical source of truth;
+- deterministic build-time generation;
+- semantic/no-JS content;
+- Diplodoc как единственный site-wide full-text search owner;
+- no automatic public truth mutation;
+- bounded Evidence semantics;
+- one RU/EN site/build/search architecture;
+- analytics как optional aggregate telemetry;
+- no behavioural tracking без explicit privacy review;
+- no weakening quality gates ради скорости.
 
 ---
 
-## 11. Как восстановить контекст
+## 7. Known operational notes / debt
 
-> Открой в `True-Ruslan/trueruslan-landing` файлы `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md` и `docs/CUSTOM_DOMAIN.md`. Затем проверь actual open PR, latest commits и exact-head CI. Для custom-domain вопроса отдельно проверь GitHub Pages DNS check, `Enforce HTTPS`, public apex/www DNS, latest Pages deployment reports, active `TR_PRODUCTION_SITE_URL`, RU/EN canonical state и Cloudflare telemetry нового hostname.
+- Локальный plain-DNS `dig` из российской сети давал ложные `REFUSED`; Google/Cloudflare DoH был надёжнее. Это network diagnostic caveat, не product defect.
+- Legacy GitHub Pages origin сохраняется как transport/rollback compatibility, но canonical public identity теперь `https://trueruslan.ru`.
+- Нужно подтвердить первые Cloudflare telemetry data для нового hostname.
+- First real Photo Story всё ещё зависит от authentic content.
+- Выборка analytics должна накапливаться 3–4 недели после реального распространения сайта до серьёзных product decisions.
+
+---
+
+## 8. Следующий оптимальный шаг
+
+Инфраструктурный custom-domain milestone завершён. Следующая фаза — **real content and distribution loop**.
+
+Приоритет:
+
+1. подтвердить provider telemetry для `trueruslan.ru`;
+2. обновить внешние публичные ссылки на новый домен: GitHub profile, project READMEs, CV, Habr/Telegram и используемые профессиональные профили;
+3. подготовить сильный Vlezet case study;
+4. подготовить flagship VillAIgence case study;
+5. обновить `/now`;
+6. выпустить 1–2 grounded Engineering Notes;
+7. добавить первую genuine Photo Story при готовом материале;
+8. собирать aggregate data 3–4 недели;
+9. выбирать дальнейший RU/EN/content/product milestone по evidence.
+
+Яндекс.Метрика остаётся conditional: только если Cloudflare систематически не даёт достаточного российского signal и оправдан отдельный consent/privacy layer.
+
+---
+
+## 9. Как восстановить контекст
+
+> Открой в `True-Ruslan/trueruslan-landing` файлы `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md` и `docs/CUSTOM_DOMAIN.md`. Затем проверь actual open PR, latest commits и exact-head CI. Отдельно проверь latest Pages deployment reports, HTTPS/redirect state, active custom site contract, RU/EN canonical/analytics state и Cloudflare telemetry для `trueruslan.ru`.
