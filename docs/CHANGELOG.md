@@ -1,12 +1,50 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-01**, после завершения P2.4a canonical-link rollout и подтверждения первой Cloudflare telemetry на `https://trueruslan.ru`.
+> Обновлено: **2026-08-01**, после завершения P2.4b header utility navigation and language consolidation.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
 ---
 
 # 2026-08-01
+
+## P2.4b — Header utility navigation and language consolidation
+
+PR #51 завершил утверждённую переработку шапки, внешних ссылок, поиска, переключателя языка и hero-actions.
+
+### UI behavior
+
+- utility order: `GitHub → Habr → Telegram → Search → Language`;
+- GitHub, Habr, Telegram и поиск используют доступные icon-only controls;
+- язык является последним правым элементом шапки;
+- floating language switch и его duplicate visual/hit layer удалены;
+- RU/EN pair routing использует существующие i18n metadata;
+- untranslated routes получают language-home fallback;
+- menu поддерживает keyboard navigation, Escape, outside click, focus return и no-JS links;
+- `Резюме` удалено только из hero и сохранено в primary navigation;
+- RU/EN hero теперь содержит Projects + GitHub + Habr + Telegram;
+- CTA indicators имеют одного CSS owner, поэтому double arrows отсутствуют.
+
+Canonical external links:
+
+- `https://github.com/True-Ruslan`;
+- `https://habr.com/ru/users/TrueRuslan/`;
+- `https://t.me/TrueRuslan_Blog`.
+
+### Verification evidence
+
+```text
+feature PR:          #51
+exact feature head:  8bd77b90f778f6384be3b9de93e69c9bc4b77e21
+Build / run:         #418 / 30719138639 — SUCCESS
+squash on master:    c6a7b74e8b0f7d07f44794505d348ab6ef5afb4e
+```
+
+Green gates included unit tests, production build, generated-site integrity, mobile overflow, Chromium/Axe/Lighthouse, Sources, Project Evidence, Photo Stories, portfolio v0.3, Firefox/WebKit, generated search, RU/EN route/header/keyboard behavior, privacy analytics, metadata/OpenGraph, Engineering Map, reviewed visual regression and custom-domain artifact verification.
+
+No search ownership, Cmd/Ctrl+K behavior, Cloudflare analytics, custom-domain contract, hosting, dependency or content-authority behavior changed.
+
+---
 
 ## P2.4a — Canonical link rollout and first custom-host telemetry
 
