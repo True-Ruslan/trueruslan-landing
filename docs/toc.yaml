@@ -47,19 +47,18 @@ navigation:
         target: _self
     rightItems:
       - type: link
-        text: Поиск
-        url: _search/ru/index.html
-        target: _self
-      - type: link
         text: GitHub
         url: https://github.com/True-Ruslan
+      - type: link
+        text: Habr
+        url: https://habr.com/ru/users/TrueRuslan/
       - type: link
         text: Telegram
         url: https://t.me/TrueRuslan_Blog
       - type: link
-        text: Habr
-        url: https://habr.com/ru/users/trueruslan
-      - type: controls
+        text: Поиск
+        url: _search/ru/index.html
+        target: _self
 
 title: Руслан Немыкин — Backend Engineer
 href: index.md
