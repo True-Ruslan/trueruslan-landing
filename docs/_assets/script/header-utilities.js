@@ -43,12 +43,47 @@
     }
   }
 
-  function findHeaderAnchor(header, kind) {
-    const anchors = [...header.querySelectorAll('a[href]')];
+  function findHeaderAnchor(scope, kind) {
+    const anchors = [...scope.querySelectorAll('a[href]')];
     if (kind === 'search') {
       return anchors.find((anchor) => (anchor.getAttribute('href') || '').includes('_search/ru/index.html')) ?? null;
     }
     return anchors.find((anchor) => matchesHref(anchor, EXTERNAL_PROFILES[kind].href)) ?? null;
+  }
+
+  function findHeaderScope(document) {
+    const search = findHeaderAnchor(document, 'search');
+    if (!search) return null;
+
+    let candidate = search.parentElement;
+    while (candidate && candidate !== document.body) {
+      if (ORDER.every((kind) => findHeaderAnchor(candidate, kind))) return candidate;
+      candidate = candidate.parentElement;
+    }
+    return null;
+  }
+
+  function directChildContaining(scope, node) {
+    let current = node;
+    while (current?.parentElement && current.parentElement !== scope) current = current.parentElement;
+    return current?.parentElement === scope ? current : null;
+  }
+
+  function createGroupInScope(document, scope, anchors) {
+    const group = document.createElement('div');
+    group.className = 'tr-header-utilities';
+    group.dataset.trHeaderUtilities = 'true';
+
+    const sharedParent = anchors.every((anchor) => anchor.parentElement === anchors[0].parentElement)
+      ? anchors[0].parentElement
+      : null;
+    if (sharedParent) {
+      sharedParent.insertBefore(group, anchors[0]);
+    } else {
+      const reference = directChildContaining(scope, anchors[0]);
+      scope.insertBefore(group, reference || null);
+    }
+    return group;
   }
 
   function resolveSiteRoot(searchAnchor) {
@@ -241,15 +276,14 @@
     for (const legacy of document.querySelectorAll('[data-tr-language-switcher]')) legacy.remove();
 
     let group = document.querySelector('[data-tr-header-utilities]');
-    const header = document.querySelector('header');
-    if (!group && header) {
-      const anchors = ORDER.map((kind) => findHeaderAnchor(header, kind));
-      if (anchors.every(Boolean)) {
-        group = document.createElement('div');
-        group.className = 'tr-header-utilities';
-        group.dataset.trHeaderUtilities = 'true';
-        anchors[0].parentElement?.insertBefore(group, anchors[0]);
-        ORDER.forEach((kind, index) => group.appendChild(configureUtilityAnchor(anchors[index], kind, document)));
+    if (!group) {
+      const scope = document.querySelector('header') || findHeaderScope(document);
+      if (scope) {
+        const anchors = ORDER.map((kind) => findHeaderAnchor(scope, kind));
+        if (anchors.every(Boolean)) {
+          group = createGroupInScope(document, scope, anchors);
+          ORDER.forEach((kind, index) => group.appendChild(configureUtilityAnchor(anchors[index], kind, document)));
+        }
       }
     }
 
@@ -295,6 +329,7 @@
 
   root.TrueRuslanHeaderUtilities = Object.freeze({
     EXTERNAL_PROFILES,
+    findHeaderScope,
     resolveLanguageTargets,
     setupHeaderUtilities,
     setupLanguageMenu,
