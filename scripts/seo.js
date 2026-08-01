@@ -1,13 +1,21 @@
 import {parse, serialize} from 'parse5';
 import * as utils from 'parse5-utils';
 
-export const DEFAULT_SITE_URL = 'https://true-ruslan.github.io/trueruslan-landing';
+import {
+  DEFAULT_SITE_MANIFEST_PATH,
+  loadSiteManifest,
+} from './site-deployment.js';
+
+export const DEFAULT_SITE_URL = loadSiteManifest(DEFAULT_SITE_MANIFEST_PATH).legacyOrigin;
 
 export const PERSON_SCHEMA_MARKER = '"@type":"Person"';
 
 export function getSiteUrl() {
   const configured = process.env.SITE_URL?.trim().replace(/\/$/, '');
-  return configured || DEFAULT_SITE_URL;
+  if (configured) return configured;
+
+  const manifestPath = process.env.SITE_MANIFEST_PATH || DEFAULT_SITE_MANIFEST_PATH;
+  return loadSiteManifest(manifestPath).legacyOrigin;
 }
 
 export function collectPagesFromToc(tocContent) {
