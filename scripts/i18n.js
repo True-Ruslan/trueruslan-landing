@@ -79,11 +79,15 @@ function removeGeneratedChildren(node) {
   node.childNodes = node.childNodes.filter((child) => getAttribute(child, 'data-tr-i18n') !== 'true');
 }
 
-function createLink(attributes) {
-  const node = utils.createNode('link');
-  for (const [name, value] of Object.entries(attributes)) utils.setAttribute(node, name, value);
+function createElement(name, attributes) {
+  const node = utils.createNode(name);
+  for (const [attribute, value] of Object.entries(attributes)) utils.setAttribute(node, attribute, value);
   utils.setAttribute(node, 'data-tr-i18n', 'true');
   return node;
+}
+
+function createLink(attributes) {
+  return createElement('link', attributes);
 }
 
 function publicUrl(siteUrl, relativePath) {
@@ -92,6 +96,12 @@ function publicUrl(siteUrl, relativePath) {
   if (relativePath === 'index.html') return `${base}/`;
   if (relativePath === 'en/index.html') return `${base}/en/`;
   return `${base}/${relativePath}`;
+}
+
+function appendStandaloneHeaderAssets(head, pair) {
+  if (pair.id !== 'home') return;
+  utils.append(head, createLink({rel: 'stylesheet', href: '_assets/style/header-utilities.css'}));
+  utils.append(head, createElement('script', {src: '_assets/script/header-utilities.js', defer: ''}));
 }
 
 export function injectI18nLinks(html, {pair, locale, siteUrl}) {
@@ -116,6 +126,7 @@ export function injectI18nLinks(html, {pair, locale, siteUrl}) {
   utils.append(head, createLink({rel: 'alternate', hreflang: 'ru', href: ruUrl}));
   utils.append(head, createLink({rel: 'alternate', hreflang: 'en', href: enUrl}));
   utils.append(head, createLink({rel: 'alternate', hreflang: 'x-default', href: ruUrl}));
+  appendStandaloneHeaderAssets(head, pair);
 
   return serialize(document);
 }
