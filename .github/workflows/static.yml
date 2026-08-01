@@ -5,6 +5,15 @@ on:
     branches: ["master"]
   workflow_dispatch:
     inputs:
+      site_mode:
+        description: Production site deployment mode
+        required: true
+        default: auto
+        type: choice
+        options:
+          - auto
+          - legacy
+          - custom
       analytics_mode:
         description: Analytics deployment mode
         required: true
@@ -14,9 +23,6 @@ on:
           - auto
           - required
           - disabled
-
-env:
-  SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
 
 permissions:
   contents: read
@@ -50,6 +56,11 @@ jobs:
         run: npm ci
       - name: Test
         run: npm test
+      - name: Resolve site deployment contract
+        env:
+          SITE_DEPLOYMENT_MODE: ${{ inputs.site_mode || 'auto' }}
+          TR_PRODUCTION_SITE_URL: ${{ vars.TR_PRODUCTION_SITE_URL }}
+        run: node scripts/site-deployment.js
       - name: Resolve analytics deployment contract
         env:
           ANALYTICS_DEPLOYMENT_MODE: ${{ inputs.analytics_mode || 'auto' }}
@@ -80,13 +91,13 @@ jobs:
         uses: actions/deploy-pages@v4
       - name: Smoke test deployed Pages site
         env:
-          PRODUCTION_URL: ${{ steps.deployment.outputs.page_url }}
+          DEPLOYED_PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         shell: bash
         run: |
           set -o pipefail
           for attempt in 1 2 3 4 5; do
-            echo "Production smoke attempt ${attempt}: ${PRODUCTION_URL}"
-            if node scripts/production-smoke.js "${PRODUCTION_URL}"; then
+            echo "Production smoke attempt ${attempt}: transport=${DEPLOYED_PAGE_URL} expected=${SITE_URL}"
+            if EXPECTED_SITE_ORIGIN="${SITE_URL}" node scripts/production-smoke.js "${DEPLOYED_PAGE_URL}"; then
               exit 0
             fi
             sleep $((attempt * 5))
@@ -99,6 +110,7 @@ jobs:
           name: production-verification-reports
           path: |
             production-smoke-report.json
+            site-deployment-contract.json
             analytics-deployment-contract.json
           if-no-files-found: warn
           retention-days: 14
