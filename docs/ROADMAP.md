@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-01**, после завершения P2.4a canonical-link rollout и подтверждения первой Cloudflare telemetry на `https://trueruslan.ru`.
+> Обновлено: **2026-08-01**, после завершения P2.4b header utility navigation and language consolidation.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -117,7 +117,6 @@ Artifact evidence:
 - `production-verification-reports` id `8819800463`;
 - digest `sha256:49bd2a9e40ebda41cc4aa8c925e15392aff9fbcd7739ca01d2934550116b58c0`.
 
-
 ### P2.4a Canonical link rollout and first custom-host telemetry — DONE
 
 Completed:
@@ -140,11 +139,37 @@ LCP P50/P75/P90/P99 648/744/829/829 ms
 
 This closes provider observation, not audience validation.
 
+### P2.4b Header utility navigation and language consolidation — DONE
+
+Completed:
+
+- header utility order is `GitHub → Habr → Telegram → Search → Language`;
+- social/search surfaces use accessible icon-only controls;
+- language is the final rightmost control and opens a bounded RU/EN menu;
+- floating language switch and duplicate visual/hit area are removed;
+- paired routes reuse existing i18n metadata, untranslated routes fall back to language home;
+- no-JS language links, keyboard behavior, focus return and outside-click close are verified;
+- hero actions are Projects + GitHub + Habr + Telegram;
+- Resume remains in primary navigation but is absent from hero;
+- CTA indicators have one CSS owner, eliminating duplicate arrows;
+- exact-head CI, cross-browser, accessibility, mobile and intentional visual regression passed.
+
+Evidence:
+
+```text
+PR #51
+exact feature head 8bd77b90f778f6384be3b9de93e69c9bc4b77e21
+Build #418 / run 30719138639 SUCCESS
+squash c6a7b74e8b0f7d07f44794505d348ab6ef5afb4e
+```
+
+Search ownership, Cmd/Ctrl+K, Cloudflare analytics, hosting and custom-domain contracts remain unchanged.
+
 ---
 
 # NOW — P2.4 Real Content and Distribution Loop
 
-Infrastructure is no longer the primary blocker. The site now needs stronger real content and external entry points.
+Infrastructure and header/navigation polish are no longer primary blockers. The site now needs stronger real content and external entry points.
 
 ## Immediate operational follow-up
 
@@ -153,7 +178,8 @@ Completed:
 - first Cloudflare page views/RUM for `trueruslan.ru` confirmed;
 - Landing README and CV updated;
 - Vlezet and VillAIgence READMEs updated;
-- cross-repository durable state synchronized.
+- cross-repository durable state synchronized;
+- GitHub, Habr and Telegram entry points are available directly from the site header and home hero.
 
 Still required:
 
@@ -269,6 +295,8 @@ Only with enough real architecture artifacts and demonstrated audience/content v
 P2.3b HTTPS custom-domain cutover DONE
         ↓
 P2.4a provider telemetry + repository link rollout DONE
+        ↓
+P2.4b header/social/language navigation DONE
         ↓
 manual external-profile updates + distribution
         ↓

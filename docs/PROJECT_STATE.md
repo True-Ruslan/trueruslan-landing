@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-01**, после завершения P2.4a canonical-link rollout и подтверждения первой Cloudflare telemetry для `https://trueruslan.ru`.
+> Последнее смысловое обновление: **2026-08-01**, после завершения P2.4b header utility navigation and language consolidation.
 >
 > Главный durable snapshot для ответа на вопрос **«что представляет собой проект, что уже сделано и что дальше?»**.
 >
@@ -44,6 +44,40 @@
 ---
 
 ## 2. Последние завершённые operational milestones
+
+### P2.4b — Header utility navigation and language consolidation — DONE
+
+PR #51 завершил утверждённую переработку шапки и hero-actions:
+
+- utility order: `GitHub → Habr → Telegram → Search → Language`;
+- GitHub, Habr, Telegram и поиск отображаются как доступные icon-only controls;
+- язык является последним правым элементом шапки;
+- floating language switch и его duplicate visual/hit layer удалены;
+- RU/EN pair routing использует существующие i18n metadata, а untranslated routes получают language-home fallback;
+- меню языка поддерживает keyboard navigation, Escape, outside click и no-JS links;
+- `Резюме` удалено только из hero, но сохранено в основной навигации;
+- RU/EN hero содержит Projects + GitHub + Habr + Telegram;
+- source markup больше не владеет стрелками, поэтому каждая CTA имеет ровно один CSS-owned indicator;
+- mobile header, touch targets, list semantics Diplodoc и intentional visual baseline проверены.
+
+Evidence:
+
+```text
+feature PR:            #51
+exact feature head:    8bd77b90f778f6384be3b9de93e69c9bc4b77e21
+Build / run:           #418 / 30719138639 SUCCESS
+squash on master:      c6a7b74e8b0f7d07f44794505d348ab6ef5afb4e
+```
+
+Green matrix included unit tests, production build, generated-site integrity, mobile overflow, Chromium/Axe/Lighthouse, Sources, Project Evidence, Photo Stories, portfolio v0.3, Firefox/WebKit, generated search, RU/EN route/header/keyboard behavior, privacy analytics, metadata/OpenGraph, Engineering Map, reviewed visual regression and custom-domain artifact verification.
+
+Canonical external links:
+
+- GitHub: `https://github.com/True-Ruslan`;
+- Habr: `https://habr.com/ru/users/TrueRuslan/`;
+- Telegram: `https://t.me/TrueRuslan_Blog`.
+
+The milestone did not change Diplodoc search ownership, Cmd/Ctrl+K behavior, Cloudflare analytics, custom-domain contracts, hosting, dependencies or content authority.
 
 ### P2.4a — Canonical link rollout and first custom-host telemetry — DONE
 
@@ -295,6 +329,7 @@ Rollback remains available through `site_mode=legacy` without weakening verifica
 - P2.3a Custom Domain Readiness — DONE: PR #45, Build #390.
 - **P2.3b HTTPS Production Cutover — DONE: run `30704218399`.**
 - **P2.4a Canonical link rollout and first custom-host telemetry — DONE: PRs #48–#49 plus cross-repository PRs #36/#37/#90/#91.**
+- **P2.4b Header utility navigation and language consolidation — DONE: PR #51, Build #418.**
 
 ---
 
@@ -329,12 +364,13 @@ Rollback remains available through `site_mode=legacy` without weakening verifica
 - Первичная Cloudflare telemetry нового hostname подтверждена; выборка ещё недостаточна для audience/product conclusions.
 - First real Photo Story всё ещё зависит от authentic content.
 - Выборка analytics должна накапливаться 3–4 недели после реального распространения сайта до серьёзных product decisions.
+- Repository-side P2.4b verified; latest Pages deployment and owner visual acceptance remain separate operational facts to confirm after publication.
 
 ---
 
 ## 8. Следующий оптимальный шаг
 
-Custom-domain infrastructure, provider telemetry observation и repository-side canonical-link rollout завершены. Следующая фаза — **real content and distribution loop**.
+Header/navigation polish завершён и не меняет основной roadmap. Следующая фаза — **real content and distribution loop**.
 
 Приоритет:
 
