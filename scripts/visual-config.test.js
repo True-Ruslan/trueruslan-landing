@@ -35,7 +35,6 @@ test('visual theme and custom resources are wired into Diplodoc', () => {
   assert.equal(packageJson.scripts['check:site'], 'node scripts/site-integrity.js');
 
   assert.equal(packageJson.license, 'MIT');
-  assert.equal(packageJson.homepage, 'https://true-ruslan.github.io/trueruslan-landing/');
   assert.match(license, /^MIT License/m);
   assert.match(contentLicense, /personal content/i);
   assert.match(contentLicense, /All rights reserved/i);

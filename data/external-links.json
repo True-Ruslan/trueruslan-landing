@@ -1,26 +1,5 @@
 [
   {
-    "name": "Production homepage",
-    "category": "production",
-    "url": "https://true-ruslan.github.io/trueruslan-landing/"
-  },
-  {
-    "name": "Production projects",
-    "category": "production",
-    "url": "https://true-ruslan.github.io/trueruslan-landing/landing/projects.html"
-  },
-  {
-    "name": "Production resume",
-    "category": "production",
-    "url": "https://true-ruslan.github.io/trueruslan-landing/landing/resume.html"
-  },
-  {
-    "name": "Production resume PDF",
-    "category": "production",
-    "url": "https://true-ruslan.github.io/trueruslan-landing/assets/documents/cv.pdf",
-    "expectedContentType": "application/pdf"
-  },
-  {
     "name": "GitHub profile",
     "category": "profile",
     "url": "https://github.com/True-Ruslan"

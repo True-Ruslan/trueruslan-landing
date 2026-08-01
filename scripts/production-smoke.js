@@ -49,6 +49,20 @@ async function fetchText(url, fetchImpl) {
   return response.text();
 }
 
+function htmlAttribute(tag, name) {
+  const match = tag.match(new RegExp(`\\b${name}\\s*=\\s*(["'])(.*?)\\1`, 'i'));
+  return match?.[2] ?? null;
+}
+
+function extractCanonical(html) {
+  for (const tag of html.match(/<link\b[^>]*>/gi) ?? []) {
+    const rel = htmlAttribute(tag, 'rel');
+    if (!rel?.toLowerCase().split(/\s+/).includes('canonical')) continue;
+    return htmlAttribute(tag, 'href');
+  }
+  return null;
+}
+
 async function assertHomepageIdentity(baseUrl, fetchImpl = globalThis.fetch) {
   const homepage = new URL(baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).href;
   let html;
@@ -74,6 +88,70 @@ async function assertFeedIdentity(baseUrl, fetchImpl = globalThis.fetch) {
   if (!xml.includes('<feed xmlns="http://www.w3.org/2005/Atom">') || !xml.includes('<title>TrueRuslan Engineering Notes</title>')) {
     throw new Error('Atom feed identity markers were not found in deployed XML.');
   }
+}
+
+async function verifyProductionSiteIdentity(baseUrl, {
+  fetchImpl,
+  expectedOrigin,
+  endpointResults,
+}) {
+  const normalizedExpectedOrigin = String(expectedOrigin || '').trim().replace(/\/$/, '');
+  const parsedExpected = new URL(normalizedExpectedOrigin);
+  if (parsedExpected.protocol !== 'https:' || parsedExpected.search || parsedExpected.hash) {
+    throw new Error(`invalid expected site origin: ${expectedOrigin}`);
+  }
+
+  const expectedHomepage = `${normalizedExpectedOrigin}/`;
+  const homepageResult = endpointResults.find((entry) => entry.name === 'Homepage');
+  const homepageFinalUrl = homepageResult?.finalUrl ?? null;
+  const homepageErrors = [];
+  if (homepageFinalUrl !== expectedHomepage) {
+    homepageErrors.push(`Homepage final URL must be ${expectedHomepage}, got ${homepageFinalUrl || 'missing'}.`);
+  }
+
+  const base = new URL(baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
+  const routeDefinitions = [
+    {route: 'index.html', url: base.href, expectedCanonical: expectedHomepage},
+    {
+      route: 'en/index.html',
+      url: new URL('en/index.html', base).href,
+      expectedCanonical: `${normalizedExpectedOrigin}/en/`,
+    },
+  ];
+
+  const routes = [];
+  for (const definition of routeDefinitions) {
+    const errors = [];
+    let actualCanonical = null;
+    try {
+      const html = await fetchText(definition.url, fetchImpl);
+      actualCanonical = extractCanonical(html);
+      if (actualCanonical !== definition.expectedCanonical) {
+        errors.push(
+          `Canonical for ${definition.route} must be ${definition.expectedCanonical}, got ${actualCanonical || 'missing'}.`,
+        );
+      }
+    } catch (error) {
+      errors.push(`Canonical check failed: ${error.message}`);
+    }
+
+    routes.push({
+      route: definition.route,
+      expectedCanonical: definition.expectedCanonical,
+      actualCanonical,
+      ok: errors.length === 0,
+      errors,
+    });
+  }
+
+  return {
+    expectedOrigin: normalizedExpectedOrigin,
+    homepageFinalUrl,
+    homepageOk: homepageErrors.length === 0,
+    homepageErrors,
+    ok: homepageErrors.length === 0 && routes.every((route) => route.ok),
+    routes,
+  };
 }
 
 async function verifyProductionAnalytics(baseUrl, {
@@ -116,6 +194,7 @@ export async function runProductionSmoke(baseUrl, {
   fetchImpl = globalThis.fetch,
   analyticsExpectation = 'ignore',
   analyticsToken,
+  expectedOrigin,
 } = {}) {
   const normalizedAnalyticsExpectation = String(analyticsExpectation || 'ignore').trim().toLowerCase();
   if (!ANALYTICS_EXPECTATIONS.has(normalizedAnalyticsExpectation)) {
@@ -145,6 +224,23 @@ export async function runProductionSmoke(baseUrl, {
   const failures = results.filter((result) => !result.ok);
   for (const error of identityErrors) failures.push({name: error.split(':', 1)[0], error});
 
+  const siteIdentity = expectedOrigin
+    ? await verifyProductionSiteIdentity(baseUrl, {
+      fetchImpl,
+      expectedOrigin,
+      endpointResults: results,
+    })
+    : null;
+
+  if (siteIdentity && !siteIdentity.ok) {
+    for (const error of siteIdentity.homepageErrors) {
+      failures.push({name: 'Site homepage origin', error});
+    }
+    for (const route of siteIdentity.routes.filter((entry) => !entry.ok)) {
+      failures.push({name: `Canonical ${route.route}`, error: route.errors.join(' ')});
+    }
+  }
+
   const analytics = normalizedAnalyticsExpectation === 'ignore'
     ? null
     : await verifyProductionAnalytics(baseUrl, {
@@ -168,6 +264,7 @@ export async function runProductionSmoke(baseUrl, {
     ok: failures.length === 0,
     results,
     identityErrors,
+    ...(siteIdentity ? {siteIdentity} : {}),
     ...(analytics ? {analytics} : {}),
   };
 
@@ -182,6 +279,7 @@ async function main() {
   const report = await runProductionSmoke(baseUrl, {
     analyticsExpectation: process.env.ANALYTICS_EXPECTATION || 'ignore',
     analyticsToken: process.env.TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN,
+    expectedOrigin: process.env.EXPECTED_SITE_ORIGIN || process.env.SITE_URL,
   });
   for (const result of report.results) {
     const marker = result.ok ? 'OK' : 'FAIL';
@@ -189,6 +287,16 @@ async function main() {
   }
 
   for (const identityError of report.identityErrors) console.error(`[FAIL] ${identityError}`);
+  if (report.siteIdentity) {
+    console.log(
+      `[${report.siteIdentity.ok ? 'OK' : 'FAIL'}] Site identity: ${report.siteIdentity.expectedOrigin}`,
+    );
+    for (const error of report.siteIdentity.homepageErrors) console.error(`[FAIL] ${error}`);
+    for (const route of report.siteIdentity.routes) {
+      console.log(`[${route.ok ? 'OK' : 'FAIL'}] Canonical ${route.route}: ${route.actualCanonical || 'missing'}`);
+      for (const error of route.errors) console.error(`[FAIL] Canonical ${route.route}: ${error}`);
+    }
+  }
   if (report.analytics) {
     for (const route of report.analytics.routes) {
       console.log(
