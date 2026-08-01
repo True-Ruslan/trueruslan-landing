@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-01**, после merge P2.3a Custom Domain Readiness PR #45.
+> Обновлено: **2026-08-01**, после успешного P2.3b HTTPS Production Cutover на `https://trueruslan.ru`.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -12,14 +12,14 @@
 - build-time intelligence;
 - progressive enhancement;
 - core content без runtime API;
-- no backend/CMS/database без реальной необходимости;
+- no backend/CMS/database без необходимости;
 - one canonical source of truth;
 - Diplodoc как единственный site-wide full-text search owner;
 - no automatic public truth mutation;
 - bounded Evidence semantics;
 - one RU/EN site/build/search architecture;
 - analytics как optional aggregate telemetry;
-- no behavioural/user tracking без нового explicit privacy review;
+- no behavioural/user tracking без explicit privacy review;
 - quality gates без ослабления;
 - repository readiness, deployed state и provider telemetry как разные факты.
 
@@ -51,172 +51,90 @@
 
 ### P2.1 Minimal RU/EN — DONE
 
-- PR #38 / squash `00f7513f685b8a8348005d0ab704ce96abe64950`;
+- PR #38;
 - Build #339 / run `30000373281` fully green;
 - one build, one site, one search index, Russian default/root, bounded `/en/` namespace.
 
 ### P2.2 Privacy-friendly analytics — DONE
 
-- PR #40 / squash `2dacace5de6b6c1225e82b372faef093850f4c9f`;
+- PR #40;
 - Build #351 / run `30003347268` fully green;
-- Cloudflare Web Analytics manual beacon;
-- pageviews/RUM-only policy;
-- tokenless build = zero analytics capability;
-- no custom events/cookies/persistent identifiers/cross-site tracking/session replay;
-- one analytics layer for RU/EN;
-- dedicated blocked-network privacy browser gate.
+- pageviews/RUM-only Cloudflare layer;
+- no custom events, cookies, persistent identifiers, replay or cross-site tracking;
+- dedicated privacy/failure browser gate.
 
-### P2.2a Production analytics activation contract — DONE
+### P2.2a Production analytics activation — DONE
 
-- PR #42 / squash `522140dda2cab121e6a5c2a099dce9e491f1b49b`;
-- exact head `21181a30d85d9f68536b266a326f849d4b451959`;
+- PR #42;
 - Build #367 / run `30560152774` fully green;
-- deployment modes `auto|required|disabled`;
-- fail-closed preflight;
+- `auto|required|disabled` analytics modes;
 - generated/deployed RU/EN verification;
 - weekly monitoring;
-- token-free reports;
-- operator runbook and kill switch.
+- strict legacy production run `30572276691`;
+- provider telemetry observed for the legacy hostname.
 
-### P2.2a Operational closure — DONE
+### P2.3a Custom Domain Readiness — DONE
 
-- strict Pages run `30572276691`;
-- legacy production beacon enabled and verified;
-- RU/EN production smoke green;
-- provider telemetry observed in Cloudflare;
-- initial sample intentionally marked insufficient for product conclusions.
-
-### P2.3a Custom Domain Readiness — DONE (repository)
-
-Feature evidence:
-
-- PR #45 — `feat: prepare custom domain deployment`;
+- PR #45;
 - squash `f2a232e55979ed17014596262abfaf2a70ef2e63`;
-- exact feature head `117128fba94ae9c4df787125393a9d08f2b712c5`;
-- Build #390 / run `30700124919` fully green.
+- exact head `117128fba94ae9c4df787125393a9d08f2b712c5`;
+- Build #390 / run `30700124919` fully green;
+- canonical `data/site.json`;
+- `TR_PRODUCTION_SITE_URL`;
+- `auto|legacy|custom` site modes;
+- dual-origin CI verification;
+- activation and rollback runbook.
 
-Implemented:
+### P2.3b HTTPS Production Cutover — DONE
 
-- canonical `data/site.json` for legacy/custom identity;
-- repository variable `TR_PRODUCTION_SITE_URL`;
-- site modes `auto|legacy|custom`;
-- fail-closed origin resolution;
-- bounded `site-deployment-contract.json`;
-- resolved-origin Pages and weekly workflows;
-- origin-derived production health endpoints;
-- deployed homepage/RU/EN canonical verification;
-- second real PR build for `https://trueruslan.ru`;
-- custom artifact verification for canonical, hreflang, robots, sitemap and Atom;
-- full activation/rollback runbook `docs/CUSTOM_DOMAIN.md`.
+External gate completed:
 
-Repository default remains legacy until explicit external cutover.
+- domain ownership verified;
+- apex A records point to GitHub Pages;
+- `www` CNAME points to `true-ruslan.github.io`;
+- conflicting Timeweb AAAA removed;
+- GitHub Pages DNS check successful;
+- GitHub Pages certificate installed;
+- `Enforce HTTPS` enabled;
+- owner manual link acceptance passed.
 
----
+Strict production deployment:
 
-# NOW — P2.3b HTTPS Production Cutover
+- run `30704218399`;
+- source SHA `9a92a0bea78ecf7aa471d445fe3513cfadc7d378`;
+- site mode `custom`;
+- analytics mode `required`;
+- job `deploy` success;
+- production origin `https://trueruslan.ru`;
+- all monitored endpoints healthy;
+- RU canonical `https://trueruslan.ru/`;
+- EN canonical `https://trueruslan.ru/en/`;
+- one analytics beacon on RU and EN;
+- production report `ok: true`.
 
-## Status
+Artifact evidence:
 
-**BLOCKED BY EXTERNAL DNS/TLS STATE.**
-
-Confirmed:
-
-- `trueruslan.ru` purchased in Timeweb;
-- GitHub account-level domain verification succeeded;
-- apex A records point to all four GitHub Pages IPv4 addresses;
-- HTTP request to apex reaches the intended site;
-- repository code can build and verify both legacy and custom origins.
-
-Not complete:
-
-- GitHub repository Pages DNS check remains unsuccessful;
-- `InvalidDNSError` is present;
-- `Enforce HTTPS` is unavailable;
-- public standard CNAME response for `www.trueruslan.ru` is unresolved;
-- Timeweb support response is pending;
-- GitHub Pages TLS certificate is not verified;
-- custom origin is not yet accepted as canonical production truth;
-- Cloudflare Web Analytics site/token for the new hostname is not verified.
-
-## External gate
-
-Before cutover require all of:
-
-1. Timeweb resolves the `www` CNAME / `REFUSED` issue or provides a supported standard configuration.
-2. GitHub repository `Settings → Pages` shows green DNS check.
-3. `https://trueruslan.ru/` presents a valid GitHub Pages certificate.
-4. `www.trueruslan.ru` resolves and redirects to apex as intended.
-5. `Enforce HTTPS` is available and enabled.
-6. A Cloudflare Web Analytics site/token exists for `trueruslan.ru`.
-
-No repository code change is required merely to wait for these conditions.
-
-## Cutover sequence
-
-After external gate is green:
-
-1. Set repository variable exactly:
-
-   `TR_PRODUCTION_SITE_URL=https://trueruslan.ru`
-
-2. Replace `TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN` with the token for the new hostname.
-3. Manually run `Deploy static content to Pages` with:
-   - `site_mode=custom`;
-   - `analytics_mode=required`.
-4. Require success for:
-   - tests;
-   - site preflight;
-   - analytics preflight;
-   - build/integrity;
-   - generated RU/EN analytics state;
-   - Pages deploy;
-   - final homepage origin;
-   - RU/EN canonical identity;
-   - production analytics state.
-5. Verify externally:
-   - HTTP → HTTPS;
-   - `www` → apex;
-   - RU and EN;
-   - search;
-   - projects, `/now`, Notes, Photo Stories, Resume/PDF;
-   - Atom, sitemap, robots;
-   - CSS/JS/images/OG;
-   - provider telemetry for the new hostname.
-6. Preserve deployment reports and perform a separate durable operational-closure PR.
-
-## Rollback
-
-If custom cutover fails:
-
-1. Do not weaken verification.
-2. Run Pages with `site_mode=legacy`.
-3. Restore `TR_PRODUCTION_SITE_URL` to the legacy exact value or remove it.
-4. Diagnose DNS, TLS, Pages routing, generated identity and analytics as separate layers.
+- `production-verification-reports` id `8819800463`;
+- digest `sha256:49bd2a9e40ebda41cc4aa8c925e15392aff9fbcd7739ca01d2934550116b58c0`.
 
 ---
 
-# After P2.3b
+# NOW — P2.4 Real Content and Distribution Loop
 
-## Real content and distribution loop — RECOMMENDED
+Infrastructure is no longer the primary blocker. The site now needs stronger real content and external entry points.
 
-Priority content:
+## Immediate operational follow-up
 
-1. flagship Vlezet case study based on real UI/UX, geometry and assisted-recognition work;
-2. flagship VillAIgence case study based on voice pipeline, Memory 2.0, semantic memory, determinism, security and persistence;
-3. update `/now`;
-4. 1–2 grounded Engineering Notes from actual implementation decisions;
-5. first genuine Photo Story if authentic material is ready.
-
-Distribution entry points:
-
-- GitHub profile README;
-- Vlezet and VillAIgence READMEs;
-- CV;
-- Habr profile/articles;
-- Telegram;
-- other professional profiles only where actually used.
-
-After distribution collect aggregate data for at least 3–4 weeks before major audience-driven decisions.
+1. Confirm first Cloudflare page views/RUM for `trueruslan.ru`.
+2. Keep Pages deployment and weekly External health green.
+3. Update external links to the canonical domain:
+   - GitHub profile README;
+   - Vlezet and VillAIgence READMEs;
+   - CV;
+   - Habr profile/articles;
+   - Telegram;
+   - other profiles actually used.
+4. Observe aggregate data for at least 3–4 weeks after distribution begins.
 
 Bounded signals:
 
@@ -229,13 +147,50 @@ Bounded signals:
 
 Do not treat owner test traffic as audience validation.
 
+## Priority content sprint
+
+### 1. Vlezet flagship case study
+
+Use real evidence from:
+
+- assisted recognition;
+- wall/door/window ambiguity;
+- geometry and area semantics;
+- furniture library and placement UX;
+- rotated-contour distance;
+- user feedback, fixes and acceptance.
+
+### 2. VillAIgence flagship case study
+
+Use real evidence from:
+
+- text/voice NPC dialogue;
+- STT/Chat/TTS pipeline;
+- Memory 2.0;
+- semantic facts and relationships;
+- deterministic IDs and persistence;
+- restart/server verification;
+- security and failure handling.
+
+### 3. `/now`
+
+Synchronize current active development, released milestones and near-term focus.
+
+### 4. Grounded Engineering Notes
+
+Publish 1–2 notes derived from actual implementation decisions rather than generic tutorials.
+
+### 5. First genuine Photo Story
+
+Only authentic material; no fake/demo album.
+
 ---
 
 # Evidence-driven future branches
 
-## Selective RU/EN/content expansion — CONDITIONAL
+## Selective RU/EN expansion — CONDITIONAL
 
-Only when actual route usage or content value identifies a concrete surface.
+Only when actual usage or content value identifies a concrete surface.
 
 ## Secondary analytics / Yandex Metrica — CONDITIONAL
 
@@ -244,17 +199,13 @@ Do not add now.
 Re-open only when:
 
 - Cloudflare systematically undercounts the Russian audience;
-- the missing data blocks a real decision;
-- a consent-controlled loader and privacy notice are justified;
-- Webvisor, replay, click maps, user IDs and broad behavioural tracking remain excluded unless separately approved.
+- missing data blocks a real decision;
+- consent-controlled loading and privacy notice are justified;
+- replay, Webvisor, click maps, user IDs and broad behavioural tracking remain excluded unless separately approved.
 
 ## Richer architecture explorer — CONDITIONAL
 
 Only with enough real architecture artifacts and demonstrated audience/content value.
-
-## First real Photo Story — CONTENT DEPENDENT
-
-Only genuine material; fake/demo album remains forbidden.
 
 ---
 
@@ -265,11 +216,9 @@ Only genuine material; fake/demo album remains forbidden.
 - migration away from GitHub Pages;
 - paid hosting merely because a custom domain exists;
 - private TLS certificate management;
-- DNS/provider API credentials in repository;
-- repository `CNAME` file for Actions deployment;
-- полный перевод сайта одним milestone;
-- отдельный EN build/CMS;
-- второй site-wide search engine;
+- DNS/provider credentials in repository;
+- separate EN build/CMS;
+- second site-wide search engine;
 - advertising analytics;
 - custom-event explosion;
 - fingerprinting/session replay/cross-site tracking;
@@ -288,38 +237,31 @@ Only genuine material; fake/demo album remains forbidden.
 # Оптимальная последовательность
 
 ```text
-P2.3a repository readiness DONE
+P2.3b HTTPS custom-domain cutover DONE
         ↓
-Timeweb www/CNAME resolution
+confirm provider telemetry for trueruslan.ru
         ↓
-GitHub Pages DNS check GREEN
+update external links to canonical domain
         ↓
-GitHub TLS + Enforce HTTPS
+Vlezet + VillAIgence case studies
         ↓
-Cloudflare site/token for trueruslan.ru
+/now + Engineering Notes + genuine Photo Story
         ↓
-TR_PRODUCTION_SITE_URL + analytics token
-        ↓
-manual custom|required deployment
-        ↓
-production/telemetry verification
-        ↓
-durable P2.3b operational closure
-        ↓
-real content + distribution
+public distribution
         ↓
 3–4 weeks aggregate observation
+        ↓
+choose further RU/EN/content/product work from evidence
 ```
 
 ## Правило для нового чата
 
-Перед любым следующим action:
+Перед следующим milestone:
 
 1. открыть `PROJECT_STATE`, `ROADMAP`, `CHANGELOG`, `CUSTOM_DOMAIN`;
 2. проверить actual open PR/latest commits/exact-head CI;
-3. проверить GitHub Pages DNS check и `Enforce HTTPS`;
-4. проверить public apex/www DNS;
-5. проверить active `TR_PRODUCTION_SITE_URL` state через deployment report;
-6. проверить latest Pages deployment and RU/EN canonical/analytics reports;
-7. проверить Cloudflare telemetry текущего production hostname;
-8. при freshness-вопросах проверить latest Content Freshness runs/issues.
+3. проверить latest Pages deployment reports;
+4. проверить HTTPS/redirects and RU/EN canonical identity;
+5. проверить active site/analytics contracts;
+6. проверить Cloudflare telemetry current hostname;
+7. при freshness-вопросах проверить latest Content Freshness runs/issues.
