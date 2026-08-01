@@ -59,3 +59,16 @@ test('injectI18nLinks exposes paired-route metadata without rendering a floating
   assert.doesNotMatch(once, /data-tr-language-switcher/);
   assert.doesNotMatch(once, /position:fixed;right:14px;bottom:14px/);
 });
+
+test('home pair receives the dedicated header utility assets exactly once', () => {
+  const source = '<!doctype html><html lang="ru"><head><title>Home</title></head><body><main><h1>Home</h1></main></body></html>';
+  const pair = {id: 'home', ru: 'index.html', en: 'en/index.html'};
+  const once = injectI18nLinks(source, {pair, locale: 'ru', siteUrl: 'https://example.test/site/'});
+  const twice = injectI18nLinks(once, {pair, locale: 'ru', siteUrl: 'https://example.test/site/'});
+
+  assert.equal(once, twice);
+  assert.equal((once.match(/header-utilities\.css/g) || []).length, 1);
+  assert.equal((once.match(/header-utilities\.js/g) || []).length, 1);
+  assert.match(once, /<link[^>]*href="_assets\/style\/header-utilities\.css"/);
+  assert.match(once, /<script[^>]*src="_assets\/script\/header-utilities\.js"[^>]*defer/);
+});
