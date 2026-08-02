@@ -26,21 +26,21 @@ async function runScenario(browser, baseUrl, name, viewport) {
     if (await filters.count() !== 5) throw new Error(`${name}: expected five filters including All`);
 
     await page.getByRole('button', {name: 'AI', exact: true}).click();
-    const livingWorld = page.locator('[data-node-id="livingworld"]');
+    const villaigence = page.locator('[data-node-id="livingworld"]');
     const java = page.locator('[data-node-id="java"]');
-    if (await livingWorld.evaluate((node) => node.classList.contains('is-filtered-out'))) {
-      throw new Error(`${name}: LivingWorld incorrectly filtered out by AI filter`);
+    if (await villaigence.evaluate((node) => node.classList.contains('is-filtered-out'))) {
+      throw new Error(`${name}: VillAIgence incorrectly filtered out by AI filter`);
     }
     if (!(await java.evaluate((node) => node.classList.contains('is-filtered-out')))) {
       throw new Error(`${name}: Java should be dimmed by AI filter`);
     }
 
     await page.getByRole('button', {name: 'Все', exact: true}).click();
-    await livingWorld.focus();
+    await villaigence.focus();
     await page.waitForTimeout(50);
     const detailText = await page.locator('.tr-engineering-graph__detail').innerText();
-    if (!detailText.includes('LivingWorld') || !detailText.includes('Server-authoritative')) {
-      throw new Error(`${name}: selected node detail did not update`);
+    if (!detailText.includes('VillAIgence') || !detailText.includes('Server-authoritative')) {
+      throw new Error(`${name}: selected VillAIgence node detail did not update`);
     }
 
     const overflow = (await assertNoHorizontalOverflow(page, name)).overflow;
