@@ -6,7 +6,7 @@
     {id: 'now', label: 'Сейчас', hint: 'Текущий инженерный фокус', target: 'landing/now.html', keywords: 'now сейчас focus фокус'},
     {id: 'notes', label: 'Engineering Notes', hint: 'Технические заметки и ретроспективы', target: 'landing/notes.html', keywords: 'notes статьи заметки engineering'},
     {id: 'map', label: 'Engineering Map', hint: 'Связи между технологиями, проектами и заметками', target: 'landing/engineering-map.html', keywords: 'map карта skills technologies'},
-    {id: 'photos', label: 'Фотографии', hint: 'Личный визуальный архив и фотоистории', target: 'photos/', keywords: 'photos фото фотографии gallery stories архив'},
+    {id: 'photos', label: 'Фотографии', hint: 'Личный визуальный архив и фотоистории', target: 'landing/photos.html', keywords: 'photos фото фотографии gallery stories архив'},
     {id: 'resume', label: 'Резюме', hint: 'Опыт, стек и web-CV', target: 'landing/resume.html', keywords: 'resume cv резюме опыт'},
     {id: 'search', label: 'Поиск по сайту', hint: 'Открыть существующий локальный поиск Diplodoc', target: '_search/ru/index.html', keywords: 'search поиск найти', kind: 'search'},
     {id: 'github', label: 'GitHub', hint: 'Публичные репозитории', target: 'https://github.com/True-Ruslan', keywords: 'github code repos код', external: true},
