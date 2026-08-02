@@ -40,19 +40,20 @@ Steps:
 3. Add RU metadata for `landing/projects/vlezet.html`.
 4. Add Vlezet to Projects navigation before LivingWorld.
 5. Add a compact project-hub introduction before LivingWorld and render status via `<span data-tr-project-status="vlezet"></span>`.
-6. Add past/current/next timeline entries, clearly keeping M7.8B under review.
+6. Add past/current/next timeline entries: accepted foundation, failed M7.8B real-plan review under corrective work, then architectural-shell acceptance before semantic expansion.
 
 ## Task 3 — add bounded project evidence
 
 **Modify:** `data/project-evidence.json`
 
 1. Add a Vlezet evidence record with `lastVerified: 2026-08-02`.
-2. Record stack/version labels that are explicitly present in canonical project state.
+2. Record stack/version labels explicitly present in canonical project state.
 3. Add bounded signals for:
    - M7.7 accepted deterministic furniture/fit workflow;
    - M7.8A accepted benchmark foundation;
-   - M7.8B pending owner acceptance with measured wall-topology improvements and known recognition gaps.
-4. Avoid treating current Draft PR #41 as merged or production accepted.
+   - M7.8B failed product-owner review with 417 local wall candidates, zero openings, symbol-network pollution, corrective structural masking and current non-accepted Source metrics.
+4. Keep the snapshot fresh and source-backed while preserving the failed state on the individual M7.8B signal.
+5. Never treat Draft PR #41 as merged or accepted recognition quality.
 
 ## Task 4 — create the architecture authority diagram
 
@@ -86,19 +87,22 @@ Steps:
    - deterministic furniture/fit semantics;
    - Draft + explicit Apply recognition boundary;
    - benchmark-first M7.8A;
-   - HoughLinesP `data32S` root cause and M7.8B benchmark delta;
+   - HoughLinesP `data32S` root cause;
+   - synthetic benchmark improvement followed by the failed representative real-plan M7.8B review;
+   - structural-mask/fail-closed corrective work and its bounded diagnostics;
    - opening/room/area work still unfinished;
-   - real-plan owner acceptance remains separate from exact-head CI.
+   - real-plan product acceptance remains separate from exact-head CI.
 6. Add exactly one Evidence placeholder.
 
-## Task 6 — verify GREEN locally through repository CI
+## Task 6 — verify GREEN through repository CI
 
-1. Run/trigger the full standard PR workflow on the exact feature head.
+1. Run the full standard PR workflow on the exact feature head.
 2. Verify unit tests and the flagship contract pass.
 3. Verify production build and generated-site integrity.
 4. Verify browser, accessibility, Lighthouse, cross-browser, search, metadata, visual regression and custom-domain artifact gates.
-5. Inspect generated project hub and Vlezet page artifacts/screenshots.
-6. Correct only evidence-backed defects; do not weaken tests.
+5. Inspect generated project hub and Vlezet desktop/mobile/evidence artifacts.
+6. Confirm the page does not imply M7.8B acceptance or generic plan-recognition accuracy.
+7. Correct only evidence-backed defects; do not weaken tests.
 
 ## Task 7 — publish and integrate
 
