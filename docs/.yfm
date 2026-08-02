@@ -20,6 +20,7 @@ resources:
     - _assets/style/engineering-graph.css
     - _assets/style/resume.css
     - _assets/style/photo-stories.css
+    - _assets/style/photo-embedded.css
     - _assets/style/header-utilities.css
   script:
     - _assets/script/custom.js
