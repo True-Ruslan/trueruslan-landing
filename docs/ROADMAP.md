@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-02**, после завершения post-P2.4b UX and rendered-asset stabilization.
+> Обновлено: **2026-08-02**, после публикации Vlezet flagship case study.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -33,240 +33,134 @@
 
 ## P0 — foundation
 
-- **P0.1 Photo Stories platform — DONE**: PR #15 + #17.
-- **P0.2 First real Photo Story — CONTENT DEPENDENT**.
-- **P0.3 Sources Registry / KB — DONE**: PR #20.
-- **P0.4 Project Evidence — DONE**: PR #22, Build #247.
-- **P0.5 Grounded Notes — DONE**: PR #25, Build #257.
-- **P0.6 Content Freshness Guard — DONE**: PR #27, Build #269.
+- P0.1 Photo Stories platform — DONE: PR #15 + #17.
+- P0.2 First genuine Photo Story — CONTENT DEPENDENT.
+- P0.3 Sources Registry / KB — DONE: PR #20.
+- P0.4 Project Evidence — DONE: PR #22.
+- P0.5 Grounded Notes — DONE: PR #25.
+- P0.6 Content Freshness Guard — DONE: PR #27.
 
 ## P1 — maintainability / depth
 
-- **P1.1 Browser Quality Harness — DONE**: PR #29, Build #293.
-- **P1.2 Project Metadata Cleanup — DONE**: PR #31, Build #296.
-- **P1.3 Flagship Case-Study Format — DONE**: PR #34, Build #301.
-- **P1.4 Additional Grounded Note — DONE**: PR #36, Build #308.
+- P1.1 Browser Quality Harness — DONE: PR #29.
+- P1.2 Project Metadata Cleanup — DONE: PR #31.
+- P1.3 Flagship Case-Study Format — DONE: PR #34.
+- P1.4 Additional Grounded Note — DONE: PR #36.
 
-## P2 — audience / operations
+## P2 — audience / operations / content
 
-### P2.1 Minimal RU/EN — DONE
+- P2.1 Minimal RU/EN — DONE: PR #38.
+- P2.2 Privacy-friendly analytics — DONE: PR #40.
+- P2.2a Production analytics activation — DONE: PR #42 + strict deployment.
+- P2.3a Custom Domain Readiness — DONE: PR #45.
+- P2.3b HTTPS Production Cutover — DONE: run `30704218399`.
+- P2.4a Canonical link rollout and first custom-host telemetry — DONE: PRs #48–#50 plus cross-repository rollout.
+- P2.4b Header utility navigation and language consolidation — DONE: PR #51.
+- P2.4c Search, Photo shell and rendered-asset stabilization — DONE: PRs #53/#54/#55/#57.
+- P2.4c durable state sync — DONE: PR #58, Build #460.
+- **P2.4d Vlezet flagship case study — DONE: PR #59, Build #486.**
 
-- PR #38;
-- Build #339 / run `30000373281` fully green;
-- one build, one site, one search index, Russian default/root, bounded `/en/` namespace.
-
-### P2.2 Privacy-friendly analytics — DONE
-
-- PR #40;
-- Build #351 / run `30003347268` fully green;
-- pageviews/RUM-only Cloudflare layer;
-- no custom events, cookies, persistent identifiers, replay or cross-site tracking;
-- dedicated privacy/failure browser gate.
-
-### P2.2a Production analytics activation — DONE
-
-- PR #42;
-- Build #367 / run `30560152774` fully green;
-- `auto|required|disabled` analytics modes;
-- generated/deployed RU/EN verification;
-- weekly monitoring;
-- strict legacy production run `30572276691`;
-- provider telemetry observed for the legacy hostname.
-
-### P2.3a Custom Domain Readiness — DONE
-
-- PR #45;
-- squash `f2a232e55979ed17014596262abfaf2a70ef2e63`;
-- exact head `117128fba94ae9c4df787125393a9d08f2b712c5`;
-- Build #390 / run `30700124919` fully green;
-- canonical `data/site.json`;
-- `TR_PRODUCTION_SITE_URL`;
-- `auto|legacy|custom` site modes;
-- dual-origin CI verification;
-- activation and rollback runbook.
-
-### P2.3b HTTPS Production Cutover — DONE
-
-External gate completed:
-
-- domain ownership verified;
-- apex A records point to GitHub Pages;
-- `www` CNAME points to `true-ruslan.github.io`;
-- conflicting Timeweb AAAA removed;
-- GitHub Pages DNS check successful;
-- GitHub Pages certificate installed;
-- `Enforce HTTPS` enabled;
-- owner manual link acceptance passed.
-
-Strict production deployment:
-
-- run `30704218399`;
-- source SHA `9a92a0bea78ecf7aa471d445fe3513cfadc7d378`;
-- site mode `custom`;
-- analytics mode `required`;
-- job `deploy` success;
-- production origin `https://trueruslan.ru`;
-- all monitored endpoints healthy;
-- RU canonical `https://trueruslan.ru/`;
-- EN canonical `https://trueruslan.ru/en/`;
-- one analytics beacon on RU and EN;
-- production report `ok: true`.
-
-Artifact evidence:
-
-- `production-verification-reports` id `8819800463`;
-- digest `sha256:49bd2a9e40ebda41cc4aa8c925e15392aff9fbcd7739ca01d2934550116b58c0`.
-
-### P2.4a Canonical link rollout and first custom-host telemetry — DONE
-
-Completed:
-
-- first Cloudflare dashboard telemetry for `trueruslan.ru` confirmed;
-- Landing README and CV point to `https://trueruslan.ru/`;
-- Vlezet and VillAIgence READMEs point to the canonical portfolio;
-- CV annotation-only edit passed zero-pixel visual comparison;
-- exact-head CI and continuity documentation passed in all three repositories.
-
-First dashboard sample:
+### P2.4d evidence
 
 ```text
-last 24 hours, GMT+3, bots excluded
-7 visits / 8 page views
-page load time 656 ms
-LCP P50/P75/P90/P99 648/744/829/829 ms
-100% Good in the observed LCP sample
+feature PR:          #59
+exact feature head:  a409a152f60ea9d11dce8790920d84c3b70c1633
+Build / run:         #486 / 30752888855 SUCCESS
+squash on master:    aa32ce01e3345612fa9ebdad2b2b096399225b5f
+unit tests:           265 PASS
+artifact:             8835053206
+artifact digest:      sha256:7a3dde6a0a36ebaeed6ea59c3c0e477a8522c786eb6703a5044567bddb767ddc
 ```
 
-This closes provider observation, not audience validation.
+Delivered:
 
-### P2.4b Header utility navigation and language consolidation — DONE
+- third controlled flagship;
+- registry, project hub, navigation and metadata;
+- Vlezet timeline and bounded Evidence;
+- production-safe authority diagram;
+- seven-section case-study contract;
+- JS/no-JS Evidence rendering;
+- Chromium, Firefox and WebKit coverage;
+- reviewed Vlezet, home and Projects visual baselines;
+- custom-domain artifact verification.
 
-Completed:
-
-- header utility order is `GitHub → Habr → Telegram → Search → Language`;
-- social/search surfaces use accessible icon-only controls;
-- language is the final rightmost control and opens a bounded RU/EN menu;
-- floating language switch and duplicate visual/hit area are removed;
-- paired routes reuse existing i18n metadata, untranslated routes fall back to language home;
-- no-JS language links, keyboard behavior, focus return and outside-click close are verified;
-- hero actions are Projects + GitHub + Habr + Telegram;
-- Resume remains in primary navigation but is absent from hero;
-- CTA indicators have one CSS owner, eliminating duplicate arrows;
-- exact-head CI, cross-browser, accessibility, mobile and intentional visual regression passed.
-
-Evidence:
-
-```text
-PR #51
-exact feature head 8bd77b90f778f6384be3b9de93e69c9bc4b77e21
-Build #418 / run 30719138639 SUCCESS
-squash c6a7b74e8b0f7d07f44794505d348ab6ef5afb4e
-```
-
-Search ownership, Cmd/Ctrl+K, Cloudflare analytics, hosting and custom-domain contracts remain unchanged.
-
-### P2.4c Search, Photo shell and rendered-asset stabilization — DONE
-
-Completed:
-
-- PR #53 added search return navigation with same-origin history and deployment-safe fallback;
-- PR #54 established one-contour search field and exact submit-label centering;
-- PR #55 moved the photo index into the shared Diplodoc shell and removed duplicate/obsolete page chrome;
-- `/photos/` remains a redirect-only compatibility bridge while future albums stay under `/photos/<slug>/`;
-- PR #57 removed critical NODE ZERO SVG paint dependency on embedded CSS/classes;
-- dedicated SVG browser rendering evidence was added to CI;
-- superseded draft PR #56 contained no production changes.
-
-Evidence:
-
-```text
-PR #53  exact 49e1943ef1a5711c931ad961e508cb3b0a8dc7b4  Build #424 / 30741301071 SUCCESS  squash 436a29178004a6b5b7ef5d27a957e80e03c9a109
-PR #54  exact 15c58ead52d2c0ba20c551989d80008c1ab5a7d5  Build #428 / 30742678180 SUCCESS  squash a3bcc4e5ab3b6776fc0a2b3a728aea2a086ebc27
-PR #55  exact c4d11cd56efc654130ebc1a6b54f963fd2011fdc  Build #452 / 30747300783 SUCCESS  squash 8428e81dff371002e5a4e047140a9467d507aeca
-PR #57  exact f1d08e2be2bebfdf94a500a1bc59ef74d3ec153c  Build #459 / 30749536943 SUCCESS  squash e037a0db0d67d142fef3f68d178fd64a6812ee77
-```
-
-Build #459 passed 262 unit tests and the complete configured matrix, including the dedicated NODE ZERO render smoke, Photo Stories, search, cross-browser, accessibility, visual regression and custom-domain artifact verification.
-
-No backend, CMS, dependency, analytics, search-ownership, canonical-content or custom-domain architecture changed.
+The page explicitly preserves the failed M7.8B representative real-plan review. It does not claim accepted arbitrary-plan recognition.
 
 ---
 
 # NOW — P2.4 Real Content and Distribution Loop
 
-Infrastructure, header/navigation and the bounded post-P2.4b UX/visual stabilization are no longer primary blockers. The site now needs stronger real content and external entry points.
+Infrastructure and the first deep content milestone are no longer blockers.
 
 ## Immediate operational follow-up
 
-Completed:
-
-- first Cloudflare page views/RUM for `trueruslan.ru` confirmed;
-- Landing README and CV updated;
-- Vlezet and VillAIgence READMEs updated;
-- cross-repository durable state synchronized through P2.4a;
-- GitHub, Habr and Telegram entry points are available directly from the site header and home hero;
-- search return/visual defects are covered by focused browser contracts;
-- Photo index uses the shared Diplodoc shell;
-- NODE ZERO SVG rendering is protected by unit and browser evidence.
-
-Still required:
-
-1. Keep Pages deployment and weekly External health green.
-2. Confirm the latest merged master state through Pages deployment and owner production visual acceptance.
-3. Manually update surfaces outside current write access:
-   - GitHub profile Website field;
+1. Confirm latest Pages deployment after PR #59 and this continuity sync.
+2. Confirm production Vlezet route, canonical metadata, diagram and Evidence visually.
+3. Keep weekly External health green.
+4. Manually update surfaces outside repository write access if still stale:
+   - GitHub profile Website;
    - Habr profile/articles;
    - Telegram profile/channel descriptions;
-   - other profiles actually used.
-4. Distribute the site and observe aggregate data for at least 3–4 weeks.
-
-Bounded signals:
-
-- page views and visits;
-- top routes and entry pages;
-- RU/default vs `/en/`;
-- referrers and countries;
-- desktop/mobile;
-- LCP/INP/CLS at P75.
+   - other used professional profiles.
+5. Distribute the site and observe aggregate Cloudflare data for 3–4 weeks.
 
 Do not treat owner test traffic as audience validation.
 
 ## Priority content sprint
 
-### 1. Vlezet flagship case study
+### 1. Vlezet flagship case study — DONE
+
+Published with explicit authority and evidence boundaries.
+
+### 2. VillAIgence flagship case study — NEXT
 
 Use real evidence from:
 
-- assisted recognition;
-- wall/door/window ambiguity;
-- geometry and area semantics;
-- furniture library and placement UX;
-- rotated-contour distance;
-- user feedback, fixes and acceptance.
-
-### 2. VillAIgence flagship case study
-
-Use real evidence from:
-
-- text/voice NPC dialogue;
-- STT/Chat/TTS pipeline;
+- text and voice NPC dialogue;
+- STT → Chat → TTS pipeline;
 - Memory 2.0;
-- semantic facts and relationships;
-- deterministic IDs and persistence;
-- restart/server verification;
-- security and failure handling.
+- semantic FACT/ACTION/RELATIONSHIP_CHANGE;
+- deterministic UUIDs and persistence;
+- restart and rollback verification;
+- multi-NPC isolation;
+- server-authoritative actions;
+- provider timeout/rate-limit/empty-response handling;
+- response-size limits, redirects, loopback/SSRF protection;
+- release acceptance defects, including water navigation and tombstone behavior.
+
+Narrative boundary:
+
+- exact-head CI is not the same as Minecraft server acceptance;
+- partial PASS must remain partial;
+- accepted memory/security milestones and current gameplay defects must be separated;
+- no invented latency, reliability or adoption metrics.
+
+Expected deliverables:
+
+- canonical project registry/evidence refresh if needed;
+- seven-section flagship page;
+- architecture/security diagram with production-safe SVG paint;
+- bounded past/current/next timeline;
+- desktop/mobile/cross-browser/evidence gates;
+- exact-head reviewed visual artifact;
+- continuity sync after merge.
 
 ### 3. `/now`
 
-Synchronize current active development, released milestones and near-term focus.
+Synchronize active development after Vlezet and VillAIgence content milestones.
 
 ### 4. Grounded Engineering Notes
 
-Publish 1–2 notes derived from actual implementation decisions rather than generic tutorials.
+Publish 1–2 notes derived from real implementation decisions. Strong candidates:
+
+- why a benchmark PASS can fail a representative product source;
+- deterministic authority around LLM/CV proposals;
+- server-side provider response budgets and redirect/SSRF boundaries;
+- why restart persistence is a product contract rather than a storage detail.
 
 ### 5. First genuine Photo Story
 
-Only authentic material; no fake/demo album.
+Only authentic material. No fake/demo album.
 
 ---
 
@@ -274,7 +168,7 @@ Only authentic material; no fake/demo album.
 
 ## Selective RU/EN expansion — CONDITIONAL
 
-Only when actual usage or content value identifies a concrete surface.
+Only when actual usage or content value identifies a concrete page. Do not create a separate English build or CMS.
 
 ## Secondary analytics / Yandex Metrica — CONDITIONAL
 
@@ -282,7 +176,7 @@ Do not add now.
 
 Re-open only when:
 
-- Cloudflare systematically undercounts the Russian audience;
+- Cloudflare systematically undercounts the relevant Russian audience;
 - missing data blocks a real decision;
 - consent-controlled loading and privacy notice are justified;
 - replay, Webvisor, click maps, user IDs and broad behavioural tracking remain excluded unless separately approved.
@@ -295,7 +189,7 @@ Only with enough real architecture artifacts and demonstrated audience/content v
 
 # Что не является priority
 
-Без нового обоснования не планировать:
+Без нового evidence-backed design decision не планировать:
 
 - migration away from GitHub Pages;
 - paid hosting merely because a custom domain exists;
@@ -329,11 +223,13 @@ P2.4b header/social/language navigation DONE
         ↓
 P2.4c search/photo/rendered-asset stabilization DONE
         ↓
+P2.4d Vlezet flagship DONE
+        ↓
 latest Pages/owner acceptance + manual external-profile updates
         ↓
-Vlezet + VillAIgence case studies
+VillAIgence flagship case study
         ↓
-/now + Engineering Notes + genuine Photo Story
+/now + Grounded Engineering Notes + genuine Photo Story
         ↓
 public distribution
         ↓
@@ -352,4 +248,5 @@ choose further RU/EN/content/product work from evidence
 4. проверить HTTPS/redirects and RU/EN canonical identity;
 5. проверить active site/analytics contracts;
 6. проверить Cloudflare telemetry current hostname;
-7. при freshness-вопросах проверить latest Content Freshness runs/issues.
+7. проверить current VillAIgence release/PR truth before writing its case study;
+8. при freshness-вопросах проверить latest Content Freshness runs/issues.
