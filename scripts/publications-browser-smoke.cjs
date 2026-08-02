@@ -79,12 +79,17 @@ async function runScenario(browser, baseUrl, {
       artifactName: `axe-${screenshot.replace('.png', '')}.json`,
     });
 
-    const fallbackCount = await page.locator('[data-tr-publications-noscript]').count();
-    if (javaScriptEnabled && fallbackCount !== 0) {
-      throw new Error(`${label}: no-JS fallback must not be exposed to enhanced DOM.`);
+    const fallback = page.locator('[data-tr-publications-noscript]');
+    const fallbackCount = await fallback.count();
+    const fallbackVisible = fallbackCount === 1 ? await fallback.isVisible() : false;
+    if (fallbackCount !== 1) {
+      throw new Error(`${label}: expected exactly one semantic no-JS fallback node.`);
     }
-    if (!javaScriptEnabled && fallbackCount !== 1) {
-      throw new Error(`${label}: expected exactly one semantic no-JS fallback.`);
+    if (javaScriptEnabled && fallbackVisible) {
+      throw new Error(`${label}: no-JS fallback must remain hidden when JavaScript is enabled.`);
+    }
+    if (!javaScriptEnabled && !fallbackVisible) {
+      throw new Error(`${label}: semantic no-JS fallback must be visible without JavaScript.`);
     }
 
     await captureScreenshot(page, screenshot);
@@ -96,6 +101,7 @@ async function runScenario(browser, baseUrl, {
       viewport,
       publicationCards: 6,
       fallbackCount,
+      fallbackVisible,
     };
   } finally {
     await runtime.close();
