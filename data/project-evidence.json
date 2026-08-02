@@ -1,5 +1,46 @@
 [
   {
+    "project": "vlezet",
+    "status": "verified",
+    "lastVerified": "2026-08-02",
+    "versions": [
+      {"label": "Web application", "value": "Next.js 16 + React + TypeScript"},
+      {"label": "2D projection", "value": "Konva / react-konva"},
+      {"label": "3D projection", "value": "Three.js"},
+      {"label": "Persistence", "value": "IndexedDB"},
+      {"label": "Canonical geometry", "value": "millimetres"}
+    ],
+    "signals": [
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M7.7 furniture and fit PR #35",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/35",
+        "observedAt": "2026-08-01",
+        "scope": "M7.7 was exact-head verified, product-owner accepted and squash-merged. It proves the searchable furniture catalogue, M2-derived fit explanations, selected-object inspector, atomic Apply and one-step semantic Undo described by that milestone. It does not prove final plan-recognition accuracy."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M7.8A recognition benchmark PR #40",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/40",
+        "observedAt": "2026-08-02",
+        "scope": "M7.8A established an eight-fixture public-safe benchmark, deterministic geometry/topology/opening/room/area/confidence metrics and real Chromium/OpenCV source execution. Product-owner calibration acceptance covered image-rectangle coordinates and undirected horizontal/vertical calibration. The accepted baseline intentionally exposed zero Source wall and opening F1 before quality tuning."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M7.8B wall topology PR #41",
+        "state": "pending",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/41",
+        "observedAt": "2026-08-02",
+        "scope": "The Draft PR reports exact-head green Standard CI, Recognition Benchmark and browser audit plus measured wall-geometry improvement to Core F1 0.834356 and Source F1 0.518519. It remains pending product-owner real-plan acceptance. Openings are deliberately deferred fail-closed, Source topology remains below the final 0.90 target, and rooms, labels and areas are unfinished."
+      }
+    ]
+  },
+  {
     "project": "livingworld",
     "status": "verified",
     "lastVerified": "2026-07-22",
