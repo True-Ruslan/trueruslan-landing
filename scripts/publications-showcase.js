@@ -35,7 +35,7 @@ function injectStylesheet(html) {
 
 function injectNoScriptFallback(html, featured, catalogue) {
   if (html.includes(NOSCRIPT_MARKER)) return html;
-  const fallback = `<noscript data-tr-publications-noscript><section aria-labelledby="publications-noscript-title"><h1 id="publications-noscript-title">Публикации и выступления</h1>${featured}${catalogue}</section></noscript>`;
+  const fallback = `<noscript data-tr-publications-noscript><section><h1>Публикации и выступления</h1>${featured}${catalogue}</section></noscript>`;
   const rootPattern = /(<div\s+id="root"[^>]*><\/div>)/;
   if (rootPattern.test(html)) return html.replace(rootPattern, `$1${fallback}`);
   if (html.includes('</body>')) return html.replace('</body>', `${fallback}</body>`);
