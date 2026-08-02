@@ -80,5 +80,5 @@ test('publications page has canonical metadata/OpenGraph configuration', () => {
   assert.ok(publicationMeta, 'landing/publications.html metadata must exist');
   assert.match(publicationMeta.title, /Публикации/i);
   assert.match(publicationMeta.description, /стать/i);
-  assert.equal(publicationMeta.displayTitle, 'ПУБЛИКАЦИИ');
+  assert.equal(publicationMeta.displayTitle, 'PUBLICATIONS');
 });
