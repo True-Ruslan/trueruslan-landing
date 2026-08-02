@@ -53,6 +53,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/browser-quality.cjs 2>&1 | tee browser-quality.log
+      - name: Publications browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/publications-browser-smoke.cjs 2>&1 | tee publications-browser-smoke.log
       - name: Sources Knowledge Base browser smoke
         shell: bash
         run: |
@@ -131,6 +136,7 @@ jobs:
           cp site-integrity.log quality-artifacts/site-integrity.log 2>/dev/null || true
           cp layout-overflow.log quality-artifacts/layout-overflow.log 2>/dev/null || true
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
+          cp publications-browser-smoke.log quality-artifacts/publications-browser-smoke.log 2>/dev/null || true
           cp sources-knowledge-base-smoke.log quality-artifacts/sources-knowledge-base-smoke.log 2>/dev/null || true
           cp project-evidence-smoke.log quality-artifacts/project-evidence-smoke.log 2>/dev/null || true
           cp node-zero-diagram-smoke.log quality-artifacts/node-zero-diagram-smoke.log 2>/dev/null || true
