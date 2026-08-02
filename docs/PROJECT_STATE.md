@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-01**, после завершения P2.4b header utility navigation and language consolidation.
+> Последнее смысловое обновление: **2026-08-02**, после завершения post-P2.4b UX and rendered-asset stabilization.
 >
 > Главный durable snapshot для ответа на вопрос **«что представляет собой проект, что уже сделано и что дальше?»**.
 >
@@ -44,6 +44,86 @@
 ---
 
 ## 2. Последние завершённые operational milestones
+
+### P2.4c — Search, Photo shell and rendered-asset stabilization — DONE
+
+После P2.4b завершён отдельный ограниченный quality sprint, закрывший фактические UX и production-rendering дефекты без изменения основной архитектуры.
+
+#### Search return navigation — PR #53
+
+- fullscreen search получил один видимый control `Назад`;
+- same-origin переход возвращается через browser history;
+- direct/external access использует deployment-safe homepage fallback;
+- fallback корректен для custom domain и legacy GitHub Pages subpath;
+- minimum target, focus, desktop/mobile overflow и Axe проверены.
+
+```text
+exact feature head: 49e1943ef1a5711c931ad961e508cb3b0a8dc7b4
+Build / run:        #424 / 30741301071 SUCCESS
+squash on master:   436a29178004a6b5b7ef5d27a957e80e03c9a109
+```
+
+#### Search control visual contract — PR #54
+
+- поле поиска теперь имеет один outer contour;
+- inherited Diplodoc input/button visual layers нейтрализованы;
+- native input не владеет отдельной рамкой или shadow;
+- submit button использует явный flex-centering contract;
+- measured text offset составил менее `0.01 px` по горизонтали и `0 px` по вертикали;
+- desktop/mobile screenshots были reviewed.
+
+```text
+exact feature head: 15c58ead52d2c0ba20c551989d80008c1ab5a7d5
+Build / run:        #428 / 30742678180 SUCCESS
+squash on master:   a3bcc4e5ab3b6776fc0a2b3a728aea2a086ebc27
+```
+
+#### Photo index inside the shared Diplodoc shell — PR #55
+
+- `landing/photos.html` стал canonical photo index;
+- current Diplodoc header, desktop sidebar, mobile navigation и article shell сохранены;
+- отдельный obsolete mini-site/header/footer удалён;
+- `/photos/` оставлен как redirect-only compatibility bridge;
+- excessive heading gap устранён: `36 px` desktop, `24 px` mobile;
+- archive, honest empty-story state, hash navigation, lightbox, Escape и focus restoration сохранены;
+- fake album count остаётся `0`.
+
+```text
+exact feature head: c4d11cd56efc654130ebc1a6b54f963fd2011fdc
+Build / run:        #452 / 30747300783 SUCCESS
+squash on master:   8428e81dff371002e5a4e047140a9467d507aeca
+```
+
+#### NODE ZERO SVG production rendering — PR #57
+
+- critical SVG paint больше не зависит от embedded `<style>` и коротких class names;
+- `fill`, `stroke`, typography, dash patterns и markers записаны presentation attributes;
+- geometry, labels, `<title>` и `<desc>` сохранены;
+- новый unit contract запрещает class-based critical paint;
+- новый Chromium smoke загружает обе built SVG по published URLs, rasterizes их и проверяет expected colors;
+- exact-head screenshots подтвердили readable labels, dark cards, cyan flow, violet control и green evidence accents.
+
+```text
+exact feature head: f1d08e2be2bebfdf94a500a1bc59ef74d3ec153c
+Build / run:        #459 / 30749536943 SUCCESS
+squash on master:   e037a0db0d67d142fef3f68d178fd64a6812ee77
+unit tests:          262 PASS
+```
+
+Draft PR #56 был закрыт как superseded до implementation; production changes в нём отсутствовали.
+
+Полная Build #459 matrix прошла tests, production build, generated-site integrity, mobile overflow, Chromium/Axe/Lighthouse, Sources, Project Evidence, dedicated NODE ZERO diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, generated search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression и custom-domain artifact verification.
+
+Snapshot repository truth после sprint:
+
+```text
+master HEAD:       e037a0db0d67d142fef3f68d178fd64a6812ee77
+actual open PR:    none
+actual open issue: none
+latest exact CI:   Build #459 / 30749536943 SUCCESS
+```
+
+Этот sprint не менял Diplodoc search ownership, Cmd/Ctrl+K behavior, canonical content authority, Cloudflare analytics, custom-domain contracts, hosting или dependency graph.
 
 ### P2.4b — Header utility navigation and language consolidation — DONE
 
@@ -330,6 +410,7 @@ Rollback remains available through `site_mode=legacy` without weakening verifica
 - **P2.3b HTTPS Production Cutover — DONE: run `30704218399`.**
 - **P2.4a Canonical link rollout and first custom-host telemetry — DONE: PRs #48–#49 plus cross-repository PRs #36/#37/#90/#91.**
 - **P2.4b Header utility navigation and language consolidation — DONE: PR #51, Build #418.**
+- **P2.4c Search, Photo shell and rendered-asset stabilization — DONE: PRs #53/#54/#55/#57, Build #459.**
 
 ---
 
@@ -364,13 +445,13 @@ Rollback remains available through `site_mode=legacy` without weakening verifica
 - Первичная Cloudflare telemetry нового hostname подтверждена; выборка ещё недостаточна для audience/product conclusions.
 - First real Photo Story всё ещё зависит от authentic content.
 - Выборка analytics должна накапливаться 3–4 недели после реального распространения сайта до серьёзных product decisions.
-- Repository-side P2.4b verified; latest Pages deployment and owner visual acceptance remain separate operational facts to confirm after publication.
+- Repository-side P2.4c exact-head CI verified; latest Pages deployment and owner production visual acceptance remain separate operational facts to confirm after publication.
 
 ---
 
 ## 8. Следующий оптимальный шаг
 
-Header/navigation polish завершён и не меняет основной roadmap. Следующая фаза — **real content and distribution loop**.
+UX/visual stabilization завершён и не меняет основной roadmap. Следующая фаза — **real content and distribution loop**.
 
 Приоритет:
 
