@@ -31,6 +31,129 @@ async function assertBackControl(page, baseUrl, name) {
   }
 }
 
+async function assertSearchControlVisuals(page, name) {
+  const field = page.locator('.tr-search-input-shell').first();
+  const input = page.locator('.tr-search-input').first();
+  const button = page.locator('.tr-search-button').first();
+  const buttonText = button.locator('.g-button__text').first();
+
+  await Promise.all([
+    field.waitFor({state: 'visible', timeout: 5000}),
+    input.waitFor({state: 'visible', timeout: 5000}),
+    button.waitFor({state: 'visible', timeout: 5000}),
+    buttonText.waitFor({state: 'visible', timeout: 5000}),
+  ]);
+
+  const idle = await page.evaluate(() => {
+    const field = document.querySelector('.tr-search-input-shell');
+    const input = document.querySelector('.tr-search-input');
+    const button = document.querySelector('.tr-search-button');
+    const text = button?.querySelector('.g-button__text');
+    if (!field || !input || !button || !text) return null;
+
+    const fieldStyle = getComputedStyle(field);
+    const inputStyle = getComputedStyle(input);
+    const buttonStyle = getComputedStyle(button);
+    const buttonBefore = getComputedStyle(button, '::before');
+    const buttonAfter = getComputedStyle(button, '::after');
+    const fieldBefore = getComputedStyle(field, '::before');
+    const fieldAfter = getComputedStyle(field, '::after');
+    const buttonRect = button.getBoundingClientRect();
+    const textRect = text.getBoundingClientRect();
+
+    return {
+      fieldBorderWidth: fieldStyle.borderTopWidth,
+      inputBorderWidths: [
+        inputStyle.borderTopWidth,
+        inputStyle.borderRightWidth,
+        inputStyle.borderBottomWidth,
+        inputStyle.borderLeftWidth,
+      ],
+      inputBoxShadow: inputStyle.boxShadow,
+      inputOutlineStyle: inputStyle.outlineStyle,
+      buttonDisplay: buttonStyle.display,
+      buttonAlignItems: buttonStyle.alignItems,
+      buttonJustifyContent: buttonStyle.justifyContent,
+      buttonBackdropFilter: buttonStyle.backdropFilter || buttonStyle.webkitBackdropFilter,
+      buttonFilter: buttonStyle.filter,
+      buttonBefore: {
+        content: buttonBefore.content,
+        backgroundImage: buttonBefore.backgroundImage,
+        boxShadow: buttonBefore.boxShadow,
+      },
+      buttonAfter: {
+        content: buttonAfter.content,
+        backgroundImage: buttonAfter.backgroundImage,
+        boxShadow: buttonAfter.boxShadow,
+      },
+      fieldBefore: {
+        content: fieldBefore.content,
+        backgroundImage: fieldBefore.backgroundImage,
+        boxShadow: fieldBefore.boxShadow,
+      },
+      fieldAfter: {
+        content: fieldAfter.content,
+        backgroundImage: fieldAfter.backgroundImage,
+        boxShadow: fieldAfter.boxShadow,
+      },
+      centerDeltaX: Math.abs((buttonRect.left + buttonRect.width / 2) - (textRect.left + textRect.width / 2)),
+      centerDeltaY: Math.abs((buttonRect.top + buttonRect.height / 2) - (textRect.top + textRect.height / 2)),
+    };
+  });
+
+  if (!idle) throw new Error(`${name}: search control metrics unavailable`);
+  if (idle.fieldBorderWidth !== '1px') {
+    throw new Error(`${name}: search field must own the single visible 1px border, got ${idle.fieldBorderWidth}`);
+  }
+  if (idle.inputBorderWidths.some((width) => width !== '0px')) {
+    throw new Error(`${name}: search input must not draw an inner border: ${idle.inputBorderWidths.join(', ')}`);
+  }
+  if (idle.inputBoxShadow !== 'none') {
+    throw new Error(`${name}: search input must not draw an inner shadow: ${idle.inputBoxShadow}`);
+  }
+  if (!idle.buttonDisplay.includes('flex') || idle.buttonAlignItems !== 'center' || idle.buttonJustifyContent !== 'center') {
+    throw new Error(`${name}: search button is not flex-centered: ${JSON.stringify(idle)}`);
+  }
+  if (idle.centerDeltaX > 1 || idle.centerDeltaY > 1) {
+    throw new Error(`${name}: search button text is off-center by ${idle.centerDeltaX.toFixed(2)}px/${idle.centerDeltaY.toFixed(2)}px`);
+  }
+  if (!['none', ''].includes(idle.buttonBackdropFilter) || idle.buttonFilter !== 'none') {
+    throw new Error(`${name}: search button uses a blur/filter that can cause shimmer: ${JSON.stringify(idle)}`);
+  }
+
+  const pseudoIsNeutral = (pseudo) => {
+    const contentNeutral = ['none', 'normal', '""'].includes(pseudo.content);
+    return contentNeutral && pseudo.backgroundImage === 'none' && pseudo.boxShadow === 'none';
+  };
+  if (![idle.buttonBefore, idle.buttonAfter, idle.fieldBefore].every(pseudoIsNeutral)) {
+    throw new Error(`${name}: inherited pseudo-elements still draw duplicate/ripple layers: ${JSON.stringify(idle)}`);
+  }
+  if (!idle.fieldAfter.content.includes('/')
+    || !idle.fieldAfter.content.includes('⌘K')
+    || idle.fieldAfter.backgroundImage !== 'none'
+    || idle.fieldAfter.boxShadow !== 'none') {
+    throw new Error(`${name}: search shortcut hint is not the only intentional field pseudo-element: ${JSON.stringify(idle)}`);
+  }
+
+  await input.focus();
+  const focused = await page.evaluate(() => {
+    const field = document.querySelector('.tr-search-input-shell');
+    const input = document.querySelector('.tr-search-input');
+    if (!field || !input) return null;
+    const fieldStyle = getComputedStyle(field);
+    const inputStyle = getComputedStyle(input);
+    return {
+      fieldBorderColor: fieldStyle.borderTopColor,
+      fieldBoxShadow: fieldStyle.boxShadow,
+      inputOutlineStyle: inputStyle.outlineStyle,
+      inputBoxShadow: inputStyle.boxShadow,
+    };
+  });
+  if (!focused || focused.inputOutlineStyle !== 'none' || focused.inputBoxShadow !== 'none') {
+    throw new Error(`${name}: focused search input still draws a second contour: ${JSON.stringify(focused)}`);
+  }
+}
+
 async function assertSameOriginBackNavigation(page, baseUrl) {
   const sourcePath = '/landing/projects.html';
   const sourceUrl = `${baseUrl}${sourcePath}`;
@@ -75,6 +198,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
     }
 
     await assertBackControl(page, baseUrl, name);
+    await assertSearchControlVisuals(page, name);
 
     const stylesheetCount = await page.locator('link[href$="_assets/style/search.css"]').count();
     const scriptCount = await page.locator('script[src$="_assets/script/search-ui.js"]').count();
@@ -104,6 +228,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
       seriousAxeViolations: serious.length,
       enhanced: marker === 'true',
       backNavigation: true,
+      controlVisuals: true,
     };
   } finally {
     await runtime.close();
