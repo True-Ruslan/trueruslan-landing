@@ -33,9 +33,9 @@ function injectStylesheet(html) {
   return html.replace('</head>', `  ${link}\n</head>`);
 }
 
-function injectNoScriptFallback(html, featured, catalogue) {
+function injectNoScriptFallback(html, catalogue) {
   if (html.includes(NOSCRIPT_MARKER)) return html;
-  const fallback = `<noscript data-tr-publications-noscript><section><h1>Публикации и выступления</h1>${featured}${catalogue}</section></noscript>`;
+  const fallback = `<noscript data-tr-publications-noscript><section><h1>Публикации и выступления</h1>${catalogue}</section></noscript>`;
   const rootPattern = /(<div\s+id="root"[^>]*><\/div>)/;
   if (rootPattern.test(html)) return html.replace(rootPattern, `$1${fallback}`);
   if (html.includes('</body>')) return html.replace('</body>', `${fallback}</body>`);
@@ -65,7 +65,7 @@ export function applyPublicationsShowcase(outputDir, publications, {
 
   let html = injectStylesheet(transformed.html);
   if (transformed.source === 'diplodoc-state') {
-    html = injectNoScriptFallback(html, featured, catalogue);
+    html = injectNoScriptFallback(html, catalogue);
   }
 
   fs.writeFileSync(htmlPath, html);
