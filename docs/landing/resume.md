@@ -8,6 +8,7 @@
   <div class="tr-resume-actions">
     <a href="https://raw.githubusercontent.com/True-Ruslan/trueruslan-landing/master/docs/assets/documents/cv.pdf" data-tr-resume-link target="_blank" rel="noopener noreferrer">Открыть PDF ↗</a>
     <a href="https://github.com/True-Ruslan" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    <a href="landing/publications.html">Публикации →</a>
     <a href="landing/contacts.html">Связаться →</a>
   </div>
 
@@ -65,6 +66,12 @@
 
 [Посмотреть проекты →](projects.md)
 
+## Публикации
+
+Внешние технические статьи и другие уже состоявшиеся публичные материалы собраны в отдельном проверяемом каталоге. Он не дублирует Engineering Notes и ведёт на канонические страницы площадок.
+
+[Открыть публикации и выступления →](publications.md)
+
 ## Что ещё делаю
 
 <div class="tr-resume-grid">
@@ -112,6 +119,6 @@
 
 {% note info %}
 
-Если нужен контекст за пределами короткого резюме, его проще найти в [Проектах](projects.md), [Engineering Notes](notes.md) и на [GitHub](https://github.com/True-Ruslan). Написать мне можно через раздел [Контакты](contacts.md).
+Если нужен контекст за пределами короткого резюме, его проще найти в [Проектах](projects.md), [Публикациях](publications.md), [Engineering Notes](notes.md) и на [GitHub](https://github.com/True-Ruslan). Написать мне можно через раздел [Контакты](contacts.md).
 
 {% endnote %}

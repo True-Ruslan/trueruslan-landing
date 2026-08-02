@@ -5,3 +5,4 @@ node_modules/
 graphify-out/
 /.quality-tools/
 /quality-artifacts/
+/docs/_includes/publications-catalogue.md

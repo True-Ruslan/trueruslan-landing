@@ -35,6 +35,17 @@ async function runScenario(browserType, browserName, scenario, baseUrl) {
 
     await assertNoHorizontalOverflow(page, `${browserName} ${scenario.path}`);
 
+    if (scenario.publications) {
+      const cards = page.locator('[data-tr-publication-id]');
+      if (await cards.count() !== 6) {
+        throw new Error(`${browserName} publications page must expose 3 featured and 3 catalogue cards.`);
+      }
+      const externalLinks = page.locator('[data-tr-publication-id] a[target="_blank"][rel="noopener noreferrer"]');
+      if (await externalLinks.count() < 6) {
+        throw new Error(`${browserName} publications external actions are missing safe link attributes.`);
+      }
+    }
+
     if (scenario.resume) {
       const pdfFallback = page.locator('a[data-tr-resume-link]').first();
       await pdfFallback.waitFor({state: 'attached'});
@@ -62,6 +73,7 @@ async function main() {
     {...CORE_SCENARIOS.home, path: '/'},
     {...CORE_SCENARIOS.projects},
     {...CORE_SCENARIOS.vlezet},
+    {...CORE_SCENARIOS.publications, publications: true},
     {...CORE_SCENARIOS.resume, resume: true},
   ];
   const browsers = [

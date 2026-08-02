@@ -154,6 +154,33 @@ async function assertSearchControlVisuals(page, name) {
   }
 }
 
+async function assertPublicationSearchCoverage(page) {
+  const input = page.locator('.tr-search-input').first();
+  const button = page.locator('.tr-search-button').first();
+  const cases = [
+    {query: 'покорить Diplodoc', phrase: 'покорить Diplodoc'},
+    {query: 'алгоритмические задачи', phrase: 'алгоритмические задачи'},
+    {query: 'электропривод ленточного конвейера', phrase: 'электропривод ленточного конвейера'},
+  ];
+
+  for (const item of cases) {
+    await input.fill(item.query);
+    await button.click();
+    await page.waitForFunction(({phrase}) => {
+      const body = document.body.innerText.toLocaleLowerCase('ru');
+      const hasPhrase = body.includes(phrase.toLocaleLowerCase('ru'));
+      const hasPublicationsRoute = [...document.querySelectorAll('a')]
+        .some((link) => (link.getAttribute('href') || '').includes('landing/publications'));
+      return hasPhrase && hasPublicationsRoute;
+    }, item, {timeout: 7000});
+
+    const matchingRoutes = page.locator('a[href*="landing/publications"]');
+    if (await matchingRoutes.count() < 1) {
+      throw new Error(`publication search query did not route to Publications: ${item.query}`);
+    }
+  }
+}
+
 async function assertSameOriginBackNavigation(page, baseUrl) {
   const sourcePath = '/landing/projects.html';
   const sourceUrl = `${baseUrl}${sourcePath}`;
@@ -217,7 +244,10 @@ async function runScenario(browser, baseUrl, name, viewport) {
     const serious = blockingAxeViolations(axe);
     if (serious.length) throw new Error(`${name}: Axe serious/critical violations: ${serious.map((item) => item.id).join(', ')}`);
 
-    if (name === 'desktop') await assertSameOriginBackNavigation(page, baseUrl);
+    if (name === 'desktop') {
+      await assertPublicationSearchCoverage(page);
+      await assertSameOriginBackNavigation(page, baseUrl);
+    }
     diagnostics.assertClean(name);
 
     return {
@@ -229,6 +259,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
       enhanced: marker === 'true',
       backNavigation: true,
       controlVisuals: true,
+      publicationQueries: name === 'desktop' ? 3 : 0,
     };
   } finally {
     await runtime.close();

@@ -6,13 +6,13 @@
   "baselines": {
     "home-desktop.png": {
       "width": 1440,
-      "height": 4557,
-      "rgbDeflateBase64": "eNqtkL9OwzAQxkfIP985ztmJY0elFIqYGOElGNlAXUB0RGXrwER3BCMSMxIPwIMhMbBwbaRA0lYqEtJP1vnz9519FkUP3AD9PpT9xFSxshFQECETJyREIdEruUNqj1FpPwSKUEfS8BqKLIhlbWbCSHIkETkIi+AYAMv6dgjraLINcz1OmZO3y7po0Y5sBUlTf3x+McsNl4G0iIESyBXtkh5yDalVWY9rPmJk5jMaaHNQ+1FXqOxCr9i2yRV/QqR5DWQlaDca3x4eHc+32v8cUYnGN5M2824yMsdPz0bT2VPdajp7xLw6v7oZT+5YvH94eX59v7iesNh5z69X+ZaiCtQezTq/BXIdEclxZKVfqIKn6zbhebVb7V9c8V+f/w3EsE2A"
+      "height": 5278,
+      "rgbDeflateBase64": "eJydkD1LBDEQhtszm+/J7ibZ79wHWNhY2Nj6gxQLQQttFGxF8YcqCto4uT1X79ZDER6GSfbJy8xy24pyhnAfWF5TcIlIdxKJUJZy4ZSsQHUpzDNYgAqEacKBcEMYEKp6cyChwFjGucWHEW4nREyo3gqRGwlIfEL4FsTYF1klwAvtlKkUNMKU2EsotWlFVguNn7wyNZi292XeiDQ6AgoJ1Thwg+fXd6zHp2e/mj3MTBlEKIREd9zMkHhjpss+1uiY0Pu23qPQMY20VDfrfaCrvg27B73PtX16ecOpRFrg7nhc4mRef/YWF8TcPw68wRDylQZ+fMnBD/7J1cPKNAX+XlXMv5syr5QLulr8kA8e55SuW/OzUtlW+engX9zcY728fTy/vsPV9g+P1sYzHndXrvnHsh/GG0GB"
     },
     "home-mobile.png": {
       "width": 390,
-      "height": 6679,
-      "rgbDeflateBase64": "eNqVkLtKA0EUhjtRoztndmdnZmd2NsYYEzG7IPaCkMob4gUbC7ERRAQbe0trLS3EWnwIO41aqKiPEUPUysuZBJIgGAl8DHP5OHP+A7rw+fVN9ZgfxczEXlhkpujrWJhEmkSEiU5PcBVLvFFFEYzvvnzsPL9vP71vPb71AC8dnW8+1Dbua7hHZs7La3fV1dvq0s3rYrmycF3pHXC7goY5GuVAZSEYpjIDIg0iItxY/BCYJq4ibtCEyiGQdcc3hFkBvJYArgZmKIvq2A0KlOkB4jdAZ5BwYKED0oHAAQU0BGp8nueigKCQ7B3OXVUmD06mzi7BVenpZazjsYznZ32e4yIvREHK8SCIlUocV/6F1FniBQQjYBBhsGdce/uJfaW/sTExDo/sBGSG6hE3HEW5LwVd0aEfhynbiYyowBlm7MBVtpPfkc2d/fakrScbuf4RR0yHCqhZRxjaiKxsP435DFLxL6ihnHJZk+PTi9L8avsNMruy3n78ATCuX7c="
+      "height": 8392,
+      "rgbDeflateBase64": "eJyVkT1Lw0AYx0fb1OTucnfJvTRp81JjU4tScVHBQSqKoIKDzjqIDi5d1EWoToLFQR3qILiITn4AP5bg4OIlxfpCkRR+PPzvud/Dk3CQh1BGiEemrGIRm6KqwDymokblhCVqwqlTVrVYbKlqj+c0+JPr++e9w6P2xa3KFi8ZiJ2cXTZXN0fyYHe/5XhRvgCHAgr/7f0DsrKqPQB1AClCLIHJ+0AsUn41v64kIi62PMLHqIxtZ5K7U6LUkO60dBrDfo9BKj2W1nd0HBok9ONZnVbmmlvdx9dRHOgk1EmQBOwnJMdES1HNPuF3Vn3iJ2BfrchpICM9WUd2RpS8vLatpg5apxn/N11k5PIZUJoGCCsbJhsA5kC9DnUQKyHuIRGgYoUH9cFyCiASWKnPPMj9ZESG//oC0CK0XZiMlKHawv2CSTSEVb15eDk+v2p37lReWNmYmV/sdJ9U/sMn18RVPA=="
     },
     "projects-desktop.png": {
       "width": 1440,
@@ -26,13 +26,13 @@
     },
     "resume-desktop.png": {
       "width": 1440,
-      "height": 3390,
-      "rgbDeflateBase64": "eNrj5BbgBKMv339//vaLg4sfE3HC1ADRqpvXIAwBURk7N/85K3eoaBnxC0tOW7yxuKZbQkLT1i5YUkIHTRcQiShq8YnJ8olI8whK8PCL8fCLICNM9VhdgtVJUIet3YQpiAedvXCFJPVqcUVAcuqiDRCuk0cgkOyesbRnxrLg6FRM9V6d84CIePP5BCWAyMzGxTMgCsKubJkor6Ld2D0LyMaq3tbVr6J5IkQxBAGjA0JitYKk8OTmF9bADTC10Fo9D78oF48gdsQnhKmeT0oRD4IrAwCbNFd7"
+      "height": 3553,
+      "rgbDeflateBase64": "eJzj5BbgBKMv339zcPHjQpwwZaK6FhAkICYnICYrICLDLywJQcIiiuLiGlISuhISWshaIEhEUYdPTI5PRJpXSJJHQIyHXwQZYaqHOAnCeP7qnaKyBpBhbGbt4u6NqRKIeERl+JV0IAwggjDaps7pmbUAroadkw9ZS2xCqqGJJVbTsKLGlg4guXLNxj37DxOvi0jEJyiBB1GuHhiY8PAkBnHzC2vgBpjxRXv1IiSp55NSxIPgygAnB0+z"
     },
     "resume-mobile.png": {
       "width": 390,
-      "height": 4842,
-      "rgbDeflateBase64": "eNr78v330xdvOLj4iUGc3AL8wpIFVW1AEohMbVz9w5NjUovmrNxhaedjZec7deFGCQlNMTE1MXF1EBJTE5JQ5BWUMDC2+vL99/Xb93gFxUFIQJxHQIxHQJSHH4hE4AhoJswuPiIQ1El0QEAPZhfXAxmaeqZAcuLcNUAyLb+KT0CMPg6AIz5BCVVtI2MLRyADgmYt35qSWwlkaOqZAcmopFy4FBnIzdMXGFPEu4ebT1hQVIZIBFRMa/V8UookIQDX71Hg"
+      "height": 5121,
+      "rgbDeflateBase64": "eJz7/O0XBxc/EK3buBXCwI/4hSXNbFyBpIGpvZmNW13ntDkrd4iIKFja+SSkl4uIKouJqUYmFLh6R4qKqYqKqghJKPIKSsCQOBzxCIjx8IvxCIgCETefMAeXABDxCYkj2cWHF0GVcXILDHX05ftvINnS3v342WsgIzwyFkhW1zYByea2LjTFfIISugZWQBKI+uesSi+o8QtNsHX1A3ItbN1MrZ0VVHVmLN0MUUAHxM0vLCgqQyQCKgbGNQnq+UhWzyelSBICAKzDT5Q="
     },
     "engineering-map-desktop.png": {
       "width": 1440,
