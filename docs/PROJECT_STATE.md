@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-02**, после публикации внешних материалов и выступлений.
+> Последнее смысловое обновление: **2026-08-02**, после публикации VillAIgence flagship case study.
 >
 > Durable snapshot для ответа на вопрос: **что представляет собой проект, что уже сделано и что дальше?**
 >
@@ -55,35 +55,36 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 Последний product feature:
 
 ```text
-feature PR:          #61 — MERGED
-exact feature head:  1386df46b57d5c9164a13039a286cafb1f296037
-Build / run:         #539 / 30757856207 — SUCCESS
-squash on master:    4036df1744840e558a6514ce6ae09eceb624b69e
-unit tests:          300 PASS / 0 FAIL
-quality artifact:    8836540794
-artifact digest:     sha256:d69dd36389ab7f6aa59120a2355e34962af2188e8dea733e9ed93826d59ac4d5
+feature PR:          #63 — MERGED
+exact feature head:  90e03b4a793bde9d8088ee930da74ebc19edfa3c
+Build / run:         #567 / 30761930974 — SUCCESS
+squash on master:    00da9ee983f17f8f5e1b5e5f353fad852fee337c
+unit tests:          306 PASS / 0 FAIL
+quality artifact:    8837765509
+artifact digest:     sha256:3aa538f9bad7eeeefd54ff24511fe700b90eedc7c872e85ffe5bd673322fa78c
 artifact retention:  through 2026-08-16
 ```
 
-Build #539 прошёл:
+Build #567 прошёл:
 
 - production Diplodoc build;
 - generated-site integrity;
-- mobile overflow для Projects и Publications;
+- mobile overflow;
 - Chromium/Axe/Lighthouse;
-- Publications enhanced desktop и no-JavaScript mobile acceptance;
-- Sources Knowledge Base;
+- Publications и Sources Knowledge Base;
 - Project Evidence в enhanced и no-JavaScript режимах;
+- VillAIgence diagram Chromium raster validation;
 - NODE ZERO diagrams;
 - Photo Stories;
 - portfolio v0.3;
 - Firefox/WebKit;
 - generated Diplodoc search;
+- dedicated `VillAIgence → landing/projects/livingworld.html` search assertion;
 - Minimal RU/EN;
 - privacy analytics;
 - metadata/OpenGraph;
-- Engineering Map;
-- reviewed visual regression;
+- Engineering Map + accessibility;
+- reviewed visual regression для 10 screenshots;
 - custom-domain artifact verification для `https://trueruslan.ru`.
 
 Latest Pages deployment и owner production acceptance после merge должны проверяться отдельно.
@@ -92,101 +93,147 @@ Latest Pages deployment и owner production acceptance после merge долж
 
 ## 3. Последний завершённый milestone
 
-### P2.4e — External Publications Showcase — DONE
+### P2.4f — VillAIgence flagship case study — DONE
 
-PR #61 создал самостоятельный верхнеуровневый раздел **«Публикации и выступления»**.
+PR #63 обновил существующий `livingworld` flagship до актуального публичного проекта **VillAIgence**.
 
-Контентные поверхности теперь разделены явно:
+Стабильные compatibility-sensitive идентификаторы намеренно сохранены:
 
-- **Projects** — созданные продукты и системы;
-- **Publications** — материалы, опубликованные или представленные на внешних площадках;
-- **Engineering Notes** — оригинальные материалы, опубликованные непосредственно на сайте;
-- **Sources** — источники и рабочая knowledge base.
+- project slug: `livingworld`;
+- route: `landing/projects/livingworld.html`;
+- timeline/evidence key: `livingworld`;
+- внутренние Minecraft-идентификаторы `mca`, Java package, `config/livingworld.json` и `<world>/livingworld/` не переименованы.
 
-#### Initial verified catalogue
+Публичное имя, repository URL, narrative, metadata, timeline и Evidence теперь используют VillAIgence.
 
-В первый релиз вошли ровно три проверенные статьи Habr:
+### Что объясняет case study
 
-1. `2025-08-23` — про Diplodoc и GitHub Pages;
-2. `2025-08-01` — про решение алгоритмических задач Java-разработчиком;
-3. `2025-03-04` — про автоматизированный электропривод ленточного конвейера.
+Seven-section narrative показывает систему как одну authority architecture:
 
-На момент milestone не добавлены научные публикации, доклады, интервью и сборники: для них не было найдено стабильной внешней точки, удовлетворяющей inclusion boundary. Пустые категории не отображаются.
+1. **Problem** — убедительный NPC всё равно должен подчиняться серверу.
+2. **Constraints** — mutable game state, async providers, multi-NPC identity, world-local persistence и exact-artifact release gates.
+3. **Decisions** — immutable bounded context, text/voice convergence, Memory 2.0, FACT/BELIEF provenance, Operator Lore и server-owned actions.
+4. **Failures** — transcript-first memory, broad navigation hook, destructive grave drop, snapshot identity, approximately 272-second Chat request и production-unsafe Mixin startup failure.
+5. **Current state** — corrective code candidate после PR #102, без broad installed PASS claim.
+6. **Evidence** — separate installed, automated и failed signals.
+7. **Retrospective** — authority map и release gate важнее feature breadth.
 
-#### Architecture
-
-`data/publications.json` — единственный source of truth.
-
-```text
-data/publications.json
-        ↓ immutable validation
-prebuild catalogue generator
-        ↓ native Diplodoc include
-searchable Publications page
-        ↓ postprocessing
-Featured block + stylesheet + compact no-JS fallback
-```
-
-Ключевые решения:
-
-- каталог генерируется **до** Diplodoc indexing, поэтому все три материала находятся штатным поиском;
-- homepage Featured и полный каталог используют один registry и один renderer;
-- postprocessor не создаёт второй content engine;
-- no-JS fallback показывает полный каталог без дублирования Featured;
-- Engineering Notes Atom feed не включает внешние публикации;
-- внешние ссылки безопасны и ведут на canonical source;
-- нет CMS, database, scraper, runtime API, второго поиска, live view/vote counters и локальных article-detail pages.
-
-#### Product integration
-
-Добавлено:
-
-- canonical `landing/publications.html`;
-- `Публикации` рядом с Notes в основной навигации;
-- top-level пункт в Diplodoc sidebar;
-- блок `Избранные публикации` после активных проектов на главной;
-- exploration card на главной;
-- contextual links из About и Resume;
-- RU metadata/OpenGraph;
-- responsive text-first cards;
-- dedicated enhanced/no-JS browser smoke;
-- Firefox/WebKit, mobile overflow и generated-search coverage;
-- generated Publications HTML и diagnostics в quality artifact.
-
-#### TDD evidence
+### Runtime authority model
 
 ```text
-Initial RED head:       3e0d4e7fce1f6923c4865adde588c4017ac99be7
-Initial RED Build/run:  #491 / 30755225315
-Result:                 265 previous tests PASS; 6 expected missing-surface failures
-
-Search RED head:        60b8781e268d81d8b12db7033fb2c4473a3de564
-Search RED Build/run:   #530 / 30757328760
-Result:                 296 previous tests PASS; only generator module missing
-
-GREEN exact head:       1386df46b57d5c9164a13039a286cafb1f296037
-GREEN Build/run:        #539 / 30757856207 SUCCESS
-squash on master:       4036df1744840e558a6514ce6ae09eceb624b69e
+player text / voice
+        ↓
+server session + identity
+        ↓
+immutable bounded context
+  ├─ observed world facts
+  ├─ operator lore
+  ├─ episodic Memory 2.0
+  └─ semantic FACT / BELIEF
+        ↓
+STT / Chat / TTS + LLM proposal
+        ↓
+server policy + revalidation
+        ↓
+authoritative action / relationship / persistence
 ```
 
-#### Manual acceptance
+LLM не становится источником истины. Сервер владеет идентичностью, текущими наблюдениями, памятью, отношениями, действиями и persistent evidence.
 
-Exact-head screenshots проверены для:
+### Release evidence model
+
+```text
+source tests
+→ distributable package
+→ exact embedded identity
+→ installed startup
+→ focused gameplay regressions
+→ restart and persistent hashes
+→ cumulative acceptance
+→ promotion
+```
+
+Страница намеренно разделяет текущую source-repository truth:
+
+- `0.1.20+1.21.1` — **PARTIAL PASS**: основной Text/STT/Chat/TTS/Voice Chat, Operator Lore, persistence/restart и большинство gameplay-сценариев прошли, но остались water drowning, destructive filled-grave Silk Touch, snapshot identity и один примерно 272-second Chat request;
+- `0.1.21+1.21.1` — installed startup FAIL на `MixinTombstoneBlock`; rollback к `0.1.20` сохранил шесть persistent hashes и восстановил server/voice/monitor operation;
+- PRs #99–#102 — automated/package corrections для water navigation, grave preservation, exact release identity и direct owned-source tombstone wiring;
+- exact `0.1.22+1.21.1` installed startup/water/grave/restart/cumulative acceptance — **pending**.
+
+Канонический source head на момент milestone:
+
+`e13660f5998fa1ed343548252d573140adc5b0c9`
+
+Перед merge он был перепроверен; открытых VillAIgence PR не было.
+
+### Evidence и timeline
+
+Canonical `livingworld` snapshot обновлён до `2026-08-02` и содержит ровно три bounded signals:
+
+1. installed `0.1.20` partial acceptance — manual/accepted-with-defects;
+2. corrective PR train #99–#102 — automated/merged, installed acceptance excluded;
+3. installed `0.1.21` startup blocker + safe rollback — manual/failed.
+
+Timeline:
+
+- security baseline + Memory 2.0;
+- Operator Lore S9–S10c;
+- installed `0.1.20` partial PASS;
+- current `0.1.22` corrective code candidate;
+- next exact installed cumulative acceptance.
+
+### Diagram и search
+
+Добавлен production-safe SVG:
+
+`docs/assets/diagrams/villaigence-authority-and-acceptance.svg`
+
+Он показывает отдельно:
+
+- runtime authority lane;
+- release evidence lane;
+- `0.1.20 PARTIAL PASS`;
+- `0.1.21 STARTUP FAIL`;
+- `0.1.22 LIVE RETEST PENDING`.
+
+Critical paint находится в SVG presentation attributes; embedded `<style>`/class dependency отсутствует. Chromium raster smoke подтвердил intrinsic `1200×760` и основные cyan/violet/green layers.
+
+Штатный Diplodoc search находит `VillAIgence` и ведёт на стабильный `landing/projects/livingworld.html`. Duplicate `projects/villaigence` route не создавался.
+
+### TDD evidence
+
+```text
+RED exact head:   e9c8f8ee93e9e9b3036f04ae6f46a037ef99329e
+RED Build/run:    #541 / 30760215988
+RED result:       299 PASS / 6 expected old-identity/data/metadata/missing-SVG failures
+
+GREEN exact head: 90e03b4a793bde9d8088ee930da74ebc19edfa3c
+GREEN Build/run:  #567 / 30761930974 SUCCESS
+squash on master: 00da9ee983f17f8f5e1b5e5f353fad852fee337c
+```
+
+### Manual visual acceptance
+
+Проверены exact-head screenshots:
 
 - home desktop/mobile;
-- resume desktop/mobile;
-- Publications enhanced desktop/mobile;
-- Publications no-JS mobile.
+- Projects desktop/mobile;
+- VillAIgence desktop/mobile;
+- Evidence mobile;
+- authority/release diagram;
+- Engineering Map.
 
 Подтверждено:
 
-- Featured остаётся ниже active projects;
-- длинные заголовки корректно переносятся;
-- empty groups отсутствуют;
-- no-JS каталог начинается без пустого Diplodoc-root gap;
-- mobile overflow отсутствует;
-- только четыре ожидаемых home/resume visual baseline были приняты после review;
-- финальный visual delta для принятых baseline — `0.00`.
+- project placement и hierarchy сохранены;
+- diagram не обрезается;
+- timeline/Evidence различают partial PASS, failed startup и pending candidate;
+- misleading accepted `0.1.22` language отсутствует;
+- overflow отсутствует;
+- обновлены только три reviewed baseline: `home-mobile`, `projects-desktop`, `projects-mobile`;
+- их final visual delta — `0.00`;
+- Resume остался exact `0.00`;
+- home desktop и Engineering Map не re-baselined, поскольку остались внутри существующих bounded thresholds.
 
 ---
 
@@ -220,11 +267,16 @@ Exact-head screenshots проверены для:
 - P2.4c Search, Photo shell and SVG stabilization — DONE: PRs #53/#54/#55/#57.
 - P2.4c durable sync — DONE: PR #58.
 - P2.4d Vlezet flagship case study — DONE: PR #59, Build #486.
-- **P2.4e External Publications Showcase — DONE: PR #61, Build #539.**
+- P2.4e External Publications Showcase — DONE: PR #61, Build #539.
+- **P2.4f VillAIgence flagship case study — DONE: PR #63, Build #567.**
 
 ### Vlezet truth boundary
 
-Vlezet остаётся третьим controlled flagship. M7.7 и M7.8A приняты; M7.8B остаётся Draft с product-owner `FAIL — DO NOT MERGE`. Landing не заявляет accurate arbitrary-plan recognition и не хранит private apartment plans/screenshots.
+Vlezet остаётся controlled flagship. M7.7 и M7.8A приняты; M7.8B остаётся Draft с product-owner `FAIL — DO NOT MERGE`. Landing не заявляет accurate arbitrary-plan recognition и не хранит private apartment plans/screenshots.
+
+### Publications truth boundary
+
+Каталог содержит только completed, externally verifiable work. Сейчас в нём три Habr-статьи. Drafts, future appearances и непроверенные научные материалы не показываются.
 
 ---
 
@@ -242,10 +294,10 @@ Canonical public origin:
 - `www → apex`;
 - strict custom deployment;
 - RU canonical `/` и EN canonical `/en/`;
-- one Cloudflare analytics beacon on RU and EN;
+- one Cloudflare analytics beacon on RU и EN;
 - initial provider telemetry.
 
-Build #539 также подтвердил custom-domain artifact contract и отсутствие leakage legacy GitHub Pages origin.
+Build #567 также подтвердил custom-domain artifact contract и отсутствие leakage legacy GitHub Pages origin.
 
 Отдельный SSL-сертификат Timeweb не используется и не нужен.
 
@@ -253,15 +305,15 @@ Build #539 также подтвердил custom-domain artifact contract и о
 
 ## 6. Known problems / debt
 
-- Latest Pages deployment после PR #61 нужно подтвердить отдельно от feature CI.
-- Owner production visual acceptance новой страницы Publications — отдельный operational fact.
-- Cloudflare sample всё ещё недостаточен для audience/product conclusions; нужен distribution window 3–4 недели.
+- Latest Pages deployment после PR #63 нужно подтвердить отдельно от feature CI.
+- Owner production visual acceptance новой VillAIgence страницы — отдельный operational fact.
+- Exact installed `0.1.22+1.21.1` acceptance относится к source project VillAIgence и всё ещё pending; landing feature не закрывает этот product gate.
+- Cloudflare sample недостаточен для audience/product conclusions; нужен distribution window 3–4 недели.
 - External profile Website/links требуют ручной проверки и обновления, если ещё stale.
 - First genuine Photo Story зависит от authentic material.
 - Vlezet M7.8B recognition не принят.
-- `/now` после последних изменений Vlezet/VillAIgence/Publications требует content sync.
-- VillAIgence пока не имеет столь же глубокого flagship case study на landing.
-- Каталог Publications расширяется только после появления подтверждаемой canonical external source; drafts и future work не показываются.
+- `/now` после Vlezet, Publications и VillAIgence milestones требует content sync.
+- Каталог Publications расширяется только после появления подтверждаемой canonical external source.
 
 Network caveat:
 
@@ -271,31 +323,24 @@ Network caveat:
 
 ## 7. Следующий оптимальный шаг
 
-Следующий product milestone — **VillAIgence flagship case study**.
+Глубокие flagship и Publications surfaces уже реализованы. Следующий content/operations loop:
 
-Использовать real evidence из:
+1. синхронизировать `/now` с Vlezet, Publications и VillAIgence;
+2. выпустить 1–2 grounded Engineering Notes из реальных решений;
+3. добавить первую genuine Photo Story, когда готов authentic material;
+4. завершить manual external-profile rollout;
+5. распространять сайт и собирать aggregate Cloudflare telemetry 3–4 недели;
+6. выбирать дальнейший RU/EN/content/product milestone по evidence.
 
-- text/voice NPC dialogue;
-- STT → Chat → TTS pipeline;
-- Memory 2.0;
-- semantic FACT/ACTION/RELATIONSHIP_CHANGE;
-- deterministic IDs и persistence;
-- restart/rollback verification;
-- multi-NPC isolation;
-- server-authoritative actions;
-- provider failure handling;
-- response-size, redirect, loopback и SSRF security hardening;
-- реальные release acceptance failures без превращения partial PASS в broad release claim.
+Сильные кандидаты для Notes:
 
-После VillAIgence:
+- почему source/package green не равен installed acceptance;
+- как проектировать authority map вокруг LLM proposal;
+- почему restart + persistent hashes являются product contract;
+- как post-build content может не попасть в search index;
+- почему benchmark PASS может не пройти representative product source.
 
-1. обновить `/now`;
-2. выпустить 1–2 grounded Engineering Notes;
-3. добавлять новые внешние Publications только при стабильном evidence;
-4. добавить первую genuine Photo Story при готовом материале;
-5. завершить external-profile rollout;
-6. распространять сайт и собирать aggregate telemetry 3–4 недели;
-7. выбирать дальнейший milestone по evidence.
+Не создавать новый большой infrastructure milestone без реального сигнала.
 
 ---
 
@@ -312,6 +357,7 @@ Network caveat:
 - no automatic public truth mutation;
 - bounded Evidence semantics;
 - Publications inclusion boundary;
+- stable project routes/keys без migration plan;
 - one RU/EN site/build/search architecture;
 - optional aggregate analytics only;
 - no behavioural tracking без privacy review;
@@ -321,4 +367,4 @@ Network caveat:
 
 ## 9. Как восстановить контекст
 
-> Открой в `True-Ruslan/trueruslan-landing` файлы `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md` и `docs/CUSTOM_DOMAIN.md`. Затем проверь actual open PR, latest commits и exact-head CI. Отдельно проверь latest Pages deployment reports, HTTPS/redirect state, production Publications/Vlezet pages и Cloudflare telemetry для `trueruslan.ru`.
+> Открой в `True-Ruslan/trueruslan-landing` файлы `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md` и `docs/CUSTOM_DOMAIN.md`. Затем проверь actual open PR, latest commits и exact-head CI. Отдельно проверь latest Pages deployment reports, HTTPS/redirect state, production VillAIgence/Publications/Vlezet pages и Cloudflare telemetry для `trueruslan.ru`. Для VillAIgence release claims отдельно проверь current `True-Ruslan/villAIgence` head, open PR, release artifact и installed acceptance evidence.
