@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-02**, после публикации Vlezet flagship case study.
+> Обновлено: **2026-08-02**, после публикации External Publications Showcase.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -17,6 +17,7 @@
 - Diplodoc как единственный site-wide full-text search owner;
 - no automatic public truth mutation;
 - bounded Evidence semantics;
+- Publications только для completed, externally verifiable work;
 - one RU/EN site/build/search architecture;
 - analytics как optional aggregate telemetry;
 - no behavioural/user tracking без explicit privacy review;
@@ -25,7 +26,7 @@
 
 Главная продуктовая формула:
 
-**что я создаю → что я изучаю → какие инженерные выводы делаю → чем это подтверждено**.
+**что я создаю → что я изучаю → что публикую → какие инженерные выводы делаю → чем это подтверждено**.
 
 ---
 
@@ -54,55 +55,60 @@
 - P2.2a Production analytics activation — DONE: PR #42 + strict deployment.
 - P2.3a Custom Domain Readiness — DONE: PR #45.
 - P2.3b HTTPS Production Cutover — DONE: run `30704218399`.
-- P2.4a Canonical link rollout and first custom-host telemetry — DONE: PRs #48–#50 plus cross-repository rollout.
+- P2.4a Canonical rollout and first custom-host telemetry — DONE: PRs #48–#50.
 - P2.4b Header utility navigation and language consolidation — DONE: PR #51.
 - P2.4c Search, Photo shell and rendered-asset stabilization — DONE: PRs #53/#54/#55/#57.
-- P2.4c durable state sync — DONE: PR #58, Build #460.
-- **P2.4d Vlezet flagship case study — DONE: PR #59, Build #486.**
+- P2.4c durable state sync — DONE: PR #58.
+- P2.4d Vlezet flagship case study — DONE: PR #59, Build #486.
+- **P2.4e External Publications Showcase — DONE: PR #61, Build #539.**
 
-### P2.4d evidence
+## P2.4e evidence
 
 ```text
-feature PR:          #59
-exact feature head:  a409a152f60ea9d11dce8790920d84c3b70c1633
-Build / run:         #486 / 30752888855 SUCCESS
-squash on master:    aa32ce01e3345612fa9ebdad2b2b096399225b5f
-unit tests:           265 PASS
-artifact:             8835053206
-artifact digest:      sha256:7a3dde6a0a36ebaeed6ea59c3c0e477a8522c786eb6703a5044567bddb767ddc
+feature PR:          #61
+exact feature head:  1386df46b57d5c9164a13039a286cafb1f296037
+Build / run:         #539 / 30757856207 SUCCESS
+squash on master:    4036df1744840e558a6514ce6ae09eceb624b69e
+unit tests:          300 PASS / 0 FAIL
+artifact:            8836540794
+artifact digest:     sha256:d69dd36389ab7f6aa59120a2355e34962af2188e8dea733e9ed93826d59ac4d5
 ```
 
 Delivered:
 
-- third controlled flagship;
-- registry, project hub, navigation and metadata;
-- Vlezet timeline and bounded Evidence;
-- production-safe authority diagram;
-- seven-section case-study contract;
-- JS/no-JS Evidence rendering;
-- Chromium, Firefox and WebKit coverage;
-- reviewed Vlezet, home and Projects visual baselines;
+- standalone `Публикации и выступления` page;
+- one validated `data/publications.json` registry;
+- three externally verified Habr technical articles;
+- homepage Featured block after active projects;
+- navigation, About, Resume and metadata integration;
+- native prebuild Diplodoc include for search indexing;
+- compact no-JS catalogue without Featured duplication;
+- generated search coverage for all three titles;
+- feed separation from Engineering Notes;
+- Chromium, Axe, Lighthouse, Firefox, WebKit and mobile overflow coverage;
+- reviewed home/resume/Publications visual evidence;
 - custom-domain artifact verification.
 
-The page explicitly preserves the failed M7.8B representative real-plan review. It does not claim accepted arbitrary-plan recognition.
+No scientific publications, talks, interviews or proceedings were added without a stable external verification point. Empty categories remain hidden.
 
 ---
 
-# NOW — P2.4 Real Content and Distribution Loop
+# NOW — Real Content and Distribution Loop
 
-Infrastructure and the first deep content milestone are no longer blockers.
+Infrastructure and several deep content surfaces are no longer blockers.
 
 ## Immediate operational follow-up
 
-1. Confirm latest Pages deployment after PR #59 and this continuity sync.
-2. Confirm production Vlezet route, canonical metadata, diagram and Evidence visually.
-3. Keep weekly External health green.
-4. Manually update surfaces outside repository write access if still stale:
+1. Confirm latest Pages deployment after PR #61 and continuity sync.
+2. Confirm production Publications route, canonical metadata, search and external links visually.
+3. Confirm production Vlezet route remains correct.
+4. Keep weekly External health green.
+5. Manually update external surfaces if stale:
    - GitHub profile Website;
    - Habr profile/articles;
    - Telegram profile/channel descriptions;
-   - other used professional profiles.
-5. Distribute the site and observe aggregate Cloudflare data for 3–4 weeks.
+   - other professional profiles.
+6. Distribute the site and observe aggregate Cloudflare data for 3–4 weeks.
 
 Do not treat owner test traffic as audience validation.
 
@@ -110,9 +116,13 @@ Do not treat owner test traffic as audience validation.
 
 ### 1. Vlezet flagship case study — DONE
 
-Published with explicit authority and evidence boundaries.
+Published with explicit authority and failed-recognition boundaries.
 
-### 2. VillAIgence flagship case study — NEXT
+### 2. External Publications Showcase — DONE
+
+Published as an evidence-backed cross-platform catalogue. Add future records only when the material is already published/completed and has a stable canonical source.
+
+### 3. VillAIgence flagship case study — NEXT
 
 Use real evidence from:
 
@@ -126,11 +136,11 @@ Use real evidence from:
 - server-authoritative actions;
 - provider timeout/rate-limit/empty-response handling;
 - response-size limits, redirects, loopback/SSRF protection;
-- release acceptance defects, including water navigation and tombstone behavior.
+- release acceptance defects, including navigation and tombstone behavior.
 
 Narrative boundary:
 
-- exact-head CI is not the same as Minecraft server acceptance;
+- exact-head CI is not Minecraft server acceptance;
 - partial PASS must remain partial;
 - accepted memory/security milestones and current gameplay defects must be separated;
 - no invented latency, reliability or adoption metrics.
@@ -145,22 +155,51 @@ Expected deliverables:
 - exact-head reviewed visual artifact;
 - continuity sync after merge.
 
-### 3. `/now`
+### 4. `/now`
 
-Synchronize active development after Vlezet and VillAIgence content milestones.
+Synchronize active development after Vlezet, Publications and VillAIgence milestones.
 
-### 4. Grounded Engineering Notes
+### 5. Grounded Engineering Notes
 
 Publish 1–2 notes derived from real implementation decisions. Strong candidates:
 
-- why a benchmark PASS can fail a representative product source;
+- why post-build HTML does not automatically become searchable content;
 - deterministic authority around LLM/CV proposals;
 - server-side provider response budgets and redirect/SSRF boundaries;
 - why restart persistence is a product contract rather than a storage detail.
 
-### 5. First genuine Photo Story
+### 6. First genuine Photo Story
 
 Only authentic material. No fake/demo album.
+
+---
+
+# Publications growth rules
+
+The catalogue may expand when all conditions hold:
+
+1. article/paper/interview is published or the appearance already occurred;
+2. the user has a substantive public role;
+3. official title, date, platform/event and role are known;
+4. stable canonical external evidence exists;
+5. no inference or placeholder metadata is needed.
+
+Allowed future kinds:
+
+- technical articles;
+- scientific publications;
+- talks and conferences;
+- interviews and invited materials;
+- proceedings publications.
+
+Do not add:
+
+- drafts or submitted papers;
+- future appearances;
+- attendance-only events;
+- certificate-only records without an independently documented contribution;
+- live views/votes/likes;
+- automatically scraped public truth.
 
 ---
 
@@ -168,7 +207,7 @@ Only authentic material. No fake/demo album.
 
 ## Selective RU/EN expansion — CONDITIONAL
 
-Only when actual usage or content value identifies a concrete page. Do not create a separate English build or CMS.
+Only when actual usage or content value identifies a concrete page. Publications remains RU-only for now; do not create a separate English catalogue/build merely for symmetry.
 
 ## Secondary analytics / Yandex Metrica — CONDITIONAL
 
@@ -185,6 +224,10 @@ Re-open only when:
 
 Only with enough real architecture artifacts and demonstrated audience/content value.
 
+## Publication filters or local detail pages — CONDITIONAL
+
+Do not add while the catalogue remains small. Static groups and canonical external links are currently clearer and cheaper.
+
 ---
 
 # Что не является priority
@@ -197,6 +240,7 @@ Only with enough real architecture artifacts and demonstrated audience/content v
 - DNS/provider credentials in repository;
 - separate EN build/CMS;
 - second site-wide search engine;
+- runtime publication APIs or scrapers;
 - advertising analytics;
 - custom-event explosion;
 - fingerprinting/session replay/cross-site tracking;
@@ -225,6 +269,8 @@ P2.4c search/photo/rendered-asset stabilization DONE
         ↓
 P2.4d Vlezet flagship DONE
         ↓
+P2.4e External Publications Showcase DONE
+        ↓
 latest Pages/owner acceptance + manual external-profile updates
         ↓
 VillAIgence flagship case study
@@ -246,7 +292,7 @@ choose further RU/EN/content/product work from evidence
 2. проверить actual open PR/latest commits/exact-head CI;
 3. проверить latest Pages deployment reports;
 4. проверить HTTPS/redirects and RU/EN canonical identity;
-5. проверить active site/analytics contracts;
+5. проверить production Publications/Vlezet routes;
 6. проверить Cloudflare telemetry current hostname;
 7. проверить current VillAIgence release/PR truth before writing its case study;
 8. при freshness-вопросах проверить latest Content Freshness runs/issues.
