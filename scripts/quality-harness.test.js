@@ -166,6 +166,8 @@ test('common scenario declarations preserve current core routes and viewports', 
   assert.equal(CORE_SCENARIOS.home.path, '/index.html');
   assert.equal(CORE_SCENARIOS.home.heading, 'Руслан Немыкин');
   assert.equal(CORE_SCENARIOS.projects.path, '/landing/projects.html');
+  assert.equal(CORE_SCENARIOS.vlezet.path, '/landing/projects/vlezet.html');
+  assert.equal(CORE_SCENARIOS.vlezet.heading, 'Vlezet');
   assert.equal(CORE_SCENARIOS.resume.path, '/landing/resume.html');
   assert.equal(Object.isFrozen(VIEWPORTS), true);
   assert.equal(Object.isFrozen(CORE_SCENARIOS), true);
