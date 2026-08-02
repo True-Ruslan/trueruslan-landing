@@ -60,6 +60,16 @@
     "accent": "cyan"
   },
   {
+    "path": "landing/photos.html",
+    "card": "photos",
+    "title": "Фотографии — Руслан Немыкин",
+    "description": "Личный визуальный архив Руслана Немыкина: фотоистории о поездках, учёбе, событиях, людях и обычных моментах вне кода.",
+    "displayTitle": "PHOTO STORIES",
+    "kicker": "VISUAL ARCHIVE",
+    "tags": ["STORIES", "MOMENTS", "ARCHIVE"],
+    "accent": "violet"
+  },
+  {
     "path": "landing/projects/livingworld.html",
     "card": "livingworld",
     "title": "LivingWorld — Server-Authoritative AI NPCs",
