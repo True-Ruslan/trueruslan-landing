@@ -1,21 +1,35 @@
 [
   {
     "date": "2026-07",
-    "title": "Server-authoritative foundation",
-    "description": "Сессии player ↔ NPC, серверный контекст, память, provider boundaries и правила отмены стали базовой архитектурой проекта.",
+    "title": "Security baseline and Memory 2.0",
+    "description": "Server-authoritative dialogue, bounded provider transport, episodic Memory 2.0, semantic FACT/BELIEF, relationships and world-local persistence became one protected architecture.",
     "state": "past"
   },
   {
-    "date": "2026-07",
-    "title": "End-to-end voice dialogue",
-    "description": "В локальном acceptance-сценарии проверен полный путь микрофон → Simple Voice Chat → STT → конкретный NPC → AI → текстовый ответ и TTS fallback.",
+    "date": "2026-08",
+    "title": "Operator Lore S9–S10c",
+    "description": "World, player, villager and village lore received immutable AI-context integration, a server-authoritative revision API and a dedicated operator-only client editor.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/88"
+  },
+  {
+    "date": "2026-08",
+    "title": "0.1.20 installed PARTIAL PASS",
+    "description": "Text, voice, lore, restart, rollback-world compatibility and most gameplay scenarios passed, while water drowning, destructive filled-grave Silk Touch behavior, snapshot identity and one approximately 272-second Chat request blocked full acceptance.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/98"
+  },
+  {
+    "date": "2026-08",
+    "title": "0.1.22 corrective code candidate",
+    "description": "Merged PRs #99–#102 narrow water navigation, preserve filled-grave data, enforce exact embedded release identity and remove the production-unsafe tombstone startup injection. Automated and package gates are green; installed acceptance is not claimed.",
     "state": "current",
-    "evidence": "https://github.com/True-Ruslan/minecraft-botics-ai"
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/102"
   },
   {
     "date": "NEXT",
-    "title": "Stable voice identity and affect",
-    "description": "Закрепить голос за каждым NPC, учитывать пол персонажа и передавать настроение без потери предсказуемости TTS pipeline.",
+    "title": "Exact installed cumulative acceptance",
+    "description": "Build the exact 0.1.22+1.21.1 artifact, verify startup, water escape, filled-grave break/place behavior, Text/STT/Chat/TTS, restart and six persistent hashes, then promote only if the cumulative acceptance gate passes.",
     "state": "next"
   }
 ]
