@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-02**, после публикации External Publications Showcase.
+> Обновлено: **2026-08-02**, после публикации VillAIgence flagship case study.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -18,11 +18,12 @@
 - no automatic public truth mutation;
 - bounded Evidence semantics;
 - Publications только для completed, externally verifiable work;
+- stable project routes/keys без migration plan;
 - one RU/EN site/build/search architecture;
 - analytics как optional aggregate telemetry;
 - no behavioural/user tracking без explicit privacy review;
 - quality gates без ослабления;
-- repository readiness, deployed state и provider telemetry как разные факты.
+- repository readiness, deployed state, source-product acceptance и provider telemetry как разные факты.
 
 Главная продуктовая формула:
 
@@ -60,49 +61,47 @@
 - P2.4c Search, Photo shell and rendered-asset stabilization — DONE: PRs #53/#54/#55/#57.
 - P2.4c durable state sync — DONE: PR #58.
 - P2.4d Vlezet flagship case study — DONE: PR #59, Build #486.
-- **P2.4e External Publications Showcase — DONE: PR #61, Build #539.**
+- P2.4e External Publications Showcase — DONE: PR #61, Build #539.
+- **P2.4f VillAIgence flagship case study — DONE: PR #63, Build #567.**
 
-## P2.4e evidence
+## P2.4f evidence
 
 ```text
-feature PR:          #61
-exact feature head:  1386df46b57d5c9164a13039a286cafb1f296037
-Build / run:         #539 / 30757856207 SUCCESS
-squash on master:    4036df1744840e558a6514ce6ae09eceb624b69e
-unit tests:          300 PASS / 0 FAIL
-artifact:            8836540794
-artifact digest:     sha256:d69dd36389ab7f6aa59120a2355e34962af2188e8dea733e9ed93826d59ac4d5
+feature PR:          #63
+exact feature head:  90e03b4a793bde9d8088ee930da74ebc19edfa3c
+Build / run:         #567 / 30761930974 SUCCESS
+squash on master:    00da9ee983f17f8f5e1b5e5f353fad852fee337c
+unit tests:          306 PASS / 0 FAIL
+artifact:            8837765509
+artifact digest:     sha256:3aa538f9bad7eeeefd54ff24511fe700b90eedc7c872e85ffe5bd673322fa78c
 ```
 
 Delivered:
 
-- standalone `Публикации и выступления` page;
-- one validated `data/publications.json` registry;
-- three externally verified Habr technical articles;
-- homepage Featured block after active projects;
-- navigation, About, Resume and metadata integration;
-- native prebuild Diplodoc include for search indexing;
-- compact no-JS catalogue without Featured duplication;
-- generated search coverage for all three titles;
-- feed separation from Engineering Notes;
-- Chromium, Axe, Lighthouse, Firefox, WebKit and mobile overflow coverage;
-- reviewed home/resume/Publications visual evidence;
+- public VillAIgence identity on the stable `livingworld` route/key;
+- current Project Registry, timeline and three-signal Evidence snapshot;
+- seven-section authority/memory/security/release narrative;
+- RU and bounded EN case-study surfaces;
+- production-safe authority + installed-acceptance SVG;
+- exact source boundary through VillAIgence head `e13660f5998fa1ed343548252d573140adc5b0c9`;
+- explicit `0.1.20 PARTIAL PASS`, `0.1.21 STARTUP FAIL`, `0.1.22 live acceptance pending` distinction;
+- Chromium/Axe/Lighthouse, mobile, Firefox/WebKit, search, Evidence, diagram, metadata, Engineering Map and visual gates;
 - custom-domain artifact verification.
 
-No scientific publications, talks, interviews or proceedings were added without a stable external verification point. Empty categories remain hidden.
+No runtime VillAIgence code or release was changed. The landing milestone does not close the source project's pending installed `0.1.22+1.21.1` acceptance.
 
 ---
 
-# NOW — Real Content and Distribution Loop
+# NOW — Content Consolidation and Distribution Loop
 
-Infrastructure and several deep content surfaces are no longer blockers.
+Infrastructure, flagship depth and the external-publication catalogue are no longer the main blockers.
 
 ## Immediate operational follow-up
 
-1. Confirm latest Pages deployment after PR #61 and continuity sync.
-2. Confirm production Publications route, canonical metadata, search and external links visually.
-3. Confirm production Vlezet route remains correct.
-4. Keep weekly External health green.
+1. Confirm latest Pages deployment after PR #63 and continuity sync.
+2. Confirm production VillAIgence route, diagram, Evidence, search and canonical metadata visually.
+3. Confirm production Vlezet and Publications routes remain correct.
+4. Keep weekly External health and Content Freshness green.
 5. Manually update external surfaces if stale:
    - GitHub profile Website;
    - Habr profile/articles;
@@ -116,61 +115,94 @@ Do not treat owner test traffic as audience validation.
 
 ### 1. Vlezet flagship case study — DONE
 
-Published with explicit authority and failed-recognition boundaries.
+Published with explicit Draft authority and failed representative recognition acceptance.
 
 ### 2. External Publications Showcase — DONE
 
-Published as an evidence-backed cross-platform catalogue. Add future records only when the material is already published/completed and has a stable canonical source.
+Published as an evidence-backed external catalogue. Add records only after publication/completion and stable canonical verification.
 
-### 3. VillAIgence flagship case study — NEXT
+### 3. VillAIgence flagship case study — DONE
 
-Use real evidence from:
+Published with stable route compatibility and source/package/installed acceptance boundaries.
 
-- text and voice NPC dialogue;
-- STT → Chat → TTS pipeline;
-- Memory 2.0;
-- semantic FACT/ACTION/RELATIONSHIP_CHANGE;
-- deterministic UUIDs and persistence;
-- restart and rollback verification;
-- multi-NPC isolation;
-- server-authoritative actions;
-- provider timeout/rate-limit/empty-response handling;
-- response-size limits, redirects, loopback/SSRF protection;
-- release acceptance defects, including navigation and tombstone behavior.
+### 4. `/now` synchronization — NEXT
 
-Narrative boundary:
+Update current focus to reflect:
 
-- exact-head CI is not Minecraft server acceptance;
-- partial PASS must remain partial;
-- accepted memory/security milestones and current gameplay defects must be separated;
-- no invented latency, reliability or adoption metrics.
+- Vlezet recognition remains active and product acceptance is not complete;
+- VillAIgence landing case study is published while exact source-product `0.1.22` installed acceptance remains pending;
+- Publications is live and grows only by verified completed work;
+- next landing work is content consolidation/distribution, not a new infrastructure layer.
 
 Expected deliverables:
 
-- canonical project registry/evidence refresh if needed;
-- seven-section flagship page;
-- architecture/security diagram with production-safe SVG paint;
-- bounded past/current/next timeline;
-- desktop/mobile/cross-browser/evidence gates;
-- exact-head reviewed visual artifact;
-- continuity sync after merge.
-
-### 4. `/now`
-
-Synchronize active development after Vlezet, Publications and VillAIgence milestones.
+- update `data/now.json` and generated `/now` content;
+- preserve registry-derived active project cards/statuses;
+- avoid copying volatile source-project details that require frequent manual changes;
+- exact-head browser/search/visual verification;
+- continuity update only if the resulting product state materially changes.
 
 ### 5. Grounded Engineering Notes
 
-Publish 1–2 notes derived from real implementation decisions. Strong candidates:
+Publish 1–2 notes derived from completed implementation evidence. Strong candidates:
 
-- why post-build HTML does not automatically become searchable content;
-- deterministic authority around LLM/CV proposals;
-- server-side provider response budgets and redirect/SSRF boundaries;
-- why restart persistence is a product contract rather than a storage detail.
+1. **Почему source/package green не равен installed acceptance**
+   - VillAIgence `0.1.21` startup failure;
+   - direct owned-source wiring versus fragile Mixin injection;
+   - exact JAR identity, startup, focused replay, restart and persistent hashes.
+
+2. **Authority map вокруг LLM proposal**
+   - immutable bounded context;
+   - FACT/BELIEF provenance;
+   - operator lore;
+   - revalidation before authoritative effect.
+
+3. **Почему benchmark PASS может провалить representative product source**
+   - Vlezet M7.8A versus M7.8B;
+   - metrics, source fixtures and owner acceptance as separate gates.
+
+4. **Почему post-build HTML может не попасть в search index**
+   - Publications search-boundary RED;
+   - native prebuild include versus postprocessing.
+
+Each Note must cite project evidence and avoid broad universal claims.
 
 ### 6. First genuine Photo Story
 
-Only authentic material. No fake/demo album.
+Only authentic material. No fake/demo album. Platform is ready; content is the blocker.
+
+### 7. Distribution and observation
+
+After `/now` and Notes:
+
+- publish/share the site on relevant external profiles;
+- collect aggregate Cloudflare telemetry for 3–4 weeks;
+- compare landing, projects, notes, publications and search usage only at aggregate level;
+- choose further RU/EN/content work from evidence.
+
+---
+
+# Source-project dependencies
+
+## VillAIgence installed acceptance — EXTERNAL TO LANDING
+
+The landing must keep current source truth bounded:
+
+- `0.1.20` installed partial PASS;
+- `0.1.21` startup FAIL + safe rollback;
+- PR #102 automated/package correction;
+- exact `0.1.22` installed cumulative acceptance pending.
+
+When VillAIgence source evidence changes:
+
+1. verify current branch head, release/tag and open PRs;
+2. read exact installed acceptance evidence;
+3. update landing timeline/Evidence only if the bounded public truth changed;
+4. never infer installed PASS from merged code or green source CI.
+
+## Vlezet recognition acceptance — EXTERNAL TO LANDING
+
+M7.8B remains unaccepted until representative source quality and owner acceptance pass. Landing changes only after source-project evidence changes.
 
 ---
 
@@ -192,14 +224,7 @@ Allowed future kinds:
 - interviews and invited materials;
 - proceedings publications.
 
-Do not add:
-
-- drafts or submitted papers;
-- future appearances;
-- attendance-only events;
-- certificate-only records without an independently documented contribution;
-- live views/votes/likes;
-- automatically scraped public truth.
+Do not add drafts, future appearances, attendance-only events, volatile counters or automatically scraped public truth.
 
 ---
 
@@ -207,18 +232,11 @@ Do not add:
 
 ## Selective RU/EN expansion — CONDITIONAL
 
-Only when actual usage or content value identifies a concrete page. Publications remains RU-only for now; do not create a separate English catalogue/build merely for symmetry.
+Only when actual usage or content value identifies a concrete page. Keep one build/search architecture.
 
 ## Secondary analytics / Yandex Metrica — CONDITIONAL
 
-Do not add now.
-
-Re-open only when:
-
-- Cloudflare systematically undercounts the relevant Russian audience;
-- missing data blocks a real decision;
-- consent-controlled loading and privacy notice are justified;
-- replay, Webvisor, click maps, user IDs and broad behavioural tracking remain excluded unless separately approved.
+Do not add now. Re-open only when Cloudflare systematically misses a decision-critical Russian audience signal and consent/privacy costs are justified.
 
 ## Richer architecture explorer — CONDITIONAL
 
@@ -226,7 +244,7 @@ Only with enough real architecture artifacts and demonstrated audience/content v
 
 ## Publication filters or local detail pages — CONDITIONAL
 
-Do not add while the catalogue remains small. Static groups and canonical external links are currently clearer and cheaper.
+Do not add while the catalogue remains small. Static groups and canonical external links are clearer.
 
 ---
 
@@ -271,13 +289,13 @@ P2.4d Vlezet flagship DONE
         ↓
 P2.4e External Publications Showcase DONE
         ↓
-latest Pages/owner acceptance + manual external-profile updates
+P2.4f VillAIgence flagship DONE
         ↓
-VillAIgence flagship case study
+latest Pages/owner acceptance + /now synchronization
         ↓
-/now + Grounded Engineering Notes + genuine Photo Story
+1–2 Grounded Engineering Notes + genuine Photo Story when material exists
         ↓
-public distribution
+manual external-profile rollout + public distribution
         ↓
 3–4 weeks aggregate observation
         ↓
@@ -292,7 +310,7 @@ choose further RU/EN/content/product work from evidence
 2. проверить actual open PR/latest commits/exact-head CI;
 3. проверить latest Pages deployment reports;
 4. проверить HTTPS/redirects and RU/EN canonical identity;
-5. проверить production Publications/Vlezet routes;
+5. проверить production VillAIgence/Publications/Vlezet routes;
 6. проверить Cloudflare telemetry current hostname;
-7. проверить current VillAIgence release/PR truth before writing its case study;
+7. проверить current VillAIgence and Vlezet source-project acceptance truth before changing claims;
 8. при freshness-вопросах проверить latest Content Freshness runs/issues.
