@@ -22,7 +22,7 @@ At the same time, I try not to introduce complexity before it is justified. Arch
 
 LLMs and agentic tools have become another major area of interest for me.
 
-I use them for code analysis, prototyping, working with large contexts and automating parts of engineering workflows. I also build systems where AI is part of the product itself, such as **LivingWorld**, an experiment with AI NPCs inside a Minecraft server.
+I use them for code analysis, prototyping, working with large contexts and automating parts of engineering workflows. I also build systems where AI is part of the product itself, such as **VillAIgence**, an experiment in server-authoritative AI villagers, Memory 2.0 and persistent NPC society inside Minecraft.
 
 The more I work with these tools, the less I see AI as an autopilot. To me it is a powerful external capability that still needs contracts, validation, authority boundaries and deterministic behavior around it when something goes wrong.
 
@@ -30,7 +30,7 @@ The more I work with these tools, the less I see AI as an autopilot. To me it is
 
 My side projects usually start with a question I want to test in practice.
 
-Sometimes that means backend and infrastructure, sometimes AI, and sometimes game development. This is how projects such as LivingWorld, NODE ZERO and several Godot experiments appeared next to more traditional Java work.
+Sometimes that means backend and infrastructure, sometimes AI, and sometimes game development. This is how projects such as VillAIgence, NODE ZERO and several Godot experiments appeared next to more traditional Java work.
 
 I like taking these projects beyond the first prototype: adding tests, CI, documentation and release processes, revisiting failed assumptions and gradually turning an idea into a system that can continue evolving.
 
