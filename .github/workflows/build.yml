@@ -152,11 +152,17 @@ jobs:
           cp docs-html/en/projects/livingworld.html quality-artifacts/en-livingworld-generated.html 2>/dev/null || true
           cp docs-html/landing/now.html quality-artifacts/now-generated.html 2>/dev/null || true
           cp docs-html/landing/bibliography.html quality-artifacts/sources-knowledge-base-generated.html 2>/dev/null || true
+          cp docs-html/landing/projects/vlezet.html quality-artifacts/vlezet-generated.html 2>/dev/null || true
           cp docs-html/landing/projects/livingworld.html quality-artifacts/livingworld-generated.html 2>/dev/null || true
           cp docs-html/landing/projects/node-zero.html quality-artifacts/node-zero-generated.html 2>/dev/null || true
           cp docs-html/feed.xml quality-artifacts/feed.xml 2>/dev/null || true
           cp docs-html/landing/engineering-map.html quality-artifacts/engineering-map-generated.html 2>/dev/null || true
           cp docs-html/landing/photos.html quality-artifacts/photo-stories-generated.html 2>/dev/null || true
+          cp artifacts/browser-summary.json quality-artifacts/browser-summary.json 2>/dev/null || true
+          cp artifacts/vlezet-desktop.png quality-artifacts/vlezet-desktop.png 2>/dev/null || true
+          cp artifacts/vlezet-mobile.png quality-artifacts/vlezet-mobile.png 2>/dev/null || true
+          cp artifacts/project-evidence-vlezet-mobile.png quality-artifacts/project-evidence-vlezet-mobile.png 2>/dev/null || true
+          cp artifacts/project-evidence-summary.json quality-artifacts/project-evidence-summary.json 2>/dev/null || true
           cp artifacts/node-zero-architecture.png quality-artifacts/node-zero-architecture.png 2>/dev/null || true
           cp artifacts/node-zero-system-flow.png quality-artifacts/node-zero-system-flow.png 2>/dev/null || true
           cp artifacts/node-zero-diagrams-summary.json quality-artifacts/node-zero-diagrams-summary.json 2>/dev/null || true
