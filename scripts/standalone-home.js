@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {renderFeaturedPublications} from './publication-renderer.js';
 import {
   DEFAULT_PROJECTS_PATH,
   getActiveProjects,
@@ -16,6 +17,7 @@ const DEFAULT_OUTPUT = path.join(ROOT, 'docs-html', 'index.html');
 
 export function renderStandaloneHome(template, siteUrl, projects = [], {
   locale = 'ru',
+  publications = [],
   hrefTransform = (href) => href,
   ctaTransform = (_project, cta) => cta,
 } = {}) {
@@ -27,16 +29,24 @@ export function renderStandaloneHome(template, siteUrl, projects = [], {
   const activeProjects = projects.length
     ? renderProjectCards(getActiveProjects(projects), {locale, hrefTransform, ctaTransform})
     : '';
+  const featuredPublications = locale === 'ru' && publications.length
+    ? renderFeaturedPublications(publications, {
+      surface: 'home',
+      catalogueHref: 'landing/publications.html',
+    })
+    : '';
 
   return template
     .replaceAll('{{SITE_URL}}', normalizedSiteUrl)
-    .replace('{{CURRENTLY_BUILDING}}', activeProjects);
+    .replace('{{CURRENTLY_BUILDING}}', activeProjects)
+    .replace('{{FEATURED_PUBLICATIONS}}', featuredPublications);
 }
 
 export function writeStandaloneHome({
   templatePath = DEFAULT_TEMPLATE,
   outputPath = DEFAULT_OUTPUT,
   projectRegistryPath = DEFAULT_PROJECTS_PATH,
+  publications = [],
   siteUrl,
   locale = 'ru',
   hrefTransform = (href) => href,
@@ -48,7 +58,12 @@ export function writeStandaloneHome({
 
   const template = fs.readFileSync(templatePath, 'utf8');
   const projects = loadProjectRegistry(projectRegistryPath);
-  const html = renderStandaloneHome(template, siteUrl, projects, {locale, hrefTransform, ctaTransform});
+  const html = renderStandaloneHome(template, siteUrl, projects, {
+    locale,
+    publications,
+    hrefTransform,
+    ctaTransform,
+  });
   fs.mkdirSync(path.dirname(outputPath), {recursive: true});
   fs.writeFileSync(outputPath, html, 'utf8');
   return outputPath;
