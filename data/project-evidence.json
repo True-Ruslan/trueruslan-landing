@@ -33,10 +33,10 @@
         "kind": "pr",
         "mode": "automated",
         "label": "M7.8B wall topology PR #41",
-        "state": "pending",
+        "state": "failed",
         "url": "https://github.com/True-Ruslan/vlezet/pull/41",
         "observedAt": "2026-08-02",
-        "scope": "The Draft PR reports exact-head green Standard CI, Recognition Benchmark and browser audit plus measured wall-geometry improvement to Core F1 0.834356 and Source F1 0.518519. It remains pending product-owner real-plan acceptance. Openings are deliberately deferred fail-closed, Source topology remains below the final 0.90 target, and rooms, labels and areas are unfinished."
+        "scope": "Product-owner review failed on a representative clear apartment plan: the local Draft contained 417 wall candidates, zero openings and a symbol/furniture network instead of an architectural wall graph; AI reconciliation retained the polluted network and added unsupported long lines. Corrective structural masking reduced an isolated reproduction from about 948 to 115 unique segments and from 12,346 to 249 admissible parallel pairs, but current aggregate Source geometry/topology F1 is only approximately 0.492537/0.462687. PR #41 remains Draft and must not be described as accepted recognition quality."
       }
     ]
   },
