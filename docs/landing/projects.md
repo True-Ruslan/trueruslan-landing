@@ -20,17 +20,17 @@ Vlezet начался как попытка быстро проверить ра
 
 ---
 
-### LivingWorld
+### VillAIgence
 
-Это мой проект про AI NPC для Minecraft.
+Это мой проект про AI-жителей и устойчивое общество NPC внутри Minecraft.
 
-LivingWorld начался с довольно простой идеи: мне хотелось, чтобы NPC в Minecraft могли разговаривать не как обычный чат-бот, а как часть самого игрового мира — помнить контекст, слышать игрока голосом и при этом оставаться под контролем сервера.
+VillAIgence начался с идеи разговаривать с MCA-жителями текстом и голосом, но постепенно стал системой про server authority, долговременную идентичность, episodic и semantic Memory 2.0, отношения, операторский lore и безопасную границу между предложением модели и действием в мире.
 
-Чем дальше я развивал проект, тем больше он становился не про «подключить LLM», а про сессии, владение NPC, память, STT/TTS, отказ внешних провайдеров и безопасную границу между ответом модели и действием в мире.
+Сейчас для меня особенно важен release-процесс. Большой установленный сценарий `0.1.20` прошёл только частично и выявил реальные дефекты навигации, могил, identity и latency; следующий кандидат не запустился из-за production-unsafe Mixin. Поэтому исправления проходят не только source CI, но и exact-JAR, installed startup, focused gameplay, restart и persistent-hash gates.
 
 **Текущий статус:** <span data-tr-project-status="livingworld"></span>
 
-[Подробнее о проекте →](projects/livingworld.md) · [GitHub ↗](https://github.com/True-Ruslan/minecraft-botics-ai)
+[Подробнее о проекте →](projects/livingworld.md) · [GitHub ↗](https://github.com/True-Ruslan/villAIgence)
 
 ---
 

@@ -2,17 +2,19 @@
 
 This is a curated English overview of my public engineering work. Project status is derived from the same canonical registry as the Russian site; I do not maintain a separate English status model.
 
-Only **LivingWorld** has a full English case study in this milestone. Other detail pages remain in Russian and are marked explicitly.
+Only **VillAIgence** has a full English case study in this milestone. Other detail pages remain in Russian and are marked explicitly.
 
-## LivingWorld — server-authoritative AI NPCs
+## VillAIgence — server-authoritative AI society
 
 <span data-tr-project-status="livingworld"></span>
 
-A Fabric 1.21.1 / MCA Reborn experiment with AI NPC conversations inside a real Minecraft server: exclusive player ↔ NPC sessions, text and voice input, STT/LLM/TTS orchestration, persistent memory, cancellation, fallback and server-side action authorization.
+An MCA-derived Minecraft 1.21.1 system that combines text and voice NPC dialogue, immutable server-owned context, episodic and semantic Memory 2.0, relationships, operator lore, bounded external providers and exact-artifact acceptance gates.
+
+The public name is VillAIgence, while the existing `livingworld` route and compatibility-sensitive engine/data identities remain stable.
 
 [Open English case study →](projects/livingworld.md)
 
-Repository: [True-Ruslan/minecraft-botics-ai ↗](https://github.com/True-Ruslan/minecraft-botics-ai)
+Repository: [True-Ruslan/villAIgence ↗](https://github.com/True-Ruslan/villAIgence)
 
 ## NODE ZERO — narrative systems and techno-horror
 

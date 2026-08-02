@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title>VillAIgence authority and acceptance boundaries</title>
+  <desc>Two-lane map showing bounded AI proposals under server authority and the evidence gates from source tests to installed acceptance.</desc>
+  <defs>
+    <marker id="cyan-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#67E8F9"/></marker>
+    <marker id="violet-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#A78BFA"/></marker>
+    <linearGradient id="runtime-panel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#132337"/><stop offset="1" stop-color="#0A1323"/></linearGradient>
+    <linearGradient id="release-panel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#17172B"/><stop offset="1" stop-color="#0B1020"/></linearGradient>
+  </defs>
+
+  <rect width="1200" height="760" rx="28" fill="#070D18"/>
+  <rect x="24" y="24" width="1152" height="712" rx="24" fill="#0B1322" stroke="#243249" stroke-width="2"/>
+  <text x="60" y="68" fill="#F8FAFC" font-family="Inter,Arial,sans-serif" font-size="27" font-weight="700">VillAIgence</text>
+  <text x="60" y="96" fill="#94A3B8" font-family="Inter,Arial,sans-serif" font-size="15">AI proposals remain bounded by server authority; release claims remain bounded by installed evidence.</text>
+
+  <rect x="48" y="122" width="1104" height="316" rx="20" fill="url(#runtime-panel)" stroke="#1E3A4A" stroke-width="2"/>
+  <text x="76" y="158" fill="#67E8F9" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="1.5">SERVER AUTHORITY</text>
+  <text x="76" y="181" fill="#CBD5E1" font-family="Inter,Arial,sans-serif" font-size="13">Runtime trust flow</text>
+
+  <rect x="76" y="212" width="150" height="86" rx="14" fill="#0F2032" stroke="#38BDF8" stroke-width="2"/>
+  <text x="151" y="244" text-anchor="middle" fill="#E0F2FE" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700">PLAYER INPUT</text>
+  <text x="151" y="269" text-anchor="middle" fill="#93C5FD" font-family="Inter,Arial,sans-serif" font-size="13">text / voice PCM</text>
+  <line x1="226" y1="255" x2="262" y2="255" stroke="#67E8F9" stroke-width="3" marker-end="url(#cyan-arrow)"/>
+
+  <rect x="270" y="198" width="176" height="114" rx="14" fill="#102638" stroke="#22D3EE" stroke-width="2"/>
+  <text x="358" y="229" text-anchor="middle" fill="#CFFAFE" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700">SESSION + IDENTITY</text>
+  <text x="358" y="254" text-anchor="middle" fill="#A5F3FC" font-family="Inter,Arial,sans-serif" font-size="12">ownership · permissions</text>
+  <text x="358" y="276" text-anchor="middle" fill="#A5F3FC" font-family="Inter,Arial,sans-serif" font-size="12">persistent NPC UUID</text>
+  <text x="358" y="298" text-anchor="middle" fill="#A5F3FC" font-family="Inter,Arial,sans-serif" font-size="12">current world state</text>
+  <line x1="446" y1="255" x2="482" y2="255" stroke="#67E8F9" stroke-width="3" marker-end="url(#cyan-arrow)"/>
+
+  <rect x="490" y="188" width="206" height="134" rx="14" fill="#102A37" stroke="#2DD4BF" stroke-width="2"/>
+  <text x="593" y="218" text-anchor="middle" fill="#CCFBF1" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700">IMMUTABLE CONTEXT</text>
+  <text x="593" y="244" text-anchor="middle" fill="#99F6E4" font-family="Inter,Arial,sans-serif" font-size="12">observed world facts</text>
+  <text x="593" y="266" text-anchor="middle" fill="#99F6E4" font-family="Inter,Arial,sans-serif" font-size="12">operator lore</text>
+  <text x="593" y="288" text-anchor="middle" fill="#99F6E4" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700">MEMORY 2.0</text>
+  <text x="593" y="308" text-anchor="middle" fill="#99F6E4" font-family="Inter,Arial,sans-serif" font-size="11">episodic + FACT / BELIEF</text>
+  <line x1="696" y1="255" x2="732" y2="255" stroke="#67E8F9" stroke-width="3" marker-end="url(#cyan-arrow)"/>
+
+  <rect x="740" y="198" width="166" height="114" rx="14" fill="#221D3A" stroke="#A78BFA" stroke-width="2"/>
+  <text x="823" y="229" text-anchor="middle" fill="#EDE9FE" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700">PROVIDERS</text>
+  <text x="823" y="254" text-anchor="middle" fill="#C4B5FD" font-family="Inter,Arial,sans-serif" font-size="12">STT · Chat · TTS</text>
+  <text x="823" y="278" text-anchor="middle" fill="#DDD6FE" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700">LLM PROPOSAL</text>
+  <text x="823" y="298" text-anchor="middle" fill="#A78BFA" font-family="Inter,Arial,sans-serif" font-size="11">bounded external output</text>
+  <line x1="906" y1="255" x2="942" y2="255" stroke="#67E8F9" stroke-width="3" marker-end="url(#cyan-arrow)"/>
+
+  <rect x="950" y="188" width="174" height="134" rx="14" fill="#16283A" stroke="#34D399" stroke-width="2"/>
+  <text x="1037" y="218" text-anchor="middle" fill="#D1FAE5" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700">REVALIDATE</text>
+  <text x="1037" y="242" text-anchor="middle" fill="#A7F3D0" font-family="Inter,Arial,sans-serif" font-size="12">session · target · policy</text>
+  <text x="1037" y="266" text-anchor="middle" fill="#D1FAE5" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700">AUTHORITATIVE EFFECT</text>
+  <text x="1037" y="289" text-anchor="middle" fill="#A7F3D0" font-family="Inter,Arial,sans-serif" font-size="11">action · relationship</text>
+  <text x="1037" y="308" text-anchor="middle" fill="#A7F3D0" font-family="Inter,Arial,sans-serif" font-size="11">persistent evidence</text>
+
+  <rect x="270" y="342" width="854" height="66" rx="12" fill="#0A1725" stroke="#28465B" stroke-width="1.5"/>
+  <text x="697" y="368" text-anchor="middle" fill="#E2E8F0" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700">FAIL-SOFT CAPABILITY BOUNDARIES</text>
+  <text x="697" y="391" text-anchor="middle" fill="#94A3B8" font-family="Inter,Arial,sans-serif" font-size="12">timeouts · bounded bodies · blocked redirects · endpoint policy · retry without duplicate effects · cancellation</text>
+
+  <rect x="48" y="458" width="1104" height="246" rx="20" fill="url(#release-panel)" stroke="#362A58" stroke-width="2"/>
+  <text x="76" y="494" fill="#C4B5FD" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="1.5">RELEASE EVIDENCE</text>
+  <text x="76" y="517" fill="#CBD5E1" font-family="Inter,Arial,sans-serif" font-size="13">A green source tree is only the first gate.</text>
+
+  <rect x="76" y="548" width="132" height="72" rx="12" fill="#171B31" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="142" y="577" text-anchor="middle" fill="#EDE9FE" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700">SOURCE + TESTS</text>
+  <text x="142" y="599" text-anchor="middle" fill="#A78BFA" font-family="Inter,Arial,sans-serif" font-size="11">Fabric · NeoForge</text>
+  <line x1="208" y1="584" x2="236" y2="584" stroke="#A78BFA" stroke-width="3" marker-end="url(#violet-arrow)"/>
+
+  <rect x="244" y="548" width="126" height="72" rx="12" fill="#171B31" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="307" y="577" text-anchor="middle" fill="#EDE9FE" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700">EXACT JAR</text>
+  <text x="307" y="599" text-anchor="middle" fill="#A78BFA" font-family="Inter,Arial,sans-serif" font-size="11">identity · checksum</text>
+  <line x1="370" y1="584" x2="398" y2="584" stroke="#A78BFA" stroke-width="3" marker-end="url(#violet-arrow)"/>
+
+  <rect x="406" y="548" width="132" height="72" rx="12" fill="#171B31" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="472" y="577" text-anchor="middle" fill="#EDE9FE" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700">STARTUP</text>
+  <text x="472" y="599" text-anchor="middle" fill="#A78BFA" font-family="Inter,Arial,sans-serif" font-size="11">remapped runtime</text>
+  <line x1="538" y1="584" x2="566" y2="584" stroke="#A78BFA" stroke-width="3" marker-end="url(#violet-arrow)"/>
+
+  <rect x="574" y="548" width="148" height="72" rx="12" fill="#171B31" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="648" y="577" text-anchor="middle" fill="#EDE9FE" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700">FOCUSED REPLAY</text>
+  <text x="648" y="599" text-anchor="middle" fill="#A78BFA" font-family="Inter,Arial,sans-serif" font-size="11">water · grave · voice</text>
+  <line x1="722" y1="584" x2="750" y2="584" stroke="#A78BFA" stroke-width="3" marker-end="url(#violet-arrow)"/>
+
+  <rect x="758" y="548" width="138" height="72" rx="12" fill="#171B31" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="827" y="577" text-anchor="middle" fill="#EDE9FE" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700">RESTART + HASHES</text>
+  <text x="827" y="599" text-anchor="middle" fill="#A78BFA" font-family="Inter,Arial,sans-serif" font-size="11">world-local durability</text>
+  <line x1="896" y1="584" x2="924" y2="584" stroke="#A78BFA" stroke-width="3" marker-end="url(#violet-arrow)"/>
+
+  <rect x="932" y="538" width="192" height="92" rx="12" fill="#211A34" stroke="#C4B5FD" stroke-width="2"/>
+  <text x="1028" y="570" text-anchor="middle" fill="#F5F3FF" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700">INSTALLED ACCEPTANCE</text>
+  <text x="1028" y="594" text-anchor="middle" fill="#FDE68A" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700">PENDING</text>
+  <text x="1028" y="614" text-anchor="middle" fill="#A78BFA" font-family="Inter,Arial,sans-serif" font-size="10">promotion only after full gate</text>
+
+  <rect x="76" y="646" width="306" height="34" rx="9" fill="#1B2930" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="229" y="668" text-anchor="middle" fill="#FDE68A" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700">0.1.20 PARTIAL PASS</text>
+  <rect x="398" y="646" width="306" height="34" rx="9" fill="#301B25" stroke="#FB7185" stroke-width="1.5"/>
+  <text x="551" y="668" text-anchor="middle" fill="#FECDD3" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700">0.1.21 STARTUP FAIL</text>
+  <rect x="720" y="646" width="404" height="34" rx="9" fill="#231D35" stroke="#A78BFA" stroke-width="1.5"/>
+  <text x="922" y="668" text-anchor="middle" fill="#DDD6FE" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700">0.1.22 LIVE RETEST PENDING</text>
+</svg>

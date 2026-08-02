@@ -11,7 +11,15 @@ const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Projec
 
 const PROJECTS = [
   {project: 'vlezet', route: '/landing/projects/vlezet.html', status: 'verified', label: 'ПРОВЕРЕНО', borderStyle: 'solid'},
-  {project: 'livingworld', route: '/landing/projects/livingworld.html', status: 'verified', label: 'ПРОВЕРЕНО', borderStyle: 'solid'},
+  {
+    project: 'livingworld',
+    route: '/landing/projects/livingworld.html',
+    status: 'verified',
+    label: 'ПРОВЕРЕНО',
+    borderStyle: 'solid',
+    signals: 3,
+    states: ['accepted', 'merged', 'failed'],
+  },
   {project: 'node-zero', route: '/landing/projects/node-zero.html', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
 ];
 
@@ -47,8 +55,22 @@ async function assertEvidence(page, expected, prefix) {
     if (!href?.startsWith('https://')) throw new Error(`${prefix}: unsafe evidence link ${href}`);
   }
 
+  const signalCount = await root.locator('[data-evidence-kind]').count();
+  if (expected.signals !== undefined && signalCount !== expected.signals) {
+    throw new Error(`${prefix}: expected ${expected.signals} evidence signals, got ${signalCount}`);
+  }
+
+  if (expected.states) {
+    const renderedStates = await root.locator('.tr-project-evidence__signal-state').evaluateAll((nodes) => nodes.map((node) => node.textContent || ''));
+    for (const state of expected.states) {
+      const count = renderedStates.filter((value) => value.includes(state)).length;
+      if (count !== 1) throw new Error(`${prefix}: expected state ${state} exactly once, got ${count}`);
+    }
+  }
+
   return {
-    signals: await root.locator('[data-evidence-kind]').count(),
+    signals: signalCount,
+    states: expected.states || [],
     status: expected.status,
     trustBorder: trustTreatment,
   };

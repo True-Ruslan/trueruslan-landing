@@ -72,7 +72,7 @@ items:
     items:
       - name: Vlezet — Apartment Planner
         href: ./landing/projects/vlezet.md
-      - name: LivingWorld — AI NPCs
+      - name: VillAIgence — AI Society
         href: ./landing/projects/livingworld.md
       - name: NODE ZERO — Techno-horror
         href: ./landing/projects/node-zero.md
@@ -122,7 +122,7 @@ items:
         href: ./en/about.md
       - name: Resume
         href: ./en/resume.md
-      - name: LivingWorld
+      - name: VillAIgence
         href: ./en/projects/livingworld.md
       - name: Server-authoritative AI NPCs
         href: ./en/notes/server-authoritative-ai-npcs.md

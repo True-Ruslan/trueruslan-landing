@@ -68,6 +68,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/project-evidence-smoke.cjs 2>&1 | tee project-evidence-smoke.log
+      - name: VillAIgence diagram browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/villaigence-diagram-smoke.cjs 2>&1 | tee villaigence-diagram-smoke.log
       - name: NODE ZERO diagram browser smoke
         shell: bash
         run: |
@@ -93,6 +98,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/search-smoke.cjs 2>&1 | tee search-smoke.log
+      - name: VillAIgence generated search smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/villaigence-search-smoke.cjs 2>&1 | tee villaigence-search-smoke.log
       - name: Minimal RU EN browser smoke
         shell: bash
         run: |
@@ -139,11 +149,13 @@ jobs:
           cp publications-browser-smoke.log quality-artifacts/publications-browser-smoke.log 2>/dev/null || true
           cp sources-knowledge-base-smoke.log quality-artifacts/sources-knowledge-base-smoke.log 2>/dev/null || true
           cp project-evidence-smoke.log quality-artifacts/project-evidence-smoke.log 2>/dev/null || true
+          cp villaigence-diagram-smoke.log quality-artifacts/villaigence-diagram-smoke.log 2>/dev/null || true
           cp node-zero-diagram-smoke.log quality-artifacts/node-zero-diagram-smoke.log 2>/dev/null || true
           cp photo-stories-browser-smoke.log quality-artifacts/photo-stories-browser-smoke.log 2>/dev/null || true
           cp v03-browser-smoke.log quality-artifacts/v03-browser-smoke.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke 2>/dev/null || true
+          cp villaigence-search-smoke.log quality-artifacts/villaigence-search-smoke.log 2>/dev/null || true
           cp i18n-browser-smoke.log quality-artifacts/i18n-browser-smoke.log 2>/dev/null || true
           cp analytics-browser-smoke.log quality-artifacts/analytics-browser-smoke.log 2>/dev/null || true
           cp metadata-smoke.log quality-artifacts/metadata-smoke.log 2>/dev/null || true
@@ -160,7 +172,7 @@ jobs:
           cp docs-html/landing/now.html quality-artifacts/now-generated.html 2>/dev/null || true
           cp docs-html/landing/bibliography.html quality-artifacts/sources-knowledge-base-generated.html 2>/dev/null || true
           cp docs-html/landing/projects/vlezet.html quality-artifacts/vlezet-generated.html 2>/dev/null || true
-          cp docs-html/landing/projects/livingworld.html quality-artifacts/livingworld-generated.html 2>/dev/null || true
+          cp docs-html/landing/projects/livingworld.html quality-artifacts/villaigence-generated.html 2>/dev/null || true
           cp docs-html/landing/projects/node-zero.html quality-artifacts/node-zero-generated.html 2>/dev/null || true
           cp docs-html/feed.xml quality-artifacts/feed.xml 2>/dev/null || true
           cp docs-html/landing/engineering-map.html quality-artifacts/engineering-map-generated.html 2>/dev/null || true
@@ -168,8 +180,15 @@ jobs:
           cp artifacts/browser-summary.json quality-artifacts/browser-summary.json 2>/dev/null || true
           cp artifacts/vlezet-desktop.png quality-artifacts/vlezet-desktop.png 2>/dev/null || true
           cp artifacts/vlezet-mobile.png quality-artifacts/vlezet-mobile.png 2>/dev/null || true
+          cp artifacts/villaigence-desktop.png quality-artifacts/villaigence-desktop.png 2>/dev/null || true
+          cp artifacts/villaigence-mobile.png quality-artifacts/villaigence-mobile.png 2>/dev/null || true
           cp artifacts/project-evidence-vlezet-mobile.png quality-artifacts/project-evidence-vlezet-mobile.png 2>/dev/null || true
+          cp artifacts/project-evidence-livingworld-mobile.png quality-artifacts/project-evidence-villaigence-mobile.png 2>/dev/null || true
           cp artifacts/project-evidence-summary.json quality-artifacts/project-evidence-summary.json 2>/dev/null || true
+          cp artifacts/villaigence-authority-and-acceptance.png quality-artifacts/villaigence-authority-and-acceptance.png 2>/dev/null || true
+          cp artifacts/villaigence-diagram-summary.json quality-artifacts/villaigence-diagram-summary.json 2>/dev/null || true
+          cp artifacts/search-villaigence.png quality-artifacts/search-villaigence.png 2>/dev/null || true
+          cp artifacts/villaigence-search-summary.json quality-artifacts/villaigence-search-summary.json 2>/dev/null || true
           cp artifacts/node-zero-architecture.png quality-artifacts/node-zero-architecture.png 2>/dev/null || true
           cp artifacts/node-zero-system-flow.png quality-artifacts/node-zero-system-flow.png 2>/dev/null || true
           cp artifacts/node-zero-diagrams-summary.json quality-artifacts/node-zero-diagrams-summary.json 2>/dev/null || true

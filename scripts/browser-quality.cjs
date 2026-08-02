@@ -77,6 +77,15 @@ async function checkScenario(browser, baseUrl, scenario, summary) {
       throw new Error(`Unexpected h1 on ${scenario.path}: expected "${scenario.heading}", got "${heading}"`);
     }
 
+    if (scenario.requiredText?.length) {
+      const bodyText = await page.locator('body').innerText();
+      for (const token of scenario.requiredText) {
+        if (!bodyText.includes(token)) {
+          throw new Error(`${scenario.slug}: required page truth is missing: ${token}`);
+        }
+      }
+    }
+
     const visualReady = await page.evaluate(() => document.documentElement.classList.contains('tr-visual-ready'));
     if (!visualReady) {
       throw new Error(`Custom visual layer did not initialize on ${scenario.path}`);
@@ -106,6 +115,7 @@ async function checkScenario(browser, baseUrl, scenario, summary) {
       path: scenario.path,
       heading,
       viewport: scenario.viewport,
+      requiredText: scenario.requiredText || [],
       accessibilityChecked: Boolean(scenario.accessibility),
     });
   } finally {
@@ -141,11 +151,13 @@ async function main() {
     {...CORE_SCENARIOS.home, slug: 'home-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
     {...CORE_SCENARIOS.projects, slug: 'projects-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
     {...CORE_SCENARIOS.vlezet, slug: 'vlezet-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
+    {...CORE_SCENARIOS.villaigence, slug: 'villaigence-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
     {...CORE_SCENARIOS.publications, slug: 'publications-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
     {...CORE_SCENARIOS.resume, slug: 'resume-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
     {...CORE_SCENARIOS.home, slug: 'home-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
     {...CORE_SCENARIOS.projects, slug: 'projects-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
     {...CORE_SCENARIOS.vlezet, slug: 'vlezet-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
+    {...CORE_SCENARIOS.villaigence, slug: 'villaigence-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
     {...CORE_SCENARIOS.publications, slug: 'publications-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
     {...CORE_SCENARIOS.resume, slug: 'resume-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
   ];

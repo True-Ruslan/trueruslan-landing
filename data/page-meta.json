@@ -82,11 +82,11 @@
   {
     "path": "landing/projects/livingworld.html",
     "card": "livingworld",
-    "title": "LivingWorld — Server-Authoritative AI NPCs",
-    "description": "Case study серверно-авторитетного AI NPC pipeline для Minecraft: sessions, voice/text ingress, STT/LLM/TTS, memory и action authorization.",
-    "displayTitle": "LIVINGWORLD AI",
-    "kicker": "SERVER-AUTHORITATIVE NPCS",
-    "tags": ["MINECRAFT", "LLM", "VOICE PIPELINE"],
+    "title": "VillAIgence — Server-Authoritative AI Society",
+    "description": "Case study Minecraft AI NPC system: text and voice dialogue, Memory 2.0, operator lore, bounded server actions, security and exact-artifact acceptance gates.",
+    "displayTitle": "VILLAIGENCE",
+    "kicker": "SERVER-AUTHORITATIVE AI",
+    "tags": ["MINECRAFT", "MEMORY 2.0", "AI SECURITY"],
     "accent": "green"
   },
   {
@@ -232,11 +232,11 @@
   {
     "path": "en/projects/livingworld.html",
     "card": "livingworld-en",
-    "title": "LivingWorld — Server-Authoritative AI NPCs",
-    "description": "English case study of a server-authoritative Minecraft AI NPC system: sessions, voice/text ingress, memory, provider boundaries and action authorization.",
-    "displayTitle": "LIVINGWORLD AI",
-    "kicker": "SERVER-AUTHORITATIVE NPCS",
-    "tags": ["MINECRAFT", "LLM", "VOICE PIPELINE"],
+    "title": "VillAIgence — Server-Authoritative AI Society",
+    "description": "English case study of a server-authoritative Minecraft society layer with text and voice dialogue, Memory 2.0, operator lore, security and exact-artifact acceptance gates.",
+    "displayTitle": "VILLAIGENCE",
+    "kicker": "SERVER-AUTHORITATIVE AI",
+    "tags": ["MINECRAFT", "MEMORY 2.0", "AI SECURITY"],
     "accent": "green"
   },
   {

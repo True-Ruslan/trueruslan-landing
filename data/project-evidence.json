@@ -43,32 +43,44 @@
   {
     "project": "livingworld",
     "status": "verified",
-    "lastVerified": "2026-07-22",
+    "lastVerified": "2026-08-02",
     "versions": [
+      {"label": "Public name", "value": "VillAIgence"},
       {"label": "Minecraft Java", "value": "1.21.1"},
       {"label": "Java", "value": "21"},
-      {"label": "Fabric Loader", "value": "0.19.3"},
-      {"label": "Fabric API", "value": "0.116.14+1.21.1"},
-      {"label": "MCA Reborn", "value": "7.7.22+1.21.1"},
-      {"label": "Simple Voice Chat", "value": "1.21.1-2.6.20"},
-      {"label": "LivingWorld", "value": "0.1.0"}
+      {"label": "Primary package", "value": "Fabric"},
+      {"label": "Compatibility build", "value": "NeoForge"},
+      {"label": "Persistent context", "value": "Memory 2.0 + Operator Lore"},
+      {"label": "Installed checkpoint", "value": "0.1.20 partial PASS"},
+      {"label": "Corrective code candidate", "value": "0.1.22 live acceptance pending"}
     ],
     "signals": [
       {
-        "kind": "ci",
-        "mode": "automated",
-        "label": "LivingWorld CI run 29736858315",
-        "state": "green",
-        "observedAt": "2026-07-20",
-        "scope": "Exact-head CI для milestone world perception прошёл проверки Java 21 и pinned dependencies, unit/storage/migration/perception/trust/package/reproducibility tests, отдельный RC resilience scenario, Fabric GameTest, staging release artifact и загрузку JAR artifact. Это не подтверждает ручную приёмку двух реальных клиентов, микрофона или spatial audio."
+        "kind": "manual",
+        "mode": "manual",
+        "label": "Installed 0.1.20 cumulative acceptance",
+        "state": "accepted",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/98",
+        "observedAt": "2026-08-02",
+        "scope": "Exact 0.1.20+1.21.1 installed acceptance ended as a partial PASS, not a full release acceptance. Text, STT, Chat, TTS, Voice Chat, Operator Lore scopes, restart, rollback-world loading and most synchronized gameplay scenarios passed. Release defects remained: an NPC became trapped in water and drowned; a filled grave broken with Silk Touch disappeared without an item; embedded identity reported a snapshot; and one Chat request took approximately 272 seconds."
       },
       {
         "kind": "pr",
         "mode": "automated",
-        "label": "World perception milestone PR #6",
+        "label": "Corrective PRs #99–#102",
         "state": "merged",
-        "observedAt": "2026-07-20",
-        "scope": "Milestone server-observed world perception и trusted knowledge был merged после documented exact-head verification. Это подтверждает именно этот milestone, а не полную готовность multiplayer release."
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/102",
+        "observedAt": "2026-08-02",
+        "scope": "PRs #99–#102 preserve vanilla water path positioning, retain filled-tombstone data, enforce exact embedded release identity and replace the production-unsafe tombstone Mixin with direct owned-source wiring. Exact-head repository, Fabric/NeoForge, remapped-package, security and applicable supply-chain gates passed. Installed acceptance remains pending for the exact 0.1.22+1.21.1 artifact."
+      },
+      {
+        "kind": "manual",
+        "mode": "manual",
+        "label": "Installed 0.1.21 startup blocker and safe rollback",
+        "state": "failed",
+        "url": "https://github.com/True-Ruslan/villAIgence/blob/1.21.1/docs/livingworld/VALIDATION_0.1.22_TOMBSTONE_STARTUP_FIX.md",
+        "observedAt": "2026-08-02",
+        "scope": "Exact 0.1.21+1.21.1 failed during startup before world and gameplay acceptance because MixinTombstoneBlock could not resolve the production getDrops target. The operator rolled back to 0.1.20; six persistent file hashes matched, the server reached STARTED, TCP 25565, UDP 24454, Voice Chat and monitoring recovered. This failure is not upgraded by the later automated correction."
       }
     ]
   },

@@ -1,142 +1,116 @@
-# LivingWorld — server-authoritative AI NPCs for Minecraft
+# VillAIgence — server-authoritative AI society for Minecraft
 
-**LivingWorld** is a Fabric 1.21.1 mod for MCA Reborn that I use as an experiment in building AI-driven characters inside a normal multiplayer Minecraft server.
+**VillAIgence** is an MCA-derived Minecraft 1.21.1 mod that has grown from AI-assisted villager dialogue into an experiment in persistent NPC society: text and voice interaction, Memory 2.0, relationships, operator-authored context and bounded server-owned actions.
 
 <span data-tr-project-status="livingworld"></span>
 
-[GitHub repository ↗](https://github.com/True-Ruslan/minecraft-botics-ai)
+[GitHub repository ↗](https://github.com/True-Ruslan/villAIgence)
 
-![LivingWorld architecture](../../assets/diagrams/livingworld-architecture.svg)
+The internal `LivingWorld / livingworld` names remain compatibility-sensitive engine, configuration and world-data identities. The public project name changed without silently renaming the `mca` mod id, Java package root or `<world>/livingworld/` storage.
+
+![VillAIgence authority and acceptance boundaries](../../assets/diagrams/villaigence-authority-and-acceptance.svg)
 
 <!-- case-study:problem -->
-## Problem: an AI character still has to live by server rules
+## Problem: a convincing NPC must still obey the server
 
-The initial idea sounded simple: instead of opening a separate chatbot window, talk to an MCA villager directly in the game through text or voice and make the character feel like part of the world.
+The initial idea was simple: talk to an MCA villager through text or voice and make the character feel like part of the current Minecraft world rather than a separate chatbot.
 
-Connecting an LLM turned out to be the easy part. The real problem was everything around it: **who owns the conversation, what context can be trusted, what the NPC should remember, what happens when an external provider partially fails and whether an old asynchronous answer still belongs to the current session**.
+The provider call was not the hard part. The real system has to decide who owns the conversation, which context was actually observed, what the NPC may remember, whether an asynchronous answer is still current and where an LLM proposal ends before any authoritative game mutation begins.
 
-My core rule became:
-
-> The server remains the source of truth for session ownership, context, memory and game actions. AI is a capability of the system, not its authority.
+> The server owns identity, context, memory, relationships, actions and persistent evidence. The model may propose; it never becomes the authority.
 
 <!-- case-study:constraints -->
 ## Constraints that shaped the architecture
 
-### Session ownership is more important than the input channel
+### Mutable game state cannot leak into asynchronous work
 
-A player may own one NPC conversation session, while one NPC must not accidentally participate in multiple independent conversations at the same time.
+STT, Chat and TTS may finish after the session, player or NPC state has changed. The server therefore captures an immutable bounded context before provider work and revalidates current state before applying any result.
 
-A voice packet by itself grants nothing. Voice is transport; the server first has to prove that this player owns the active session with this NPC.
-
-### External capabilities fail independently
+### Text and voice share one conversation core
 
 ```text
-voice PCM → STT → validated text → LLM → bounded response → TTS PCM
-text command ────────────────────┘
+voice PCM → STT → validated message ┐
+                                     ├→ context → Chat → response → optional TTS
+text command → validated message ────┘
 ```
 
-STT can fail while text still works. TTS can fail after a useful text response already exists. An LLM provider can time out without giving old work the right to mutate a later session.
+Voice is transport. A failed TTS stage must not erase a useful text response, and a failed STT stage must not disable text interaction.
 
-### Asynchronous work can outlive its own context
+### Memory is not one provider-shaped transcript
 
-While STT, LLM or TTS is running, the player may end the conversation, disconnect or start a newer request. Cancellation therefore has to be normal control flow rather than an exceptional cleanup path.
+VillAIgence separates bounded legacy dialogue history, episodic Memory 2.0 events, semantic FACT/BELIEF entries, relationships, voice identity and operator-authored lore. Current server-observed world facts remain authoritative over recalled or authored context.
 
-### Memory must not belong to one prompt format
+### Release evidence has multiple boundaries
 
-Persistent NPC identity, facts and relationships should survive a change in provider or prompt assembly strategy. Conversation context, durable memory, world context and provider-specific prompt representation are different concerns.
-
-### LLM output cannot directly mutate the game world
-
-Even a valid structured response remains an external proposal. Action type, parameters, current NPC/session state and world rules must pass a separate validation and authorization boundary.
+Green source CI does not prove that a remapped distributable JAR starts on the installed server. Package structure, embedded identity, startup, focused gameplay regressions, restart and persistent hashes are separate gates.
 
 <!-- case-study:decisions -->
 ## Key decisions
 
-### Server-authoritative session ownership
+### Server-owned session and immutable context
 
-A conversation starts with a server-owned `player ↔ NPC` session, not with an LLM request.
+A conversation begins with an authoritative `player ↔ NPC` session. Text or voice is accepted only inside that session. The server captures bounded identity, observed facts, operator lore and memory, then revalidates the session and world before an answer can affect state.
 
-1. the player interacts with a live MCA villager;
-2. the server creates an exclusive session;
-3. text or voice is accepted only inside that session;
-4. every answer belongs to a specific NPC and current owner;
-5. ending or superseding the session invalidates related asynchronous work.
+### Memory 2.0 preserves provenance and ownership
 
-### Text and voice converge into one conversation core
+Episodic events describe what happened. Semantic entries distinguish server-observed FACT from PLAYER_TOLD, NPC_TOLD or INFERRED BELIEF. Actions and relationship changes enter memory only after server-owned execution. Deterministic IDs and per-NPC retention prevent retries from duplicating effects or one NPC from evicting another NPC's knowledge.
 
-Voice becomes a normalized message first. After that, text and voice follow the same session validation, context assembly, memory, LLM, fallback and cancellation rules.
+### Operator Lore remains background context
 
-### Provider stages have independent degradation boundaries
+The client editor never owns files or arbitrary identities. Permission checks, trusted target resolution, SHA-256 revision conflicts and atomic world-local writes remain server-authoritative. Operator lore is not automatically promoted into semantic FACT.
 
-A TTS failure should not destroy a useful text response. An STT failure should not break the text channel. Timeouts and malformed responses should fail in bounded ways and release session resources predictably.
+### Provider failures degrade by capability
 
-### Memory is separate from prompt representation
+STT, Chat and TTS have independent bounded failure paths. Authenticated redirects are blocked, bodies and active PCM are limited, unsafe endpoints fail closed and diagnostics exclude credentials, prompts and transcripts.
 
-The server assembles bounded identity, memory and world context before a provider call. Persistent memory is not simply an endless provider-shaped transcript.
+### Selective MCA synchronization protects authority boundaries
 
-### The model proposes; the server decides
-
-![LivingWorld request lifecycle and trust boundaries](../../assets/diagrams/livingworld-request-lifecycle.svg)
-
-The trust flow is intentionally layered:
-
-```text
-input ownership
-→ normalized message
-→ server-built context and memory
-→ LLM proposal
-→ strict validation
-→ persistence policy / action authorization
-→ bounded effects
-```
-
-A structured and convincing model response does not become authoritative merely because it looks correct.
+Gameplay fixes are adopted as isolated packages instead of a broad upstream merge. Water navigation, tombstones, conversion identity, beds, ladders, pathfinding, mourning, gifts, fishing and mounted archers retain focused tests and acceptance scope.
 
 <!-- case-study:failures -->
-## What I underestimated at first
+## What real failures changed
 
-### “Connect an LLM” is not the center of the problem
+The installed `0.1.20+1.21.1` candidate passed the main dialogue, voice, lore, persistence, restart and most gameplay scenarios, but still ended as a partial PASS: an NPC drowned after becoming trapped in water, a filled grave disappeared under Silk Touch, runtime identity reported a snapshot and one Chat request took about 272 seconds.
 
-The hardest questions appeared before the provider call: ownership, concurrency, lifecycle and trust boundaries. Voice, memory and asynchronous providers only amplify ambiguity if those rules are not explicit first.
+The following `0.1.21+1.21.1` candidate failed during startup because a tombstone Mixin could not resolve its production target. Safe rollback restored `0.1.20`, preserved six persistent hashes and recovered the server, voice and monitoring surfaces.
 
-### A transcript is not a memory model
-
-Simply replaying previous messages couples durable character state to a provider-specific prompt shape. Separating current context, durable facts/relationships, rebuildable world context and prompt representation is more resilient.
-
-### Partial failure matters more than the perfect happy path
-
-STT, LLM and TTS do not fail as one unit. Designing fallback per capability preserves useful results instead of collapsing the whole conversation into a generic “AI unavailable” state.
-
-### Cancellation is control flow
-
-An answer can be technically correct and still have no right to exist in the current session. Superseded work needs an explicit lifecycle state.
+These failures showed why a correct source-level intention and green package tests cannot be collapsed into installed acceptance. PR #102 moved tombstone preservation into owned source and removed the unsafe injection rather than weakening the startup gate.
 
 <!-- case-study:current-state -->
 ## Current state
 
-LivingWorld is developed as a release-candidate system rather than presented as a finished multiplayer product. The canonical status badge above is injected from the same project registry used by the Russian site.
+The canonical source head represented by this page is `e13660f5998fa1ed343548252d573140adc5b0c9`.
 
-The architecture already brings session ownership, text/voice convergence, memory, provider boundaries, cancellation and controlled action authorization into one system. The remaining release boundary is dominated by real multiplayer and human acceptance rather than adding another isolated feature.
+The merged correction train through PR #102 covers narrow water navigation, filled-grave preservation, exact release identity and direct tombstone wiring. Automated source and package gates are green.
 
-I intentionally do not duplicate version numbers, verification dates or trust claims in this translation.
+The exact `0.1.22+1.21.1` installed startup, water, grave, restart and cumulative acceptance are still pending. The project is therefore presented as a corrective candidate, not as an accepted production-ready release.
 
 <!-- case-study:evidence -->
 ## Evidence and verification boundary
 
-The full machine-like Project Evidence snapshot and project timeline remain on the [Russian canonical LivingWorld page](../../landing/projects/livingworld.md). They are generated from shared registries and are intentionally not cloned into an English evidence model.
+The complete machine-like Project Evidence snapshot and timeline remain on the [Russian canonical VillAIgence page](../../landing/projects/livingworld.md). They are generated from shared registries rather than copied into a second English evidence model.
 
-Automated tests can prove contracts such as persistence, session ownership, cancellation, rejection/fallback paths and reproducible builds. They cannot replace two real clients, real microphones, human evaluation of speech recognition/positional audio or staging provider-degradation checks.
-
-That distinction is part of the product model: green CI is evidence with a scope, not a universal claim of product readiness.
+That snapshot distinguishes installed partial acceptance, automated corrective code and an installed startup failure. Green CI remains evidence with a bounded scope, not a universal readiness claim.
 
 <!-- case-study:retrospective -->
 ## What I would change if I started today
 
-I would formalize the session/cancellation state machine before deep provider integration. That would make ownership, superseded requests and asynchronous lifetime boundaries explicit earlier.
+I would define the full authority map before deep provider integration: mutable server state → immutable snapshot → external proposal → revalidation → authoritative effect.
 
-I would also define degradation contracts for STT, LLM and TTS up front: what remains useful after each failure and which resources/state must be released.
+I would also begin with episodic and semantic memory as separate models instead of evolving from a transcript, and I would define operator lore as background context from day one.
 
-Finally, I would separate persistent memory from prompt representation from day one and define manual acceptance gates alongside CI before the pipeline became complex.
+Finally, every release candidate would follow the same gate from the start:
+
+```text
+source tests
+→ distributable package inspection
+→ exact embedded identity
+→ installed startup
+→ focused regressions
+→ restart and persistent hashes
+→ cumulative acceptance
+→ promotion
+```
 
 ---
 
