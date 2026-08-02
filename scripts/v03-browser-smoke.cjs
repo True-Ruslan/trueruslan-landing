@@ -92,12 +92,12 @@ async function main() {
       pathname: '/landing/projects.html',
       heading: 'Проекты',
       verify: async (page) => {
-        const livingWorldStatus = page.locator('[data-project-status="livingworld"]');
+        const villaigenceStatus = page.locator('[data-project-status="livingworld"]');
         const nodeZeroStatus = page.locator('[data-project-status="node-zero"]');
-        await livingWorldStatus.waitFor({state: 'visible'});
+        await villaigenceStatus.waitFor({state: 'visible'});
         await nodeZeroStatus.waitFor({state: 'visible'});
-        if ((await livingWorldStatus.innerText()).trim() !== 'RELEASE CANDIDATE') {
-          throw new Error('LivingWorld status on Projects hub drifted from Project Registry.');
+        if ((await villaigenceStatus.innerText()).trim() !== 'CORRECTIVE CANDIDATE') {
+          throw new Error('VillAIgence status on Projects hub drifted from Project Registry.');
         }
         if ((await nodeZeroStatus.innerText()).trim() !== 'PRE-PRODUCTION') {
           throw new Error('NODE ZERO status on Projects hub drifted from Project Registry.');
@@ -114,7 +114,7 @@ async function main() {
         const activeCards = await page.locator('[data-tr-now] .tr-active-card').count();
         if (activeCards < 1) throw new Error('Now page contains no registry-derived active project cards.');
         const nowText = await page.locator('[data-tr-now]').innerText();
-        if (!nowText.includes('RELEASE CANDIDATE') || !nowText.includes('PRE-PRODUCTION')) {
+        if (!nowText.includes('CORRECTIVE CANDIDATE') || !nowText.includes('PRE-PRODUCTION')) {
           throw new Error('Now page project statuses drifted from Project Registry.');
         }
         await assertCommandPalette(page);
@@ -157,7 +157,7 @@ async function main() {
     });
 
     for (const project of [
-      {slug: 'livingworld', heading: 'LivingWorld'},
+      {slug: 'livingworld', heading: 'VillAIgence'},
       {slug: 'node-zero', heading: 'NODE ZERO'},
     ]) {
       await checkPage(browser, serverRuntime.baseUrl, {
