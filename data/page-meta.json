@@ -110,6 +110,16 @@
     "accent": "cyan"
   },
   {
+    "path": "landing/publications.html",
+    "card": "publications",
+    "title": "Публикации и выступления — Руслан Немыкин",
+    "description": "Технические и научные статьи, доклады, интервью, конференции и публикации Руслана Немыкина на внешних площадках.",
+    "displayTitle": "ПУБЛИКАЦИИ",
+    "kicker": "EXTERNAL WORK",
+    "tags": ["ARTICLES", "TALKS", "RESEARCH"],
+    "accent": "green"
+  },
+  {
     "path": "landing/notes/portfolio-runtime-boundary.html",
     "card": "note-runtime-boundary",
     "title": "Почему я отделил landing page от Diplodoc runtime",
