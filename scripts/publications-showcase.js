@@ -9,21 +9,19 @@ import {
 
 const TARGET = 'landing/publications.html';
 const FEATURED_PLACEHOLDER = /<div\s+data-tr-publications-featured(?:="")?\s*><\/div>/;
-const CATALOGUE_PLACEHOLDER = /<div\s+data-tr-publications-catalogue(?:="")?\s*><\/div>/;
+const PREBUILD_CATALOGUE_MARKER = 'data-tr-publications-root';
 const STYLE_MARKER = 'data-tr-publications-style';
 const NOSCRIPT_MARKER = 'data-tr-publications-noscript';
 
-function replacePublicationPlaceholders(html, featured, catalogue) {
+function injectFeaturedPublications(html, featured) {
   const hasFeatured = FEATURED_PLACEHOLDER.test(html);
-  const hasCatalogue = CATALOGUE_PLACEHOLDER.test(html);
+  const hasCatalogue = html.includes(PREBUILD_CATALOGUE_MARKER);
 
   if (!hasFeatured && !hasCatalogue) return html;
   if (!hasFeatured) throw new Error('publication featured placeholder is missing');
-  if (!hasCatalogue) throw new Error('publication catalogue placeholder is missing');
+  if (!hasCatalogue) throw new Error('generated publication catalogue is missing');
 
-  return html
-    .replace(FEATURED_PLACEHOLDER, featured)
-    .replace(CATALOGUE_PLACEHOLDER, catalogue);
+  return html.replace(FEATURED_PLACEHOLDER, featured);
 }
 
 function injectStylesheet(html) {
@@ -35,7 +33,7 @@ function injectStylesheet(html) {
 
 function injectNoScriptFallback(html, catalogue) {
   if (html.includes(NOSCRIPT_MARKER)) return html;
-  const fallback = `<noscript data-tr-publications-noscript><section><h1>Публикации и выступления</h1>${catalogue}</section></noscript>`;
+  const fallback = `<noscript data-tr-publications-noscript><style>#root{display:none!important}</style><section class="tr-publications-noscript"><h1>Публикации и выступления</h1>${catalogue}</section></noscript>`;
   const rootPattern = /(<div\s+id="root"[^>]*><\/div>)/;
   if (rootPattern.test(html)) return html.replace(rootPattern, `$1${fallback}`);
   if (html.includes('</body>')) return html.replace('</body>', `${fallback}</body>`);
@@ -55,12 +53,12 @@ export function applyPublicationsShowcase(outputDir, publications, {
 
   const transformed = transformGeneratedContent(
     source,
-    (content) => replacePublicationPlaceholders(content, featured, catalogue),
-    'publication showcase placeholders',
+    (content) => injectFeaturedPublications(content, featured),
+    'publication featured placeholder and prebuild catalogue',
   );
 
   if (!transformed.source) {
-    throw new Error('publication featured and catalogue placeholders are missing');
+    throw new Error('publication featured placeholder or generated catalogue is missing');
   }
 
   let html = injectStylesheet(transformed.html);
