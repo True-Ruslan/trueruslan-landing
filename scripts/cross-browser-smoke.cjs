@@ -33,6 +33,13 @@ async function runScenario(browserType, browserName, scenario, baseUrl) {
       throw new Error(`${browserName} unexpected h1 on ${scenario.path}: ${heading}`);
     }
 
+    if (scenario.requiredText?.length) {
+      const bodyText = await page.locator('body').innerText();
+      for (const token of scenario.requiredText) {
+        if (!bodyText.includes(token)) throw new Error(`${browserName} ${scenario.slug} missing required truth: ${token}`);
+      }
+    }
+
     await assertNoHorizontalOverflow(page, `${browserName} ${scenario.path}`);
 
     if (scenario.publications) {
@@ -73,6 +80,7 @@ async function main() {
     {...CORE_SCENARIOS.home, path: '/'},
     {...CORE_SCENARIOS.projects},
     {...CORE_SCENARIOS.vlezet},
+    {...CORE_SCENARIOS.villaigence},
     {...CORE_SCENARIOS.publications, publications: true},
     {...CORE_SCENARIOS.resume, resume: true},
   ];
