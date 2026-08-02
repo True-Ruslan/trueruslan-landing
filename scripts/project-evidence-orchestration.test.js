@@ -33,6 +33,11 @@ test('postprocessOutput loads and injects canonical project evidence when explic
 
   const projects = [
     {
+      slug: 'vlezet', name: 'Vlezet', status: 'pre-production', statusLabel: 'ACTIVE DEVELOPMENT',
+      summary: 'Test Vlezet.', featured: true, active: true, visibility: 'public',
+      href: 'landing/projects/vlezet.html', tags: ['TypeScript', 'Geometry'],
+    },
+    {
       slug: 'livingworld', name: 'LivingWorld', status: 'release-candidate', statusLabel: 'RELEASE CANDIDATE',
       summary: 'Test LivingWorld.', featured: true, active: true, visibility: 'public',
       href: 'landing/projects/livingworld.html', tags: ['Java', 'AI'],
@@ -66,6 +71,10 @@ test('postprocessOutput loads and injects canonical project evidence when explic
   });
   writeJson(evidencePath, [
     {
+      project: 'vlezet', status: 'verified', lastVerified: '2026-08-02', versions: [],
+      signals: [{kind: 'pr', mode: 'automated', label: 'Recognition review', state: 'failed', observedAt: '2026-08-02', scope: 'Real-plan review failed and remains bounded.'}],
+    },
+    {
       project: 'livingworld', status: 'verified', lastVerified: '2026-07-22', versions: [],
       signals: [{kind: 'ci', mode: 'automated', label: 'CI', state: 'green', observedAt: '2026-07-22', scope: 'CI scope.'}],
     },
@@ -76,10 +85,11 @@ test('postprocessOutput loads and injects canonical project evidence when explic
   ]);
 
   fs.writeFileSync(path.join(outputDir, 'index.html'), '<!doctype html><html><head><title>Generated</title></head><body class="g-root"></body></html>');
-  fs.writeFileSync(path.join(outputDir, 'landing', 'projects.html'), '<!doctype html><html><body><main><span data-tr-project-status="livingworld"></span><span data-tr-project-status="node-zero"></span></main></body></html>');
+  fs.writeFileSync(path.join(outputDir, 'landing', 'projects.html'), '<!doctype html><html><body><main><span data-tr-project-status="vlezet"></span><span data-tr-project-status="livingworld"></span><span data-tr-project-status="node-zero"></span></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'now.html'), '<!doctype html><html><body><main><div data-tr-now-placeholder></div></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'engineering-map.html'), '<!doctype html><html><body><main><div data-tr-engineering-graph-root></div></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'notes', 'test-note.html'), '<!doctype html><html><body><main><h1>Test note</h1><p>Body</p></main></body></html>');
+  fs.writeFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet.html'), '<!doctype html><html><body><main><div data-tr-project-evidence="vlezet"></div></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'projects', 'livingworld.html'), '<!doctype html><html><body><main><div data-tr-project-evidence="livingworld"></div></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'projects', 'node-zero.html'), '<!doctype html><html><body><main><div data-tr-project-evidence="node-zero"></div></main></body></html>');
 
@@ -101,7 +111,10 @@ test('postprocessOutput loads and injects canonical project evidence when explic
   assert.deepEqual(result.projectEvidenceTargets, [
     'landing/projects/livingworld.html',
     'landing/projects/node-zero.html',
+    'landing/projects/vlezet.html',
   ]);
+  assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet.html'), 'utf8'), /data-evidence-status="verified"/);
+  assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet.html'), 'utf8'), /Состояние:<\/strong> failed/);
   assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'livingworld.html'), 'utf8'), /data-evidence-status="verified"/);
   assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'node-zero.html'), 'utf8'), /data-evidence-status="stale"/);
 });
