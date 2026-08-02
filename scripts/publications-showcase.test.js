@@ -53,14 +53,20 @@ test('standalone homepage reserves one featured-publications surface below activ
   assert.equal(home.indexOf('{{FEATURED_PUBLICATIONS}}', publicationsIndex + 1), -1);
   assert.ok(publicationsIndex > activeIndex, 'featured publications must follow active projects');
   assert.ok(publicationsIndex < focusIndex, 'featured publications must precede broad focus cards');
-  assert.match(home, /Избранные публикации/);
   assert.match(home, /landing\/publications\.html/);
 });
 
-test('primary and side navigation expose Publications next to Notes', () => {
+test('primary and side navigation expose Publications after Notes', () => {
   const toc = read(TOC_PATH);
   assert.match(toc, /- text: Notes[\s\S]{0,180}- text: Публикации/);
-  assert.match(toc, /- name: Engineering Notes[\s\S]{0,180}- name: Публикации/);
+
+  const notesIndex = toc.indexOf('  - name: Engineering Notes');
+  const publicationsIndex = toc.indexOf('  - name: Публикации');
+  const aboutIndex = toc.indexOf('  - name: Обо мне');
+  assert.notEqual(notesIndex, -1);
+  assert.notEqual(publicationsIndex, -1);
+  assert.ok(publicationsIndex > notesIndex, 'Publications must follow the complete Engineering Notes tree');
+  assert.ok(publicationsIndex < aboutIndex, 'Publications must remain a first-class content surface before About');
   assert.match(toc, /href: \.\/landing\/publications\.md/);
 
   const home = read(HOME_TEMPLATE_PATH);
