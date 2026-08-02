@@ -10,6 +10,7 @@ const PAGE_PATH = path.join(ROOT, 'docs', 'landing', 'publications.md');
 const HOME_TEMPLATE_PATH = path.join(ROOT, 'templates', 'index.html');
 const TOC_PATH = path.join(ROOT, 'docs', 'toc.yaml');
 const META_PATH = path.join(ROOT, 'data', 'page-meta.json');
+const PACKAGE_PATH = path.join(ROOT, 'package.json');
 
 function read(filePath) {
   return fs.readFileSync(filePath, 'utf8');
@@ -30,16 +31,26 @@ test('publication showcase owns one canonical data registry and page', () => {
   assert.equal(registry.some((entry) => 'views' in entry || 'votes' in entry || 'likes' in entry), false);
 });
 
-test('publications page has stable framing and exactly one build-time catalogue placeholder', () => {
+test('publications page has stable framing, one featured placeholder and one generated catalogue include', () => {
   const page = read(PAGE_PATH);
 
   assert.match(page, /^# Публикации и выступления/m);
   assert.match(page, /PUBLICATIONS · TALKS · RESEARCH/);
   assert.match(page, /только уже опубликованные или состоявшиеся материалы/i);
   assert.equal((page.match(/data-tr-publications-featured/g) ?? []).length, 1);
-  assert.equal((page.match(/data-tr-publications-catalogue/g) ?? []).length, 1);
+  assert.equal((page.match(/publications-catalogue\.md/g) ?? []).length, 1);
+  assert.match(page, /\{% include notitle \[Generated publications catalogue\]\(\.\.\/_includes\/publications-catalogue\.md\) %\}/);
+  assert.doesNotMatch(page, /data-tr-publications-catalogue/);
   assert.match(page, /внешн/i);
   assert.doesNotMatch(page, /\bTODO\b|\bTBD\b/i);
+});
+
+test('Diplodoc builds generate publication content before indexing', () => {
+  const packageJson = JSON.parse(read(PACKAGE_PATH));
+
+  assert.equal(packageJson.scripts['generate:publications'], 'node scripts/publication-content-generator.js');
+  assert.match(packageJson.scripts['build:docs'], /^npm run generate:publications && yfm /);
+  assert.match(packageJson.scripts['build:docs:fast'], /^npm run generate:publications && yfm /);
 });
 
 test('standalone homepage reserves one featured-publications surface below active projects', () => {
