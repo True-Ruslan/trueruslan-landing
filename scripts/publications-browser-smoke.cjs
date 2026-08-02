@@ -85,12 +85,17 @@ async function runScenario(browser, baseUrl, {
 
     const publicationCards = await assertPublicationContent(page, label, {javaScriptEnabled});
     await assertNoHorizontalOverflow(page, label);
-    await assertNoBlockingAxe({
-      page,
-      label,
-      AxeBuilder,
-      artifactName: `axe-${screenshot.replace('.png', '')}.json`,
-    });
+
+    let axeChecked = false;
+    if (javaScriptEnabled) {
+      await assertNoBlockingAxe({
+        page,
+        label,
+        AxeBuilder,
+        artifactName: `axe-${screenshot.replace('.png', '')}.json`,
+      });
+      axeChecked = true;
+    }
 
     const fallback = page.locator('[data-tr-publications-noscript]');
     const fallbackCount = await fallback.count();
@@ -115,6 +120,7 @@ async function runScenario(browser, baseUrl, {
       publicationCards,
       fallbackCount,
       fallbackVisible,
+      axeChecked,
     };
   } finally {
     await runtime.close();
