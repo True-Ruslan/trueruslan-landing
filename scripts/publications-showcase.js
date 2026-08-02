@@ -9,13 +9,13 @@ import {
 
 const TARGET = 'landing/publications.html';
 const FEATURED_PLACEHOLDER = /<div\s+data-tr-publications-featured(?:="")?\s*><\/div>/;
-const PREBUILD_CATALOGUE_MARKER = 'data-tr-publications-root';
+const PREBUILD_CATALOGUE = /<div\b[^>]*\bdata-tr-publications-root(?:="")?[^>]*>/;
 const STYLE_MARKER = 'data-tr-publications-style';
 const NOSCRIPT_MARKER = 'data-tr-publications-noscript';
 
 function injectFeaturedPublications(html, featured) {
   const hasFeatured = FEATURED_PLACEHOLDER.test(html);
-  const hasCatalogue = html.includes(PREBUILD_CATALOGUE_MARKER);
+  const hasCatalogue = PREBUILD_CATALOGUE.test(html);
 
   if (!hasFeatured && !hasCatalogue) return html;
   if (!hasFeatured) throw new Error('publication featured placeholder is missing');
