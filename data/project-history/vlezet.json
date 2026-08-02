@@ -8,15 +8,15 @@
   },
   {
     "date": "2026-08",
-    "title": "Benchmark-first recognition quality",
-    "description": "M7.8A introduced a versioned public-safe benchmark and was accepted. M7.8B now improves source normalisation and wall topology, but remains under product-owner real-plan review rather than accepted product state.",
+    "title": "Recognition quality under corrective review",
+    "description": "M7.8A established and accepted the public-safe benchmark. M7.8B then failed product-owner review on a representative real plan: the Draft contained 417 local wall candidates, zero openings and a symbol/furniture network. Structural masking and fail-closed overload handling are now being developed; the PR remains Draft and must not be treated as accepted recognition quality.",
     "state": "current",
     "evidence": "https://github.com/True-Ruslan/vlezet/pull/41"
   },
   {
     "date": "NEXT",
-    "title": "Openings, rooms, labels and area constraints",
-    "description": "Classify doors and windows with verified host walls, derive room faces, reconcile labels and areas, calibrate confidence and preserve explicit review before Apply.",
+    "title": "Architectural shell before semantic expansion",
+    "description": "Add a public-safe clutter-heavy regression, keep candidate counts reviewable, prevent symbol networks from outranking the shell, repeat real-plan acceptance, and only then continue with verified host-wall openings, room faces, labels, areas and confidence calibration.",
     "state": "next"
   }
 ]
