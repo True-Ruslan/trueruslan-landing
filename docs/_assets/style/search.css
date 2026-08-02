@@ -211,7 +211,7 @@ html[data-tr-search-page="true"] .tr-search-input:focus-visible {
 }
 
 html[data-tr-search-page="true"] .tr-search-input-shell::after {
-  content: "/ · ⌘K";
+  content: "/ · ⌘K" !important;
   position: absolute;
   top: 50%;
   right: .75rem;
