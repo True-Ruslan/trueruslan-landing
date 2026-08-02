@@ -45,6 +45,7 @@ async function main() {
     browser = await launchChromium(chromium);
     const scenarios = [
       {label: 'Projects', path: CORE_SCENARIOS.projects.path},
+      {label: 'VillAIgence', path: CORE_SCENARIOS.villaigence.path},
       {label: 'Publications', path: CORE_SCENARIOS.publications.path},
     ];
 
