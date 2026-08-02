@@ -2,9 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {transformGeneratedContent} from './diplodoc-state.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
-const DEFAULT_INDEX_TEMPLATE = path.join(ROOT, 'templates', 'photos-index.html');
 const DEFAULT_ALBUM_TEMPLATE = path.join(ROOT, 'templates', 'photo-album.html');
 
 export const PHOTO_CATEGORIES = Object.freeze([
@@ -272,7 +273,7 @@ function formatAlbumDate(date) {
   return `${RU_MONTHS[month - 1]} ${year}`;
 }
 
-function renderHeader(prefix, photosHref) {
+function renderAlbumHeader(prefix) {
   return `<header class="tr-site-header">
     <div class="tr-site-header__inner">
       <a class="tr-site-brand" href="${prefix}index.html" aria-label="TrueRuslan — главная">TRUERUSLAN_</a>
@@ -281,12 +282,16 @@ function renderHeader(prefix, photosHref) {
         <a href="${prefix}landing/now.html">Сейчас</a>
         <a href="${prefix}landing/engineering-map.html">Map</a>
         <a href="${prefix}landing/notes.html">Notes</a>
-        <a href="${photosHref}" aria-current="page">Фото</a>
+        <a href="${prefix}landing/photos.html" aria-current="page">Фото</a>
         <a href="${prefix}landing/about.html">Обо мне</a>
         <a href="${prefix}landing/resume.html">Резюме</a>
-        <a href="${prefix}_search/ru/index.html">Поиск</a>
       </nav>
-      <a class="tr-site-github" href="https://github.com/True-Ruslan" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+      <div class="tr-site-header__profiles">
+        <a href="https://github.com/True-Ruslan" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://habr.com/ru/users/TrueRuslan/" target="_blank" rel="noopener noreferrer">Habr</a>
+        <a href="https://t.me/TrueRuslan_Blog" target="_blank" rel="noopener noreferrer">Telegram</a>
+        <a href="${prefix}_search/ru/index.html">Поиск</a>
+      </div>
     </div>
   </header>`;
 }
@@ -335,7 +340,7 @@ function renderArchiveItem(item) {
 function renderAlbumCard(album) {
   const places = album.places?.length ? album.places.join(' · ') : '';
   return `<article class="tr-photo-album-card" data-tr-photo-album-card data-category="${escapeHtml(album.category)}">
-    <a class="tr-photo-album-card__link" href="${escapeHtml(album.slug)}/">
+    <a class="tr-photo-album-card__link" href="../photos/${escapeHtml(album.slug)}/">
       <div class="tr-photo-album-card__media">
         <img src="../${escapeHtml(album.cover)}" alt="" loading="lazy" decoding="async">
         <span class="tr-photo-album-card__count">${album.photos.length} фото</span>
@@ -374,36 +379,45 @@ function renderYears(albums) {
   </section>`).join('\n');
 }
 
-export function renderPhotoIndexPage({albums = [], archive = [], siteUrl, templatePath = DEFAULT_INDEX_TEMPLATE}) {
+export function renderPhotoIndexContent({albums = [], archive = []} = {}) {
   const validatedAlbums = validatePhotoAlbums(albums, {requireFiles: false});
   const validatedArchive = validatePhotoArchive(archive, {requireFiles: false});
-  const cleanSiteUrl = stripTrailingSlash(siteUrl);
-  const title = 'Фотографии — Руслан Немыкин';
-  const description = 'Личный визуальный архив Руслана Немыкина: фотоистории о поездках, учёбе, событиях, людях и обычных моментах вне кода.';
-  const content = `<div class="tr-photo-shell">
-    <section class="tr-photo-index-hero" aria-labelledby="photo-title">
-      <p class="tr-photo-eyebrow">VISUAL ARCHIVE · STORIES · MOMENTS</p>
-      <h1 id="photo-title">Фотографии</h1>
-      <p class="tr-photo-index-hero__lead">Здесь я сохраняю не всё подряд, а небольшие визуальные истории — поездки, события, людей и обычные моменты, к которым самому хочется потом вернуться.</p>
-      ${renderFilters(validatedAlbums)}
-    </section>
+  return `<div class="tr-photo-embedded" data-tr-photo-page="index">
+    <p class="tr-photo-intro">Здесь я сохраняю не всё подряд, а небольшие визуальные истории — поездки, события, людей и обычные моменты, к которым самому хочется потом вернуться.</p>
+    ${renderFilters(validatedAlbums)}
     <div class="tr-photo-chronology" data-tr-photo-chronology>${renderYears(validatedAlbums)}</div>
     <section class="tr-photo-archive" aria-labelledby="photo-archive-title">
       <div class="tr-photo-section-head"><div><span class="tr-photo-section-kicker">FROM THE ARCHIVE</span><h2 id="photo-archive-title">Из архива</h2></div><p>Несколько отдельных кадров, которые остались здесь ещё с ранней версии сайта. Я не стал искусственно превращать их в альбомы.</p></div>
       <div class="tr-photo-archive-grid">${validatedArchive.map(renderArchiveItem).join('\n')}</div>
     </section>
+    ${renderLightboxShell()}
   </div>`;
+}
 
-  return applyTemplate(loadTemplate(templatePath), {
-    TITLE: escapeHtml(title),
-    DESCRIPTION: escapeHtml(description),
-    CANONICAL: `${cleanSiteUrl}/photos/`,
-    OG_IMAGE: `${cleanSiteUrl}/assets/images/avatar.png`,
-    HEADER: renderHeader('../', './'),
-    CONTENT: content,
-    LIGHTBOX: renderLightboxShell(),
-    FOOTER: renderFooter(),
-  });
+function injectPhotoResources(html) {
+  let result = html;
+  if (!/data-tr-photo-stylesheet/i.test(result)) {
+    const styles = '<link rel="stylesheet" href="../_assets/style/photo-stories.css" data-tr-photo-stylesheet><link rel="stylesheet" href="../_assets/style/photo-embedded.css" data-tr-photo-embedded-stylesheet>';
+    result = result.replace(/<\/head>/i, `${styles}</head>`);
+  }
+  if (!/data-tr-photo-script/i.test(result)) {
+    result = result.replace(/<\/body>/i, '<script src="../_assets/script/photo-stories.js" defer data-tr-photo-script></script></body>');
+  }
+  return result;
+}
+
+export function applyPhotoIndexPage(documentHtml, {albums = [], archive = []} = {}) {
+  const marker = /<div[^>]*data-tr-photo-placeholder(?:=["'][^"']*["'])?[^>]*>\s*<\/div>/i;
+  const content = renderPhotoIndexContent({albums, archive});
+  const transformed = transformGeneratedContent(
+    documentHtml,
+    (contentHtml) => marker.test(contentHtml) ? contentHtml.replace(marker, content) : contentHtml,
+    'Photo Stories index',
+  );
+  if (!transformed.source) {
+    throw new Error('Photo Stories placeholder not found in rendered DOM or Diplodoc state payload.');
+  }
+  return injectPhotoResources(transformed.html);
 }
 
 function renderAlbumPhoto(photo, album) {
@@ -433,12 +447,13 @@ export function renderPhotoAlbumPage(album, {siteUrl, previous = null, next = nu
   const meta = [places, formatAlbumDate(validated.date), `${validated.photos.length} фото`].filter(Boolean).join(' · ');
   const title = `${validated.title} — Фотоистория Руслана Немыкина`;
   const description = validated.summary;
+  const indexHref = '../../landing/photos.html';
   const content = `<article class="tr-photo-story">
     <section class="tr-photo-album-hero" aria-labelledby="album-title">
       <img class="tr-photo-album-hero__image" src="../../${escapeHtml(validated.cover)}" alt="" fetchpriority="high" decoding="async">
       <div class="tr-photo-album-hero__veil"></div>
       <div class="tr-photo-album-hero__content">
-        <a class="tr-photo-back" href="../">← Все истории</a>
+        <a class="tr-photo-back" href="${indexHref}">← Все истории</a>
         <span class="tr-photo-album-hero__category">${escapeHtml(PHOTO_CATEGORY_LABELS[validated.category])}</span>
         <h1 id="album-title">${escapeHtml(validated.title)}</h1>
         <p class="tr-photo-album-hero__meta">${escapeHtml(meta)}</p>
@@ -449,7 +464,7 @@ export function renderPhotoAlbumPage(album, {siteUrl, previous = null, next = nu
     <section class="tr-photo-story-body" id="photo-story" aria-label="Фотографии истории ${escapeHtml(validated.title)}">
       <div class="tr-photo-editorial">${validated.photos.map((photo) => renderAlbumPhoto(photo, validated)).join('\n')}</div>
       ${renderStoryNavigation(previous, next)}
-      <div class="tr-photo-story-end"><a href="../">← Вернуться в фотоархив</a></div>
+      <div class="tr-photo-story-end"><a href="${indexHref}">← Вернуться в фотоархив</a></div>
     </section>
   </article>`;
 
@@ -459,18 +474,18 @@ export function renderPhotoAlbumPage(album, {siteUrl, previous = null, next = nu
     CANONICAL: `${cleanSiteUrl}/photos/${validated.slug}/`,
     OG_IMAGE: `${cleanSiteUrl}/${validated.cover}`,
     SLUG: escapeHtml(validated.slug),
-    HEADER: renderHeader('../../', '../'),
+    HEADER: renderAlbumHeader('../../'),
     CONTENT: content,
     LIGHTBOX: renderLightboxShell(),
     FOOTER: renderFooter(),
   });
 }
 
-export function renderLegacyPhotosBridge(target = '../photos/') {
+export function renderLegacyPhotosBridge(target = '../landing/photos.html') {
   const safeTarget = escapeHtml(target);
   return `<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="refresh" content="0;url=${safeTarget}"><title>Фотографии — Руслан Немыкин</title><link rel="canonical" href="${safeTarget}"></head>
-<body><main><h1>Фотографии</h1><p>Раздел переехал в новый фотоархив.</p><p><a href="${safeTarget}">Открыть фотоархив</a></p></main></body></html>`;
+<body><main><h1>Фотографии</h1><p>Фотоархив теперь находится в общем разделе сайта.</p><p><a href="${safeTarget}">Открыть фотоархив</a></p></main></body></html>`;
 }
 
 export function writePhotoStories({
@@ -478,7 +493,6 @@ export function writePhotoStories({
   albums,
   archive,
   siteUrl,
-  indexTemplatePath = DEFAULT_INDEX_TEMPLATE,
   albumTemplatePath = DEFAULT_ALBUM_TEMPLATE,
 } = {}) {
   if (!outputDir) throw new Error('outputDir is required to write photo stories');
@@ -488,9 +502,16 @@ export function writePhotoStories({
     .filter((album) => album.published)
     .toSorted((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug));
 
-  const indexPath = path.join(outputDir, 'photos', 'index.html');
-  fs.mkdirSync(path.dirname(indexPath), {recursive: true});
-  fs.writeFileSync(indexPath, renderPhotoIndexPage({albums: validatedAlbums, archive: validatedArchive, siteUrl, templatePath: indexTemplatePath}), 'utf8');
+  const indexPath = path.join(outputDir, 'landing', 'photos.html');
+  if (!fs.existsSync(indexPath)) {
+    throw new Error('generated photo page not found: landing/photos.html');
+  }
+  const generatedIndex = fs.readFileSync(indexPath, 'utf8');
+  fs.writeFileSync(indexPath, applyPhotoIndexPage(generatedIndex, {
+    albums: validatedAlbums,
+    archive: validatedArchive,
+    siteUrl,
+  }), 'utf8');
 
   const albumRoutes = [];
   for (const [index, album] of published.entries()) {
@@ -505,12 +526,12 @@ export function writePhotoStories({
     albumRoutes.push(`photos/${album.slug}/`);
   }
 
-  const legacyPath = path.join(outputDir, 'landing', 'photos.html');
+  const legacyPath = path.join(outputDir, 'photos', 'index.html');
   fs.mkdirSync(path.dirname(legacyPath), {recursive: true});
-  fs.writeFileSync(legacyPath, renderLegacyPhotosBridge('../photos/'), 'utf8');
+  fs.writeFileSync(legacyPath, renderLegacyPhotosBridge('../landing/photos.html'), 'utf8');
 
   return {
-    routes: ['photos/', ...albumRoutes],
+    routes: ['landing/photos.html', ...albumRoutes],
     albumRoutes,
     indexPath,
     legacyPath,
