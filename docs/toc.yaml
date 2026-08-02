@@ -33,6 +33,10 @@ navigation:
         type: link
         url: landing/notes.html
         target: _self
+      - text: Публикации
+        type: link
+        url: landing/publications.html
+        target: _self
       - text: Источники
         type: link
         url: landing/bibliography.html
@@ -99,6 +103,8 @@ items:
         href: ./landing/notes/static-first-sources-no-js.md
       - name: CI vs product verification
         href: ./landing/notes/green-ci-is-not-product-verification.md
+  - name: Публикации
+    href: ./landing/publications.md
   - name: Обо мне
     href: ./landing/about.md
   - name: Резюме
