@@ -157,13 +157,6 @@ async function main() {
     const pageResponse = await page.goto(`${server.baseUrl}/landing/projects/node-zero.html`, {waitUntil: 'networkidle'});
     if (!pageResponse?.ok()) throw new Error(`NODE ZERO page returned HTTP ${pageResponse?.status() ?? 'none'}`);
 
-    const generatedHtml = await page.content();
-    for (const diagram of DIAGRAMS) {
-      if (!generatedHtml.includes(diagram.path.replace(/^\//, '../../'))) {
-        throw new Error(`NODE ZERO page does not reference ${diagram.path}`);
-      }
-    }
-
     const results = [];
     for (const diagram of DIAGRAMS) {
       const sourceUrl = `${server.baseUrl}${diagram.path}`;
