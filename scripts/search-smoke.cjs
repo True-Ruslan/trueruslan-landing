@@ -125,8 +125,14 @@ async function assertSearchControlVisuals(page, name) {
     const contentNeutral = ['none', 'normal', '""'].includes(pseudo.content);
     return contentNeutral && pseudo.backgroundImage === 'none' && pseudo.boxShadow === 'none';
   };
-  if (![idle.buttonBefore, idle.buttonAfter, idle.fieldBefore, idle.fieldAfter].every(pseudoIsNeutral)) {
+  if (![idle.buttonBefore, idle.buttonAfter, idle.fieldBefore].every(pseudoIsNeutral)) {
     throw new Error(`${name}: inherited pseudo-elements still draw duplicate/ripple layers: ${JSON.stringify(idle)}`);
+  }
+  if (!idle.fieldAfter.content.includes('/')
+    || !idle.fieldAfter.content.includes('⌘K')
+    || idle.fieldAfter.backgroundImage !== 'none'
+    || idle.fieldAfter.boxShadow !== 'none') {
+    throw new Error(`${name}: search shortcut hint is not the only intentional field pseudo-element: ${JSON.stringify(idle)}`);
   }
 
   await input.focus();
