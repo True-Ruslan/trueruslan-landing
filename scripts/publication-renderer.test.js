@@ -112,7 +112,10 @@ test('renderer exposes optional secondary and contextual links without duplicati
     ]),
     relatedProjects: Object.freeze(['livingworld']),
     relatedNotes: Object.freeze(['portfolio-runtime-boundary']),
-  })]);
+  })], {
+    projectLabels: new Map([['livingworld', 'LivingWorld']]),
+    noteLabels: new Map([['portfolio-runtime-boundary', 'Runtime boundary']]),
+  });
 
   assert.match(html, /href="https:\/\/example\.test\/slides"[^>]*>Слайды ↗<\/a>/);
   assert.match(html, /href="https:\/\/example\.test\/video"[^>]*>Видео ↗<\/a>/);
