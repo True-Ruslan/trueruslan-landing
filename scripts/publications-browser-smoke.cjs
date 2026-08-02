@@ -15,25 +15,36 @@ const EXPECTED_PUBLICATION_IDS = Object.freeze([
   'automated-conveyor-drive',
 ]);
 
-async function assertPublicationContent(page, label) {
+async function assertPublicationContent(page, label, {javaScriptEnabled}) {
   const heading = (await page.locator('h1').first().innerText()).trim();
   if (!heading.includes(CORE_SCENARIOS.publications.heading)) {
     throw new Error(`${label}: unexpected h1: ${heading}`);
   }
 
+  const expectedCopies = javaScriptEnabled ? 2 : 1;
+  const expectedCardCount = EXPECTED_PUBLICATION_IDS.length * expectedCopies;
   const cards = page.locator('[data-tr-publication-id]');
-  if (await cards.count() !== 6) {
-    throw new Error(`${label}: expected 3 featured and 3 catalogue cards.`);
+  const actualCardCount = await cards.count();
+  if (actualCardCount !== expectedCardCount) {
+    throw new Error(`${label}: expected ${expectedCardCount} publication cards, got ${actualCardCount}.`);
   }
 
   for (const id of EXPECTED_PUBLICATION_IDS) {
-    if (await page.locator(`[data-tr-publication-id="${id}"]`).count() !== 2) {
-      throw new Error(`${label}: publication ${id} must appear once in Featured and once in Catalogue.`);
+    const actualCopies = await page.locator(`[data-tr-publication-id="${id}"]`).count();
+    if (actualCopies !== expectedCopies) {
+      throw new Error(`${label}: publication ${id} expected ${expectedCopies} visible representation(s), got ${actualCopies}.`);
     }
   }
 
-  const emptyGroupHeadings = ['Научные публикации', 'Доклады и конференции', 'Интервью и приглашённые материалы', 'Публикации в сборниках'];
   const pageText = await page.locator('body').innerText();
+  if (javaScriptEnabled && !pageText.includes('Избранное')) {
+    throw new Error(`${label}: enhanced page must expose the curated Featured section.`);
+  }
+  if (!javaScriptEnabled && pageText.includes('Избранное')) {
+    throw new Error(`${label}: no-JS fallback must expose the complete catalogue without duplicate Featured cards.`);
+  }
+
+  const emptyGroupHeadings = ['Научные публикации', 'Доклады и конференции', 'Интервью и приглашённые материалы', 'Публикации в сборниках'];
   for (const headingText of emptyGroupHeadings) {
     if (pageText.includes(headingText)) {
       throw new Error(`${label}: empty group must not render: ${headingText}`);
@@ -44,6 +55,8 @@ async function assertPublicationContent(page, label) {
   if (await unsafeExternal.count()) {
     throw new Error(`${label}: external publication links must use noopener noreferrer.`);
   }
+
+  return actualCardCount;
 }
 
 async function runScenario(browser, baseUrl, {
@@ -70,7 +83,7 @@ async function runScenario(browser, baseUrl, {
       throw new Error(`${label}: publications page returned HTTP ${response?.status() ?? 'no response'}`);
     }
 
-    await assertPublicationContent(page, label);
+    const publicationCards = await assertPublicationContent(page, label, {javaScriptEnabled});
     await assertNoHorizontalOverflow(page, label);
     await assertNoBlockingAxe({
       page,
@@ -99,7 +112,7 @@ async function runScenario(browser, baseUrl, {
       label,
       javaScriptEnabled,
       viewport,
-      publicationCards: 6,
+      publicationCards,
       fallbackCount,
       fallbackVisible,
     };
