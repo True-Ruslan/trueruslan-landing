@@ -46,7 +46,7 @@ test('repository now snapshot reflects the post-flagship phase', () => {
   assert.match(editorialText, /Vlezet/);
   assert.match(editorialText, /VillAIgence/);
   assert.match(editorialText, /installed|установленн/i);
-  assert.match(editorialText, /Engineering Notes/);
+  assert.match(editorialText, /Engineering Note/);
   assert.doesNotMatch(editorialText, /LivingWorld/);
 });
 
