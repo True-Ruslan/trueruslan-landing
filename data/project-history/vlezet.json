@@ -1,0 +1,22 @@
+[
+  {
+    "date": "2026-07 — 2026-08",
+    "title": "Authoritative apartment-planning foundation",
+    "description": "M0–M7.7 established millimetre geometry, derived rooms and areas, semantic history, local projects, reference calibration, editable recognition, read-only 3D, bounded planning, geometry inspection and explainable furniture fit.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/35"
+  },
+  {
+    "date": "2026-08",
+    "title": "Benchmark-first recognition quality",
+    "description": "M7.8A introduced a versioned public-safe benchmark and was accepted. M7.8B now improves source normalisation and wall topology, but remains under product-owner real-plan review rather than accepted product state.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/41"
+  },
+  {
+    "date": "NEXT",
+    "title": "Openings, rooms, labels and area constraints",
+    "description": "Classify doors and windows with verified host walls, derive room faces, reconcile labels and areas, calibrate confidence and preserve explicit review before Apply.",
+    "state": "next"
+  }
+]
