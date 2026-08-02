@@ -10,6 +10,41 @@ const PORT = Number(process.env.SEARCH_SMOKE_PORT || 4174);
 const {chromium} = requireQualityTool('playwright');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright');
 
+async function assertBackControl(page, baseUrl, name) {
+  const back = page.locator('[data-tr-search-back="true"]');
+  if (await back.count() !== 1) throw new Error(`${name}: expected exactly one search back control`);
+  await back.waitFor({state: 'visible', timeout: 5000});
+
+  const label = (await back.innerText()).trim();
+  if (label !== 'Назад') throw new Error(`${name}: unexpected search back label: ${label}`);
+
+  const href = await back.getAttribute('href');
+  const expectedHome = new URL('../../', page.url());
+  const actualHome = new URL(href, page.url());
+  if (actualHome.origin !== new URL(baseUrl).origin || actualHome.pathname !== expectedHome.pathname) {
+    throw new Error(`${name}: search back fallback mismatch: ${actualHome.href}`);
+  }
+
+  const box = await back.boundingBox();
+  if (!box || box.width < 40 || box.height < 40) {
+    throw new Error(`${name}: search back target is smaller than 40x40`);
+  }
+}
+
+async function assertSameOriginBackNavigation(page, baseUrl) {
+  const sourcePath = '/landing/projects.html';
+  const sourceUrl = `${baseUrl}${sourcePath}`;
+  const searchUrl = `${baseUrl}/_search/ru/index.html`;
+
+  const sourceResponse = await page.goto(sourceUrl, {waitUntil: 'networkidle'});
+  if (!sourceResponse?.ok()) throw new Error('search back: source page unavailable');
+  await page.evaluate((target) => window.location.assign(target), searchUrl);
+  await page.waitForURL(searchUrl);
+  await page.locator('[data-tr-search-back="true"]').waitFor({state: 'visible'});
+  await page.locator('[data-tr-search-back="true"]').click();
+  await page.waitForURL(sourceUrl);
+}
+
 async function runScenario(browser, baseUrl, name, viewport) {
   const runtime = await createScenarioPage(browser, {viewport, colorScheme: 'dark'});
   const {page} = runtime;
@@ -39,6 +74,8 @@ async function runScenario(browser, baseUrl, name, viewport) {
       throw new Error(`${name}: progressive search enhancement marker missing; pageErrors=${diagnostics.pageErrors.join(' | ') || 'none'}`);
     }
 
+    await assertBackControl(page, baseUrl, name);
+
     const stylesheetCount = await page.locator('link[href$="_assets/style/search.css"]').count();
     const scriptCount = await page.locator('script[src$="_assets/script/search-ui.js"]').count();
     if (stylesheetCount !== 1 || scriptCount !== 1) {
@@ -56,6 +93,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
     const serious = blockingAxeViolations(axe);
     if (serious.length) throw new Error(`${name}: Axe serious/critical violations: ${serious.map((item) => item.id).join(', ')}`);
 
+    if (name === 'desktop') await assertSameOriginBackNavigation(page, baseUrl);
     diagnostics.assertClean(name);
 
     return {
@@ -65,6 +103,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
       overflow,
       seriousAxeViolations: serious.length,
       enhanced: marker === 'true',
+      backNavigation: true,
     };
   } finally {
     await runtime.close();
