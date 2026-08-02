@@ -13,21 +13,30 @@ const {chromium} = requireQualityTool('playwright', 'Photo Stories smoke tool');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Photo Stories smoke tool');
 
 async function assertSharedShell(page, name, viewport) {
-  const visibleUtilities = page.locator('[data-tr-header-utilities]:visible');
-  await visibleUtilities.first().waitFor({state: 'visible'});
-  const visibleCount = await visibleUtilities.count();
-  if (visibleCount !== 1) {
-    throw new Error(`${name}: expected one visible shared header utility group, got ${visibleCount}`);
-  }
-  const utilities = visibleUtilities.first();
+  const controls = [
+    ['github', page.locator('a[aria-label="GitHub"]:visible')],
+    ['habr', page.locator('a[aria-label="Habr"]:visible')],
+    ['telegram', page.locator('a[aria-label="Telegram"]:visible')],
+    ['search', page.locator('a[aria-label="Поиск по сайту"]:visible')],
+    ['language', page.locator('[data-tr-language-trigger]:visible')],
+  ];
 
-  const utilityOrder = await utilities.locator('[data-tr-utility], [data-tr-language]').evaluateAll((nodes) =>
-    nodes.map((node) => node.getAttribute('data-tr-utility') || 'language'),
-  );
-  const expected = ['github', 'habr', 'telegram', 'search', 'language'];
-  if (JSON.stringify(utilityOrder) !== JSON.stringify(expected)) {
-    throw new Error(`${name}: unexpected shared header utility order: ${JSON.stringify(utilityOrder)}`);
+  const positions = [];
+  for (const [kind, locator] of controls) {
+    await locator.first().waitFor({state: 'visible'});
+    const count = await locator.count();
+    if (count !== 1) throw new Error(`${name}: expected one visible ${kind} control, got ${count}`);
+    const box = await locator.first().boundingBox();
+    if (!box) throw new Error(`${name}: visible ${kind} control has no bounding box`);
+    positions.push({kind, x: box.x, right: box.x + box.width});
   }
+
+  for (let index = 1; index < positions.length; index += 1) {
+    if (positions[index].x < positions[index - 1].x) {
+      throw new Error(`${name}: shared header controls are out of order: ${JSON.stringify(positions)}`);
+    }
+  }
+  const utilityOrder = positions.map(({kind}) => kind);
 
   if (await page.locator('.tr-site-header, .tr-site-nav, .tr-photo-index-hero').count()) {
     throw new Error(`${name}: legacy standalone photo shell is still present`);
@@ -69,7 +78,7 @@ async function assertSharedShell(page, name, viewport) {
     if (!sidebarVisible) throw new Error(`${name}: Diplodoc left navigation does not expose the active Фото route`);
   }
 
-  return {utilityOrder, geometry, sidebarVisible, visibleUtilityGroups: visibleCount};
+  return {utilityOrder, positions, geometry, sidebarVisible};
 }
 
 async function assertArchiveAndLightbox(page, name, baseUrl) {
