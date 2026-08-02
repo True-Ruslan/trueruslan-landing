@@ -1,3 +1,5 @@
+const fs = require('node:fs');
+
 const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cjs');
 const {startStaticServer} = require('./quality-harness/static-server.cjs');
 const {createScenarioPage} = require('./quality-harness/browser.cjs');
@@ -10,20 +12,59 @@ const PORT = Number(process.env.PHOTO_STORIES_SMOKE_PORT || 4184);
 const {chromium} = requireQualityTool('playwright', 'Photo Stories smoke tool');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Photo Stories smoke tool');
 
-async function assertHeroTitleFitsViewport(page, name) {
-  const geometry = await page.locator('.tr-photo-index-hero h1').evaluate((node) => {
-    const rect = node.getBoundingClientRect();
+async function assertSharedShell(page, name, viewport) {
+  const utilities = page.locator('[data-tr-header-utilities]');
+  await utilities.waitFor({state: 'visible'});
+
+  const utilityOrder = await utilities.locator('[data-tr-utility], [data-tr-language]').evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute('data-tr-utility') || 'language'),
+  );
+  const expected = ['github', 'habr', 'telegram', 'search', 'language'];
+  if (JSON.stringify(utilityOrder) !== JSON.stringify(expected)) {
+    throw new Error(`${name}: unexpected shared header utility order: ${JSON.stringify(utilityOrder)}`);
+  }
+
+  if (await page.locator('.tr-site-header, .tr-site-nav, .tr-photo-index-hero').count()) {
+    throw new Error(`${name}: legacy standalone photo shell is still present`);
+  }
+
+  const headingCount = await page.locator('h1').count();
+  if (headingCount !== 1) throw new Error(`${name}: expected one page h1, got ${headingCount}`);
+
+  const geometry = await page.evaluate(() => {
+    const heading = document.querySelector('h1');
+    const root = document.querySelector('[data-tr-photo-page="index"]');
+    if (!heading || !root) return null;
+    const headingRect = heading.getBoundingClientRect();
+    const rootRect = root.getBoundingClientRect();
     return {
-      left: rect.left,
-      right: rect.right,
-      width: rect.width,
-      viewportWidth: window.innerWidth,
+      headingTop: headingRect.top,
+      headingBottom: headingRect.bottom,
+      contentTop: rootRect.top,
+      gap: rootRect.top - headingRect.bottom,
+      viewportHeight: window.innerHeight,
     };
   });
-  if (geometry.left < -1 || geometry.right > geometry.viewportWidth + 1) {
-    throw new Error(`${name}: photo hero title is clipped by the viewport: ${JSON.stringify(geometry)}`);
+  if (!geometry) throw new Error(`${name}: photo page heading or embedded content is missing`);
+  if (geometry.gap < -2 || geometry.gap > 180) {
+    throw new Error(`${name}: photo content is not aligned with normal article spacing: ${JSON.stringify(geometry)}`);
   }
-  return geometry;
+  if (geometry.headingTop > geometry.viewportHeight * 0.45) {
+    throw new Error(`${name}: page heading starts too far below the shared header: ${JSON.stringify(geometry)}`);
+  }
+
+  let sidebarVisible = null;
+  if (viewport.width >= 1000) {
+    sidebarVisible = await page.getByRole('link', {name: 'Фото', exact: true}).evaluateAll((links) =>
+      links.some((link) => {
+        const rect = link.getBoundingClientRect();
+        return !link.closest('header') && rect.width > 0 && rect.height > 0;
+      }),
+    );
+    if (!sidebarVisible) throw new Error(`${name}: Diplodoc left navigation does not expose the active Фото route`);
+  }
+
+  return {utilityOrder, geometry, sidebarVisible};
 }
 
 async function assertArchiveAndLightbox(page, name, baseUrl) {
@@ -41,8 +82,7 @@ async function assertArchiveAndLightbox(page, name, baseUrl) {
   const root = page.locator('[data-tr-photo-lightbox-root]');
   await root.waitFor({state: 'visible'});
   if (page.url().split('#')[1] !== 'archive-semihatov') throw new Error(`${name}: lightbox did not synchronize archive hash`);
-  const dialog = root.locator('[role="dialog"]');
-  if (!(await dialog.isVisible())) throw new Error(`${name}: lightbox dialog is not visible`);
+  if (!(await root.locator('[role="dialog"]').isVisible())) throw new Error(`${name}: lightbox dialog is not visible`);
   if (!(await page.locator('[data-tr-photo-lightbox-image]').getAttribute('src'))) throw new Error(`${name}: lightbox image has no source`);
 
   await page.keyboard.press('Escape');
@@ -50,12 +90,21 @@ async function assertArchiveAndLightbox(page, name, baseUrl) {
   const focusId = await page.evaluate(() => document.activeElement?.dataset?.photoId || null);
   if (focusId !== 'archive-semihatov') throw new Error(`${name}: focus was not restored to the originating photo link`);
 
-  await page.goto(`${baseUrl}/photos/#archive-magister`, {waitUntil: 'networkidle'});
+  await page.goto(`${baseUrl}/landing/photos.html#archive-magister`, {waitUntil: 'networkidle'});
+  await page.locator('[data-tr-photo-page="index"]').waitFor({state: 'visible'});
   await root.waitFor({state: 'visible'});
   const directTitle = await page.locator('[data-tr-photo-lightbox-title]').textContent();
   if (!String(directTitle).includes('Защита магистерской')) throw new Error(`${name}: direct hash did not open the requested archive photo`);
   await page.keyboard.press('Escape');
   await root.waitFor({state: 'hidden'});
+}
+
+async function assertLegacyRedirect(page, name, baseUrl) {
+  await page.goto(`${baseUrl}/photos/`, {waitUntil: 'domcontentloaded'});
+  await page.waitForURL(/\/landing\/photos\.html$/, {timeout: 5000});
+  if (!page.url().endsWith('/landing/photos.html')) {
+    throw new Error(`${name}: legacy photo route did not redirect to the canonical index`);
+  }
 }
 
 async function prepareVisualEvidence(page, name) {
@@ -82,19 +131,19 @@ async function runScenario(browser, baseUrl, name, viewport, reducedMotion = 'no
   });
 
   try {
-    const response = await page.goto(`${baseUrl}/photos/`, {waitUntil: 'networkidle'});
+    const response = await page.goto(`${baseUrl}/landing/photos.html`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`${name}: navigation HTTP ${response?.status() ?? 'none'}`);
     await page.locator('[data-tr-photo-page="index"]').waitFor({state: 'visible'});
 
     const overflow = (await assertNoHorizontalOverflow(page, name)).overflow;
-    const titleGeometry = await assertHeroTitleFitsViewport(page, name);
+    const shell = await assertSharedShell(page, name, viewport);
     await assertArchiveAndLightbox(page, name, baseUrl);
 
     const axe = await new AxeBuilder({page}).analyze();
     const serious = blockingAxeViolations(axe);
     if (serious.length) {
       ensureArtifactsDir();
-      require('node:fs').writeFileSync(
+      fs.writeFileSync(
         artifactPath(`photo-stories-axe-${name}.json`),
         JSON.stringify(axe.violations, null, 2),
       );
@@ -102,7 +151,9 @@ async function runScenario(browser, baseUrl, name, viewport, reducedMotion = 'no
     }
     diagnostics.assertClean(name);
 
-    await page.goto(`${baseUrl}/photos/`, {waitUntil: 'networkidle'});
+    await assertLegacyRedirect(page, name, baseUrl);
+    await page.goto(`${baseUrl}/landing/photos.html`, {waitUntil: 'networkidle'});
+    await page.locator('[data-tr-photo-page="index"]').waitFor({state: 'visible'});
     await prepareVisualEvidence(page, name);
     await captureScreenshot(page, `photo-stories-${name}.png`);
 
@@ -112,7 +163,7 @@ async function runScenario(browser, baseUrl, name, viewport, reducedMotion = 'no
       archiveItems: await page.locator('[data-tr-photo-archive-item]').count(),
       albumCards: await page.locator('[data-tr-photo-album-card]').count(),
       overflow,
-      titleGeometry,
+      shell,
       seriousAxeViolations: serious.length,
     };
   } finally {
