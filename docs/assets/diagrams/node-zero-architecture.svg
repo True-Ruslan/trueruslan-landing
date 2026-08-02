@@ -5,63 +5,60 @@
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#090B10"/><stop offset="1" stop-color="#14111F"/></linearGradient>
     <marker id="cyan" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#4CC9F0"/></marker>
     <marker id="violet" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#8B5CF6"/></marker>
-    <style>
-      .t{font-family:system-ui,-apple-system,Segoe UI,sans-serif;fill:#F4F7FB}.m{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;fill:#9CA9B8}.box{fill:#11151C;stroke:#304052;stroke-width:2}.mirror{fill:#181225;stroke:#8B5CF6;stroke-width:3}.evidence{fill:#0F1C18;stroke:#4ADE80;stroke-width:2}.flow{fill:none;stroke:#4CC9F0;stroke-width:3;marker-end:url(#cyan)}.control{fill:none;stroke:#8B5CF6;stroke-width:3;stroke-dasharray:10 8;marker-end:url(#violet)}
-    </style>
   </defs>
   <rect width="1200" height="720" rx="28" fill="url(#bg)"/>
-  <text x="60" y="68" class="t" font-size="30" font-weight="750">NODE ZERO / VERTICAL-SLICE SYSTEM MAP</text>
-  <text x="60" y="98" class="m" font-size="15">Unity 6.3 LTS · URP · C# · authored techno-horror</text>
+  <text x="60" y="68" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="30" font-weight="750">NODE ZERO / VERTICAL-SLICE SYSTEM MAP</text>
+  <text x="60" y="98" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="15">Unity 6.3 LTS · URP · C# · authored techno-horror</text>
 
-  <rect class="box" x="60" y="190" width="210" height="170" rx="18"/>
-  <text class="t" x="90" y="235" font-size="22" font-weight="700">Player</text>
-  <text class="m" x="90" y="272" font-size="14">Infrastructure engineer</text>
-  <text class="m" x="90" y="300" font-size="14">First-person interaction</text>
-  <text class="m" x="90" y="328" font-size="14">No combat</text>
+  <rect x="60" y="190" width="210" height="170" rx="18" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="90" y="235" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="22" font-weight="700">Player</text>
+  <text x="90" y="272" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">Infrastructure engineer</text>
+  <text x="90" y="300" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">First-person interaction</text>
+  <text x="90" y="328" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">No combat</text>
 
-  <rect class="box" x="340" y="145" width="260" height="125" rx="18"/>
-  <text class="t" x="370" y="188" font-size="20" font-weight="700">Gameplay systems</text>
-  <text class="m" x="370" y="220" font-size="14">movement · interaction · tasks</text>
-  <text class="m" x="370" y="246" font-size="14">independent from scene scripts</text>
+  <rect x="340" y="145" width="260" height="125" rx="18" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="370" y="188" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="20" font-weight="700">Gameplay systems</text>
+  <text x="370" y="220" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">movement · interaction · tasks</text>
+  <text x="370" y="246" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">independent from scene scripts</text>
 
-  <rect class="box" x="340" y="320" width="260" height="125" rx="18"/>
-  <text class="t" x="370" y="363" font-size="20" font-weight="700">Facility simulation</text>
-  <text class="m" x="370" y="395" font-size="14">telemetry · access · routing</text>
-  <text class="m" x="370" y="421" font-size="14">lighting · audio · environment</text>
+  <rect x="340" y="320" width="260" height="125" rx="18" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="370" y="363" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="20" font-weight="700">Facility simulation</text>
+  <text x="370" y="395" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">telemetry · access · routing</text>
+  <text x="370" y="421" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">lighting · audio · environment</text>
 
-  <rect class="mirror" x="670" y="160" width="270" height="300" rx="22"/>
-  <text class="t" x="705" y="210" font-size="25" font-weight="750">MIRROR</text>
-  <text class="m" x="705" y="240" font-size="14">behavior prediction system</text>
-  <rect class="box" x="705" y="275" width="200" height="66" rx="12"/>
-  <text class="t" x="730" y="315" font-size="16" font-weight="700">Observe telemetry</text>
-  <rect class="box" x="705" y="365" width="200" height="66" rx="12"/>
-  <text class="t" x="730" y="405" font-size="16" font-weight="700">Constrain choices</text>
+  <rect x="670" y="160" width="270" height="300" rx="22" fill="#181225" stroke="#8B5CF6" stroke-width="3"/>
+  <text x="705" y="210" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="25" font-weight="750">MIRROR</text>
+  <text x="705" y="240" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">behavior prediction system</text>
+  <rect x="705" y="275" width="200" height="66" rx="12" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="730" y="315" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="16" font-weight="700">Observe telemetry</text>
+  <rect x="705" y="365" width="200" height="66" rx="12" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="730" y="405" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="16" font-weight="700">Constrain choices</text>
 
-  <rect class="evidence" x="995" y="145" width="155" height="140" rx="18"/>
-  <text class="t" x="1020" y="188" font-size="18" font-weight="700">Evidence</text>
-  <text class="m" x="1020" y="220" font-size="13">logs</text>
-  <text class="m" x="1020" y="246" font-size="13">anomalies</text>
-  <text class="m" x="1020" y="272" font-size="13">second person</text>
+  <rect x="995" y="145" width="155" height="140" rx="18" fill="#0F1C18" stroke="#4ADE80" stroke-width="2"/>
+  <text x="1020" y="188" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="18" font-weight="700">Evidence</text>
+  <text x="1020" y="220" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">logs</text>
+  <text x="1020" y="246" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">anomalies</text>
+  <text x="1020" y="272" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">second person</text>
 
-  <rect class="box" x="995" y="340" width="155" height="140" rx="18"/>
-  <text class="t" x="1020" y="383" font-size="18" font-weight="700">Authored layer</text>
-  <text class="m" x="1020" y="415" font-size="13">sequences</text>
-  <text class="m" x="1020" y="441" font-size="13">scares</text>
-  <text class="m" x="1020" y="467" font-size="13">narrative gates</text>
+  <rect x="995" y="340" width="155" height="140" rx="18" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="1020" y="383" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="18" font-weight="700">Authored layer</text>
+  <text x="1020" y="415" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">sequences</text>
+  <text x="1020" y="441" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">scares</text>
+  <text x="1020" y="467" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">narrative gates</text>
 
-  <rect class="evidence" x="340" y="525" width="600" height="100" rx="18"/>
-  <text class="t" x="375" y="568" font-size="20" font-weight="700">Vertical slice definition</text>
-  <text class="m" x="375" y="598" font-size="14">arrival → onboarding → first constrained-route prediction → evidence of another person</text>
+  <rect x="340" y="525" width="600" height="100" rx="18" fill="#0F1C18" stroke="#4ADE80" stroke-width="2"/>
+  <text x="375" y="568" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="20" font-weight="700">Vertical slice definition</text>
+  <text x="375" y="598" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">arrival → onboarding → first constrained-route prediction → evidence of another person</text>
 
-  <path class="flow" d="M270 275 H340"/>
-  <path class="flow" d="M470 270 V320"/>
-  <path class="flow" d="M600 382 H670"/>
-  <path class="flow" d="M940 220 H995"/>
-  <path class="flow" d="M940 395 H995"/>
-  <path class="control" d="M805 275 V130 H470 V145"/>
-  <path class="control" d="M805 431 V500 H165 V360"/>
-  <path class="flow" d="M1070 285 V340"/>
-  <path class="flow" d="M1070 480 V575 H940"/>
+  <path d="M270 275 H340" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan)"/>
+  <path d="M470 270 V320" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan)"/>
+  <path d="M600 382 H670" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan)"/>
+  <path d="M940 220 H995" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan)"/>
+  <path d="M940 395 H995" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan)"/>
+  <path d="M805 275 V130 H470 V145" fill="none" stroke="#8B5CF6" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#violet)"/>
+  <path d="M805 431 V500 H165 V360" fill="none" stroke="#8B5CF6" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#violet)"/>
+  <path d="M1070 285 V340" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan)"/>
+  <path d="M1070 480 V575 H940" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan)"/>
 
-  <text class="m" x="60" y="675" font-size="14">Design rule: MIRROR manipulates constraints and context; it does not behave like a sarcastic omniscient villain.</text>
+  <text x="60" y="675" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">Design rule: MIRROR manipulates constraints and context; it does not behave like a sarcastic omniscient villain.</text>
 </svg>
