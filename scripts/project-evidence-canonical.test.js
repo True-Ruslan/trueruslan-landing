@@ -10,13 +10,13 @@ import {
   loadProjectRegistry,
 } from './project-registry.js';
 
-test('canonical evidence registry covers the two flagship evidence projects', () => {
+test('canonical evidence registry covers the controlled flagship evidence projects', () => {
   const projects = loadProjectRegistry(DEFAULT_PROJECTS_PATH);
   const evidence = loadProjectEvidence(DEFAULT_PROJECT_EVIDENCE_PATH, {projects});
 
   assert.deepEqual(
     evidence.map(({project}) => project).sort(),
-    ['livingworld', 'node-zero'],
+    ['livingworld', 'node-zero', 'vlezet'],
   );
 
   for (const snapshot of evidence) {
