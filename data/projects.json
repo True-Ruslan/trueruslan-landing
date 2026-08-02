@@ -17,17 +17,17 @@
   },
   {
     "slug": "livingworld",
-    "name": "LivingWorld",
+    "name": "VillAIgence",
     "status": "release-candidate",
-    "statusLabel": "RELEASE CANDIDATE",
-    "summary": "Server-authoritative AI NPC conversations for MCA Reborn with text, voice, memory and bounded actions.",
+    "statusLabel": "CORRECTIVE CANDIDATE",
+    "summary": "Server-authoritative Minecraft society layer with text and voice dialogue, Memory 2.0, operator lore, bounded AI actions and exact-artifact acceptance gates.",
     "featured": true,
     "active": true,
     "visibility": "public",
     "href": "landing/projects/livingworld.html",
-    "tags": ["Minecraft", "Fabric", "Java 21", "AI agents", "Voice"],
+    "tags": ["Minecraft", "Fabric", "Java 21", "Memory 2.0", "AI security"],
     "links": {
-      "github": "https://github.com/True-Ruslan/minecraft-botics-ai"
+      "github": "https://github.com/True-Ruslan/villAIgence"
     },
     "timeline": "livingworld",
     "noteSlugs": ["server-authoritative-ai-npcs"]
