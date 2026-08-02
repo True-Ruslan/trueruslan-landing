@@ -56,7 +56,7 @@ test('applyPublicationsShowcase replaces both direct DOM placeholders and inject
   assert.doesNotMatch(html, /data-tr-publications-noscript/);
 });
 
-test('applyPublicationsShowcase patches Diplodoc state and adds semantic no-JS fallback', () => {
+test('applyPublicationsShowcase patches Diplodoc state and adds one complete no-JS catalogue', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-publications-state-'));
   const htmlPath = path.join(outputDir, 'landing', 'publications.html');
   fs.mkdirSync(path.dirname(htmlPath), {recursive: true});
@@ -64,12 +64,17 @@ test('applyPublicationsShowcase patches Diplodoc state and adds semantic no-JS f
 
   applyPublicationsShowcase(outputDir, publications());
   const html = fs.readFileSync(htmlPath, 'utf8');
+  const fallbackStart = html.indexOf('<noscript data-tr-publications-noscript>');
+  const fallbackEnd = html.indexOf('</noscript>', fallbackStart);
+  const fallback = html.slice(fallbackStart, fallbackEnd);
 
   assert.match(html, /id="diplodoc-state"/);
   assert.match(html, /Diplodoc и GitHub Pages/);
   assert.match(html, /<noscript data-tr-publications-noscript>/);
-  assert.match(html, /<h1>Публикации и выступления<\/h1>/);
-  assert.equal((html.match(/data-tr-publication-id/g) ?? []).length >= 2, true);
+  assert.match(fallback, /<h1>Публикации и выступления<\/h1>/);
+  assert.match(fallback, /Технические статьи/);
+  assert.doesNotMatch(fallback, /Избранное/);
+  assert.equal((fallback.match(/data-tr-publication-id/g) ?? []).length, 1);
   assert.equal((html.match(/data-tr-publications-noscript/g) ?? []).length, 1);
 });
 
