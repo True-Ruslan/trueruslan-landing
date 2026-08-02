@@ -14,11 +14,11 @@ const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Photo 
 
 async function assertSharedShell(page, name, viewport) {
   const controls = [
-    ['github', page.locator('a[aria-label="GitHub"]:visible')],
-    ['habr', page.locator('a[aria-label="Habr"]:visible')],
-    ['telegram', page.locator('a[aria-label="Telegram"]:visible')],
-    ['search', page.locator('a[aria-label="Поиск по сайту"]:visible')],
-    ['language', page.locator('[data-tr-language-trigger]:visible')],
+    ['github', page.locator('a[href*="github.com/True-Ruslan"]:visible')],
+    ['habr', page.locator('a[href*="habr.com/ru/users/TrueRuslan"]:visible')],
+    ['telegram', page.locator('a[href*="t.me/TrueRuslan_Blog"]:visible')],
+    ['search', page.locator('a[href*="_search/ru/index.html"]:visible')],
+    ['language', page.locator('summary:visible').filter({hasText: /^\s*RU/})],
   ];
 
   const positions = [];
