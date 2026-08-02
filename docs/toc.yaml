@@ -39,7 +39,7 @@ navigation:
         target: _self
       - text: Фото
         type: link
-        url: photos/
+        url: landing/photos.html
         target: _self
       - text: Контакты
         type: link

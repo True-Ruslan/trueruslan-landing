@@ -11,7 +11,7 @@ function writeJson(filePath, value) {
   fs.writeFileSync(filePath, JSON.stringify(value));
 }
 
-test('postprocessOutput generates canonical photo archive, legacy bridge and sitemap route', () => {
+test('postprocessOutput enhances the canonical Diplodoc photo page and preserves the old route as a bridge', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-photo-postprocess-'));
   const docsDir = path.join(root, 'docs');
   const outputDir = path.join(root, 'docs-html');
@@ -29,10 +29,13 @@ test('postprocessOutput generates canonical photo archive, legacy bridge and sit
   fs.mkdirSync(templatesDir, {recursive: true});
 
   fs.writeFileSync(path.join(docsDir, 'toc.yaml'), 'items:\n  - name: Фото\n    href: ./landing/photos.md\n');
-  fs.writeFileSync(path.join(docsDir, 'landing', 'photos.md'), '# Фотографии\n');
+  fs.writeFileSync(path.join(docsDir, 'landing', 'photos.md'), '# Фотографии\n\n<div data-tr-photo-placeholder></div>\n');
   fs.writeFileSync(noteSource, '# Test note\n');
   fs.writeFileSync(noteOutput, '<!doctype html><html><head><title>Note</title></head><body><main><h1>Test note</h1><p>Body</p></main></body></html>');
-  fs.writeFileSync(path.join(outputDir, 'landing', 'photos.html'), '<html><body>Old photos</body></html>');
+  fs.writeFileSync(
+    path.join(outputDir, 'landing', 'photos.html'),
+    '<!doctype html><html><head><title>Photos</title></head><body><header data-test-shared-header></header><aside data-test-sidebar></aside><main><h1>Фотографии</h1><div data-tr-photo-placeholder></div></main></body></html>',
+  );
   fs.writeFileSync(path.join(outputDir, 'landing', 'projects.html'), '<!doctype html><html><head><title>Projects</title></head><body><main><h1>Projects</h1><span data-tr-project-status="test-project"></span></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'engineering-map.html'), '<html><body><div data-tr-engineering-graph-root></div></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'now.html'), '<html><body><div data-tr-now-placeholder></div></body></html>');
@@ -116,14 +119,17 @@ test('postprocessOutput generates canonical photo archive, legacy bridge and sit
     copyAssets: false,
   });
 
-  const photoIndex = fs.readFileSync(path.join(outputDir, 'photos', 'index.html'), 'utf8');
-  const legacy = fs.readFileSync(path.join(outputDir, 'landing', 'photos.html'), 'utf8');
+  const photoIndex = fs.readFileSync(path.join(outputDir, 'landing', 'photos.html'), 'utf8');
+  const legacy = fs.readFileSync(path.join(outputDir, 'photos', 'index.html'), 'utf8');
   const sitemap = fs.readFileSync(path.join(outputDir, 'sitemap.xml'), 'utf8');
 
-  assert.deepEqual(result.photoStoryRoutes, ['photos/']);
+  assert.deepEqual(result.photoStoryRoutes, ['landing/photos.html']);
+  assert.match(photoIndex, /data-test-shared-header/);
+  assert.match(photoIndex, /data-test-sidebar/);
   assert.match(photoIndex, /data-tr-photo-page="index"/);
   assert.match(photoIndex, /Из архива/);
   assert.match(legacy, /http-equiv="refresh"/);
-  assert.match(legacy, /\.\.\/photos\//);
-  assert.match(sitemap, /https:\/\/example\.test\/photos\//);
+  assert.match(legacy, /\.\.\/landing\/photos\.html/);
+  assert.match(sitemap, /https:\/\/example\.test\/landing\/photos\.html/);
+  assert.doesNotMatch(sitemap, /https:\/\/example\.test\/photos\/<\/loc>/);
 });

@@ -1,0 +1,109 @@
+.tr-photo-embedded {
+  width: 100%;
+  min-width: 0;
+  margin-top: 1.75rem;
+  overflow: clip;
+}
+
+.tr-photo-embedded .tr-photo-intro {
+  max-width: 72ch;
+  margin: 0;
+  color: var(--tr-muted);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.tr-photo-embedded .tr-photo-filters {
+  margin-top: 1.5rem;
+}
+
+.tr-photo-embedded .tr-photo-chronology {
+  padding-top: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.tr-photo-embedded .tr-photo-year {
+  grid-template-columns: minmax(72px, 110px) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2.5rem);
+  padding-bottom: clamp(3.5rem, 7vw, 6rem);
+}
+
+.tr-photo-embedded .tr-photo-album-card__body h3 {
+  font-size: clamp(1.65rem, 4vw, 2.6rem);
+}
+
+.tr-photo-embedded .tr-photo-empty {
+  grid-template-columns: minmax(110px, .3fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  padding: 0 0 clamp(3.5rem, 7vw, 5.5rem);
+}
+
+.tr-photo-embedded .tr-photo-empty h2,
+.tr-photo-embedded .tr-photo-section-head h2 {
+  font-size: clamp(2rem, 5vw, 3.8rem);
+}
+
+.tr-photo-embedded .tr-photo-archive {
+  padding-top: clamp(2.75rem, 5vw, 4.5rem);
+}
+
+.tr-photo-embedded .tr-photo-section-head {
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  margin-bottom: clamp(1.75rem, 4vw, 3rem);
+}
+
+.tr-photo-embedded .tr-photo-archive-grid {
+  gap: clamp(.9rem, 2vw, 1.4rem);
+}
+
+.tr-photo-embedded .tr-photo-archive-card {
+  min-width: 0;
+}
+
+.tr-photo-embedded .tr-photo-archive-card:nth-child(2) {
+  margin-top: clamp(1rem, 3vw, 2.5rem);
+}
+
+.tr-photo-embedded .tr-photo-archive-card__image {
+  border-radius: 16px;
+}
+
+@media (max-width: 920px) {
+  .tr-photo-embedded .tr-photo-archive-card {
+    grid-column: span 6;
+  }
+
+  .tr-photo-embedded .tr-photo-archive-card:nth-child(2) {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .tr-photo-embedded {
+    margin-top: 1.25rem;
+    overflow: visible;
+  }
+
+  .tr-photo-embedded .tr-photo-filters {
+    margin-right: 0;
+  }
+
+  .tr-photo-embedded .tr-photo-year,
+  .tr-photo-embedded .tr-photo-empty,
+  .tr-photo-embedded .tr-photo-section-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tr-photo-embedded .tr-photo-year {
+    gap: .85rem;
+  }
+
+  .tr-photo-embedded .tr-photo-album-card,
+  .tr-photo-embedded .tr-photo-archive-card {
+    grid-column: 1 / -1;
+  }
+
+  .tr-photo-embedded .tr-photo-archive-card__image {
+    aspect-ratio: 4 / 3;
+  }
+}

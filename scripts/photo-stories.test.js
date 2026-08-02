@@ -7,10 +7,11 @@ import path from 'node:path';
 import {
   PHOTO_CATEGORIES,
   PHOTO_LAYOUTS,
+  applyPhotoIndexPage,
   groupPublishedAlbumsByYear,
   renderLegacyPhotosBridge,
   renderPhotoAlbumPage,
-  renderPhotoIndexPage,
+  renderPhotoIndexContent,
   validatePhotoAlbums,
   validatePhotoArchive,
   writePhotoStories,
@@ -49,6 +50,16 @@ const threeArchiveItems = [
   {...validArchive, id: 'magister', src: 'assets/images/magister.jpg', title: 'Защита магистерской', order: 2},
   {...validArchive, id: 'avatar', src: 'assets/images/avatar.png', title: 'Из личного архива', order: 3},
 ];
+
+const generatedPhotoPage = `<!doctype html>
+<html lang="ru">
+<head><title>Фотографии</title></head>
+<body>
+  <header data-test-shared-header></header>
+  <aside data-test-sidebar><a href="photos.html" aria-current="page">Фото</a></aside>
+  <main><article><h1>Фотографии</h1><p>Intro</p><div data-tr-photo-placeholder></div></article></main>
+</body>
+</html>`;
 
 test('photo registries expose only the approved categories and layout types', () => {
   assert.deepEqual([...PHOTO_CATEGORIES], ['travel', 'study-events', 'people', 'everyday']);
@@ -157,37 +168,53 @@ test('groupPublishedAlbumsByYear sorts published albums newest-first and groups 
   assert.deepEqual(groups[0].albums.map((album) => album.slug), ['newer', 'karelia-2026']);
 });
 
-test('renderPhotoIndexPage renders a complete archive-only state without fake albums', () => {
-  const html = renderPhotoIndexPage({
+test('renderPhotoIndexContent renders archive-only content without a second page shell', () => {
+  const html = renderPhotoIndexContent({
     albums: [],
     archive: threeArchiveItems,
-    siteUrl: 'https://example.test',
   });
 
-  assert.match(html, /<html lang="ru">/);
   assert.match(html, /data-tr-photo-page="index"/);
-  assert.match(html, /Фотографии/);
   assert.match(html, /Из архива/);
   assert.match(html, /Полноценные фотоистории появятся здесь/);
   assert.equal((html.match(/data-tr-photo-archive-item/g) ?? []).length, 3);
   assert.doesNotMatch(html, /data-tr-photo-album-card/);
   assert.doesNotMatch(html, /data-tr-photo-filter/);
-  assert.match(html, /href="assets\/images\/Semihatov\.jpg#archive-semihatov"|href="\.\.\/assets\/images\/Semihatov\.jpg"/);
+  assert.doesNotMatch(html, /<h1\b/);
+  assert.doesNotMatch(html, /tr-site-header|tr-site-nav|tr-photo-index-hero/);
+  assert.match(html, /href="\.\.\/assets\/images\/Semihatov\.jpg"/);
 });
 
-test('renderPhotoIndexPage renders year groups, category filters and album cards newest-first', () => {
+test('renderPhotoIndexContent renders year groups, category filters and canonical album links newest-first', () => {
   const newer = {...validAlbum, slug: 'autumn-2026', title: 'Осень', date: '2026-09'};
-  const html = renderPhotoIndexPage({
+  const html = renderPhotoIndexContent({
     albums: [validAlbum, newer],
     archive: threeArchiveItems,
-    siteUrl: 'https://example.test',
   });
 
   assert.match(html, /data-tr-photo-filter/);
   assert.equal((html.match(/data-tr-photo-album-card/g) ?? []).length, 2);
   assert.ok(html.indexOf('Осень') < html.indexOf('Карелия'));
-  assert.match(html, /href="autumn-2026\/"/);
+  assert.match(html, /href="\.\.\/photos\/autumn-2026\/"/);
   assert.match(html, /2026/);
+});
+
+test('applyPhotoIndexPage preserves the generated Diplodoc shell and injects one photo index', () => {
+  const html = applyPhotoIndexPage(generatedPhotoPage, {
+    albums: [],
+    archive: threeArchiveItems,
+    siteUrl: 'https://example.test',
+  });
+
+  assert.match(html, /data-test-shared-header/);
+  assert.match(html, /data-test-sidebar/);
+  assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
+  assert.equal((html.match(/data-tr-photo-page="index"/g) ?? []).length, 1);
+  assert.match(html, /data-tr-photo-lightbox-root/);
+  assert.match(html, /photo-stories\.css/);
+  assert.match(html, /photo-stories\.js/);
+  assert.doesNotMatch(html, /data-tr-photo-placeholder/);
+  assert.doesNotMatch(html, /tr-site-header|tr-site-nav|tr-photo-index-hero/);
 });
 
 test('renderPhotoAlbumPage renders cinematic hero, semantic photo anchor and editorial layout', () => {
@@ -204,19 +231,20 @@ test('renderPhotoAlbumPage renders cinematic hero, semantic photo anchor and edi
   assert.match(html, /id="photo-1"/);
   assert.match(html, /data-tr-photo-layout="wide"/);
   assert.match(html, /data-tr-photo-lightbox/);
-  assert.match(html, /href="\.\.\/"/);
 });
 
-test('renderLegacyPhotosBridge preserves the old route with redirect and visible fallback link', () => {
-  const html = renderLegacyPhotosBridge('../photos/');
-  assert.match(html, /http-equiv="refresh" content="0;url=\.\.\/photos\/"/);
-  assert.match(html, /href="\.\.\/photos\/"/);
+test('renderLegacyPhotosBridge redirects the old photo index to the canonical Diplodoc page', () => {
+  const html = renderLegacyPhotosBridge('../landing/photos.html');
+  assert.match(html, /http-equiv="refresh" content="0;url=\.\.\/landing\/photos\.html"/);
+  assert.match(html, /rel="canonical" href="\.\.\/landing\/photos\.html"/);
+  assert.match(html, /href="\.\.\/landing\/photos\.html"/);
   assert.match(html, /Открыть фотоархив/);
 });
 
-test('writePhotoStories writes index, album routes and legacy compatibility page', () => {
+test('writePhotoStories enhances the canonical index, writes albums and preserves the old route as a bridge', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-photo-output-'));
   fs.mkdirSync(path.join(outputDir, 'landing'), {recursive: true});
+  fs.writeFileSync(path.join(outputDir, 'landing', 'photos.html'), generatedPhotoPage, 'utf8');
 
   const result = writePhotoStories({
     outputDir,
@@ -225,10 +253,12 @@ test('writePhotoStories writes index, album routes and legacy compatibility page
     siteUrl: 'https://example.test',
   });
 
-  assert.deepEqual(result.routes, ['photos/', 'photos/karelia-2026/']);
+  assert.deepEqual(result.routes, ['landing/photos.html', 'photos/karelia-2026/']);
+  assert.equal(result.indexPath, path.join(outputDir, 'landing', 'photos.html'));
+  assert.equal(result.legacyPath, path.join(outputDir, 'photos', 'index.html'));
   assert.ok(fs.existsSync(path.join(outputDir, 'photos', 'index.html')));
   assert.ok(fs.existsSync(path.join(outputDir, 'photos', 'karelia-2026', 'index.html')));
-  assert.ok(fs.existsSync(path.join(outputDir, 'landing', 'photos.html')));
-  assert.match(fs.readFileSync(path.join(outputDir, 'photos', 'index.html'), 'utf8'), /Из архива/);
+  assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'photos.html'), 'utf8'), /data-tr-photo-page="index"/);
+  assert.match(fs.readFileSync(path.join(outputDir, 'photos', 'index.html'), 'utf8'), /landing\/photos\.html/);
   assert.match(fs.readFileSync(path.join(outputDir, 'photos', 'karelia-2026', 'index.html'), 'utf8'), /Карелия/);
 });

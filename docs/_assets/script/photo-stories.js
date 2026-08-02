@@ -63,7 +63,8 @@
   }
 
   function initLightbox(page) {
-    const root = page.querySelector('[data-tr-photo-lightbox-root]');
+    const root = page.querySelector('[data-tr-photo-lightbox-root]')
+      || document.querySelector('[data-tr-photo-lightbox-root]');
     if (!root) return null;
 
     const dialog = root.querySelector('.tr-photo-lightbox__dialog');
@@ -129,6 +130,7 @@
     }
 
     function open(link, {fromHash = false} = {}) {
+      if (!page.isConnected || !root.isConnected) return;
       group = groupFor(link);
       currentIndex = group.indexOf(link);
       if (currentIndex < 0) return;
@@ -192,7 +194,7 @@
     }
 
     function openFromCurrentHash() {
-      if (suppressHashOpen || !root.hidden || typeof location === 'undefined') return;
+      if (!page.isConnected || !root.isConnected || suppressHashOpen || !root.hidden || typeof location === 'undefined') return;
       const id = parsePhotoHash(location.hash);
       if (!id) return;
       const link = links.find((candidate) => candidate.dataset.photoId === id);
@@ -247,11 +249,34 @@
     return {open, close, navigate};
   }
 
+  function observeHydration() {
+    if (typeof document === 'undefined' || typeof global.MutationObserver !== 'function') return;
+    let scheduled = false;
+    const observer = new global.MutationObserver(() => {
+      if (scheduled) return;
+      scheduled = true;
+      const run = () => {
+        scheduled = false;
+        init();
+      };
+      if (typeof global.requestAnimationFrame === 'function') global.requestAnimationFrame(run);
+      else global.setTimeout(run, 0);
+    });
+    observer.observe(document.documentElement, {childList: true, subtree: true});
+  }
+
   const api = {parsePhotoHash, buildPhotoHash, nextPhotoIndex, isEditableTarget, init};
   global.TrueRuslanPhotoStories = api;
 
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once: true});
     else init();
+    if (typeof global.addEventListener === 'function') {
+      global.addEventListener('load', () => {
+        init();
+        global.setTimeout(init, 80);
+      }, {once: true});
+    }
+    observeHydration();
   }
 })(globalThis);

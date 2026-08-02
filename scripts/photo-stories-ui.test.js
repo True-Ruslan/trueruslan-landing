@@ -40,6 +40,13 @@ test('isEditableTarget protects keyboard shortcuts inside editable controls', ()
   assert.equal(ui.isEditableTarget({tagName: 'A'}), false);
 });
 
+test('browser script survives Diplodoc hydration replacements', () => {
+  assert.match(script, /MutationObserver/);
+  assert.match(script, /observer\.observe\(document\.documentElement, \{childList: true, subtree: true\}\)/);
+  assert.match(script, /page\.isConnected/);
+  assert.match(script, /global\.setTimeout\(init, 80\)/);
+});
+
 test('browser script stays classic and avoids runtime dependencies', () => {
   assert.doesNotMatch(script, /\bimport\s/);
   assert.doesNotMatch(script, /\bfetch\s*\(/);
