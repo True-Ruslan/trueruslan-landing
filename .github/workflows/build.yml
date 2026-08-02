@@ -63,6 +63,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/project-evidence-smoke.cjs 2>&1 | tee project-evidence-smoke.log
+      - name: NODE ZERO diagram browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/node-zero-diagram-smoke.cjs 2>&1 | tee node-zero-diagram-smoke.log
       - name: Photo Stories browser smoke
         shell: bash
         run: |
@@ -128,6 +133,7 @@ jobs:
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
           cp sources-knowledge-base-smoke.log quality-artifacts/sources-knowledge-base-smoke.log 2>/dev/null || true
           cp project-evidence-smoke.log quality-artifacts/project-evidence-smoke.log 2>/dev/null || true
+          cp node-zero-diagram-smoke.log quality-artifacts/node-zero-diagram-smoke.log 2>/dev/null || true
           cp photo-stories-browser-smoke.log quality-artifacts/photo-stories-browser-smoke.log 2>/dev/null || true
           cp v03-browser-smoke.log quality-artifacts/v03-browser-smoke.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
@@ -151,6 +157,9 @@ jobs:
           cp docs-html/feed.xml quality-artifacts/feed.xml 2>/dev/null || true
           cp docs-html/landing/engineering-map.html quality-artifacts/engineering-map-generated.html 2>/dev/null || true
           cp docs-html/landing/photos.html quality-artifacts/photo-stories-generated.html 2>/dev/null || true
+          cp artifacts/node-zero-architecture.png quality-artifacts/node-zero-architecture.png 2>/dev/null || true
+          cp artifacts/node-zero-system-flow.png quality-artifacts/node-zero-system-flow.png 2>/dev/null || true
+          cp artifacts/node-zero-diagrams-summary.json quality-artifacts/node-zero-diagrams-summary.json 2>/dev/null || true
           cp artifacts/photo-stories-desktop.png quality-artifacts/photo-stories-desktop.png 2>/dev/null || true
           cp artifacts/photo-stories-mobile.png quality-artifacts/photo-stories-mobile.png 2>/dev/null || true
           cp artifacts/photo-stories-reduced-motion.png quality-artifacts/photo-stories-reduced-motion.png 2>/dev/null || true
