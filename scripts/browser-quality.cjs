@@ -141,10 +141,12 @@ async function main() {
     {...CORE_SCENARIOS.home, slug: 'home-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
     {...CORE_SCENARIOS.projects, slug: 'projects-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
     {...CORE_SCENARIOS.vlezet, slug: 'vlezet-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
+    {...CORE_SCENARIOS.publications, slug: 'publications-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
     {...CORE_SCENARIOS.resume, slug: 'resume-desktop', viewport: VIEWPORTS.desktop, accessibility: true},
     {...CORE_SCENARIOS.home, slug: 'home-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
     {...CORE_SCENARIOS.projects, slug: 'projects-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
     {...CORE_SCENARIOS.vlezet, slug: 'vlezet-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
+    {...CORE_SCENARIOS.publications, slug: 'publications-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
     {...CORE_SCENARIOS.resume, slug: 'resume-mobile', viewport: VIEWPORTS.mobile, accessibility: false},
   ];
 
