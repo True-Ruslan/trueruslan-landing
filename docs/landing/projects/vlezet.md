@@ -99,6 +99,8 @@ M7.8A добавил versioned public-safe corpus из восьми synthetic/re
 
 Принятый baseline намеренно показал слабое состояние: Source wall geometry F1 был `0`, openings F1 — `0`, total-area median APE — `1`. Этот RED стал измеримой отправной точкой, а не неудобным результатом, который нужно скрыть.
 
+Но benchmark — только один слой доказательств. Следующий milestone показал, что улучшение восьми fixtures ещё не гарантирует приемлемое поведение на representative real plan.
+
 <!-- case-study:failures -->
 ## Что пришлось понять через ошибки
 
@@ -120,19 +122,31 @@ M7.8A добавил versioned public-safe corpus из восьми synthetic/re
 
 Предыдущая реализация итерировала `lines.rows` и практически забирала по одному segment из каждого pass. Два edge pass в лучшем случае оставляли две линии, поэтому понятный человеку план мог завершиться Draft с нулём стен.
 
-M7.8B исправляет чтение всех полных coordinate groups, добавляет canonicalisation, paired-edge centre-lines, bounded gap bridging и topology splitting. На benchmark это подняло wall geometry F1 до `0.834356` для Core и `0.518519` для Source. Но это всё ещё не финальная точность: dense и perspective cases сохраняют пропуски, а Source topology ниже целевого `0.90`.
+Первая версия M7.8B исправила чтение всех coordinate groups, добавила canonicalisation, paired-edge centre-lines, bounded gap bridging и topology splitting. На восьми benchmark fixtures это выглядело как значительный прогресс.
+
+### Benchmark PASS не пережил проверку реальным планом
+
+Product-owner review дал противоположный результат: representative clear apartment plan сформировал **417 local wall candidates, ноль проёмов и связанную сеть символов и мебели вместо архитектурного wall graph**. AI review сохранил загрязнённую сеть и добавил неподтверждённые длинные линии.
+
+Причина оказалась системной. Hough evidence извлекался из полного raster, где рядом со стенами находились подписи, цифры, сантехника, мебель и дверные дуги. Примерно тысяча исходных segments превращалась в тысячи допустимых parallel pairs, и плотная symbol network могла получить более высокий приоритет, чем реальный внешний контур.
+
+После этого milestone получил буквальный статус **`PRODUCT-OWNER REVIEW: FAIL — DO NOT MERGE`**.
+
+Corrective implementation добавляет thick-ink structural mask до Canny/Hough, fail-closed review budget, отказ сохранять перегруженный local Draft, запрет передавать его в AI и отклонение cloud candidate explosions. В isolated reproduction число unique segments снизилось примерно с `948` до `115`, а admissible parallel pairs — с `12 346` до `249`.
+
+Это полезное снижение шума, но не product acceptance. Текущий aggregate Source F1 составляет примерно `0.492537` для geometry и `0.462687` для topology. Качество архитектурного shell всё ещё недостаточно, поэтому PR остаётся Draft.
 
 ### Валидный AI-ответ может быть пространственно неправильным
 
 Response healing решил malformed JSON, а reconciliation перестал хранить decisions для уже исчезнувших candidates. Это исправило protocol и state defects.
 
-Но ручная проверка всё равно показала оранжевые стены, которые не совпадали с исходным планом. Значит, успешный API call, валидная schema и зелёный CI не могут быть объединены в claim «план распознан правильно».
+Но ручная проверка всё равно показала стены, которые не совпадали с исходным планом. Значит, успешный API call, валидная schema и зелёный CI не могут быть объединены в claim «план распознан правильно».
 
 ### Проём нельзя угадывать без надёжной стены-хозяина
 
 Gap в линии может быть дверью, окном, артефактом текста или результатом слабого edge detection.
 
-Поэтому текущий M7.8B вычисляет opening hypotheses только для диагностики и не добавляет их в Draft. Лучше честно вернуть ноль проёмов, чем показать уверенную дверь без verified host wall. Классификация и assignment намеренно вынесены в следующий slice.
+Поэтому текущая ветка вычисляет opening hypotheses только для диагностики и не добавляет их в Draft. Лучше честно вернуть ноль проёмов, чем показать уверенную дверь без verified host wall. Классификация и assignment намеренно отложены до устойчивого архитектурного shell.
 
 <!-- case-study:current-state -->
 ## Где проект находится сейчас
@@ -152,9 +166,11 @@ Gap в линии может быть дверью, окном, артефакт
 - responsive editor shell, inspectors, onboarding и объяснимый furniture-fit workflow;
 - accepted benchmark foundation для recognition quality.
 
-M7.8B сейчас остаётся Draft PR и проходит отдельную product-owner проверку на реальном representative plan. Exact-head automation подтверждает benchmark и browser contracts, но merge и product claim зависят от ручной оценки того, действительно ли внешние и основные внутренние стены стали ближе к источнику.
+M7.8B сейчас остаётся Draft PR после failed product-owner review. Exact-head automation может подтверждать deterministic benchmark, browser contracts и fail-closed overload behavior, но это не отменяет факта, что representative real plan не был принят.
 
-Следующие recognition slices должны добавить verified host-wall openings, room-face derivation, OCR/labels, area constraints, hybrid reconciliation и confidence calibration.
+До повторной приёмки необходимо добавить public-safe clutter-heavy regression, удержать candidate count в reviewable границах, не позволить symbol/furniture network обойти architectural shell и повторить тот же real-source test.
+
+Только после этого имеет смысл расширять recognition через verified host-wall openings, room-face derivation, OCR/labels, area constraints, hybrid reconciliation и confidence calibration.
 
 Я не считаю распознавание завершённым, пока эти части не измерены и не прошли реальную приёмку.
 
@@ -167,9 +183,9 @@ Evidence намеренно разделяет три уровня:
 
 - принятый product workflow и deterministic geometry contracts;
 - accepted benchmark infrastructure, которая умеет показывать плохой результат;
-- текущий recognition improvement, у которого зелёные exact-head gates есть, а product-owner acceptance ещё нет.
+- failed real-plan acceptance текущего recognition milestone и corrective work, которое ещё не получило права на merge.
 
-Такой snapshot не должен автоматически становиться широкой формулировкой «AI распознаёт планы». Он подтверждает конкретные milestones, конкретные метрики и конкретные ограничения на дату проверки.
+Такой snapshot не должен автоматически становиться широкой формулировкой «AI распознаёт планы». Он подтверждает конкретные milestones, конкретные наблюдения и конкретные ограничения на дату проверки.
 
 <!-- case-study:retrospective -->
 ## Что бы я сделал иначе, начиная проект сегодня
@@ -177,6 +193,8 @@ Evidence намеренно разделяет три уровня:
 Я бы раньше записал `VlezetDocument` и миллиметры как формальный authority contract. Многие UI-решения после этого становятся проще: Canvas — проекция, комнаты — derivation, 3D — read-only, Preview — ephemeral, Apply — semantic command.
 
 Recognition benchmark я тоже построил бы до первого quality-tuning. Без фиксированного корпуса легко улучшить один знакомый план, одновременно ухудшив другой, и принять визуальное впечатление за прогресс.
+
+Но после M7.8B я добавил бы ещё одно правило: **public benchmark и representative product-owner source должны оставаться разными обязательными gates**. Первый даёт воспроизводимость и regression control. Второй показывает, не научилась ли система проходить fixtures, сохранив неправильное поведение на настоящем документе.
 
 Ещё раньше разделил бы четыре разные проверки:
 
