@@ -1,7 +1,7 @@
 # Vlezet flagship case study — design
 
 **Date:** 2026-08-02  
-**Status:** approved for implementation  
+**Status:** approved and updated after M7.8B product-owner failure  
 **Repository:** `True-Ruslan/trueruslan-landing`
 
 ## Goal
@@ -18,7 +18,7 @@ Claims are limited to public, repository-backed evidence from `True-Ruslan/vleze
 
 - canonical `docs/PROJECT_STATE.md`;
 - accepted milestone PRs and acceptance records through M7.8A;
-- current Draft PR #41 for M7.8B, clearly labelled as active review rather than accepted production state;
+- current Draft PR #41 for M7.8B, including the literal failed real-plan product-owner review and corrective iteration;
 - exact-head CI and benchmark evidence recorded in those PRs.
 
 Private apartment plans and owner screenshots are not copied into the portfolio repository.
@@ -61,7 +61,7 @@ Vlezet is described as a precise apartment planner for non-professional owners a
 - use 3D as a projection of the same document;
 - use CV/LLM recognition as assistance rather than geometry authority.
 
-The case study avoids generic claims such as “AI accurately recognises any plan”. Current benchmark limitations remain visible.
+The case study avoids generic claims such as “AI accurately recognises any plan”. The M7.8B real-plan failure is a first-class part of the narrative rather than a hidden caveat.
 
 ## Core architecture story
 
@@ -107,29 +107,30 @@ This adds the project to generated active-project surfaces from the existing reg
 The timeline remains compact and truthful:
 
 1. **Past:** authoritative local-first planner foundation through accepted M7.7;
-2. **Current:** benchmark-first recognition work, with M7.8A accepted and M7.8B still under product-owner review;
-3. **Next:** openings, room faces, labels, areas, reconciliation and confidence calibration.
+2. **Current:** M7.8A benchmark accepted; M7.8B failed representative real-plan review and remains in corrective Draft iteration;
+3. **Next:** prove a reviewable architectural shell on clutter-heavy and real sources before openings, room faces, labels, areas and confidence work.
 
-The timeline does not claim that the active Draft PR is merged or accepted.
+The timeline must not imply that current Draft recognition quality is accepted.
 
 ## Evidence model
 
 Add a bounded Vlezet entry to `data/project-evidence.json`.
 
-Recommended status: `verified`, because accepted milestones and exact-head CI are real, while every signal limits its scope.
+Recommended status: `verified`, because the snapshot and accepted historical milestones are current and source-backed; individual signal states carry the result of each milestone, including the failed M7.8B review.
 
 Signals:
 
 - accepted M7.7 furniture/fit milestone with browser and product-owner evidence;
 - accepted M7.8A benchmark foundation with product-owner calibration acceptance;
-- M7.8B wall-topology work as `pending`, with benchmark deltas and an explicit statement that product-owner acceptance is still required.
+- M7.8B as `failed`, explicitly recording 417 local wall candidates, zero openings, symbol-network pollution, corrective structural masking and current non-accepted Source metrics.
 
 The evidence panel must distinguish:
 
 - proven deterministic/editor capabilities;
-- measured benchmark improvements;
+- an accepted benchmark system that can reveal failure;
+- failed real-plan recognition acceptance;
 - unfinished opening/room/area recognition;
-- the difference between green CI and real-plan acceptance.
+- the difference between green CI and product acceptance.
 
 ## Project hub placement
 
@@ -194,8 +195,9 @@ Review exact-head desktop and mobile screenshots for:
 - diagram legibility;
 - project hub placement;
 - no horizontal overflow;
-- no unsupported claim that M7.8B is accepted;
-- visible Evidence boundaries.
+- explicit failed M7.8B product-owner boundary;
+- visible Evidence boundaries;
+- no broad recognition-success claim.
 
 ## Non-goals
 
