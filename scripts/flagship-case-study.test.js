@@ -13,7 +13,7 @@ const FLAGSHIPS = Object.freeze([
     file: 'livingworld.md',
     timeline: 'livingworld',
     evidence: 'livingworld',
-    diagram: '../../assets/diagrams/livingworld-architecture.svg',
+    diagram: '../../assets/diagrams/villaigence-authority-and-acceptance.svg',
   },
   {
     slug: 'node-zero',
