@@ -13,8 +13,13 @@ const {chromium} = requireQualityTool('playwright', 'Photo Stories smoke tool');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Photo Stories smoke tool');
 
 async function assertSharedShell(page, name, viewport) {
-  const utilities = page.locator('[data-tr-header-utilities]');
-  await utilities.waitFor({state: 'visible'});
+  const visibleUtilities = page.locator('[data-tr-header-utilities]:visible');
+  await visibleUtilities.first().waitFor({state: 'visible'});
+  const visibleCount = await visibleUtilities.count();
+  if (visibleCount !== 1) {
+    throw new Error(`${name}: expected one visible shared header utility group, got ${visibleCount}`);
+  }
+  const utilities = visibleUtilities.first();
 
   const utilityOrder = await utilities.locator('[data-tr-utility], [data-tr-language]').evaluateAll((nodes) =>
     nodes.map((node) => node.getAttribute('data-tr-utility') || 'language'),
@@ -64,7 +69,7 @@ async function assertSharedShell(page, name, viewport) {
     if (!sidebarVisible) throw new Error(`${name}: Diplodoc left navigation does not expose the active Фото route`);
   }
 
-  return {utilityOrder, geometry, sidebarVisible};
+  return {utilityOrder, geometry, sidebarVisible, visibleUtilityGroups: visibleCount};
 }
 
 async function assertArchiveAndLightbox(page, name, baseUrl) {
