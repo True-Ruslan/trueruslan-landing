@@ -8,7 +8,7 @@
 
 <div data-tr-publications-featured></div>
 
-<div data-tr-publications-catalogue></div>
+{% include notitle [Generated publications catalogue](../_includes/publications-catalogue.md) %}
 
 {% note info %}
 
