@@ -28,6 +28,8 @@ import {
   loadProjectRegistry,
 } from './project-registry.js';
 import {applyProjectTimelines} from './project-timeline.js';
+import {loadPublicationRegistry} from './publication-registry.js';
+import {applyPublicationsShowcase} from './publications-showcase.js';
 import {normalizeSearchPageHtml} from './search-page.js';
 import {
   collectPagesFromToc,
@@ -51,6 +53,7 @@ const PROJECTS_MANIFEST = path.join(ROOT, 'data', 'projects.json');
 const PROJECT_EVIDENCE_MANIFEST = path.join(ROOT, 'data', 'project-evidence.json');
 const NOW_MANIFEST = path.join(ROOT, 'data', 'now.json');
 const NOTES_MANIFEST = path.join(ROOT, 'data', 'notes.json');
+const PUBLICATIONS_MANIFEST = path.join(ROOT, 'data', 'publications.json');
 const SOURCES_MANIFEST = path.join(ROOT, 'data', 'sources.json');
 const PHOTO_ALBUMS_MANIFEST = path.join(ROOT, 'data', 'photo-albums.json');
 const PHOTO_ARCHIVE_MANIFEST = path.join(ROOT, 'data', 'photo-archive.json');
@@ -62,6 +65,7 @@ const SEARCH_RESOURCES = [
   ['_assets', 'style', 'search.css'],
   ['_assets', 'script', 'search-ui.js'],
   ['_assets', 'style', 'project-evidence.css'],
+  ['_assets', 'style', 'publications.css'],
 ];
 
 function copyFile(source, target) {
@@ -234,6 +238,7 @@ export function postprocessOutput({
   projectEvidencePath,
   nowPath = NOW_MANIFEST,
   notesPath = NOTES_MANIFEST,
+  publicationsPath,
   sourcesPath,
   photoAlbumsPath,
   photoArchivePath,
@@ -257,6 +262,13 @@ export function postprocessOutput({
   const projectEvidence = resolvedProjectEvidencePath
     ? loadProjectEvidence(resolvedProjectEvidencePath, {projects})
     : null;
+  const resolvedPublicationsPath = publicationsPath ?? (isProductionDocs ? PUBLICATIONS_MANIFEST : null);
+  const publications = resolvedPublicationsPath
+    ? loadPublicationRegistry(resolvedPublicationsPath, {
+      projectSlugs: new Set(projects.map(({slug}) => slug)),
+      noteSlugs: new Set(notes.map(({slug}) => slug)),
+    })
+    : null;
   const resolvedSourcesPath = sourcesPath ?? (isProductionDocs ? SOURCES_MANIFEST : null);
   const sources = resolvedSourcesPath ? loadSourcesRegistry(resolvedSourcesPath) : null;
   const resolvedPhotoAlbumsPath = photoAlbumsPath ?? (isProductionDocs ? PHOTO_ALBUMS_MANIFEST : null);
@@ -279,6 +291,7 @@ export function postprocessOutput({
     templatePath: standaloneTemplatePath,
     outputPath: path.join(outputDir, 'index.html'),
     projectRegistryPath,
+    publications: publications ?? [],
     siteUrl,
   });
   const standaloneHomeEnPath = i18nPairs
@@ -286,6 +299,7 @@ export function postprocessOutput({
       templatePath: standaloneEnTemplatePath,
       outputPath: path.join(outputDir, 'en', 'index.html'),
       projectRegistryPath,
+      publications: [],
       siteUrl,
       locale: 'en',
       hrefTransform: englishProjectHref,
@@ -308,6 +322,12 @@ export function postprocessOutput({
   const projectEvidenceStylesheetTargets = applyProjectEvidenceStylesheet(outputDir, projectEvidenceTargets);
   const noteTargets = applyNoteEnhancements(outputDir, notes);
   const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
+  const publicationShowcaseTarget = publications
+    ? applyPublicationsShowcase(outputDir, publications, {
+      projectLabels: new Map(projects.map(({slug, name}) => [slug, name])),
+      noteLabels: new Map(notes.map(({slug, title}) => [slug, title])),
+    })
+    : null;
   const sourcesKnowledgeBaseTarget = sources
     ? applySourcesKnowledgeBase(outputDir, sources)
     : null;
@@ -354,6 +374,7 @@ export function postprocessOutput({
     noteTargets,
     feedPath,
     feedDiscoveryUpdated,
+    publicationShowcaseTarget,
     sourcesKnowledgeBaseTarget,
     photoStoryRoutes: photoStories.routes,
     photoStoryIndexPath: photoStories.indexPath,
@@ -382,6 +403,7 @@ function main() {
     if (result.projectEvidenceStylesheetTargets.length) console.log(`Wired Project Evidence stylesheet into ${result.projectEvidenceStylesheetTargets.length} page(s).`);
     console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
     console.log(`Atom feed written: ${result.feedPath}`);
+    if (result.publicationShowcaseTarget) console.log(`Publications showcase injected: ${result.publicationShowcaseTarget}`);
     if (result.sourcesKnowledgeBaseTarget) console.log(`Sources Knowledge Base injected: ${result.sourcesKnowledgeBaseTarget}`);
     if (result.photoStoryIndexPath) console.log(`Photo Stories written: ${result.photoStoryIndexPath}`);
     console.log(`Engineering Map injected: ${result.engineeringGraphTarget}`);
