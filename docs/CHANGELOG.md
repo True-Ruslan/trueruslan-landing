@@ -1,8 +1,156 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-01**, после завершения P2.4b header utility navigation and language consolidation.
+> Обновлено: **2026-08-02**, после завершения post-P2.4b UX and rendered-asset stabilization.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
+
+---
+
+# 2026-08-02
+
+## P2.4c — Search, Photo shell and rendered-asset stabilization
+
+После P2.4b завершён ограниченный quality sprint по фактическим UX и production-rendering дефектам. Архитектурные границы static-first, Diplodoc search ownership, RU/EN, analytics и custom-domain contracts не менялись.
+
+### Search return navigation — PR #53
+
+Fullscreen search не имел видимого способа вернуться к открывшей его странице.
+
+Реализовано:
+
+- один visible control `Назад`;
+- same-origin navigation через browser history;
+- direct/external access через deployment-safe homepage fallback;
+- корректный fallback для custom domain и legacy GitHub Pages subpath;
+- accessible target `40×40+`, focus, desktop/mobile overflow и Axe coverage.
+
+Evidence:
+
+```text
+RED Build / run:     #420 / 30740830057
+exact feature head:  49e1943ef1a5711c931ad961e508cb3b0a8dc7b4
+GREEN Build / run:   #424 / 30741301071 SUCCESS
+squash on master:    436a29178004a6b5b7ef5d27a957e80e03c9a109
+```
+
+### Search control visual contract — PR #54
+
+Generated search page показывала doubled input contour, noisy inherited button layers и визуально смещённую label.
+
+Реализовано:
+
+- единственный visible border/background/focus state принадлежит outer search shell;
+- native input стал transparent и не владеет border/outline/shadow;
+- inherited Diplodoc pseudo-layers нейтрализованы;
+- intentional `/ · ⌘K` hint сохранён как единственный field pseudo-layer;
+- submit button использует explicit flex-centering contract;
+- blur/filter noise удалён;
+- measured label offset: `<0.01 px` horizontally и `0 px` vertically.
+
+Evidence:
+
+```text
+RED Build / run:     #425 / 30742276189
+exact feature head:  15c58ead52d2c0ba20c551989d80008c1ab5a7d5
+GREEN Build / run:   #428 / 30742678180 SUCCESS
+squash on master:    a3bcc4e5ab3b6776fc0a2b3a728aea2a086ebc27
+unit tests:           259 PASS
+```
+
+Desktop и mobile exact-head screenshots были manually reviewed.
+
+### Photo index inside the shared Diplodoc shell — PR #55
+
+Старый public photo index был отдельным mini-site с obsolete handwritten header, без sidebar, с duplicated navigation и excessive viewport-height gap.
+
+Реализовано:
+
+- `landing/photos.html` стал single canonical photo index;
+- current Diplodoc header, desktop sidebar, mobile navigation и article shell сохранены;
+- photo content вставляется через explicit build-time placeholder;
+- archive, honest empty-story state и accessible lightbox сохранены;
+- standalone index template и duplicate header/footer удалены;
+- `/photos/` стал redirect-only compatibility bridge;
+- future cinematic albums остаются под `/photos/<slug>/`;
+- homepage, command palette, shared navigation, sitemap и metadata указывают на canonical route;
+- runtime устойчив к Diplodoc hydration replacement.
+
+Acceptance evidence:
+
+```text
+RED Build / run:     #429 / 30745173685
+exact feature head:  c4d11cd56efc654130ebc1a6b54f963fd2011fdc
+GREEN Build / run:   #452 / 30747300783 SUCCESS
+squash on master:    8428e81dff371002e5a4e047140a9467d507aeca
+unit tests:           260 PASS
+heading gap:          36 px desktop / 24 px mobile
+archive / fake album: 3 / 0
+overflow:             0
+Axe serious/critical: 0
+```
+
+Lightbox, direct hash navigation, Escape close, focus restoration, reduced motion и Chromium/Firefox/WebKit прошли. Exact-head desktop/mobile screenshots были manually reviewed.
+
+### NODE ZERO SVG production rendering — PR #57
+
+Обе NODE ZERO diagrams задавали critical paint через embedded `<style>` и короткие CSS classes. На published Diplodoc page rules не применялись: gradient background оставался, а rectangles/text/connectors падали в default black paint.
+
+Реализовано:
+
+- embedded `<style>` dependency удалена;
+- class-based critical paint удалён;
+- `fill`, `stroke`, typography, dash patterns и marker references записаны SVG presentation attributes;
+- geometry, labels, semantic `<title>` и `<desc>` сохранены;
+- unit regression contract запрещает embedded/class-based critical paint;
+- dedicated Chromium smoke загружает обе built SVG через published URLs, rasterizes в canvas, проверяет expected primary/secondary/cyan/violet/green/surface colors и сохраняет screenshots/pixel summary в quality artifact.
+
+Evidence:
+
+```text
+RED exact test head: a3492d01d617eef7451ab97f10f51342208ceff3
+RED Build / run:     #453 / 30749095373
+exact feature head:  f1d08e2be2bebfdf94a500a1bc59ef74d3ec153c
+GREEN Build / run:   #459 / 30749536943 SUCCESS
+squash on master:    e037a0db0d67d142fef3f68d178fd64a6812ee77
+unit tests:           262 PASS
+```
+
+Exact-head screenshots подтвердили readable light labels, dark cards, cyan flow arrows, violet control paths и green evidence/definition accents. Intended geometry и text не изменились.
+
+Draft PR #56 был закрыт как superseded до implementation; production changes отсутствовали.
+
+### Final quality matrix
+
+Build #459 прошёл:
+
+- unit tests;
+- production build;
+- generated-site integrity;
+- mobile overflow;
+- Chromium/Axe/Lighthouse;
+- Sources Knowledge Base;
+- Project Evidence;
+- NODE ZERO diagram browser smoke;
+- Photo Stories;
+- portfolio v0.3;
+- Firefox/WebKit;
+- generated search;
+- Minimal RU/EN;
+- privacy analytics;
+- Metadata/OpenGraph;
+- Engineering Map;
+- visual regression;
+- custom-domain artifact verification;
+- quality evidence upload.
+
+Snapshot after merge:
+
+```text
+master HEAD:       e037a0db0d67d142fef3f68d178fd64a6812ee77
+actual open PR:    none
+actual open issue: none
+latest exact CI:   Build #459 / 30749536943 SUCCESS
+```
 
 ---
 
