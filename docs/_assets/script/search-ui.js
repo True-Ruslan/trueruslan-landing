@@ -16,10 +16,46 @@
     );
   }
 
+  function resolveSiteHome(locationObject = root.location) {
+    return new URL('../../', locationObject.href).href;
+  }
+
+  function canReturnToReferrer(document, locationObject = root.location) {
+    if (!document.referrer) return false;
+    try {
+      const referrer = new URL(document.referrer);
+      return referrer.origin === locationObject.origin && referrer.href !== locationObject.href;
+    } catch {
+      return false;
+    }
+  }
+
+  function createBackControl(document, rootObject = root) {
+    const existing = document.querySelector('[data-tr-search-back="true"]');
+    if (existing) return existing;
+    if (!document.body || !rootObject.location) return null;
+
+    const anchor = document.createElement('a');
+    anchor.className = 'tr-search-back';
+    anchor.dataset.trSearchBack = 'true';
+    anchor.href = resolveSiteHome(rootObject.location);
+    anchor.setAttribute('aria-label', 'Вернуться на предыдущую страницу');
+    anchor.setAttribute('title', 'Вернуться назад');
+    anchor.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m11.5 5-5 5 5 5M7 10h7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Назад</span>';
+    anchor.addEventListener('click', (event) => {
+      if (!canReturnToReferrer(document, rootObject.location)) return;
+      event.preventDefault();
+      rootObject.history.back();
+    });
+    document.body.prepend(anchor);
+    return anchor;
+  }
+
   function decorate(document) {
     const input = findSearchInput(document);
     if (!input) return false;
 
+    createBackControl(document);
     input.classList.add('tr-search-input');
     if (!input.getAttribute('aria-label')) input.setAttribute('aria-label', 'Поиск по сайту');
     if (!input.getAttribute('placeholder')) input.setAttribute('placeholder', 'Найти проект, технологию или заметку…');
@@ -91,7 +127,15 @@
     return false;
   }
 
-  root.TrueRuslanSearchUI = Object.freeze({isEditableTarget, findSearchInput, decorate, init});
+  root.TrueRuslanSearchUI = Object.freeze({
+    isEditableTarget,
+    findSearchInput,
+    resolveSiteHome,
+    canReturnToReferrer,
+    createBackControl,
+    decorate,
+    init,
+  });
 
   if (!root.document) return;
   if (root.document.readyState === 'loading') {
