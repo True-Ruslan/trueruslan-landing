@@ -20,6 +20,16 @@
     "accent": "violet"
   },
   {
+    "path": "landing/projects/vlezet.html",
+    "card": "vlezet",
+    "title": "Vlezet — Geometry and Recognition Case Study",
+    "description": "Case study точного local-first планировщика квартиры: millimetre geometry, rooms and areas, furniture fit, editable CV/LLM recognition Draft и explicit Apply authority.",
+    "displayTitle": "VLEZET",
+    "kicker": "GEOMETRY AND RECOGNITION",
+    "tags": ["TYPESCRIPT", "GEOMETRY", "COMPUTER VISION"],
+    "accent": "cyan"
+  },
+  {
     "path": "landing/now.html",
     "card": "now",
     "title": "Сейчас — Руслан Немыкин",

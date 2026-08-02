@@ -10,6 +10,7 @@ const {chromium} = requireQualityTool('playwright', 'Project Evidence smoke tool
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Project Evidence smoke tool');
 
 const PROJECTS = [
+  {project: 'vlezet', route: '/landing/projects/vlezet.html', status: 'verified', label: 'ПРОВЕРЕНО', borderStyle: 'solid'},
   {project: 'livingworld', route: '/landing/projects/livingworld.html', status: 'verified', label: 'ПРОВЕРЕНО', borderStyle: 'solid'},
   {project: 'node-zero', route: '/landing/projects/node-zero.html', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
 ];

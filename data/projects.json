@@ -1,5 +1,21 @@
 [
   {
+    "slug": "vlezet",
+    "name": "Vlezet",
+    "status": "pre-production",
+    "statusLabel": "ACTIVE DEVELOPMENT",
+    "summary": "Precise local-first apartment planning with authoritative millimetre geometry, explainable furniture fit and reviewable CV/LLM recognition.",
+    "featured": true,
+    "active": true,
+    "visibility": "public",
+    "href": "landing/projects/vlezet.html",
+    "tags": ["TypeScript", "Next.js", "Geometry", "Computer vision", "Three.js"],
+    "links": {
+      "github": "https://github.com/True-Ruslan/vlezet"
+    },
+    "timeline": "vlezet"
+  },
+  {
     "slug": "livingworld",
     "name": "LivingWorld",
     "status": "release-candidate",

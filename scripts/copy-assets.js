@@ -54,7 +54,7 @@ const NOTES_MANIFEST = path.join(ROOT, 'data', 'notes.json');
 const SOURCES_MANIFEST = path.join(ROOT, 'data', 'sources.json');
 const PHOTO_ALBUMS_MANIFEST = path.join(ROOT, 'data', 'photo-albums.json');
 const PHOTO_ARCHIVE_MANIFEST = path.join(ROOT, 'data', 'photo-archive.json');
-const REQUIRED_PROJECT_EVIDENCE = Object.freeze(['livingworld', 'node-zero']);
+export const REQUIRED_PROJECT_EVIDENCE = Object.freeze(['livingworld', 'node-zero', 'vlezet']);
 const PROJECT_EVIDENCE_STYLESHEET = '_assets/style/project-evidence.css';
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);

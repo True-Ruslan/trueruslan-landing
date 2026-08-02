@@ -61,6 +61,7 @@ async function main() {
   const scenarios = [
     {...CORE_SCENARIOS.home, path: '/'},
     {...CORE_SCENARIOS.projects},
+    {...CORE_SCENARIOS.vlezet},
     {...CORE_SCENARIOS.resume, resume: true},
   ];
   const browsers = [

@@ -22,6 +22,13 @@ const FLAGSHIPS = Object.freeze([
     evidence: 'node-zero',
     diagram: '../../assets/diagrams/node-zero-architecture.svg',
   },
+  {
+    slug: 'vlezet',
+    file: 'vlezet.md',
+    timeline: 'vlezet',
+    evidence: 'vlezet',
+    diagram: '../../assets/diagrams/vlezet-recognition-authority.svg',
+  },
 ]);
 
 const SECTION_MARKERS = Object.freeze([
@@ -60,5 +67,5 @@ for (const flagship of FLAGSHIPS) {
 }
 
 test('controlled flagship set stays intentionally small', () => {
-  assert.deepEqual(FLAGSHIPS.map(({slug}) => slug), ['livingworld', 'node-zero']);
+  assert.deepEqual(FLAGSHIPS.map(({slug}) => slug), ['livingworld', 'node-zero', 'vlezet']);
 });

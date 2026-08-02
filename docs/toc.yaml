@@ -66,6 +66,8 @@ items:
   - name: Проекты
     href: ./landing/projects.md
     items:
+      - name: Vlezet — Apartment Planner
+        href: ./landing/projects/vlezet.md
       - name: LivingWorld — AI NPCs
         href: ./landing/projects/livingworld.md
       - name: NODE ZERO — Techno-horror

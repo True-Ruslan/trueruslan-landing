@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Vlezet recognition and geometry authority map</title>
+  <desc id="desc">A source floor plan is calibrated, processed by local computer vision and optional cloud review, converted into an editable recognition draft, reviewed by the user, and only then applied to the authoritative millimetre-based Vlezet document. Rooms, areas, furniture fit, planning and read-only 3D are deterministic derived systems.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#090B10"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <marker id="cyan-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#4CC9F0"/>
+    </marker>
+    <marker id="violet-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#8B5CF6"/>
+    </marker>
+    <marker id="green-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#4ADE80"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="720" rx="28" fill="url(#bg)"/>
+  <text x="60" y="64" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="30" font-weight="750">VLEZET / RECOGNITION AND GEOMETRY AUTHORITY</text>
+  <text x="60" y="96" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="15">assistance proposes · deterministic validation constrains · explicit Apply mutates</text>
+
+  <rect x="55" y="150" width="190" height="150" rx="18" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="82" y="192" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="20" font-weight="700">Source plan</text>
+  <text x="82" y="225" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">JPG · PNG · PDF</text>
+  <text x="82" y="251" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">private input</text>
+  <text x="82" y="277" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">not geometry authority</text>
+
+  <rect x="300" y="150" width="215" height="150" rx="18" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="328" y="192" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="20" font-weight="700">Source setup</text>
+  <text x="328" y="225" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">image rectangle mapping</text>
+  <text x="328" y="251" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">undirected calibration axis</text>
+  <text x="328" y="277" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">millimetre scale</text>
+
+  <rect x="570" y="125" width="255" height="200" rx="20" fill="#151225" stroke="#8B5CF6" stroke-width="3"/>
+  <text x="602" y="172" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="22" font-weight="750">Proposal engines</text>
+  <rect x="602" y="198" width="190" height="46" rx="11" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="622" y="227" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="15" font-weight="650">Local OpenCV</text>
+  <rect x="602" y="259" width="190" height="46" rx="11" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="622" y="288" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="15" font-weight="650">Optional cloud review</text>
+
+  <rect x="880" y="150" width="260" height="150" rx="20" fill="#181225" stroke="#8B5CF6" stroke-width="3"/>
+  <text x="910" y="192" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="21" font-weight="750">Recognition Draft</text>
+  <text x="910" y="225" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#C4B5FD" font-size="14">walls · openings · labels</text>
+  <text x="910" y="251" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#C4B5FD" font-size="14">confidence · provenance</text>
+  <text x="910" y="277" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="14">editable · rejectable · ephemeral</text>
+
+  <path d="M245 225 H292" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan-arrow)"/>
+  <path d="M515 225 H562" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan-arrow)"/>
+  <path d="M825 225 H872" fill="none" stroke="#8B5CF6" stroke-width="3" marker-end="url(#violet-arrow)"/>
+
+  <rect x="315" y="380" width="570" height="92" rx="18" fill="#0F1C18" stroke="#4ADE80" stroke-width="3"/>
+  <text x="350" y="420" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="21" font-weight="750">Review boundary</text>
+  <text x="350" y="449" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#B7F7C8" font-size="14">accept · reject · edit · deterministic validation · explicit Apply</text>
+  <path d="M1010 300 V344 H600 V372" fill="none" stroke="#8B5CF6" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#violet-arrow)"/>
+
+  <rect x="410" y="525" width="380" height="112" rx="20" fill="#0D2023" stroke="#4CC9F0" stroke-width="3"/>
+  <text x="446" y="569" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="23" font-weight="750">VlezetDocument</text>
+  <text x="446" y="600" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#A5E8F7" font-size="14">authoritative persistent geometry in millimetres</text>
+  <text x="446" y="624" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">semantic commands · migrations · IndexedDB</text>
+  <path d="M600 472 V517" fill="none" stroke="#4ADE80" stroke-width="4" marker-end="url(#green-arrow)"/>
+
+  <rect x="55" y="525" width="285" height="112" rx="18" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="84" y="565" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="19" font-weight="700">Deterministic derivation</text>
+  <text x="84" y="595" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">rooms · areas · dimensions</text>
+  <text x="84" y="619" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">validation · diagnostics</text>
+
+  <rect x="860" y="525" width="285" height="112" rx="18" fill="#11151C" stroke="#304052" stroke-width="2"/>
+  <text x="890" y="565" font-family="system-ui,-apple-system,Segoe UI,sans-serif" fill="#F4F7FB" font-size="19" font-weight="700">Deterministic projections</text>
+  <text x="890" y="595" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">furniture fit · planning</text>
+  <text x="890" y="619" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#9CA9B8" font-size="13">Konva 2D · read-only Three.js</text>
+
+  <path d="M410 581 H348" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan-arrow)"/>
+  <path d="M790 581 H852" fill="none" stroke="#4CC9F0" stroke-width="3" marker-end="url(#cyan-arrow)"/>
+
+  <text x="60" y="683" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#718095" font-size="13">Existing geometry is never silently replaced · providers cannot bypass validation · 3D never becomes a parallel editor</text>
+</svg>

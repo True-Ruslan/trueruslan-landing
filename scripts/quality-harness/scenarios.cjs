@@ -7,6 +7,7 @@ const VIEWPORTS = Object.freeze({
 const CORE_SCENARIOS = Object.freeze({
   home: Object.freeze({slug: 'home', path: '/index.html', heading: 'Руслан Немыкин'}),
   projects: Object.freeze({slug: 'projects', path: '/landing/projects.html', heading: 'Проекты'}),
+  vlezet: Object.freeze({slug: 'vlezet', path: '/landing/projects/vlezet.html', heading: 'Vlezet'}),
   resume: Object.freeze({slug: 'resume', path: '/landing/resume.html', heading: 'Резюме'}),
 });
 
