@@ -13,9 +13,17 @@ const CATALOGUE_PLACEHOLDER = /<div\s+data-tr-publications-catalogue(?:="")?\s*>
 const STYLE_MARKER = 'data-tr-publications-style';
 const NOSCRIPT_MARKER = 'data-tr-publications-noscript';
 
-function replaceRequiredPlaceholder(html, pattern, replacement, label) {
-  if (!pattern.test(html)) throw new Error(`publication ${label} placeholder is missing`);
-  return html.replace(pattern, replacement);
+function replacePublicationPlaceholders(html, featured, catalogue) {
+  const hasFeatured = FEATURED_PLACEHOLDER.test(html);
+  const hasCatalogue = CATALOGUE_PLACEHOLDER.test(html);
+
+  if (!hasFeatured && !hasCatalogue) return html;
+  if (!hasFeatured) throw new Error('publication featured placeholder is missing');
+  if (!hasCatalogue) throw new Error('publication catalogue placeholder is missing');
+
+  return html
+    .replace(FEATURED_PLACEHOLDER, featured)
+    .replace(CATALOGUE_PLACEHOLDER, catalogue);
 }
 
 function injectStylesheet(html) {
@@ -47,30 +55,12 @@ export function applyPublicationsShowcase(outputDir, publications, {
 
   const transformed = transformGeneratedContent(
     source,
-    (content) => {
-      let next = replaceRequiredPlaceholder(
-        content,
-        FEATURED_PLACEHOLDER,
-        featured,
-        'featured',
-      );
-      next = replaceRequiredPlaceholder(
-        next,
-        CATALOGUE_PLACEHOLDER,
-        catalogue,
-        'catalogue',
-      );
-      return next;
-    },
+    (content) => replacePublicationPlaceholders(content, featured, catalogue),
     'publication showcase placeholders',
   );
 
   if (!transformed.source) {
-    const hasFeatured = FEATURED_PLACEHOLDER.test(source);
-    const hasCatalogue = CATALOGUE_PLACEHOLDER.test(source);
-    if (!hasFeatured) throw new Error('publication featured placeholder is missing');
-    if (!hasCatalogue) throw new Error('publication catalogue placeholder is missing');
-    throw new Error('publication showcase placeholders could not be replaced');
+    throw new Error('publication featured and catalogue placeholders are missing');
   }
 
   let html = injectStylesheet(transformed.html);
