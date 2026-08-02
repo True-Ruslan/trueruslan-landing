@@ -1,0 +1,13 @@
+# Default repository ownership
+* @True-Ruslan
+
+# Security-sensitive repository automation
+/.github/ @True-Ruslan
+/package.json @True-Ruslan
+/package-lock.json @True-Ruslan
+/scripts/ @True-Ruslan
+
+# Production content and deployment contracts
+/data/ @True-Ruslan
+/docs/ @True-Ruslan
+/templates/ @True-Ruslan
