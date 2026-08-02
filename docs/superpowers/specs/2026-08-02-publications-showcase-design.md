@@ -61,7 +61,12 @@ Attendance without a speaker/author role is excluded. Certificates alone do not 
 
 ## Initial scope
 
-The first release imports every currently discoverable item that satisfies the inclusion boundary from approved sources already available to the project or supplied by the user.
+The first release imports every currently discoverable item that satisfies the inclusion boundary from these approved discovery sources:
+
+- the user's canonical Habr profile and article pages;
+- external publication links already present in the site repository;
+- official journal, publisher, DOI, conference, video and proceedings pages;
+- stable external evidence supplied by the user.
 
 The implementation must not invent missing metadata or create placeholder entries. If an external material cannot be independently verified, it remains outside the public catalogue until evidence is available.
 
@@ -97,6 +102,16 @@ The public catalogue uses these groups:
 
 Empty groups are not rendered.
 
+Display groups are derived only from the controlled material type:
+
+| `kind` | Public group |
+|---|---|
+| `technical-article` | Технические статьи |
+| `scientific-publication` | Научные публикации |
+| `talk` | Доклады и конференции |
+| `interview` | Интервью и приглашённые материалы |
+| `proceedings-publication` | Публикации в сборниках |
+
 Conference work is represented by the public contribution, not by event attendance. A conference paper in proceedings belongs to scientific publications or proceedings; a delivered session belongs to talks and conferences. One real-world contribution may expose several links but must not become duplicate catalogue records.
 
 ## Single source of truth
@@ -108,20 +123,19 @@ Each record contains:
 - `id` — stable unique identifier;
 - `title` — official title;
 - `kind` — controlled content type;
-- `group` — controlled display group;
 - `platform` — publication platform, publisher or event;
 - `date` — ISO date of publication or completed appearance;
-- `role` — author, co-author, speaker, panellist or interview subject;
+- `role` — controlled public role;
 - `language` — source language;
 - `summary` — original concise site summary, not copied promotional text;
 - `topics` — controlled topic labels;
-- `canonicalUrl` — primary external source;
-- `links` — optional additional verified resources such as video, slides, DOI or PDF;
+- `canonicalUrl` — primary external verification source;
+- `links` — optional additional verified resources;
 - `featured` — whether the item is eligible for the homepage and top-of-page selection;
 - `featuredOrder` — explicit editorial order when featured;
 - `relatedProjects` — optional validated project slugs;
 - `relatedNotes` — optional validated Engineering Note slugs;
-- `verifiedAt` — date when external evidence was last checked.
+- `verifiedAt` — ISO date when the external evidence was last checked.
 
 Controlled `kind` values:
 
@@ -131,7 +145,24 @@ Controlled `kind` values:
 - `interview`;
 - `proceedings-publication`.
 
-The display group is derived from `kind` where possible. It may be explicit only when required to resolve a legitimate editorial distinction. The implementation must avoid two independent classification fields that can silently disagree.
+Controlled `role` values:
+
+- `author`;
+- `co-author`;
+- `speaker`;
+- `panellist`;
+- `interview-subject`.
+
+Allowed additional link types:
+
+- `video`;
+- `slides`;
+- `doi`;
+- `pdf`;
+- `event`;
+- `source`.
+
+No separate display-group field is stored. This prevents classification drift between the data model and rendered sections.
 
 ## Rendering architecture
 
@@ -141,7 +172,7 @@ The existing static build remains authoritative:
 
 ```text
 data/publications.json
-        ↓ validation
+        ↓ structural validation
 build-time publication renderer
         ↓
 publications page + homepage featured block
@@ -241,7 +272,7 @@ The page and all rendered titles/summaries must be ordinary semantic HTML so Dip
 
 Add page metadata/OpenGraph for `landing/publications.html`.
 
-External catalogue records are not added to the Engineering Notes Atom feed because the site does not own their canonical content. The publications page itself may be discoverable through ordinary site navigation and search.
+External catalogue records are not added to the Engineering Notes Atom feed because the site does not own their canonical content. The publications page itself remains discoverable through ordinary site navigation and search.
 
 No local article-detail pages are created in the first milestone. The catalogue links directly to canonical external sources, avoiding duplicate content and false ownership signals.
 
@@ -266,20 +297,22 @@ Interactive filters are a non-goal for the initial catalogue. Static grouping is
 
 Add focused registry tests before implementation.
 
-Validation must reject:
+Structural validation must reject:
 
 - duplicate IDs;
 - duplicate canonical URLs;
 - unsupported kinds or roles;
 - invalid or non-HTTPS canonical URLs;
 - missing title, date, platform, role, summary or canonical URL;
-- future dates;
+- publication/event dates later than the build date;
 - featured records without a deterministic order;
 - duplicate featured order values;
-- links with unsupported types;
+- unsupported additional link types;
+- invalid additional URLs;
 - related project slugs that do not exist;
-- related Engineering Note slugs that do not exist;
-- records without an independently verifiable external source.
+- related Engineering Note slugs that do not exist.
+
+External factual verification remains a required manual acceptance step: every canonical and secondary link must resolve to the represented material and support the recorded title, date, platform/event and role.
 
 Sorting is deterministic:
 
@@ -293,10 +326,10 @@ Sorting is deterministic:
 
 Add tests that require:
 
-- a valid `data/publications.json` registry;
+- a structurally valid `data/publications.json` registry;
 - the canonical publications page and navigation entry;
 - homepage featured-publications placeholder/output;
-- no future or unverified records;
+- no future-dated records;
 - no duplication between generated homepage and catalogue data;
 - static/no-JS catalogue representation;
 - metadata and search coverage.
