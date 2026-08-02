@@ -148,6 +148,7 @@ jobs:
           cp custom-domain-artifact.log quality-artifacts/custom-domain-artifact.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           cp docs-html/landing/resume.html quality-artifacts/resume-generated.html 2>/dev/null || true
+          cp docs-html/landing/publications.html quality-artifacts/publications-generated.html 2>/dev/null || true
           cp docs-html/en/index.html quality-artifacts/en-home-generated.html 2>/dev/null || true
           cp docs-html/en/projects/livingworld.html quality-artifacts/en-livingworld-generated.html 2>/dev/null || true
           cp docs-html/landing/now.html quality-artifacts/now-generated.html 2>/dev/null || true
