@@ -58,12 +58,7 @@ function classifyHeaderControl(item) {
   return null;
 }
 
-async function assertSharedShell(page, name, viewport) {
-  await page.waitForTimeout(250);
-  const diagnostics = await collectHeaderDiagnostics(page);
-  writeJsonArtifact(`photo-stories-header-${name}.json`, diagnostics);
-  console.log(`PHOTO_HEADER_DIAGNOSTICS ${name}: ${JSON.stringify(diagnostics)}`);
-
+function assertDesktopHeaderControls(diagnostics, name) {
   const expected = ['github', 'habr', 'telegram', 'search', 'language'];
   const matches = Object.fromEntries(expected.map((kind) => [kind, []]));
   for (const item of diagnostics) {
@@ -85,7 +80,28 @@ async function assertSharedShell(page, name, viewport) {
       throw new Error(`${name}: shared header controls are out of order: ${JSON.stringify(positions)}`);
     }
   }
-  const utilityOrder = positions.map(({kind}) => kind);
+  return {utilityOrder: positions.map(({kind}) => kind), positions};
+}
+
+function assertMobileHeaderControl(diagnostics, name) {
+  const menuButtons = diagnostics.filter((item) => item.tag === 'button' && item.className.includes('pc-mobile-menu-button'));
+  if (menuButtons.length !== 1) {
+    throw new Error(`${name}: expected one visible Diplodoc mobile menu control, got ${menuButtons.length}; diagnostics=${JSON.stringify(diagnostics)}`);
+  }
+  return {
+    utilityOrder: ['mobile-menu'],
+    positions: [{kind: 'mobile-menu', x: menuButtons[0].x, right: menuButtons[0].x + menuButtons[0].width}],
+  };
+}
+
+async function assertSharedShell(page, name, viewport) {
+  await page.waitForTimeout(250);
+  const diagnostics = await collectHeaderDiagnostics(page);
+  writeJsonArtifact(`photo-stories-header-${name}.json`, diagnostics);
+
+  const headerContract = viewport.width >= 1000
+    ? assertDesktopHeaderControls(diagnostics, name)
+    : assertMobileHeaderControl(diagnostics, name);
 
   if (await page.locator('.tr-site-header, .tr-site-nav, .tr-photo-index-hero').count()) {
     throw new Error(`${name}: legacy standalone photo shell is still present`);
@@ -127,7 +143,7 @@ async function assertSharedShell(page, name, viewport) {
     if (!sidebarVisible) throw new Error(`${name}: Diplodoc left navigation does not expose the active Фото route`);
   }
 
-  return {utilityOrder, positions, geometry, sidebarVisible};
+  return {...headerContract, geometry, sidebarVisible};
 }
 
 async function assertArchiveAndLightbox(page, name, baseUrl) {
