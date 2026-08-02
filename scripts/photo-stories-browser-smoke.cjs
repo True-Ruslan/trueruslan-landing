@@ -12,23 +12,72 @@ const PORT = Number(process.env.PHOTO_STORIES_SMOKE_PORT || 4184);
 const {chromium} = requireQualityTool('playwright', 'Photo Stories smoke tool');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Photo Stories smoke tool');
 
+async function collectHeaderDiagnostics(page) {
+  return page.evaluate(() => [...document.querySelectorAll('a, button, summary, [role="button"]')]
+    .map((node) => {
+      const rect = node.getBoundingClientRect();
+      const style = getComputedStyle(node);
+      return {
+        tag: node.tagName.toLowerCase(),
+        text: String(node.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 120),
+        href: node.getAttribute('href'),
+        ariaLabel: node.getAttribute('aria-label'),
+        title: node.getAttribute('title'),
+        role: node.getAttribute('role'),
+        className: typeof node.className === 'string' ? node.className : '',
+        dataUtility: node.getAttribute('data-tr-utility'),
+        dataLanguage: node.getAttribute('data-tr-language-trigger') != null,
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+        display: style.display,
+        visibility: style.visibility,
+        opacity: style.opacity,
+        pointerEvents: style.pointerEvents,
+        outerHtml: node.outerHTML.slice(0, 360),
+      };
+    })
+    .filter((item) => (
+      item.width > 0
+      && item.height > 0
+      && item.y < 120
+      && item.display !== 'none'
+      && item.visibility !== 'hidden'
+      && Number(item.opacity) > 0
+    )));
+}
+
+function classifyHeaderControl(item) {
+  const haystack = `${item.href || ''} ${item.ariaLabel || ''} ${item.title || ''} ${item.text || ''} ${item.dataUtility || ''}`.toLowerCase();
+  if (haystack.includes('github.com/true-ruslan') || haystack.includes('github')) return 'github';
+  if (haystack.includes('habr.com/ru/users/trueruslan') || /(^|\s)habr(\s|$)/.test(haystack)) return 'habr';
+  if (haystack.includes('t.me/trueruslan_blog') || haystack.includes('telegram')) return 'telegram';
+  if (haystack.includes('_search/ru/index.html') || haystack.includes('поиск') || haystack.includes('search')) return 'search';
+  if (item.tag === 'summary' && (/^ru\b/i.test(item.text) || item.dataLanguage)) return 'language';
+  return null;
+}
+
 async function assertSharedShell(page, name, viewport) {
-  const controls = [
-    ['github', page.locator('a[href*="github.com/True-Ruslan"]:visible')],
-    ['habr', page.locator('a[href*="habr.com/ru/users/TrueRuslan"]:visible')],
-    ['telegram', page.locator('a[href*="t.me/TrueRuslan_Blog"]:visible')],
-    ['search', page.locator('a[href*="_search/ru/index.html"]:visible')],
-    ['language', page.locator('summary:visible').filter({hasText: /^\s*RU/})],
-  ];
+  await page.waitForTimeout(250);
+  const diagnostics = await collectHeaderDiagnostics(page);
+  writeJsonArtifact(`photo-stories-header-${name}.json`, diagnostics);
+  console.log(`PHOTO_HEADER_DIAGNOSTICS ${name}: ${JSON.stringify(diagnostics)}`);
+
+  const expected = ['github', 'habr', 'telegram', 'search', 'language'];
+  const matches = Object.fromEntries(expected.map((kind) => [kind, []]));
+  for (const item of diagnostics) {
+    const kind = classifyHeaderControl(item);
+    if (kind) matches[kind].push(item);
+  }
 
   const positions = [];
-  for (const [kind, locator] of controls) {
-    await locator.first().waitFor({state: 'visible'});
-    const count = await locator.count();
-    if (count !== 1) throw new Error(`${name}: expected one visible ${kind} control, got ${count}`);
-    const box = await locator.first().boundingBox();
-    if (!box) throw new Error(`${name}: visible ${kind} control has no bounding box`);
-    positions.push({kind, x: box.x, right: box.x + box.width});
+  for (const kind of expected) {
+    if (matches[kind].length !== 1) {
+      throw new Error(`${name}: expected one visible ${kind} control, got ${matches[kind].length}; diagnostics=${JSON.stringify(diagnostics)}`);
+    }
+    const item = matches[kind][0];
+    positions.push({kind, x: item.x, right: item.x + item.width});
   }
 
   for (let index = 1; index < positions.length; index += 1) {
@@ -135,6 +184,20 @@ async function prepareVisualEvidence(page, name) {
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
+function cleanStalePhotoEvidence() {
+  for (const filename of [
+    'photo-stories-desktop.png',
+    'photo-stories-mobile.png',
+    'photo-stories-reduced-motion.png',
+    'photo-stories-summary.json',
+    'photo-stories-header-desktop.json',
+    'photo-stories-header-mobile.json',
+    'photo-stories-header-reduced-motion.json',
+  ]) {
+    fs.rmSync(artifactPath(filename), {force: true});
+  }
+}
+
 async function runScenario(browser, baseUrl, name, viewport, reducedMotion = 'no-preference') {
   const runtime = await createScenarioPage(browser, {viewport, colorScheme: 'dark', reducedMotion});
   const {page} = runtime;
@@ -187,6 +250,7 @@ async function runScenario(browser, baseUrl, name, viewport, reducedMotion = 'no
 
 async function main() {
   ensureArtifactsDir();
+  cleanStalePhotoEvidence();
   const serverRuntime = await startStaticServer({port: PORT});
   let browser;
   try {
