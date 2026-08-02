@@ -74,6 +74,7 @@ function normalizeAssetPath(value, label) {
 function requireAssetFile(assetPath, {docsDir, requireFiles}, label) {
   if (!requireFiles) return;
   if (!docsDir) throw new Error('docsDir is required when requireFiles is true');
+
   const resolvedDocsDir = path.resolve(docsDir);
   const absolutePath = path.resolve(resolvedDocsDir, assetPath);
   if (!absolutePath.startsWith(`${resolvedDocsDir}${path.sep}`)) {
@@ -82,14 +83,6 @@ function requireAssetFile(assetPath, {docsDir, requireFiles}, label) {
   if (!fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isFile()) {
     throw new Error(`missing ${label}: ${assetPath}`);
   }
-}
-
-function clonePhoto(photo) {
-  return {
-    ...photo,
-    ...(photo.caption == null ? {} : {caption: String(photo.caption)}),
-    ...(photo.place == null ? {} : {place: String(photo.place)}),
-  };
 }
 
 function validatePhoto(photo, albumSlug, seenPhotoIds, options) {
@@ -115,7 +108,15 @@ function validatePhoto(photo, albumSlug, seenPhotoIds, options) {
   if (photo.height != null) assertPositiveInteger(photo.height, `album ${albumSlug} photo height`);
 
   requireAssetFile(src, options, 'album photo');
-  return {...clonePhoto(photo), id, src, alt, layout};
+  return {
+    ...photo,
+    id,
+    src,
+    alt,
+    layout,
+    ...(photo.caption == null ? {} : {caption: String(photo.caption)}),
+    ...(photo.place == null ? {} : {place: String(photo.place)}),
+  };
 }
 
 export function validatePhotoAlbums(albums, options = {}) {
@@ -186,6 +187,7 @@ export function validatePhotoArchive(items, options = {}) {
     if (!item || typeof item !== 'object' || Array.isArray(item)) {
       throw new Error(`archive photo at index ${index} must be an object`);
     }
+
     const id = assertNonEmptyString(item.id, 'archive photo id');
     if (!SAFE_ID_RE.test(id)) throw new Error(`unsafe archive photo id: ${id}`);
     if (seenIds.has(id)) throw new Error(`duplicate archive photo id: ${id}`);
@@ -394,14 +396,24 @@ export function renderPhotoIndexContent({albums = [], archive = []} = {}) {
   </div>`;
 }
 
+function hasResource(html, pattern) {
+  return pattern.test(html);
+}
+
 function injectPhotoResources(html) {
   let result = html;
-  if (!/data-tr-photo-stylesheet/i.test(result)) {
-    const styles = '<link rel="stylesheet" href="../_assets/style/photo-stories.css" data-tr-photo-stylesheet><link rel="stylesheet" href="../_assets/style/photo-embedded.css" data-tr-photo-embedded-stylesheet>';
-    result = result.replace(/<\/head>/i, `${styles}</head>`);
+  const missingStyles = [];
+  if (!hasResource(result, /href=["'][^"']*photo-stories\.css(?:[?#][^"']*)?["']/i)) {
+    missingStyles.push('<link rel="stylesheet" href="_assets/style/photo-stories.css" data-tr-photo-stylesheet>');
   }
-  if (!/data-tr-photo-script/i.test(result)) {
-    result = result.replace(/<\/body>/i, '<script src="../_assets/script/photo-stories.js" defer data-tr-photo-script></script></body>');
+  if (!hasResource(result, /href=["'][^"']*photo-embedded\.css(?:[?#][^"']*)?["']/i)) {
+    missingStyles.push('<link rel="stylesheet" href="_assets/style/photo-embedded.css" data-tr-photo-embedded-stylesheet>');
+  }
+  if (missingStyles.length) {
+    result = result.replace(/<\/head>/i, `${missingStyles.join('')}</head>`);
+  }
+  if (!hasResource(result, /src=["'][^"']*photo-stories\.js(?:[?#][^"']*)?["']/i)) {
+    result = result.replace(/<\/body>/i, '<script src="_assets/script/photo-stories.js" defer data-tr-photo-script></script></body>');
   }
   return result;
 }
