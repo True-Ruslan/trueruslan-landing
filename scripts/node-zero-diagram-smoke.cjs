@@ -18,7 +18,7 @@ const TARGETS = Object.freeze({
 const DIAGRAMS = Object.freeze([
   {
     name: 'architecture',
-    alt: 'NODE ZERO vertical-slice architecture',
+    path: '/assets/diagrams/node-zero-architecture.svg',
     width: 1200,
     height: 720,
     targets: {
@@ -32,7 +32,7 @@ const DIAGRAMS = Object.freeze([
   },
   {
     name: 'system-flow',
-    alt: 'NODE ZERO gameplay and system-state flow',
+    path: '/assets/diagrams/node-zero-system-flow.svg',
     width: 1200,
     height: 620,
     targets: {
@@ -46,18 +46,55 @@ const DIAGRAMS = Object.freeze([
   },
 ]);
 
-async function sampleDiagram(page, imageLocator, diagram) {
-  const source = await imageLocator.evaluate((image) => image.currentSrc || image.src);
-  const result = await page.evaluate(async ({sourceUrl, width, height, targets}) => {
+async function mountDiagram(page, sourceUrl, diagram) {
+  await page.evaluate(({source, width, height}) => {
+    document.body.replaceChildren();
+    Object.assign(document.documentElement.style, {
+      background: '#090B10',
+      colorScheme: 'dark',
+    });
+    Object.assign(document.body.style, {
+      margin: '0',
+      padding: '24px',
+      minHeight: '100vh',
+      display: 'grid',
+      placeItems: 'start center',
+      background: '#090B10',
+    });
+
+    const image = document.createElement('img');
+    image.id = 'node-zero-diagram-under-test';
+    image.src = source;
+    image.alt = '';
+    image.width = width;
+    image.height = height;
+    image.style.display = 'block';
+    image.style.width = `${width}px`;
+    image.style.height = `${height}px`;
+    image.style.maxWidth = 'none';
+    document.body.append(image);
+  }, {source: sourceUrl, width: diagram.width, height: diagram.height});
+
+  const image = page.locator('#node-zero-diagram-under-test');
+  await image.waitFor({state: 'visible'});
+  await page.waitForFunction(() => {
+    const candidate = document.querySelector('#node-zero-diagram-under-test');
+    return Boolean(candidate?.complete && candidate.naturalWidth > 0);
+  });
+  return image;
+}
+
+async function sampleDiagram(page, sourceUrl, diagram) {
+  const result = await page.evaluate(async ({source, width, height, targets}) => {
     const image = new Image();
-    image.src = sourceUrl;
+    image.src = source;
     await new Promise((resolve, reject) => {
       if (image.complete && image.naturalWidth > 0) {
         resolve();
         return;
       }
       image.addEventListener('load', resolve, {once: true});
-      image.addEventListener('error', () => reject(new Error(`Unable to load ${sourceUrl}`)), {once: true});
+      image.addEventListener('error', () => reject(new Error(`Unable to load ${source}`)), {once: true});
     });
 
     const canvas = document.createElement('canvas');
@@ -85,7 +122,7 @@ async function sampleDiagram(page, imageLocator, diagram) {
     }
 
     return {
-      sourceUrl,
+      sourceUrl: source,
       naturalWidth: image.naturalWidth,
       naturalHeight: image.naturalHeight,
       sampledWidth: width,
@@ -93,7 +130,7 @@ async function sampleDiagram(page, imageLocator, diagram) {
       counts,
     };
   }, {
-    sourceUrl: source,
+    source: sourceUrl,
     width: diagram.width,
     height: diagram.height,
     targets: diagram.targets,
@@ -115,21 +152,29 @@ async function main() {
   let browser;
   try {
     browser = await launchChromium(chromium);
-    const page = await browser.newPage({viewport: {width: 1440, height: 1100}, colorScheme: 'dark'});
-    const response = await page.goto(`${server.baseUrl}/landing/projects/node-zero.html`, {waitUntil: 'networkidle'});
-    if (!response?.ok()) throw new Error(`NODE ZERO page returned HTTP ${response?.status() ?? 'none'}`);
+    const page = await browser.newPage({viewport: {width: 1280, height: 900}, colorScheme: 'dark'});
+
+    const pageResponse = await page.goto(`${server.baseUrl}/landing/projects/node-zero.html`, {waitUntil: 'networkidle'});
+    if (!pageResponse?.ok()) throw new Error(`NODE ZERO page returned HTTP ${pageResponse?.status() ?? 'none'}`);
+
+    const generatedHtml = await page.content();
+    for (const diagram of DIAGRAMS) {
+      if (!generatedHtml.includes(diagram.path.replace(/^\//, '../../'))) {
+        throw new Error(`NODE ZERO page does not reference ${diagram.path}`);
+      }
+    }
 
     const results = [];
     for (const diagram of DIAGRAMS) {
-      const image = page.getByAltText(diagram.alt, {exact: true});
-      await image.waitFor({state: 'visible'});
-      await image.scrollIntoViewIfNeeded();
-      await page.waitForFunction((alt) => {
-        const candidate = [...document.images].find((item) => item.alt === alt);
-        return Boolean(candidate?.complete && candidate.naturalWidth > 0);
-      }, diagram.alt);
+      const sourceUrl = `${server.baseUrl}${diagram.path}`;
+      const assetResponse = await page.request.get(sourceUrl);
+      if (!assetResponse.ok()) throw new Error(`${diagram.name}: asset returned HTTP ${assetResponse.status()}`);
+      if (!String(assetResponse.headers()['content-type'] || '').includes('image/svg+xml')) {
+        throw new Error(`${diagram.name}: unexpected content type ${assetResponse.headers()['content-type'] || 'none'}`);
+      }
 
-      const sampled = await sampleDiagram(page, image, diagram);
+      const image = await mountDiagram(page, sourceUrl, diagram);
+      const sampled = await sampleDiagram(page, sourceUrl, diagram);
       await image.screenshot({path: artifactPath(`node-zero-${diagram.name}.png`), animations: 'disabled'});
       results.push({name: diagram.name, ...sampled});
     }
