@@ -11,6 +11,8 @@ const diagramPaths = [
   path.join(root, 'docs', 'assets', 'diagrams', 'node-zero-system-flow.svg'),
 ];
 
+// Production regression: the explicit gradient remained visible while every
+// class-painted box and label fell back to the browser's default black paint.
 test('NODE ZERO diagrams keep critical paint in SVG presentation attributes', () => {
   for (const diagramPath of diagramPaths) {
     const svg = fs.readFileSync(diagramPath, 'utf8');
