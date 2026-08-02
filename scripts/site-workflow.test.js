@@ -38,8 +38,8 @@ test('Pages workflow resolves repository site identity before analytics and buil
     'node scripts/site-deployment.js',
     'node scripts/analytics-deployment.js',
     'npm run build:docs',
-    'actions/upload-pages-artifact@v3',
-    'actions/deploy-pages@v4',
+    'actions/upload-pages-artifact@',
+    'actions/deploy-pages@',
     'node scripts/production-smoke.js',
   ], 'Pages site deployment');
   assert.match(staticWorkflow, /EXPECTED_SITE_ORIGIN/);

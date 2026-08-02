@@ -34,8 +34,8 @@ test('Pages workflow resolves repository analytics configuration before build', 
     'node scripts/analytics-deployment.js',
     'npm run build:docs',
     'verifyAnalyticsArtifact',
-    'actions/upload-pages-artifact@v3',
-    'actions/deploy-pages@v4',
+    'actions/upload-pages-artifact@',
+    'actions/deploy-pages@',
     'node scripts/production-smoke.js',
   ], 'Pages analytics activation');
 });

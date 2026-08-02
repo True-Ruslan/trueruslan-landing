@@ -22,7 +22,7 @@ test('Content Freshness workflow is scheduled/manual, minimally privileged and n
 
   assert.match(workflow, /content-freshness-probe\.js/);
   assert.match(workflow, /content-freshness-report\.js/);
-  assert.match(workflow, /actions\/upload-artifact@v4/);
+  assert.match(workflow, /actions\/upload-artifact@[0-9a-f]{40}/i);
   assert.match(workflow, /content-freshness-report\.json/);
   assert.match(workflow, /content-freshness-report\.md/);
   assert.match(workflow, /<!-- content-freshness-guard -->/);
