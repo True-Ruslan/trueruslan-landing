@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-04**, во время P2.4k Restart and Persistence Engineering Note.
+> Последнее смысловое обновление: **2026-08-04**, после merge P2.4k Restart and Persistence Engineering Note.
 >
 > Durable snapshot для ответа на вопрос: **что представляет собой проект, что уже сделано, что доказано и что дальше?**
 
@@ -36,33 +36,32 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 ## 2. Текущее repository truth
 
 ```text
-master before P2.4k:       bcc1d0f69c8188b0b1fe38d831069f82b74aeac2
-feature PR:                #89 — DRAFT / IN PROGRESS
-RED head:                  1dfddfa3a7750b62caef4618a6836f7778580a76
-implementation head:       266acea5bb01d725a2473981481580591bb47ceb
-Build:                     #677 / 30855874811 — SUCCESS
-CodeQL:                    #121 / 30855874711 — SUCCESS
-Dependency Review:         #105 / 30855874772 — SUCCESS
+master after P2.4k:        40af9e52237f03da58355caa065a40b64ad597d8
+feature PR:                #89 — MERGED
+exact feature head:        e73a94d5d2b832d188e62b8790b4d039ac797a44
+Build:                     #680 / 30856377655 — SUCCESS
+CodeQL:                    #124 / 30856377996 — SUCCESS
+Dependency Review:         #108 / 30856377653 — SUCCESS
 unit tests:                327 PASS / 0 FAIL
 Lighthouse:                100 / 100 / 100 / 100
-quality artifact:          8872532865
-artifact digest:           sha256:2c64346e46b3a927cc4f522c9fff3bbe41542d46d682b182029e6e4840bb69be
+quality artifact:          8872727513
+artifact digest:           sha256:932a3275d3cd7d28b9ca117ad6548ce79efbc25fc195803a7cd44748e5a0c625
 artifact retention:        through 2026-08-17
 ```
 
-Build #677 прошёл production build, generated-site integrity, mobile overflow, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, generated search, exact `persistence contract` search-route check, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression и custom-domain artifact verification.
+Build #680 прошёл production build, generated-site integrity, mobile overflow, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, generated search, exact `persistence contract` search-route check, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression и custom-domain artifact verification.
 
-Durable-document changes требуют нового final exact-head matrix до ready/merge PR #89. Feature merge, push-triggered Pages deployment и production visual acceptance остаются отдельными фактами.
+Documentation-only continuity sync фиксирует final feature squash. Feature merge, push-triggered Pages deployment и production visual acceptance остаются отдельными фактами.
 
 ---
 
-## 3. P2.4k — Restart and Persistence as Product Contract — IN PROGRESS
+## 3. P2.4k — Restart and Persistence as Product Contract — DONE
 
-Engineering Note:
+Published Engineering Note:
 
 **«Restart — это часть продукта: почему сохранённый JSON ещё не доказывает persistence»**
 
-Canonical route after build:
+Canonical route:
 
 `landing/notes/restart-persistence-is-a-product-contract.html`
 
@@ -86,13 +85,13 @@ Persistence разделена на четыре уровня:
 3. **semantic continuity** — UUID, evidence links, ordering, ownership и per-entity isolation остаются корректными;
 4. **behavioral continuity** — пользователь после restart наблюдает тот же recall, identity, permissions и failure isolation.
 
-Equal SHA-256 подтверждает byte continuity в no-mutation scenario, но не доказывает, что runtime прочитал правильный файл или восстановил правильный смысл. После intentional writes или migration hash может и должен измениться; тогда требуется semantic/read-back evidence.
+Equal SHA-256 подтверждает byte continuity только в no-mutation scenario. Он не доказывает, что runtime прочитал правильный store или восстановил правильный смысл. После intentional writes или migration hash может измениться; тогда требуется отдельное read-back и semantic evidence.
 
 ### Evidence boundary
 
 #### PR #66
 
-- старый corroborated FACT Basiliso пережил pressure;
+- corroborated FACT Basiliso пережил pressure;
 - semantic UUID и `sourceEventIds` пережили pressure и restart;
 - decay ordering разрешил otherwise equal entries;
 - слабый Casimiro relationship FACT был вытеснен;
@@ -102,14 +101,7 @@ Equal SHA-256 подтверждает byte continuity в no-mutation scenario, 
 
 #### PR #67
 
-- все шесть world-local stores были hash-identical across restart;
-- Pio и Justino сохранили isolation;
-- Pio сохранил имя игрока и любимый цвет;
-- controlled TTS failure сохранил visible text и Memory 2.0 dialogue;
-- rejected hostile endpoints не передали credentials и не изменили persistence;
-- production configuration восстановлена byte-for-byte.
-
-Canonical stores:
+Все шесть world-local stores были hash-identical across restart:
 
 ```text
 memory.json
@@ -119,6 +111,8 @@ relationships.json
 voices.json
 operator-lore.json
 ```
+
+Дополнительно Pio и Justino сохранили isolation, Pio сохранил имя игрока и любимый цвет, controlled TTS failure сохранил visible text и Memory 2.0 dialogue, hostile endpoints не передали credentials и не изменили persistence, production configuration восстановлена byte-for-byte.
 
 #### Startup failure and rollback
 
@@ -130,7 +124,7 @@ PRs #92, #95 и #102 используются как отрицательное 
 - persistent hashes не менялись;
 - service readiness, monitoring и ports восстанавливались.
 
-Rollback доказывает recovery outcome, а не качество failed candidate.
+Rollback доказывает recovery outcome, а не качество rejected candidate.
 
 #### PR #103
 
@@ -159,15 +153,19 @@ failure scope:         missing registry, Markdown and index/TOC/page-meta surfac
 
 implementation head:   266acea5bb01d725a2473981481580591bb47ceb
 Build:                 #677 / 30855874811 — SUCCESS
-CodeQL:                #121 / 30855874711 — SUCCESS
-Dependency Review:     #105 / 30855874772 — SUCCESS
+unit tests:            327 PASS / 0 FAIL
+
+final head:            e73a94d5d2b832d188e62b8790b4d039ac797a44
+Build:                 #680 / 30856377655 — SUCCESS
+CodeQL:                #124 / 30856377996 — SUCCESS
+Dependency Review:     #108 / 30856377653 — SUCCESS
 unit tests:            327 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
 ```
 
-Первый implementation attempt Build #676 выявил одну слишком широкую запрещённую формулировку внутри отрицания. Текст исправлен без ослабления test contract; final implementation matrix стал зелёным.
+Build #676 выявил одну слишком широкую запрещённую формулировку внутри отрицания. Текст был сужен без ослабления test contract.
 
-### Delivered on implementation head
+### Delivered
 
 - canonical `data/notes.json` record;
 - grounded Markdown article;
@@ -224,6 +222,7 @@ P2.4k does not claim:
 - Product Evidence Reconciliation — PR #83.
 - Installed Acceptance Engineering Note — PR #85.
 - Deterministic Authority Engineering Note — PR #87.
+- Restart and Persistence Engineering Note — PR #89.
 
 ### Repository hardening
 
@@ -256,7 +255,7 @@ Source/package/GameTest/production-JAR/persistence/server-authority evidence о�
 
 ### Publications and Photo Stories
 
-Publications contains only completed, externally verifiable work. Photo Stories platform is ready, but the first genuine story requires authentic material; fake/demo albums remain prohibited.
+Publications contains only completed, externally verifiable work. Photo Stories platform готова, но первая genuine story требует authentic material; fake/demo albums запрещены.
 
 ---
 
@@ -266,9 +265,9 @@ Canonical public origin:
 
 `https://trueruslan.ru`
 
-Previously confirmed: GitHub domain verification, Pages DNS, certificate and Enforce HTTPS, `www → apex`, RU/EN canonical identity, one Cloudflare beacon per localized homepage and no legacy Pages-origin leakage in custom-domain artifacts.
+Ранее подтверждены GitHub domain verification, Pages DNS, certificate и Enforce HTTPS, `www → apex`, RU/EN canonical identity, один Cloudflare beacon на localized homepage и отсутствие legacy Pages-origin leakage в custom-domain artifact.
 
-PR quality gates verify the custom-domain artifact contract. Latest push-triggered Pages deployment and owner visual acceptance must not be inferred from PR CI.
+PR quality gates проверяют custom-domain artifact contract. Latest push-triggered Pages deployment и owner visual acceptance нельзя выводить из PR CI.
 
 ---
 
@@ -276,14 +275,14 @@ PR quality gates verify the custom-domain artifact contract. Latest push-trigger
 
 ### Operational follow-up
 
-- after merge confirm latest Pages deployment and new Note route;
-- confirm deployed Atom feed and exact generated search result;
-- run or inspect a fresh Content Freshness Guard; close issue #78 only when generated evidence is clean;
-- run exact `npm audit --json` advisory/path triage for issue #82.
+- получить fresh Content Freshness Guard report и закрыть issue #78 только при clean generated evidence;
+- получить exact `npm audit --json` advisory/path triage для issue #82;
+- проверить latest Pages deployment, production Note route, Atom feed и search, если инструменты позволяют;
+- update public truth только после accepted external evidence.
 
 ### Dependency residual risk
 
-Current `npm ci` on unchanged dependency graph reports:
+Current `npm ci` на неизменённом dependency graph сообщает:
 
 ```text
 6 moderate
@@ -291,29 +290,29 @@ Current `npm ci` on unchanged dependency graph reports:
 critical count not reported by the summary line
 ```
 
-Dependency Review remains SUCCESS, so P2.4k introduces no dependency delta. Do not use `npm audit fix --force`, a local `node_modules` shim or an unreviewed fork. Issue #82 remains the maintenance owner.
+Dependency Review остаётся SUCCESS, поэтому P2.4k не внес dependency delta. Не применять `npm audit fix --force`, local `node_modules` shim или unreviewed fork. Issue #82 остаётся maintenance owner.
 
 ### Product/content debt
 
-- Vlezet M7.8C owner retest and acceptance remain external product work;
-- VillAIgence cumulative manual acceptance remains pending;
-- first genuine Photo Story requires authentic material;
-- Publications grows only from stable evidence;
-- Cloudflare data requires deliberate distribution and a 3–4 week observation window before audience conclusions.
+- Vlezet M7.8C owner retest и acceptance остаются external product work;
+- VillAIgence cumulative manual acceptance остаётся pending;
+- first genuine Photo Story требует authentic material;
+- Publications растёт только из stable evidence;
+- Cloudflare data требует deliberate distribution и 3–4 week observation window.
 
 ---
 
-## 8. Следующий оптимальный шаг после merge
+## 8. Следующий оптимальный шаг
 
-### Operational maintenance closure
+### Operational Maintenance Closure
 
-1. obtain a fresh Content Freshness Guard report and reconcile issue #78;
-2. obtain exact `npm audit --json` advisories and dependency paths for issue #82;
-3. verify the latest Pages deployment, production Note route, feed and generated search where tooling permits;
-4. update source-project public truth only after accepted external evidence;
-5. create the first genuine Photo Story only when authentic material exists.
+1. Fresh Content Freshness Guard and issue #78 reconciliation.
+2. Exact `npm audit --json` advisory/path triage for issue #82.
+3. Latest Pages/live Note/feed/search verification where tooling permits.
+4. Source-project public truth updates only after accepted evidence.
+5. First genuine Photo Story only when authentic material exists.
 
-Another conceptual Note is not the immediate priority until these operational facts are closed or explicitly blocked.
+Следующая conceptual Note не является immediate priority, пока operational facts не закрыты или явно не заблокированы.
 
 ---
 
