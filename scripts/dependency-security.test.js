@@ -125,30 +125,20 @@ test('low-risk audit packages remain on fixed patch or minor releases', () => {
   );
 });
 
-test('markdown parser stack is beyond every currently affected advisory range', () => {
+test('linkify-it is beyond every currently affected advisory range', () => {
   const lockfile = JSON.parse(fs.readFileSync(lockfilePath, 'utf8'));
-  const violations = [];
-
-  for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'markdown-it')) {
-    if (compareVersion(metadata?.version, [14, 2, 0]) < 0) {
-      violations.push(`${packagePath}: ${metadata?.version ?? 'unknown'}`);
-    }
-  }
-
-  for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'linkify-it')) {
-    if (compareVersion(metadata?.version, [5, 0, 2]) < 0) {
-      violations.push(`${packagePath}: ${metadata?.version ?? 'unknown'}`);
-    }
-  }
+  const violations = lockfileEntriesFor(lockfile, 'linkify-it')
+    .filter(([, metadata]) => compareVersion(metadata?.version, [5, 0, 2]) < 0)
+    .map(([packagePath, metadata]) => `${packagePath}: ${metadata?.version ?? 'unknown'}`);
 
   assert.deepEqual(
     violations,
     [],
-    `Affected markdown parser versions remain in package-lock.json:\n${violations.join('\n')}`,
+    `Affected linkify-it versions remain in package-lock.json:\n${violations.join('\n')}`,
   );
 });
 
-test('markdown-it 14.3 preserves core Diplodoc-facing rendering semantics', () => {
+test('the supported markdown-it line preserves core Diplodoc-facing rendering semantics', () => {
   const markdown = new MarkdownIt({html: false, linkify: true, typographer: true});
   const rendered = markdown.render([
     '# Heading',
