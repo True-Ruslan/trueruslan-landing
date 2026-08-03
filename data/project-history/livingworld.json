@@ -14,22 +14,23 @@
   },
   {
     "date": "2026-08",
-    "title": "0.1.20 installed PARTIAL PASS",
-    "description": "Text, voice, lore, restart, rollback-world compatibility and most gameplay scenarios passed, while water drowning, destructive filled-grave Silk Touch behavior, snapshot identity and one approximately 272-second Chat request blocked full acceptance.",
+    "title": "Installed failures became release gates",
+    "description": "0.1.20 ended as a partial PASS with water, grave, identity and latency defects. 0.1.21 then failed at startup on a production-unsafe tombstone Mixin; safe rollback preserved all six persistent hashes and restored service.",
     "state": "past",
-    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/98"
-  },
-  {
-    "date": "2026-08",
-    "title": "0.1.22 corrective code candidate",
-    "description": "Merged PRs #99–#102 narrow water navigation, preserve filled-grave data, enforce exact embedded release identity and remove the production-unsafe tombstone startup injection. Automated and package gates are green; installed acceptance is not claimed.",
-    "state": "current",
     "evidence": "https://github.com/True-Ruslan/villAIgence/pull/102"
   },
   {
+    "date": "2026-08",
+    "title": "M11 risk-based production-JAR acceptance",
+    "description": "PRs #103 and #104 added a 28-scenario risk catalogue, real Fabric GameTests and an isolated exact production-JAR gate. The candidate reached ready state twice, stopped cleanly and preserved six canonical stores across restart; cumulative manual provider and gameplay acceptance remains separate.",
+    "state": "current",
+    "version": "0.1.23+1.21.1",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/104"
+  },
+  {
     "date": "NEXT",
-    "title": "Exact installed cumulative acceptance",
-    "description": "Build the exact 0.1.22+1.21.1 artifact, verify startup, water escape, filled-grave break/place behavior, Text/STT/Chat/TTS, restart and six persistent hashes, then promote only if the cumulative acceptance gate passes.",
+    "title": "Cumulative provider, multiplayer and gameplay acceptance",
+    "description": "Run the exact published candidate through real Text/STT/Chat/TTS and Voice Chat, logical two-client lore conflict, focused water and filled-grave canaries, restart and product-owner acceptance before promotion beyond release-candidate status.",
     "state": "next"
   }
 ]
