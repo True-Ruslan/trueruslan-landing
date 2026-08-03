@@ -1,0 +1,87 @@
+name: Generate markdown parser lockfile
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - package.json
+      - scripts/dependency-security.test.js
+      - .github/workflows/generate-markdown-parser-lockfile.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-markdown-parser-lockfile-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6.1.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6.6.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Resolve parser migration and regenerate lockfile
+        run: npm install --ignore-scripts
+
+      - name: Verify parser security and compatibility tests
+        run: node --test scripts/dependency-security.test.js
+
+      - name: Capture parser dependency tree
+        run: npm ls markdown-it linkify-it --all > markdown-parser-tree.txt
+
+      - name: Capture audit inventory
+        shell: bash
+        run: npm audit --json > npm-audit.json || true
+
+      - name: Require zero audit findings
+        run: >-
+          node -e
+          "const fs=require('node:fs');
+          const audit=JSON.parse(fs.readFileSync('npm-audit.json','utf8'));
+          const summary=audit.metadata?.vulnerabilities ?? {};
+          console.log(JSON.stringify(summary,null,2));
+          if ((summary.total ?? 0) !== 0) process.exit(1);"
+
+      - name: Commit generated lockfile to the PR branch
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'package-lock.json';
+            const {owner, repo} = context.repo;
+            const branch = context.payload.pull_request.head.ref;
+            const current = await github.rest.repos.getContent({owner, repo, path, ref: branch});
+            await github.rest.repos.createOrUpdateFileContents({
+              owner,
+              repo,
+              path,
+              branch,
+              sha: current.data.sha,
+              message: 'deps: regenerate lockfile for secure markdown parser stack',
+              content: fs.readFileSync(path).toString('base64'),
+            });
+
+      - name: Upload parser security evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: markdown-parser-security-evidence
+          path: |
+            package-lock.json
+            markdown-parser-tree.txt
+            npm-audit.json
+          if-no-files-found: error
+          retention-days: 14
