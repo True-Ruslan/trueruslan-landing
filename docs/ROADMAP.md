@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-04**, после merge P2.4k Restart and Persistence Engineering Note.
+> Обновлено: **2026-08-04**, после Content Freshness closure, exact dependency triage и high-severity remediation.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -12,7 +12,6 @@
 - build-time intelligence;
 - progressive enhancement;
 - core content без runtime API;
-- no backend/CMS/database без необходимости;
 - one canonical source of truth;
 - Diplodoc как единственный site-wide full-text search owner;
 - no automatic public truth mutation;
@@ -21,10 +20,11 @@
 - one RU/EN site/build/search architecture;
 - optional aggregate analytics;
 - no behavioural tracking без explicit privacy review;
-- quality gates без ослабления;
 - repository readiness, generated artifact, deployed state, external-project acceptance и provider telemetry как разные факты;
-- **exact artifact → installed acceptance** как явную release boundary;
-- **byte continuity ≠ structural readability ≠ semantic continuity ≠ behavioral continuity**.
+- exact artifact → installed acceptance как явную release boundary;
+- byte continuity ≠ structural readability ≠ semantic continuity ≠ behavioral continuity;
+- dependency evidence не является автоматическим разрешением на fix;
+- quality gates без ослабления.
 
 Главная продуктовая формула:
 
@@ -36,7 +36,7 @@
 
 ## P0 — foundation
 
-- Photo Stories platform — PRs #15/#17; first genuine story remains content-dependent.
+- Photo Stories platform — PRs #15/#17.
 - Sources Registry / KB — PR #20.
 - Project Evidence — PR #22.
 - Grounded Notes — PR #25.
@@ -52,8 +52,8 @@
 ## P2 — audience / operations / content
 
 - Minimal RU/EN — PR #38.
-- Privacy-friendly analytics and activation — PRs #40/#42.
-- Custom domain and HTTPS — PR #45, run `30704218399`.
+- Privacy-friendly analytics — PRs #40/#42.
+- Custom domain and HTTPS — PR #45.
 - Canonical rollout/header/search/Photo stabilization — PRs #48–#58.
 - Vlezet flagship — PR #59.
 - Publications — PR #61.
@@ -64,43 +64,12 @@
 - Deterministic Authority Engineering Note — PR #87.
 - Restart and Persistence Engineering Note — PR #89.
 
-## Repository hardening
+## Operational and security hardening
 
-- Governance/security/ownership/immutable Actions/CodeQL/Dependency Review — PR #67.
-- Compatible dependency updates — PRs #69/#71/#76/#77/#79/#80/#81.
-- Dependency maintenance owner — issue #82; current audit signal requires exact advisory/path triage.
-
----
-
-# P2.4i — Installed Acceptance Engineering Note — DONE
-
-Published **От source tests к installed acceptance: что доказывает каждый release gate**.
-
-```text
-feature PR:            #85 — MERGED
-exact feature head:    9d9fcff92c9a9826391028b2f2e25c524e7463ea
-squash on master:      c03f8403b77df5a91238d62bd8a143c046511a92
-Build:                 #655 / 30833707629 — SUCCESS
-unit tests:            321 PASS / 0 FAIL
-```
-
-Source tests, package identity, GameTests, production-JAR startup/restart, rollback and cumulative installed acceptance remain separate evidence layers.
-
----
-
-# P2.4j — Deterministic Authority Around Probabilistic Proposals — DONE
-
-Published **AI может предложить, но не применить: как строить deterministic authority**.
-
-```text
-feature PR:            #87 — MERGED
-exact feature head:    b38d225d837e5e347184ca09c685a479923ba06e
-squash on master:      2fba404bbca9680d934f11f30c8a76347a5ab7b1
-Build:                 #668 / 30853751417 — SUCCESS
-unit tests:            324 PASS / 0 FAIL
-```
-
-Probabilistic proposals remain evidence until deterministic identity, validation, authorization, current-state revalidation and explicit Apply permit one authoritative mutation.
+- Freshness PR evidence and clean issue #78 closure — PR #91.
+- Exact full-lockfile dependency audit evidence — PR #93.
+- High-severity `brace-expansion` / `undici` remediation — PR #94.
+- Remaining markdown-it/Diplodoc blocker — issue #82.
 
 ---
 
@@ -110,157 +79,111 @@ Published:
 
 **Restart — это часть продукта: почему сохранённый JSON ещё не доказывает persistence**
 
-Canonical route:
-
-`landing/notes/restart-persistence-is-a-product-contract.html`
-
-## Product model
-
 ```text
-write
-→ completed save
-→ controlled shutdown
-→ exact artifact restart
-→ unique canonical discovery
-→ parse and schema check
-→ semantic identity/isolation check
-→ user-visible continuity
-```
-
-Four evidence levels:
-
-1. storage durability;
-2. structural readability;
-3. semantic continuity;
-4. behavioral continuity.
-
-Equal SHA-256 is byte-continuity evidence for a no-mutation scenario. It cannot prove read-back, schema compatibility, identity ownership, per-entity isolation or user-visible behavior. Intentional writes and migration may legitimately change hashes.
-
-## Evidence base
-
-- PR #66 — live semantic UUID/`sourceEventIds`, decay ordering and Basiliso/Casimiro isolation across pressure and restart;
-- PR #67 — six-store hashes plus Pio/Justino isolation, observable recall and controlled TTS/security failure isolation;
-- PRs #92/#95/#102 — startup failure before world load and safe rollback with unchanged persistent state and recovered service;
-- PR #103 — GameTest UUID/name/full-inventory NPC round trip;
-- PR #104 — exact production-JAR, two independent JVMs, controlled stop/save/exit, exactly one valid JSON per canonical store and stable no-mutation paths/hashes.
-
-Canonical stores:
-
-```text
-memory.json
-memory2.json
-semantic-memory.json
-relationships.json
-voices.json
-operator-lore.json
-```
-
-## Verification and merge
-
-```text
-RED head:              1dfddfa3a7750b62caef4618a6836f7778580a76
-RED Build:             #670 / 30855380512 — expected FAILURE
-RED tests:             324 PASS / 3 expected FAIL
-
 feature PR:            #89 — MERGED
 exact feature head:    e73a94d5d2b832d188e62b8790b4d039ac797a44
-squash on master:      40af9e52237f03da58355caa065a40b64ad597d8
+squash:                40af9e52237f03da58355caa065a40b64ad597d8
 Build:                 #680 / 30856377655 — SUCCESS
-CodeQL:                #124 / 30856377996 — SUCCESS
-Dependency Review:     #108 / 30856377653 — SUCCESS
 unit tests:            327 PASS / 0 FAIL
-Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8872727513
-artifact digest:       sha256:932a3275d3cd7d28b9ca117ad6548ce79efbc25fc195803a7cd44748e5a0c625
 ```
 
-## Static integration
-
-- canonical Notes registry record;
-- grounded Markdown article;
-- Notes index and TOC;
-- metadata/OpenGraph;
-- previous/next/related build-time navigation;
-- Atom feed;
-- generated Diplodoc search;
-- exact search assertion for query `persistence contract` and canonical route;
-- permanent content/evidence contract;
-- no new runtime, schema, renderer, CSS, backend, API, analytics event or second search engine.
-
-## Boundaries retained
-
-- stable bytes do not prove semantic correctness;
-- schema/migration/read-back are separate gates;
-- GameTest evidence is not production-JAR restart evidence;
-- PR #104 is no-mutation automated persistence evidence, not cumulative acceptance;
-- rollback proves recovery, not success of the rejected candidate;
-- production Pages deployment is not inferred from PR CI.
+Persistence remains a layered product contract: storage, structural readability, semantic continuity and behavioral continuity.
 
 ---
 
-# NOW — Operational Maintenance Closure
-
-После P2.4k следующая conceptual Note не является immediate priority.
+# Operational Maintenance Closure — DONE
 
 ## O1 — Content Freshness reconciliation
 
-- получить fresh Content Freshness Guard report;
-- проверить, воспроизводятся ли три warnings issue #78 после registry reconciliation;
-- закрыть #78 только при clean generated evidence;
-- не считать stale issue body текущим scan result.
+PR #91 added path-scoped PR evidence. Pull-request runs upload reports without mutating the issue; scheduled/manual runs retain automatic issue ownership.
 
-## O2 — Exact dependency advisory/path triage
+```text
+exact head:            6d64ed81e6bfebd856f502c993ce9f574c55aa4b
+squash:                7afade6cc6e1cdfce2d14b28d5a4ff42b28453ee
+Content Freshness:     #13 / 30857597584 — SUCCESS
+findings:              0
+```
 
-- получить `npm audit --json` на exact lockfile;
-- определить две high records, advisory IDs и transitive paths;
-- проверить, относятся ли они к существующей build-time markdown-it family или к новому path;
-- обновить issue #82 measured evidence;
-- не применять `npm audit fix --force`, local shims или unreviewed fork.
+Issue #78 is closed as completed.
 
-## O3 — Production deployment verification
+## O2 — Exact dependency audit evidence
 
-Если инструменты позволяют, проверить:
+PR #93 added a read-only weekly/manual/path-scoped workflow preserving raw audit JSON, normalized reports and npm-explain chains.
 
-- latest Pages deployment соответствует merged master SHA;
-- новая Note route доступна;
-- Atom feed содержит Note;
-- production search возвращает canonical route;
-- custom-domain HTTPS/canonical/analytics boundaries сохранены.
+```text
+exact head:            23cffa3bd863de70fd70fa2bd8d1aa4a5c8a64a1
+squash:                9055ed182c7590643a09533c9d4011bada84d399
+Dependency Audit:      #4 / 30858629032 — SUCCESS
+measured:              3 high / 6 moderate / 0 critical
+```
 
-PR artifact evidence остаётся отдельным от live deployment evidence.
+High families were `undici`, `brace-expansion` and propagated `minimatch`.
 
-## O4 — Genuine content and distribution
+## O2.1 — High-severity remediation
 
-- first genuine Photo Story только с authentic material и confirmed chronology;
-- external profile links и selective announcements только после production verification;
-- aggregate Cloudflare observation 3–4 weeks до audience conclusions.
+PR #94 applied compatible patch-only overrides:
+
+```text
+brace-expansion 2.1.3 → 2.1.4
+brace-expansion 5.0.8 → 5.0.9
+undici         7.28.0 → 7.29.0
+```
+
+```text
+exact head:            ef47f18d52ca2d3e334e3c95d8fa312f167cc217
+squash:                2e1bbd8e4b8e8e77319691a785f5ce14402f3389
+Build:                 #695 / 30859354170 — SUCCESS
+CodeQL:                #143 / 30859354188 — SUCCESS
+Dependency Review:     #123 / 30859354189 — SUCCESS
+Dependency Audit:      #7 / 30859354182 — SUCCESS
+unit tests:            331 PASS / 0 FAIL
+Lighthouse:            100 / 100 / 100 / 100
+final audit:           0 high / 6 moderate / 0 critical
+```
+
+Issue #82 remains open only for the moderate `markdown-it@13.0.2` / Diplodoc compatibility blocker. Do not use forced fixes, local shims or an unreviewed fork.
 
 ---
 
-# External product dependencies
+# NOW — O3 Production Deployment Verification
 
-## Vlezet M7.8C
+Where tooling permits, independently verify:
 
-Landing public truth updates only after exact-head automated evidence plus the same real-plan product-owner acceptance. Until then M7.8B remains the latest accepted public recognition slice.
+1. latest Pages deployment belongs to current `master`;
+2. `landing/notes/restart-persistence-is-a-product-contract.html` returns successfully;
+3. Atom feed contains the persistence Note;
+4. production search returns the canonical Note route;
+5. HTTPS, `www → apex`, canonical metadata and Cloudflare beacon boundaries remain intact.
 
-## VillAIgence cumulative acceptance
-
-Promotion beyond `release-candidate` still requires real Text/STT/Chat/TTS and Voice Chat, Chat deadline behavior, logical two-client conflict, focused water and filled-grave canaries, restart/six-store persistence and product-owner cumulative acceptance.
-
-Do not edit `/now` as a substitute for updating canonical registry/evidence/timeline after a newly accepted source milestone.
+PR artifact evidence remains separate from live deployment evidence.
 
 ---
 
-# Publications growth rules
+# Conditional next work
 
-Add only completed, externally verifiable work with known title/date/platform/role and stable canonical evidence. Do not add drafts, submitted papers, future appearances, attendance-only events or live popularity metrics.
+## Genuine Photo Story
+
+Only authentic material with confirmed chronology, publishable alt text/captions and an explicit hero/layout decision. No fake/demo album.
+
+## External product updates
+
+- Vlezet public truth changes only after exact-head automated evidence plus the same real-plan owner acceptance. M7.8B remains latest accepted; M7.8C PR #42 remains Draft.
+- VillAIgence promotion beyond `release-candidate` still requires real Text/STT/Chat/TTS and Voice Chat, deadline behavior, logical two-client conflict, focused gameplay canaries and product-owner cumulative acceptance.
+
+## Distribution and analytics
+
+After live production verification:
+
+- update stale external profile links;
+- announce selectively with direct case-study/Note links;
+- observe aggregate Cloudflare data for 3–4 weeks before audience conclusions.
 
 ---
 
 # Что не является priority
 
-Без нового evidence-backed design decision не планировать migration from GitHub Pages, paid hosting merely for the custom domain, private TLS management, separate EN CMS/build, second full-text search, runtime publication APIs, advertising analytics/session replay, AI chat over the CV, accounts/comments/likes, backend/database for static content, runtime GitHub API, automatic public-state mutation or decorative version bumps.
+Без нового evidence-backed design decision не планировать migration from GitHub Pages, paid hosting merely for the custom domain, separate EN CMS/build, second full-text search, runtime publication APIs, behavioural analytics/session replay, accounts/comments/likes, backend/database for static content, automatic public-state mutation or decorative version bumps.
 
 ## Правило для нового чата
 
-Перед следующим milestone открыть durable docs; проверить actual open PR/latest commits/exact-head CI; отдельно проверить Pages/production routes, Cloudflare, Vlezet/VillAIgence source truth, Content Freshness issue #78 and dependency issue #82; distinguish accepted, Draft, package, GameTest, production-JAR, persistence, server-authority and manual cumulative evidence.
+Перед следующим milestone открыть durable docs; проверить actual open PR/latest commits/exact-head CI; отдельно проверить Pages/live routes и Cloudflare; подтвердить, что issue #78 закрыт, issue #82 открыт только для moderate markdown-it blocker, Vlezet M7.8B accepted while M7.8C Draft, and VillAIgence automated evidence remains separate from manual cumulative acceptance.
