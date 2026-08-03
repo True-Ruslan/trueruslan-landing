@@ -13,8 +13,8 @@ const nowData = {
 const projects = [{
   slug: 'livingworld',
   name: 'VillAIgence',
-  status: 'corrective-candidate',
-  statusLabel: 'CORRECTIVE CANDIDATE',
+  status: 'release-candidate',
+  statusLabel: 'ACCEPTANCE IN PROGRESS',
   summary: 'Server-authoritative Minecraft AI society with bounded installed acceptance.',
   featured: true,
   active: true,
@@ -38,14 +38,16 @@ test('renderNowContent preserves the stable route under the public VillAIgence i
   assert.match(html, /datetime="2026-07-22"/);
 });
 
-test('repository now snapshot reflects the post-flagship phase', () => {
+test('repository now snapshot reflects the reconciled product-evidence phase', () => {
   const current = loadNowData();
   const editorialText = [current.focus, ...current.learning, ...current.writing].join('\n');
 
-  assert.equal(current.updated, '2026-08-02');
+  assert.equal(current.updated, '2026-08-03');
   assert.match(editorialText, /Vlezet/);
+  assert.match(editorialText, /M7\.8B/);
   assert.match(editorialText, /VillAIgence/);
-  assert.match(editorialText, /installed|установленн/i);
+  assert.match(editorialText, /production-JAR/);
+  assert.match(editorialText, /cumulative|совокупн/i);
   assert.match(editorialText, /Engineering Note/);
   assert.doesNotMatch(editorialText, /LivingWorld/);
 });
