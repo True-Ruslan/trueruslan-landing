@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-04**, во время P2.4k Restart and Persistence Engineering Note.
+> Обновлено: **2026-08-04**, после merge P2.4k Restart and Persistence Engineering Note.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -62,6 +62,7 @@
 - Product Evidence Reconciliation — PR #83.
 - Installed Acceptance Engineering Note — PR #85.
 - Deterministic Authority Engineering Note — PR #87.
+- Restart and Persistence Engineering Note — PR #89.
 
 ## Repository hardening
 
@@ -73,9 +74,7 @@
 
 # P2.4i — Installed Acceptance Engineering Note — DONE
 
-Published:
-
-**От source tests к installed acceptance: что доказывает каждый release gate**.
+Published **От source tests к installed acceptance: что доказывает каждый release gate**.
 
 ```text
 feature PR:            #85 — MERGED
@@ -91,9 +90,7 @@ Source tests, package identity, GameTests, production-JAR startup/restart, rollb
 
 # P2.4j — Deterministic Authority Around Probabilistic Proposals — DONE
 
-Published:
-
-**AI может предложить, но не применить: как строить deterministic authority**.
+Published **AI может предложить, но не применить: как строить deterministic authority**.
 
 ```text
 feature PR:            #87 — MERGED
@@ -107,13 +104,11 @@ Probabilistic proposals remain evidence until deterministic identity, validation
 
 ---
 
-# NOW — P2.4k Restart and Persistence as Product Contract
+# P2.4k — Restart and Persistence as Product Contract — DONE
 
-## Goal
+Published:
 
-Publish:
-
-**Restart — это часть продукта: почему сохранённый JSON ещё не доказывает persistence**.
+**Restart — это часть продукта: почему сохранённый JSON ещё не доказывает persistence**
 
 Canonical route:
 
@@ -160,21 +155,23 @@ voices.json
 operator-lore.json
 ```
 
-## TDD state
+## Verification and merge
 
 ```text
 RED head:              1dfddfa3a7750b62caef4618a6836f7778580a76
 RED Build:             #670 / 30855380512 — expected FAILURE
 RED tests:             324 PASS / 3 expected FAIL
 
-implementation head:   266acea5bb01d725a2473981481580591bb47ceb
-Build:                 #677 / 30855874811 — SUCCESS
-CodeQL:                #121 / 30855874711 — SUCCESS
-Dependency Review:     #105 / 30855874772 — SUCCESS
+feature PR:            #89 — MERGED
+exact feature head:    e73a94d5d2b832d188e62b8790b4d039ac797a44
+squash on master:      40af9e52237f03da58355caa065a40b64ad597d8
+Build:                 #680 / 30856377655 — SUCCESS
+CodeQL:                #124 / 30856377996 — SUCCESS
+Dependency Review:     #108 / 30856377653 — SUCCESS
 unit tests:            327 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8872532865
-artifact digest:       sha256:2c64346e46b3a927cc4f522c9fff3bbe41542d46d682b182029e6e4840bb69be
+quality artifact:      8872727513
+artifact digest:       sha256:932a3275d3cd7d28b9ca117ad6548ce79efbc25fc195803a7cd44748e5a0c625
 ```
 
 ## Static integration
@@ -190,7 +187,7 @@ artifact digest:       sha256:2c64346e46b3a927cc4f522c9fff3bbe41542d46d682b18202
 - permanent content/evidence contract;
 - no new runtime, schema, renderer, CSS, backend, API, analytics event or second search engine.
 
-## Required boundaries
+## Boundaries retained
 
 - stable bytes do not prove semantic correctness;
 - schema/migration/read-back are separate gates;
@@ -199,52 +196,44 @@ artifact digest:       sha256:2c64346e46b3a927cc4f522c9fff3bbe41542d46d682b18202
 - rollback proves recovery, not success of the rejected candidate;
 - production Pages deployment is not inferred from PR CI.
 
-## Exit criteria
-
-1. durable docs committed;
-2. fresh final exact-head Build/CodeQL/Dependency Review all green;
-3. 327 tests and complete browser/accessibility/visual/custom-domain matrix pass;
-4. PR #89 reviewed, moved out of Draft and squash-merged;
-5. docs-only continuity PR records final squash and marks P2.4k DONE.
-
 ---
 
-# NEXT — Operational Maintenance Closure
+# NOW — Operational Maintenance Closure
 
-After P2.4k, another conceptual Note is not the immediate priority.
+После P2.4k следующая conceptual Note не является immediate priority.
 
 ## O1 — Content Freshness reconciliation
 
-- obtain a fresh Content Freshness Guard report;
-- verify whether the three issue #78 warnings still reproduce against updated registries;
-- close #78 only when generated evidence is clean;
-- never treat a stale issue body as a current scan result.
+- получить fresh Content Freshness Guard report;
+- проверить, воспроизводятся ли три warnings issue #78 после registry reconciliation;
+- закрыть #78 только при clean generated evidence;
+- не считать stale issue body текущим scan result.
 
 ## O2 — Exact dependency advisory/path triage
 
-- run or capture `npm audit --json` on the exact lockfile;
-- identify the two high records, advisory IDs and full transitive paths;
-- determine whether they are the existing markdown-it build-time family or a new path;
-- update issue #82 with measured evidence;
-- do not use `npm audit fix --force`, local shims or an unreviewed fork.
+- получить `npm audit --json` на exact lockfile;
+- определить две high records, advisory IDs и transitive paths;
+- проверить, относятся ли они к существующей build-time markdown-it family или к новому path;
+- обновить issue #82 measured evidence;
+- не применять `npm audit fix --force`, local shims или unreviewed fork.
 
 ## O3 — Production deployment verification
 
-Where tooling permits, verify:
+Если инструменты позволяют, проверить:
 
-- latest Pages deployment belongs to the merged master SHA;
-- the new Note route returns successfully;
-- Atom feed contains the Note;
-- production search returns the canonical route;
-- custom-domain HTTPS/canonical/analytics boundaries remain intact.
+- latest Pages deployment соответствует merged master SHA;
+- новая Note route доступна;
+- Atom feed содержит Note;
+- production search возвращает canonical route;
+- custom-domain HTTPS/canonical/analytics boundaries сохранены.
 
-PR artifact evidence remains separate from live deployment evidence.
+PR artifact evidence остаётся отдельным от live deployment evidence.
 
 ## O4 — Genuine content and distribution
 
-- first genuine Photo Story only with authentic material and confirmed chronology;
-- external profile links and selective announcements only after production verification;
-- aggregate Cloudflare observation for 3–4 weeks before audience conclusions.
+- first genuine Photo Story только с authentic material и confirmed chronology;
+- external profile links и selective announcements только после production verification;
+- aggregate Cloudflare observation 3–4 weeks до audience conclusions.
 
 ---
 
