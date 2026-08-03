@@ -310,6 +310,6 @@ safe rollback on failure
 bounded product persistence evidence
 ```
 
-Это всё ещё не обещание нулевой вероятности data loss и не утверждение, что cumulative acceptance завершена. Real-provider, multiplayer и полный product-owner acceptance остаются pending.
+Это всё ещё не обещание нулевой вероятности data loss; cumulative acceptance по-прежнему остаётся pending.
 
 Но теперь каждый следующий persistence claim можно проверять по понятному вопросу: сохранился ли не только файл, но и тот пользовательский смысл, ради которого этот файл существовал.
