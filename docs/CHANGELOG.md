@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-03**, после полного GREEN implementation matrix для P2.4h Product Evidence Reconciliation.
+> Обновлено: **2026-08-03**, после merge P2.4h Product Evidence Reconciliation.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -38,16 +38,7 @@ data/now.json
 → short-lived editorial snapshot
 ```
 
-Не изменены:
-
-- schemas;
-- renderers;
-- CSS;
-- routes;
-- search ownership;
-- analytics policy;
-- visual thresholds;
-- backend/runtime architecture.
+Не изменены schemas, renderers, CSS, routes, search ownership, analytics policy, visual thresholds и backend/runtime architecture.
 
 ### TDD RED
 
@@ -64,8 +55,6 @@ Dependency Review:     30826689352 — SUCCESS
 The failure occurred only in the new repository reconciliation contract. All 317 pre-existing tests passed.
 
 ### Vlezet reconciliation
-
-Source evidence:
 
 ```text
 PR:                     #41 — MERGED
@@ -132,13 +121,7 @@ Automated scope:
 - exact remapped Fabric candidate installed outside Loom/dev classpath;
 - two separate JVM runs reached Minecraft ready state;
 - controlled `stop`, complete world save and exit code 0;
-- stable relative paths and SHA-256 values across restart for:
-  - `memory.json`;
-  - `memory2.json`;
-  - `semantic-memory.json`;
-  - `relationships.json`;
-  - `voices.json`;
-  - `operator-lore.json`;
+- stable relative paths and SHA-256 values across restart for six canonical stores;
 - fixture classes and mod ID absent from distributable JAR.
 
 Landing changes:
@@ -186,31 +169,27 @@ Corrections:
 - Project Evidence smoke requires five signals, state counts `accepted=1 / failed=1 / merged=3`, PR #103 and PR #104 in enhanced and no-JS output;
 - Projects hub and `/now` status checks now derive expected labels from canonical `data/projects.json` instead of duplicating lifecycle copy.
 
-### Implementation GREEN
+### Final exact-head verification and merge
 
 ```text
-implementation head:   bf4bd811233ef90159cb90864c1dc8d79752486e
-Build:                 #638 / 30829054939 — SUCCESS
-CodeQL:                #76 / 30829056057 — SUCCESS
-Dependency Review:     #66 / 30829054307 — SUCCESS
+feature PR:            #83 — MERGED
+exact feature head:    e50495e7f988e362905c7b137efd6541e7f94e33
+squash on master:      5978f727206fa386e9cce18c26c9ba7b7eade2eb
+Build:                 #641 / 30829739512 — SUCCESS
+CodeQL:                #79 / 30829740495 — SUCCESS
+Dependency Review:     #69 / 30829738958 — SUCCESS
 unit tests:            318 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8862245353
-artifact digest:       sha256:ed04a93d4989a968514383c2e5d85097463f97f31446fe988e7300d11e8f8dff
+quality artifact:      8862581638
+artifact digest:       sha256:5c85da305745e2f66307c543cd3d356d1b6f2f7d5e459400ad54ae8d08432afe
 artifact retention:    through 2026-08-17
 ```
 
-Build #638 passed production build, site integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression and custom-domain artifact verification.
+Build #641 passed production build, site integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression and custom-domain artifact verification.
 
-A final docs-only exact-head matrix and squash merge remain before P2.4h becomes master truth.
+PR #83 was squash-merged into `master` on 2026-08-03. PR #84 records this final state as a minimal continuity sync.
 
-### Durable documentation
-
-Updated:
-
-- `docs/PROJECT_STATE.md`;
-- `docs/ROADMAP.md`;
-- `docs/CHANGELOG.md`.
+### Next milestone
 
 The next landing milestone is a narrow Engineering Note about source tests, integration GameTests, package identity, exact artifact, installed startup/restart and cumulative acceptance. It is explicitly distinct from the existing general green-CI/Evidence Layer Note.
 
@@ -220,33 +199,11 @@ The next landing milestone is a narrow Engineering Note about source tests, inte
 
 ### PR #67 — repository governance
 
-Added:
+Added `SECURITY.md`, ownership and pull-request contracts, bounded Dependabot, CodeQL, Dependency Review, immutable Action SHAs, fixed runner/concurrency policy and permanent repository invariants.
 
-- `SECURITY.md`;
-- ownership and pull-request contracts;
-- bounded Dependabot configuration;
-- CodeQL;
-- Dependency Review;
-- immutable full-SHA GitHub Actions;
-- fixed runner and concurrency policy;
-- removal of redundant Docker deployment workflow;
-- permanent repository invariants.
+### PRs #69/#71/#74/#76/#77
 
-### PR #69 — parse5 major update
-
-Accepted after the complete unit, build, browser, accessibility, visual, custom-domain, CodeQL and dependency-review matrix passed.
-
-### PR #71 — pinned GitHub Actions update
-
-Updated checkout, setup-node and CodeQL immutable SHAs after complete matrix verification.
-
-### PR #74 — durable hardening sync
-
-Recorded governance, CI, Dependabot and dependency-review outcomes and separated source-controlled readiness from GitHub administrative state.
-
-### PRs #76 and #77 — compatible indirect updates
-
-Updated `postcss` and `fast-uri` within the existing compatibility boundary.
+Accepted compatible dependency, pinned Action and durable hardening updates after their configured verification matrices.
 
 ### PR #79 — remove vulnerable fast-xml-parser 4.x
 
@@ -273,18 +230,7 @@ unit tests:          317 PASS / 0 FAIL
 fresh audit:         6 moderate / 0 high / 0 critical
 ```
 
-Delivered:
-
-- `linkify-it@5.0.2`;
-- parser security and compatibility regression coverage;
-- measured residual risk;
-- issue #82 with owner and next review date.
-
-The six residual package-level records reduce to build-time `markdown-it@13.0.2`.
-
-Upgrade above `14.1.1` is blocked by `@diplodoc/translation@1.7.26` imports of removed internal paths. A local shim, unreviewed fork and `npm audit fix --force` were rejected.
-
-Next review: **2026-08-17**.
+The six residual package-level records reduce to build-time `markdown-it@13.0.2`. Upgrade above `14.1.1` is blocked by current Diplodoc internal imports. A local shim, unreviewed fork and `npm audit fix --force` were rejected. Issue #82 remains open with next review on **2026-08-17**.
 
 ---
 

@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-03**, после полного GREEN implementation matrix для P2.4h Product Evidence Reconciliation.
+> Обновлено: **2026-08-03**, после merge P2.4h Product Evidence Reconciliation.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -62,7 +62,7 @@
 - P2.4e External Publications Showcase — DONE: PR #61.
 - P2.4f VillAIgence flagship case study — DONE: PR #63.
 - P2.4g `/now` synchronization — DONE: PR #65.
-- P2.4h Product Evidence Reconciliation — IMPLEMENTED: PR #83, merge pending.
+- P2.4h Product Evidence Reconciliation — DONE: PR #83.
 
 ## Repository hardening
 
@@ -72,18 +72,19 @@
 
 ---
 
-# P2.4h implementation evidence
+# P2.4h final evidence
 
 ```text
-PR:                    #83
-implementation head:   bf4bd811233ef90159cb90864c1dc8d79752486e
-Build:                 #638 / 30829054939 — SUCCESS
-CodeQL:                #76 / 30829056057 — SUCCESS
-Dependency Review:     #66 / 30829054307 — SUCCESS
+feature PR:            #83 — MERGED
+exact feature head:    e50495e7f988e362905c7b137efd6541e7f94e33
+squash on master:      5978f727206fa386e9cce18c26c9ba7b7eade2eb
+Build:                 #641 / 30829739512 — SUCCESS
+CodeQL:                #79 / 30829740495 — SUCCESS
+Dependency Review:     #69 / 30829738958 — SUCCESS
 unit tests:            318 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8862245353
-artifact digest:       sha256:ed04a93d4989a968514383c2e5d85097463f97f31446fe988e7300d11e8f8dff
+quality artifact:      8862581638
+artifact digest:       sha256:5c85da305745e2f66307c543cd3d356d1b6f2f7d5e459400ad54ae8d08432afe
 ```
 
 Delivered:
@@ -98,13 +99,7 @@ Delivered:
 - status smoke now derives expected labels from canonical Project Registry;
 - schemas, renderers, CSS, routes, search ownership, analytics and visual thresholds unchanged.
 
-Before merge:
-
-1. pass the final docs-only exact-head Build, CodeQL and Dependency Review;
-2. mark PR #83 ready;
-3. squash-merge with expected head protection.
-
-After merge:
+Immediate operational follow-up:
 
 1. confirm latest Pages deployment;
 2. confirm production `/now`, Vlezet, VillAIgence and Publications routes;
@@ -330,9 +325,7 @@ Issue #82 is a separate upstream compatibility review. Do not run blind `npm aud
 # Оптимальная последовательность
 
 ```text
-P2.4h final exact-head verification + merge
-        ↓
-production deployment + freshness confirmation
+P2.4h production/freshness confirmation
         ↓
 Engineering Note: source/package/exact artifact/installed acceptance
         ↓
