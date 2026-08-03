@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-03**, во время P2.4h Product Evidence Reconciliation.
+> Последнее смысловое обновление: **2026-08-03**, после полного GREEN implementation matrix для P2.4h Product Evidence Reconciliation.
 >
 > Durable snapshot для ответа на вопрос: **что представляет собой проект, что уже сделано, что доказано и что дальше?**
 
@@ -67,46 +67,88 @@ unit tests:           317 PASS / 0 FAIL
 Lighthouse:           100 / 100 / 100 / 100
 ```
 
-### Текущий milestone
+### P2.4h implementation
 
 ```text
 milestone:             P2.4h — Product Evidence Reconciliation
-implementation PR:     #83 — IN PROGRESS
+implementation PR:     #83 — implementation complete, merge pending
 branch:                agent/sync-product-evidence-2026-08-03
+implementation head:   bf4bd811233ef90159cb90864c1dc8d79752486e
+Build:                 #638 / 30829054939 — SUCCESS
+CodeQL:                #76 / 30829056057 — SUCCESS
+Dependency Review:     #66 / 30829054307 — SUCCESS
+unit tests:            318 PASS / 0 FAIL
+Lighthouse:            100 / 100 / 100 / 100
+quality artifact:      8862245353
+artifact digest:       sha256:ed04a93d4989a968514383c2e5d85097463f97f31446fe988e7300d11e8f8dff
+artifact retention:    through 2026-08-17
+```
+
+Build #638 прошёл полный configured matrix:
+
+- production Diplodoc build;
+- generated-site integrity;
+- mobile overflow;
+- Chromium/Axe/Lighthouse;
+- Publications и Sources Knowledge Base;
+- Project Evidence в enhanced и no-JS режимах;
+- VillAIgence и NODE ZERO diagram raster gates;
+- Photo Stories;
+- portfolio v0.3, включая registry-owned status checks;
+- Firefox/WebKit;
+- generated search и dedicated VillAIgence search;
+- Minimal RU/EN;
+- privacy analytics;
+- metadata/OpenGraph;
+- Engineering Map + accessibility;
+- visual regression;
+- custom-domain artifact verification для `https://trueruslan.ru`.
+
+A final docs-only exact-head matrix and squash merge still need to complete before the milestone becomes master truth.
+
+### TDD evidence
+
+```text
 RED head:              fe269ad4a0207968b87aaff4901bffce25ae58f5
 RED Build:             30826688736 — expected FAILURE
 RED result:            317 PASS / 1 expected FAIL
-failure:               Vlezet M7.8B evidence was still `failed`, expected `merged`
+failure:               Vlezet M7.8B evidence was `failed`, expected `merged`
 RED CodeQL:            30826688612 — SUCCESS
 RED Dependency Review: 30826689352 — SUCCESS
 ```
 
+Intermediate GREEN candidates exposed stale test contracts rather than production defects:
+
+- Build #634 — English-only cumulative-acceptance assertion on the Russian page;
+- Build #635 — browser scenario still required `0.1.22`;
+- Build #636 — Project Evidence smoke still expected three VillAIgence signals;
+- Build #637 — portfolio smoke hard-coded `CORRECTIVE CANDIDATE`.
+
+The final fix made portfolio status checks derive expected labels from canonical `data/projects.json`, reducing future duplicated truth.
+
+---
+
+## 3. Milestone state
+
+### P2.4h — Product Evidence Reconciliation — IMPLEMENTED IN PR #83
+
 P2.4h synchronizes the landing with newer accepted source-repository facts while preserving bounded evidence semantics.
 
-Final exact-head CI and squash merge must be recorded after PR #83 completes.
+Delivered:
 
----
+- Vlezet M7.8B moved from stale failed-Draft representation to accepted, merged, precision-limited evidence;
+- Vlezet timeline advanced to M7.8C Opening Classification and Host-Wall Validation;
+- VillAIgence PR #103 risk-based GameTests recorded separately from PR #104 production-JAR startup/restart evidence;
+- current VillAIgence candidate recorded as `0.1.23+1.21.1`;
+- VillAIgence lifecycle preserved as `release-candidate`, public label advanced to `ACCEPTANCE IN PROGRESS`;
+- `/now` refreshed to `2026-08-03`;
+- RU Vlezet, RU VillAIgence and paired EN VillAIgence narratives synchronized;
+- Project Evidence, timelines and durable documents updated;
+- no schema, renderer, CSS, route, analytics or search-ownership change.
 
-## 3. Последний завершённый product/content milestone
+### Earlier completed milestones
 
-### P2.4g — `/now` synchronization — DONE
-
-PR #65 synchronized `/now` after Vlezet flagship, External Publications Showcase and VillAIgence flagship.
-
-```text
-exact feature head:  fdc2d2ddf54f67aacf1e730f210fb6aae7325cdf
-Build / run:         #571 / 30763586234 — SUCCESS
-squash on master:    2ef556a6e910be001355193d9d96f499131d5094
-unit tests:          307 PASS / 0 FAIL
-```
-
-P2.4h does not redesign `/now`; it refreshes the authored snapshot to `2026-08-03` after product evidence changed.
-
----
-
-## 4. Завершённые milestones
-
-### P0 — foundation
+#### P0 — foundation
 
 - P0.1 Photo Stories platform — DONE: PR #15 + #17.
 - P0.2 First genuine Photo Story — CONTENT DEPENDENT.
@@ -115,14 +157,14 @@ P2.4h does not redesign `/now`; it refreshes the authored snapshot to `2026-08-0
 - P0.5 Grounded Notes — DONE: PR #25.
 - P0.6 Content Freshness Guard — DONE: PR #27.
 
-### P1 — maintainability / depth
+#### P1 — maintainability / depth
 
 - P1.1 Browser Quality Harness — DONE: PR #29.
 - P1.2 Project Metadata Cleanup — DONE: PR #31.
 - P1.3 Flagship Case-Study Format — DONE: PR #34.
 - P1.4 Additional Grounded Note — DONE: PR #36.
 
-### P2 — audience / operations / content
+#### P2 — audience / operations / content
 
 - P2.1 Minimal RU/EN — DONE: PR #38.
 - P2.2 Privacy-friendly analytics — DONE: PR #40.
@@ -136,7 +178,6 @@ P2.4h does not redesign `/now`; it refreshes the authored snapshot to `2026-08-0
 - P2.4e External Publications Showcase — DONE: PR #61.
 - P2.4f VillAIgence flagship case study — DONE: PR #63.
 - P2.4g `/now` synchronization — DONE: PR #65.
-- P2.4h Product Evidence Reconciliation — IN PROGRESS: PR #83.
 
 ### Repository hardening — DONE within current compatible boundary
 
@@ -151,7 +192,7 @@ P2.4h does not redesign `/now`; it refreshes the authored snapshot to `2026-08-0
 
 ---
 
-## 5. Current product boundaries
+## 4. Current product boundaries
 
 ### Vlezet
 
@@ -160,6 +201,7 @@ Current source truth:
 ```text
 accepted milestones:       M0–M7.8B
 M7.8B PR:                   #41 — MERGED
+accepted head:              a5003371f2feb4fa37edbd2513b0b5312bc5dd07
 squash:                     08800dd66fa298ff31d1a7e6b33e91964cdb8d16
 Source geometry F1:         0.837989
 Source topology F1:         0.837989
@@ -233,7 +275,7 @@ Public name remains **VillAIgence**, stable route remains:
 
 ---
 
-## 6. Production and custom-domain truth
+## 5. Production and custom-domain truth
 
 Canonical public origin:
 
@@ -250,19 +292,22 @@ Previously confirmed:
 - one Cloudflare analytics beacon on RU and EN;
 - no legacy GitHub Pages origin leakage in custom-domain artifact.
 
+Build #638 confirmed the custom-domain artifact contract for P2.4h.
+
 A separate Timeweb TLS certificate is not used or required.
 
 Latest Pages deployment and owner production visual acceptance after PR #83 remain operational facts separate from PR CI.
 
 ---
 
-## 7. Known problems / debt
+## 6. Known problems / debt
 
-### Active maintenance
+### Active operational follow-up
 
-- PR #83 must complete full exact-head Build, CodeQL and Dependency Review.
-- Issue #78 should close only after a new Content Freshness run confirms no remaining Vlezet/VillAIgence drift.
-- Latest Pages deployment and production visual acceptance after merge require separate confirmation.
+- final docs-only exact-head Build, CodeQL and Dependency Review must pass;
+- PR #83 must be squash-merged;
+- latest Pages deployment and production visual acceptance require separate confirmation;
+- issue #78 should close only after a new Content Freshness run confirms no remaining Vlezet/VillAIgence drift.
 
 ### Dependency residual risk
 
@@ -291,12 +336,16 @@ Do not use `npm audit fix --force`, a local `node_modules` shim or an unreviewed
 
 ### Product/content debt
 
-- Vlezet M7.8C and later room/label/area slices are external product work, not landing claims.
-- VillAIgence cumulative manual acceptance remains pending despite automated production-JAR proof.
-- Cloudflare sample is insufficient for audience/product conclusions; deliberate distribution plus 3–4 weeks observation are required.
-- External profile Website/links require manual verification if stale.
-- First genuine Photo Story requires authentic material.
+- Vlezet M7.8C and later room/label/area slices are external product work, not landing claims;
+- VillAIgence cumulative manual acceptance remains pending despite automated production-JAR proof;
+- Cloudflare sample is insufficient for audience/product conclusions; deliberate distribution plus 3–4 weeks observation are required;
+- external profile Website/links require manual verification if stale;
+- first genuine Photo Story requires authentic material;
 - Publications grows only from stable canonical external evidence.
+
+### CI hygiene
+
+Some passing smoke tools still log expected missing optional resources such as `favicon.ico` or a deliberately absent English search index as `ENOENT`. These are not product failures, but future maintenance should downgrade expected absence to explicit informational diagnostics.
 
 ### Diagnostic caveat
 
@@ -304,7 +353,7 @@ Local plain-DNS `dig` from some Russian networks previously returned false `REFU
 
 ---
 
-## 8. Следующий оптимальный шаг
+## 7. Следующий оптимальный шаг
 
 After P2.4h is merged and production continuity is confirmed, the next landing milestone is a narrow grounded Engineering Note:
 
@@ -349,7 +398,7 @@ After it:
 
 ---
 
-## 9. Нельзя ломать без нового design decision
+## 8. Нельзя ломать без нового design decision
 
 - static-first;
 - build-time intelligence;
@@ -369,6 +418,6 @@ After it:
 
 ---
 
-## 10. New-session handoff
+## 9. New-session handoff
 
 > Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md` and `docs/CUSTOM_DOMAIN.md` in `True-Ruslan/trueruslan-landing`. Then check actual open PRs, latest commits and exact-head CI. Separately verify latest Pages deployment, production `/now`, Publications, Vlezet and VillAIgence routes, HTTPS/redirect state and Cloudflare telemetry. Before changing flagship evidence, reconcile the source repositories and distinguish automated package/production-JAR evidence from manual cumulative product acceptance.
