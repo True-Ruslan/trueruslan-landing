@@ -2,21 +2,28 @@
   {
     "date": "2026-07 — 2026-08",
     "title": "Authoritative apartment-planning foundation",
-    "description": "M0–M7.7 established millimetre geometry, derived rooms and areas, semantic history, local projects, reference calibration, editable recognition, read-only 3D, bounded planning, geometry inspection and explainable furniture fit.",
+    "description": "M0–M7.8A established millimetre geometry, derived rooms and areas, semantic history, local projects, reference calibration, editable recognition, read-only 3D, bounded planning, explainable furniture fit and a versioned recognition benchmark.",
     "state": "past",
-    "evidence": "https://github.com/True-Ruslan/vlezet/pull/35"
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/40"
   },
   {
     "date": "2026-08",
-    "title": "Recognition quality under corrective review",
-    "description": "M7.8A established and accepted the public-safe benchmark. M7.8B then failed product-owner review on a representative real plan: the Draft contained 417 local wall candidates, zero openings and a symbol/furniture network. Structural masking and fail-closed overload handling are now being developed; the PR remains Draft and must not be treated as accepted recognition quality.",
-    "state": "current",
+    "title": "M7.8B source normalization and wall topology accepted",
+    "description": "Region-first structural extraction, bounded Canny/Hough fallback, fail-closed overload protection and verification-only AI were product-owner accepted with known precision limitations. Source geometry and topology F1 reached 0.837989; openings remained intentionally deferred.",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/vlezet/pull/41"
   },
   {
+    "date": "2026-08",
+    "title": "M7.8C Opening Classification and Host-Wall Validation",
+    "description": "Classify door, window and unknown hypotheses, bind every accepted opening to a known host wall, reject ambiguous placement fail-closed and preserve Draft plus explicit Apply authority.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/vlezet/blob/main/docs/PROJECT_STATE.md"
+  },
+  {
     "date": "NEXT",
-    "title": "Architectural shell before semantic expansion",
-    "description": "Add a public-safe clutter-heavy regression, keep candidate counts reviewable, prevent symbol networks from outranking the shell, repeat real-plan acceptance, and only then continue with verified host-wall openings, room faces, labels, areas and confidence calibration.",
+    "title": "Room faces and semantic reconciliation",
+    "description": "After host-wall correctness, derive room faces and then add labels, areas, confidence calibration and bounded hybrid reconciliation without letting AI create authoritative coordinates.",
     "state": "next"
   }
 ]
