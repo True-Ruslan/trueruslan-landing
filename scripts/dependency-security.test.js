@@ -7,13 +7,18 @@ import {compose, extract} from '@diplodoc/translation';
 
 const root = path.resolve(import.meta.dirname, '..');
 const lockfilePath = path.join(root, 'package-lock.json');
+const packageJsonPath = path.join(root, 'package.json');
 const minimumSafeFastXmlParser = [5, 7, 0];
 
-function compareVersion(version, minimum) {
-  const parts = String(version)
+function versionParts(version) {
+  return String(version)
     .split('-', 1)[0]
     .split('.')
     .map((part) => Number.parseInt(part, 10));
+}
+
+function compareVersion(version, minimum) {
+  const parts = versionParts(version);
 
   if (parts.length < 3 || parts.some(Number.isNaN)) {
     return -1;
@@ -29,10 +34,16 @@ function compareVersion(version, minimum) {
   return 0;
 }
 
+function lockfileEntriesFor(lockfile, packageName) {
+  const suffix = `/node_modules/${packageName}`;
+  return Object.entries(lockfile.packages ?? {}).filter(
+    ([packagePath]) => packagePath === `node_modules/${packageName}` || packagePath.endsWith(suffix),
+  );
+}
+
 test('lockfile contains no fast-xml-parser release affected by GHSA-gh4j-gqv2-49f6', () => {
   const lockfile = JSON.parse(fs.readFileSync(lockfilePath, 'utf8'));
-  const violations = Object.entries(lockfile.packages ?? {})
-    .filter(([packagePath]) => /(^|\/)node_modules\/fast-xml-parser$/.test(packagePath))
+  const violations = lockfileEntriesFor(lockfile, 'fast-xml-parser')
     .filter(([, metadata]) => compareVersion(metadata?.version, minimumSafeFastXmlParser) < 0)
     .map(([packagePath, metadata]) => `${packagePath}: ${metadata?.version ?? 'unknown'}`);
 
@@ -57,4 +68,58 @@ test('fast-xml-parser 5.x remains compatible with the Diplodoc translation round
   assert.match(xliff, /<xliff\b/);
   assert.match(composed, /Heading/);
   assert.match(composed, /Paragraph/);
+});
+
+test('unused page-constructor dependency and its vulnerable-only graph are absent', () => {
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const lockfile = JSON.parse(fs.readFileSync(lockfilePath, 'utf8'));
+
+  assert.equal(packageJson.dependencies?.['@gravity-ui/page-constructor'], undefined);
+  assert.deepEqual(lockfileEntriesFor(lockfile, '@gravity-ui/page-constructor'), []);
+});
+
+test('low-risk audit packages remain on fixed patch or minor releases', () => {
+  const lockfile = JSON.parse(fs.readFileSync(lockfilePath, 'utf8'));
+  const violations = [];
+
+  for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'brace-expansion')) {
+    const version = metadata?.version;
+    const [major] = versionParts(version);
+    const affected =
+      (major === 2 && compareVersion(version, [2, 1, 3]) < 0) ||
+      (major >= 3 && major < 5) ||
+      (major === 5 && compareVersion(version, [5, 0, 8]) < 0);
+    if (affected) {
+      violations.push(`${packagePath}: ${version}`);
+    }
+  }
+
+  const minimums = new Map([
+    ['katex', [0, 16, 21]],
+    ['lodash', [4, 18, 0]],
+    ['sanitize-html', [2, 17, 5]],
+    ['svgo', [3, 3, 4]],
+    ['uuid', [11, 1, 1]],
+  ]);
+
+  for (const [packageName, minimum] of minimums) {
+    for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, packageName)) {
+      if (compareVersion(metadata?.version, minimum) < 0) {
+        violations.push(`${packagePath}: ${metadata?.version ?? 'unknown'}`);
+      }
+    }
+  }
+
+  for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'js-yaml')) {
+    const [major] = versionParts(metadata?.version);
+    if (major === 4 && compareVersion(metadata?.version, [4, 3, 0]) < 0) {
+      violations.push(`${packagePath}: ${metadata?.version ?? 'unknown'}`);
+    }
+  }
+
+  assert.deepEqual(
+    violations,
+    [],
+    `Affected low-risk dependency versions remain in package-lock.json:\n${violations.join('\n')}`,
+  );
 });

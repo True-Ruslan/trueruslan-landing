@@ -47,8 +47,7 @@
   "dependencies": {
     "@diplodoc/cli": "^5.47.3",
     "@diplodoc/search-extension": "^3.0.6",
-    "@diplodoc/transform": "^4.77.5",
-    "@gravity-ui/page-constructor": "^8.13.2"
+    "@diplodoc/transform": "^4.77.5"
   },
   "devDependencies": {
     "chokidar": "^5.0.0",
@@ -60,6 +59,12 @@
     "serve-static": "^2.2.1"
   },
   "overrides": {
-    "fast-xml-parser": "5.10.1"
+    "fast-xml-parser": "5.10.1",
+    "brace-expansion@2": "2.1.3",
+    "brace-expansion@5": "5.0.8",
+    "js-yaml@4": "4.3.0",
+    "katex": "0.16.21",
+    "lodash": "4.18.1",
+    "svgo": "3.3.4"
   }
 }
