@@ -4,7 +4,7 @@ const {createScenarioPage} = require('./quality-harness/browser.cjs');
 const {captureScreenshot, ensureArtifactsDir, writeJsonArtifact} = require('./quality-harness/evidence.cjs');
 
 const PORT = Number(process.env.VILLAIGENCE_SEARCH_SMOKE_PORT || 4187);
-const {chromium} = requireQualityTool('playwright', 'VillAIgence and deterministic-authority search smoke');
+const {chromium} = requireQualityTool('playwright', 'VillAIgence and grounded Notes search smoke');
 
 async function searchForRoute(page, input, button, {query, routeFragment, textFragment}) {
   await input.fill(query);
@@ -59,14 +59,22 @@ async function main() {
         textFragment: 'AI может предложить, но не применить',
       });
 
+      const persistenceRoutes = await searchForRoute(page, input, button, {
+        query: 'persistence contract',
+        routeFragment: 'landing/notes/restart-persistence-is-a-product-contract',
+        textFragment: 'Restart',
+      });
+
       writeJsonArtifact('villaigence-search-summary.json', {
         queries: [
           {query: 'VillAIgence', routes: villaigenceRoutes},
           {query: 'deterministic authority', routes: authorityRoutes},
+          {query: 'persistence contract', routes: persistenceRoutes},
         ],
       });
       console.log(`VillAIgence search smoke passed: ${villaigenceRoutes.join(', ')}`);
       console.log(`Deterministic-authority search smoke passed: ${authorityRoutes.join(', ')}`);
+      console.log(`Restart-persistence search smoke passed: ${persistenceRoutes.join(', ')}`);
     } finally {
       await runtime.close();
     }
