@@ -106,5 +106,19 @@
       "green-ci-is-not-product-verification",
       "source-tests-to-installed-acceptance"
     ]
+  },
+  {
+    "slug": "restart-persistence-is-a-product-contract",
+    "title": "Restart — это часть продукта: почему сохранённый JSON ещё не доказывает persistence",
+    "description": "Практический разбор VillAIgence: почему сохранённые bytes и совпадающие hashes ещё нужно дополнить controlled shutdown, exact-artifact restart, read-back, identity/isolation и user-visible continuity.",
+    "published": "2026-08-04",
+    "updated": "2026-08-04",
+    "readingMinutes": 12,
+    "tags": ["Persistence", "Reliability", "Recovery", "Acceptance"],
+    "related": [
+      "source-tests-to-installed-acceptance",
+      "green-ci-is-not-product-verification",
+      "probabilistic-proposals-deterministic-authority"
+    ]
   }
 ]
