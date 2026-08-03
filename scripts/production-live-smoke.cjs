@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cjs');
+const {requireQualityTool} = require('./quality-harness/tools.cjs');
 
 const {chromium} = requireQualityTool('playwright', 'Production live smoke');
 
@@ -57,7 +57,7 @@ async function main() {
   };
 
   try {
-    browser = await launchChromium(chromium);
+    browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
     const context = await browser.newContext({
       viewport: {width: 1440, height: 1000},
       colorScheme: 'dark',
