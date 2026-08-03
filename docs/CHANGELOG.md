@@ -1,8 +1,166 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-03**, после merge P2.4j Deterministic Authority Engineering Note.
+> Обновлено: **2026-08-04**, во время P2.4k Restart and Persistence Engineering Note.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
+
+---
+
+# 2026-08-04
+
+## P2.4k — Restart and Persistence as Product Contract — IN PROGRESS
+
+Engineering Note:
+
+**«Restart — это часть продукта: почему сохранённый JSON ещё не доказывает persistence»**
+
+Canonical route after build:
+
+`landing/notes/restart-persistence-is-a-product-contract.html`
+
+### Why
+
+Предыдущая Note описывала release gates и exact installed artifact. P2.4k фиксирует более узкую продуктовую границу: успешная serialization и совпадающий SHA-256 ещё не доказывают, что приложение после restart прочитало правильный canonical store, восстановило те же identities и сохранило пользовательское поведение.
+
+### Selected design
+
+- one Russian grounded Note in the existing static Notes platform;
+- four distinct levels: storage durability, structural readability, semantic continuity and behavioral continuity;
+- PR #66 and PR #67 as live identity/isolation/recall checkpoints;
+- PRs #92/#95/#102 as startup-failure and safe-rollback evidence;
+- PR #103 as GameTest lifecycle semantics;
+- PR #104 as exact production-JAR no-mutation restart oracle;
+- existing registry, build-time navigation, Atom feed and Diplodoc search;
+- no new schema, renderer, CSS, runtime, backend, API, analytics event or search engine.
+
+### Persistence pipeline
+
+```text
+write
+→ completed save
+→ controlled shutdown
+→ exact artifact restart
+→ unique canonical discovery
+→ parse and schema check
+→ semantic identity/isolation check
+→ user-visible continuity
+```
+
+### Four evidence levels
+
+1. **Storage durability** — bytes exist after completed save.
+2. **Structural readability** — exactly one canonical file is found and accepted as UTF-8/JSON/root/schema.
+3. **Semantic continuity** — UUIDs, evidence links, ordering, ownership and per-entity isolation remain correct.
+4. **Behavioral continuity** — user-visible recall, identity, permissions and failure isolation remain correct after restart.
+
+Equal hashes establish byte continuity only in a no-mutation scenario. Intentional writes and migration may legitimately change bytes and therefore require separate read-back and semantic oracles.
+
+### PR #66 evidence
+
+- Basiliso corroborated FACT survived retention pressure;
+- semantic UUID and `sourceEventIds` survived pressure and restart;
+- decay ordering resolved otherwise equal entries;
+- weak Casimiro relationship FACT was evicted;
+- Basiliso/Casimiro pressure remained isolated;
+- five persistent files were byte-identical;
+- rejected-new-append no-rewrite remained automated-only, not live-proven.
+
+### PR #67 evidence
+
+All six stores remained hash-identical across restart:
+
+```text
+memory.json
+memory2.json
+semantic-memory.json
+relationships.json
+voices.json
+operator-lore.json
+```
+
+Additionally:
+
+- Pio and Justino remained isolated;
+- Pio retained the player name and favourite colour;
+- controlled TTS failure preserved visible text and Memory 2.0 dialogue;
+- rejected hostile endpoints transmitted no credentials and caused no persistence mutation;
+- production configuration was restored byte-for-byte.
+
+### Startup failure and rollback
+
+PRs #92, #95 and #102 demonstrate that an exact candidate may fail before world load. Downstream gameplay acceptance therefore does not start. Controlled rollback must restore the previous artifact, preserve persistent state and recover service readiness, monitoring and ports.
+
+Rollback proves recovery outcome, not correctness of the rejected candidate.
+
+### PR #103 evidence
+
+The GameTest `NPC → tombstone item → NPC` round trip requires the same UUID, name and full inventory multiset. It is semantic lifecycle evidence and remains distinct from production-JAR restart evidence.
+
+### PR #104 evidence
+
+- exact remapped Fabric candidate outside Loom/development classpath;
+- two independent JVM runs;
+- ready marker, controlled `stop`, full save and exit code `0` twice;
+- exactly one valid JSON copy of every canonical store;
+- stable relative paths and SHA-256 across no-mutation restart;
+- fixture code absent from the distributable JAR.
+
+PR #104 does not prove every migration, provider path, multiplayer race or cumulative installed acceptance.
+
+### TDD RED
+
+```text
+RED head:              1dfddfa3a7750b62caef4618a6836f7778580a76
+Build:                 #670 / 30855380512 — expected FAILURE
+unit tests:            324 PASS / 3 expected FAIL
+CodeQL:                #114 / 30855380544 — SUCCESS
+Dependency Review:     #98 / 30855380504 — SUCCESS
+RED artifact:          8872239442
+artifact digest:       sha256:bf5f54ca116e53bfac237e6626bd6b996787ebac9d3ec63a7335086cef5eacb7
+```
+
+Only the absent registry, Markdown and index/TOC/page-meta surfaces failed. Every pre-existing test passed.
+
+### Intermediate correction
+
+Build #676 produced `326 PASS / 1 FAIL`. The article contained a prohibited broad claim phrase inside an explicit negation. The wording was narrowed without weakening the contract.
+
+### Implementation GREEN
+
+```text
+head:                  266acea5bb01d725a2473981481580591bb47ceb
+Build:                 #677 / 30855874811 — SUCCESS
+CodeQL:                #121 / 30855874711 — SUCCESS
+Dependency Review:     #105 / 30855874772 — SUCCESS
+unit tests:            327 PASS / 0 FAIL
+Lighthouse:            100 / 100 / 100 / 100
+quality artifact:      8872532865
+artifact digest:       sha256:2c64346e46b3a927cc4f522c9fff3bbe41542d46d682b182029e6e4840bb69be
+artifact retention:    through 2026-08-17
+```
+
+The complete production build, integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio, Firefox/WebKit, generic search, exact `persistence contract` search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual-regression and custom-domain matrix passed.
+
+### Delivered on implementation head
+
+- canonical Note registry record with 12-minute reading time;
+- grounded Markdown article;
+- Notes index and TOC entry;
+- metadata/OpenGraph identity;
+- previous/next/related navigation;
+- Atom feed inclusion;
+- exact generated-search route assertion;
+- permanent `restart-persistence-note` contract;
+- durable PROJECT_STATE/ROADMAP/CHANGELOG synchronization;
+- no runtime or dependency graph change.
+
+### Claim boundary
+
+P2.4k does not claim semantic correctness from hashes alone, unchanged hashes after intentional writes, complete historical migration coverage, equivalence between GameTests and production-JAR restart, completed provider/multiplayer/manual acceptance, zero data-loss probability or production deployment from PR CI.
+
+### Next after merge
+
+Operational maintenance closure: fresh Content Freshness report for issue #78, exact `npm audit --json` triage for issue #82 and live Pages/route/feed/search verification where tooling permits.
 
 ---
 
@@ -58,59 +216,19 @@ Accepted M7.8B PR #41:
 - semantic Undo remains the recovery boundary;
 - stronger provider may confirm more existing candidates but cannot invent missing local geometry.
 
-Draft M7.8C PR #42:
-
-- strict-ID and geometry-immutable verification continues;
-- active geometry is separated from diagnostic geometry;
-- blocked candidates cannot enter topology, opening-host analysis or Apply;
-- AI cannot create, move, resize, thicken or re-host geometry;
-- automated gates are not substituted for the same real-plan owner retest;
-- no accepted/merged/product-ready claim is made.
+Draft M7.8C PR #42 remains unaccepted and owner-retest dependent.
 
 ### VillAIgence evidence
 
-Merged operator-lore PR #85:
+Merged operator-lore PR #85 keeps permission, identity resolution, bounds, SHA-256 revision conflict and persistent mutation server-authoritative. PR #103 GameTests and PR #104 production-JAR lifecycle acceptance remain separate automated evidence. Real-provider, multiplayer and product-owner cumulative acceptance remain pending.
 
-- permission checked server-side;
-- WORLD/PLAYER/VILLAGER/VILLAGE targets resolved from authenticated/live server state;
-- arbitrary UUID/dimension/village identities absent from request authority;
-- payload bounds and canonicalization fail closed;
-- write compares expected and current SHA-256 revision;
-- stale edit returns `CONFLICT` plus current canonical value without mutation;
-- replay returns `UNCHANGED`;
-- persistent store changes only on `APPLY`.
-
-PR #103 GameTests and PR #104 production-JAR lifecycle acceptance remain separate automated evidence. Real-provider, multiplayer, focused live gameplay and product-owner cumulative acceptance remain pending.
-
-### TDD RED
+### TDD and merge
 
 ```text
 RED head:              1422efbaa6f0d4791d511bfb71fa89f1712c6604
-Build:                 #658 / 30852218324 — expected FAILURE
-unit tests:            321 PASS / 3 expected FAIL
-CodeQL:                #100 / 30852218498 — SUCCESS
-Dependency Review:     #86 / 30852220087 — SUCCESS
-RED artifact:          8871091646
-```
+RED Build:             #658 / 30852218324 — expected FAILURE
+RED tests:             321 PASS / 3 expected FAIL
 
-The failures were limited to the absent registry entry, Markdown source and index/TOC/page-meta integration. All pre-existing tests passed.
-
-### Delivered
-
-- canonical Note registry record with related Notes and 12-minute reading time;
-- grounded Markdown article;
-- Notes index and TOC entry;
-- metadata/OpenGraph identity;
-- previous/next/related navigation;
-- Atom feed inclusion;
-- generated search coverage;
-- exact browser search assertion for query `deterministic authority` and canonical Note route;
-- permanent `deterministic-authority-note` contract;
-- durable PROJECT_STATE/ROADMAP/CHANGELOG synchronization.
-
-### Final exact-head GREEN and merge
-
-```text
 feature PR:            #87 — MERGED
 exact feature head:    b38d225d837e5e347184ca09c685a479923ba06e
 squash on master:      2fba404bbca9680d934f11f30c8a76347a5ab7b1
@@ -120,23 +238,11 @@ Dependency Review:     #96 / 30853751469 — SUCCESS
 unit tests:            324 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
 quality artifact:      8871721514
-artifact digest:       sha256:af0a406ec92352ab356618a563e885cd8413818bfaa59326a83235db3f521838
-artifact retention:    through 2026-08-17
 ```
-
-The complete production build, integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio, Firefox/WebKit, generic search, exact deterministic-authority search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual-regression and custom-domain matrix passed.
-
-### Claim boundary
-
-P2.4j does not claim accepted M7.8C, arbitrary-plan recognition accuracy, provider repair of missing geometry, authorization from valid JSON alone, completed VillAIgence real-provider/multiplayer acceptance, universal AI-safety guarantees or invented reliability/adoption/latency metrics.
 
 ### New maintenance signal
 
-`npm ci` on the unchanged dependency graph now reports `6 moderate / 2 high`. Dependency Review remains SUCCESS, so PR #87 introduced no dependency delta. The previous durable `0 high` claim is stale; issue #82 must receive a fresh advisory/path triage. `npm audit fix --force`, local shims and unreviewed forks remain rejected.
-
-### Next
-
-P2.4k — restart and persistence as product contract.
+`npm ci` on the unchanged dependency graph reports `6 moderate / 2 high`. Dependency Review remains SUCCESS, so the content milestone introduced no dependency delta. Issue #82 owns exact advisory/path triage; forced fixes, local shims and unreviewed forks remain rejected.
 
 ---
 
@@ -182,7 +288,7 @@ unit tests:            318 PASS / 0 FAIL
 - PR #79 — vulnerable `fast-xml-parser` 4.x path removed with compatibility contracts.
 - PR #80 — low-risk audit cleanup.
 - PR #81 — `linkify-it@5.0.2` remediation and measured `markdown-it@13.0.2` upstream blocker.
-- Issue #82 remains the dependency maintenance owner and now requires fresh triage of the newly observed high-severity audit signal.
+- Issue #82 remains the dependency maintenance owner and requires exact triage of the current high-severity summary.
 
 ---
 
