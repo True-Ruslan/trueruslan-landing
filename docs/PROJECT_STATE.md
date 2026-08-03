@@ -92,7 +92,7 @@ Build #641 прошёл полный configured matrix:
 - visual regression;
 - custom-domain artifact verification для `https://trueruslan.ru`.
 
-PR #84 is a minimal durable continuity sync that records the final squash and operational follow-up. Its exact-head CI must be checked separately.
+The final squash and operational follow-up are persisted by a documentation-only continuity sync. Its exact-head CI is repository evidence, not a new product milestone.
 
 ### TDD evidence
 
@@ -283,7 +283,6 @@ Latest Pages deployment and owner production visual acceptance after PR #83 rema
 
 ### Active operational follow-up
 
-- PR #84 continuity sync must pass exact-head CI and merge;
 - latest Pages deployment and production visual acceptance require separate confirmation;
 - issue #78 should close only after a new Content Freshness run confirms no remaining Vlezet/VillAIgence drift.
 
