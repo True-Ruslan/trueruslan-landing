@@ -34,6 +34,19 @@ jobs:
       - name: Generate lockfile
         run: npm install --package-lock-only --ignore-scripts
 
+      - name: Report fast-xml-parser dependency paths
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const lockfile = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          for (const [packagePath, metadata] of Object.entries(lockfile.packages ?? {})) {
+            const range = metadata.dependencies?.['fast-xml-parser'];
+            if (range) {
+              console.log(`${packagePath || '<root>'} -> fast-xml-parser@${range}`);
+            }
+          }
+          NODE
+
       - name: Verify vulnerable parser is absent
         run: |
           node --input-type=module <<'NODE'
@@ -55,6 +68,7 @@ jobs:
           NODE
 
       - name: Upload generated lockfile
+        if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: generated-security-lockfile
