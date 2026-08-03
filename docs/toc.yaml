@@ -103,6 +103,8 @@ items:
         href: ./landing/notes/static-first-sources-no-js.md
       - name: CI vs product verification
         href: ./landing/notes/green-ci-is-not-product-verification.md
+      - name: Source tests → installed acceptance
+        href: ./landing/notes/source-tests-to-installed-acceptance.md
   - name: Публикации
     href: ./landing/publications.md
   - name: Обо мне
