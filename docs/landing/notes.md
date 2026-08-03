@@ -68,6 +68,12 @@ HTTP 200 или успешный вызов provider ещё не означае�
 
 [Читать заметку →](notes/llm-output-is-a-protocol-boundary.md)
 
+### AI может предложить, но не применить: как строить deterministic authority
+
+На примерах Vlezet и VillAIgence разбираю следующий слой после protocol validation: immutable candidate identity, server-side target resolution, current-state revalidation и explicit Apply. Правдоподобный proposal остаётся evidence до тех пор, пока детерминированная product boundary не разрешит одну атомарную mutation.
+
+[Читать заметку →](notes/probabilistic-proposals-deterministic-authority.md)
+
 ---
 
 {% note info %}

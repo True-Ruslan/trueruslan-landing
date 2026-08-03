@@ -74,6 +74,7 @@ test('canonical notes include the grounded Engineering Notes milestones', () => 
     'green-ci-is-not-product-verification',
     'llm-output-is-a-protocol-boundary',
     'source-tests-to-installed-acceptance',
+    'probabilistic-proposals-deterministic-authority',
   ];
   const canonicalNotes = loadNotesManifest();
 

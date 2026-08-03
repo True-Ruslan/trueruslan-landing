@@ -200,6 +200,16 @@
     "accent": "green"
   },
   {
+    "path": "landing/notes/probabilistic-proposals-deterministic-authority.html",
+    "card": "note-deterministic-authority",
+    "title": "AI может предложить, но не применить: как строить deterministic authority",
+    "description": "Vlezet and VillAIgence case study: immutable proposal identities, deterministic validation, current-state revalidation and atomic authoritative mutation.",
+    "displayTitle": "DETERMINISTIC AUTHORITY",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["AI", "AUTHORITY", "VALIDATION"],
+    "accent": "violet"
+  },
+  {
     "path": "en/index.html",
     "card": "home-en",
     "title": "Ruslan Nemykin — Backend Engineer",

@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-03**, после merge P2.4i Installed Acceptance Engineering Note.
+> Обновлено: **2026-08-03**, во время P2.4j Deterministic Authority Engineering Note.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -22,7 +22,8 @@
 - optional aggregate analytics;
 - no behavioural tracking без explicit privacy review;
 - quality gates без ослабления;
-- repository readiness, generated artifact, deployed state, external-project acceptance и provider telemetry как разные факты.
+- repository readiness, generated artifact, deployed state, external-project acceptance и provider telemetry как разные факты;
+- **exact artifact → installed acceptance** как явную release boundary.
 
 Главная продуктовая формула:
 
@@ -64,7 +65,7 @@
 
 - Governance/security/ownership/immutable Actions/CodeQL/Dependency Review — PR #67.
 - Compatible dependency updates — PRs #69/#71/#76/#77/#79/#80/#81.
-- Residual `markdown-it@13.0.2` risk — issue #82, next review 2026-08-17.
+- Dependency maintenance owner — issue #82; current audit signal requires fresh triage.
 
 ---
 
@@ -74,8 +75,6 @@ Published:
 
 **От source tests к installed acceptance: что доказывает каждый release gate**.
 
-The Note preserves **exact artifact → installed acceptance** as an explicit boundary: exact release identity and package inspection are required evidence, but they do not prove that the same artifact starts, stops, saves and restarts in the production runtime.
-
 ```text
 feature PR:            #85 — MERGED
 exact feature head:    9d9fcff92c9a9826391028b2f2e25c524e7463ea
@@ -84,39 +83,9 @@ Build:                 #655 / 30833707629 — SUCCESS
 CodeQL:                #95 / 30833706682 — SUCCESS
 Dependency Review:     #83 / 30833707121 — SUCCESS
 unit tests:            321 PASS / 0 FAIL
-Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8864072101
-artifact digest:       sha256:b89fb185c7a2b8f54aa1dae81415cd28be92fe885c89e108a293894ae9cb2daa
 ```
 
-Delivered surfaces:
-
-- canonical Note registry and Markdown source;
-- Notes index and TOC;
-- metadata/OpenGraph;
-- previous/next/related navigation;
-- Atom feed;
-- generated search;
-- permanent RED/GREEN contract;
-- synchronized durable state.
-
-Boundaries retained:
-
-- `0.1.20` remains partial PASS;
-- `0.1.21` remains installed startup failure with safe rollback;
-- PR #103 GameTests and PR #104 production-JAR lifecycle proof remain separate;
-- real provider, two-client, focused live gameplay and product-owner cumulative acceptance remain pending;
-- no new runtime, renderer, backend, API, analytics event or search engine.
-
----
-
-# Immediate operational follow-up
-
-1. Confirm latest Pages deployment after PR #85.
-2. Confirm production Notes index and `source-tests-to-installed-acceptance` route.
-3. Confirm deployed Atom feed and generated search.
-4. Run or inspect Content Freshness Guard; close issue #78 only when generated evidence is clean.
-5. Keep issue #82 open until upstream compatibility exists.
+This milestone preserves source tests, package identity, GameTests, production-JAR startup/restart, rollback and cumulative installed acceptance as separate evidence layers.
 
 ---
 
@@ -124,46 +93,143 @@ Boundaries retained:
 
 ## Goal
 
-Publish a grounded Engineering Note using both Vlezet and VillAIgence:
+Publish:
+
+**AI может предложить, но не применить: как строить deterministic authority**.
+
+Core principle:
 
 **Probabilistic systems may propose; deterministic product boundaries decide what becomes authoritative.**
 
+## Authority pipeline
+
+```text
+proposal
+→ known identity binding
+→ shape and bounds validation
+→ product-policy authorization
+→ current-state revalidation
+→ APPLY / CONFLICT / REJECT / UNCHANGED
+→ atomic authoritative mutation
+```
+
 ## Vlezet evidence
 
-- local CV proposes bounded wall/opening candidates;
-- AI may confirm or reject known candidate IDs;
-- provider strength can verify more existing candidates but cannot create missing geometry outside the candidate set;
-- deterministic validation owns geometry/topology invariants;
-- explicit Apply owns authoritative document mutation;
-- stale review decisions must be revalidated against current draft state.
+### Accepted foundation
+
+- M7.8B PR #41 is accepted / принят;
+- local CV proposes bounded candidates;
+- AI verifies exact known candidate IDs and coordinates;
+- IDs and geometry remain immutable during verification;
+- unknown IDs, moved geometry and cloud-only geometry fail closed;
+- provider strength can verify more existing candidates but cannot create missing geometry;
+- deterministic validation and explicit Apply own canonical document mutation;
+- semantic Undo remains the recovery boundary.
+
+### Current Draft evidence
+
+Vlezet M7.8C PR #42 is Draft and awaits product-owner retest. It may support the article as current implementation evidence but must not be represented as accepted, merged or production-ready.
+
+Allowed observations:
+
+- strict-ID / geometry-immutable verification;
+- active vs diagnostic geometry;
+- blocked candidates excluded from topology, host analysis and Apply;
+- AI cannot create, move, resize, thicken or re-host geometry.
 
 ## VillAIgence evidence
 
-- strict JSON parsing and type/domain validation treat provider output as external protocol data;
-- a syntactically valid decision is still only a proposal;
-- server policy, permissions, current world state and entity identity own authorization;
-- cancellation and current-state revalidation prevent stale model decisions from mutating the world;
-- provider text never becomes authoritative merely because HTTP/provider execution succeeded.
+Use merged operator-lore PR #85:
 
-## Required narrative boundaries
+- permission is checked server-side;
+- WORLD/PLAYER/VILLAGER/VILLAGE identity is derived from authenticated/live state;
+- arbitrary UUID/dimension/village IDs are not accepted as request authority;
+- payload bounds and canonicalization fail closed;
+- write compares expected and current SHA-256 revision;
+- stale write returns `CONFLICT` without mutation;
+- replay returns `UNCHANGED`;
+- persistent store changes only on `APPLY`.
 
-- distinguish generation, verification, validation, authorization and mutation;
-- explain why deterministic authority is not the same as eliminating AI uncertainty;
-- include explicit stale-decision/current-state revalidation;
-- avoid generic AI-safety or model-quality claims unsupported by project evidence;
-- preserve Vlezet pre-production and VillAIgence release-candidate lifecycle boundaries.
+PR #103 GameTests and PR #104 production-JAR lifecycle proof remain separate acceptance layers. Real-provider, multiplayer and product-owner cumulative acceptance remain pending.
 
-## Expected static integration
+## Static integration
 
-Use the existing Notes registry/index/TOC/page-meta/feed/search architecture. No new runtime, visual system, backend or analytics event.
+Required surfaces:
+
+- canonical Notes registry;
+- grounded Markdown article;
+- Notes index and TOC;
+- page metadata/OpenGraph;
+- build-time previous/next/related navigation;
+- Atom feed;
+- generated Diplodoc search;
+- exact browser assertion for query `deterministic authority`;
+- permanent content/evidence contract;
+- existing browser/accessibility/visual/custom-domain matrix.
+
+No new schema, renderer, CSS, runtime, backend, API, analytics event or search engine.
+
+## TDD evidence
+
+```text
+PR:                    #87
+RED head:              1422efbaa6f0d4791d511bfb71fa89f1712c6604
+RED Build:             #658 / 30852218324 — expected FAILURE
+RED tests:             321 PASS / 3 expected FAIL
+RED CodeQL:            #100 / 30852218498 — SUCCESS
+RED Dependency Review: #86 / 30852220087 — SUCCESS
+failure scope:         missing registry, article and discovery surfaces
+
+implementation head:   e8cad3b7f0dbf468ffebb1d55ea4d269143a758d
+Build:                 #665 / 30853200992 — SUCCESS
+CodeQL:                #107 / 30853201468 — SUCCESS
+Dependency Review:     #93 / 30853201100 — SUCCESS
+unit tests:            324 PASS / 0 FAIL
+Lighthouse:            100 / 100 / 100 / 100
+quality artifact:      8871540363
+artifact digest:       sha256:ffafe7d916a39a25b6162f8fdc06656bc855ef3133ab2496c81ac0e5364a25e6
+```
+
+Final exact-head matrix must run after durable documentation changes. PR merge and production Pages deployment remain separate facts.
+
+## Completion criteria
+
+1. accepted Vlezet #41 and Draft #42 are visibly distinct;
+2. both products map to the same deterministic authority pipeline;
+3. the Note does not promote project lifecycle or invent metrics;
+4. feed, navigation and generated search include the Note;
+5. exact query `deterministic authority` returns the canonical Note route;
+6. Build, CodeQL and Dependency Review pass on final exact head;
+7. PR #87 squash-merges with expected-head protection;
+8. final squash is persisted through a docs-only continuity sync.
+
+---
+
+# Immediate operational follow-up
+
+1. Confirm latest Pages deployment after merge.
+2. Confirm production Note route, Atom feed and generated search result.
+3. Run or inspect Content Freshness Guard; close issue #78 only when generated evidence is clean.
+4. Re-triage issue #82 because current `npm ci` reports `6 moderate / 2 high` on the unchanged graph.
+5. Never use `npm audit fix --force`, a local `node_modules` shim or an unreviewed fork.
+
+---
+
+# NEXT — P2.4k Restart and Persistence as Product Contract
+
+Explain why stored bytes are insufficient without:
+
+- startup and read-back;
+- controlled shutdown and independent restart;
+- deterministic identity and per-entity isolation;
+- six-store path/hash continuity;
+- schema/migration compatibility;
+- rollback and recovery oracles;
+- user-visible continuity rather than storage implementation alone.
 
 ---
 
 # Following content milestones
-
-## P2.4k — restart and persistence as product contract
-
-Explain why stored bytes are insufficient without startup/read-back/restart evidence, deterministic IDs, per-entity isolation, six-store hashes, schema/migration compatibility and user-visible continuity.
 
 ## First genuine Photo Story
 
@@ -187,7 +253,7 @@ Observe for 3–4 weeks: aggregate requests/page views, privacy-bounded country/
 
 ## Vlezet M7.8C
 
-Landing updates only after source evidence exists for opening classification, known host-wall identity, bounded placement, stale-decision protection, exact-head benchmark/browser evidence and product-owner acceptance. M7.8B remains the latest accepted public recognition slice.
+Landing public truth updates only after exact-head automated evidence plus the same real-plan product-owner acceptance. Until then M7.8B remains the latest accepted public recognition slice.
 
 ## VillAIgence cumulative acceptance
 
@@ -203,34 +269,10 @@ Add only completed, externally verifiable work with known title/date/platform/ro
 
 ---
 
-# Conditional future branches
-
-- Selective RU/EN expansion only for a concrete valuable page.
-- Secondary analytics only when missing aggregate data blocks a decision and after privacy review.
-- Richer architecture explorer only with enough real artifacts.
-- Publication filters/detail pages only after catalogue growth.
-- Dependency modernization only through issue #82; never blind `npm audit fix --force`.
-
----
-
 # Что не является priority
 
 Без нового evidence-backed design decision не планировать migration from GitHub Pages, paid hosting merely for the custom domain, private TLS management, separate EN CMS/build, second full-text search, runtime publication APIs, advertising analytics/session replay, AI chat over the CV, accounts/comments/likes, backend/database for static content, runtime GitHub API, automatic public-state mutation or decorative version bumps.
 
----
-
-# Оптимальная последовательность
-
-```text
-P2.4i deployment confirmation
-→ P2.4j deterministic authority around AI proposals
-→ P2.4k restart/persistence product contract
-→ genuine Photo Story when authentic material exists
-→ external-profile rollout and selective distribution
-→ 3–4 weeks aggregate observation
-→ choose further work from evidence
-```
-
 ## Правило для нового чата
 
-Перед следующим milestone открыть durable docs; проверить actual open PR/latest commits/exact-head CI; separately verify Pages/production routes, HTTPS/redirects, Cloudflare, Vlezet/VillAIgence source truth, Content Freshness issue #78 and dependency issue #82; distinguish source/package/GameTest/production-JAR/manual cumulative evidence.
+Перед следующим milestone открыть durable docs; проверить actual open PR/latest commits/exact-head CI; отдельно проверить Pages/production routes, Cloudflare, Vlezet/VillAIgence source truth, Content Freshness issue #78 and dependency issue #82; distinguish accepted, Draft, package, GameTest, production-JAR, server-authority and manual cumulative evidence.
