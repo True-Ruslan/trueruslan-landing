@@ -28,9 +28,12 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
 
   assert.match(workflow, /contents:\s*read/);
   assert.match(workflow, /pages:\s*read/);
-  assert.doesNotMatch(workflow, /contents:\s*write|issues:\s*write|deployments:\s*write/);
+  assert.match(workflow, /actions:\s*read/);
+  assert.doesNotMatch(workflow, /contents:\s*write|issues:\s*write|deployments:\s*write|actions:\s*write/);
   assert.match(workflow, /actions\/github-script@[0-9a-f]{40}/i);
-  assert.match(workflow, /GET \/repos\/\{owner\}\/\{repo\}\/pages\/builds\/latest/);
+  assert.match(workflow, /GET \/repos\/\{owner\}\/\{repo\}\/actions\/runs/);
+  assert.match(workflow, /pages-build-deployment/);
+  assert.match(workflow, /head_sha/);
   assert.match(workflow, /github\.event_name\s*==\s*'push'/);
   assert.match(workflow, /GITHUB_SHA/);
   assert.match(workflow, /playwright@1\.61\.1/);
