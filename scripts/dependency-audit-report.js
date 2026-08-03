@@ -31,6 +31,10 @@ function normalizeFixAvailable(value) {
   };
 }
 
+function compareSeverity(left, right) {
+  return (SEVERITY_ORDER.get(left) ?? 99) - (SEVERITY_ORDER.get(right) ?? 99);
+}
+
 export function normalizeAudit({audit, auditExitCode, nodeVersion, npmVersion, explains = {}, generatedAt}) {
   if (!audit || typeof audit !== 'object') throw new TypeError('audit must be an object');
   if (!audit.metadata?.vulnerabilities || typeof audit.vulnerabilities !== 'object') {
@@ -49,20 +53,30 @@ export function normalizeAudit({audit, auditExitCode, nodeVersion, npmVersion, e
           continue;
         }
         if (!via || typeof via !== 'object') continue;
+
         const id = advisoryIdFrom(via);
         advisoryIds.push(id);
-        if (!advisoryMap.has(id)) {
-          advisoryMap.set(id, {
-            id,
-            source: via.source ?? null,
-            name: via.name ?? packageName,
-            dependency: via.dependency ?? packageName,
-            title: via.title ?? 'Untitled npm advisory',
-            url: via.url ?? null,
-            severity: via.severity ?? record.severity ?? 'unknown',
-            range: via.range ?? record.range ?? null,
-          });
-        }
+        const severity = via.severity ?? record.severity ?? 'unknown';
+        const instance = {
+          source: via.source ?? null,
+          range: via.range ?? record.range ?? null,
+        };
+        const advisory = advisoryMap.get(id) || {
+          id,
+          name: via.name ?? packageName,
+          dependency: via.dependency ?? packageName,
+          title: via.title ?? 'Untitled npm advisory',
+          url: via.url ?? null,
+          severity,
+          instances: [],
+        };
+
+        if (compareSeverity(severity, advisory.severity) < 0) advisory.severity = severity;
+        const duplicate = advisory.instances.some((candidate) => (
+          candidate.source === instance.source && candidate.range === instance.range
+        ));
+        if (!duplicate) advisory.instances.push(instance);
+        advisoryMap.set(id, advisory);
       }
 
       return {
@@ -78,15 +92,18 @@ export function normalizeAudit({audit, auditExitCode, nodeVersion, npmVersion, e
         explain: Array.isArray(explains[packageName]) ? explains[packageName] : [],
       };
     })
-    .sort((left, right) => {
-      const severity = (SEVERITY_ORDER.get(left.severity) ?? 99) - (SEVERITY_ORDER.get(right.severity) ?? 99);
-      return severity || left.package.localeCompare(right.package);
-    });
+    .sort((left, right) => compareSeverity(left.severity, right.severity) || left.package.localeCompare(right.package));
 
-  const advisories = [...advisoryMap.values()].sort((left, right) => {
-    const severity = (SEVERITY_ORDER.get(left.severity) ?? 99) - (SEVERITY_ORDER.get(right.severity) ?? 99);
-    return severity || left.id.localeCompare(right.id);
-  });
+  const advisories = [...advisoryMap.values()]
+    .map((advisory) => ({
+      ...advisory,
+      instances: advisory.instances.sort((left, right) => {
+        const leftSource = left.source === null ? '' : String(left.source);
+        const rightSource = right.source === null ? '' : String(right.source);
+        return leftSource.localeCompare(rightSource) || String(left.range || '').localeCompare(String(right.range || ''));
+      }),
+    }))
+    .sort((left, right) => compareSeverity(left.severity, right.severity) || left.id.localeCompare(right.id));
 
   return {
     generatedAt,
@@ -141,8 +158,12 @@ export function renderMarkdown(report) {
   } else {
     for (const advisory of report.advisories) {
       const link = advisory.url ? ` — ${advisory.url}` : '';
+      const ranges = [...new Set(advisory.instances.map((instance) => instance.range).filter(Boolean))];
+      const sources = [...new Set(advisory.instances.map((instance) => instance.source).filter((source) => source !== null))];
       lines.push(`- **${advisory.id}** · ${advisory.severity} · ${advisory.title}${link}`);
-      lines.push(`  - package: \`${advisory.name}\`; range: \`${advisory.range ?? 'unknown'}\``);
+      lines.push(`  - package: \`${advisory.name}\``);
+      lines.push(`  - affected ranges: ${ranges.length ? ranges.map((range) => `\`${range}\``).join(', ') : 'unknown'}`);
+      lines.push(`  - npm sources: ${sources.length ? sources.map((source) => `\`${source}\``).join(', ') : 'unknown'}`);
     }
     lines.push('');
   }
