@@ -1,12 +1,139 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-04**, после merge P2.4k Restart and Persistence Engineering Note.
+> Обновлено: **2026-08-04**, после Content Freshness closure, exact dependency triage и high-severity remediation.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
 ---
 
 # 2026-08-04
+
+## Operational Maintenance Closure — DONE
+
+### PR #91 — pull-request Content Freshness evidence
+
+Added a path-scoped PR trigger for controlled project/evidence/history changes. PR runs execute the existing bounded probe and deterministic report, upload a 30-day artifact and explicitly skip issue mutation. Scheduled/manual runs remain the automatic maintenance-issue owner.
+
+TDD RED:
+
+```text
+head:                68c7e5f39405666e032ee071476af14226029b94
+Build:               #682 / 30857522116 — expected FAILURE
+failure:             missing PR trigger and issue-isolation condition
+```
+
+Final evidence:
+
+```text
+exact head:          6d64ed81e6bfebd856f502c993ce9f574c55aa4b
+squash:              7afade6cc6e1cdfce2d14b28d5a4ff42b28453ee
+Build:               #683 / 30857597259 — SUCCESS
+CodeQL:              #129 / 30857597245 — SUCCESS
+Dependency Review:   #111 / 30857597225 — SUCCESS
+Content Freshness:   #13 / 30857597584 — SUCCESS
+unit tests:          328 PASS / 0 FAIL
+freshness artifact:  8873073130
+artifact digest:     sha256:f54ca989f6a696258a1b976217b71363b711681fd284300cbc91914ace7971c0
+findings:            0
+```
+
+The previous VillAIgence release/repository drift and Vlezet repository-drift warnings no longer reproduce. Issue #78 was closed as completed.
+
+### PR #93 — exact dependency audit evidence
+
+Added a read-only `Dependency Audit Evidence` workflow with weekly/manual/path-scoped PR triggers. It preserves:
+
+- raw `npm audit --json`;
+- normalized JSON and Markdown;
+- every advisory source/affected-range instance;
+- `npm explain --json` chains for every vulnerable package record;
+- 30-day artifacts.
+
+It never performs a fix, lockfile mutation, issue mutation, commit or push.
+
+TDD RED:
+
+```text
+head:                2be6e19ee3b00218135d0f350acea7e0b9d4d748
+Build:               #685 / 30858133181 — expected FAILURE
+failure:             missing generator and workflow
+```
+
+Final evidence:
+
+```text
+exact head:          23cffa3bd863de70fd70fa2bd8d1aa4a5c8a64a1
+squash:              9055ed182c7590643a09533c9d4011bada84d399
+Build:               #690 / 30858629038 — SUCCESS
+CodeQL:              #137 / 30858629067 — SUCCESS
+Dependency Review:   #118 / 30858629031 — SUCCESS
+Dependency Audit:    #4 / 30858629032 — SUCCESS
+unit tests:          330 PASS / 0 FAIL
+audit artifact:      8873443014
+artifact digest:     sha256:e65d636ff062dd64c4dbe983a14edbac9c514a1e2efce3b4411ce0fc2ba8765b
+```
+
+Measured exact lockfile state:
+
+```text
+9 package records
+3 high
+6 moderate
+0 critical
+```
+
+High records came from `undici@7.28.0`, vulnerable `brace-expansion@2.1.3` / `5.0.8`, and propagated `minimatch`. Moderate records came from the known `markdown-it@13.0.2` / Diplodoc family.
+
+### PR #94 — high-severity audit remediation
+
+Applied compatible patch-only overrides:
+
+```text
+brace-expansion 2.1.3 → 2.1.4
+brace-expansion 5.0.8 → 5.0.9
+undici         7.28.0 → 7.29.0
+```
+
+A temporary branch-only contents-write workflow generated an npm integrity-safe lockfile and was deleted before final CI. The merge scope contained only `package.json`, `package-lock.json` and the permanent security contract.
+
+TDD RED:
+
+```text
+head:                edd6501a2e41b15739af2974bfdc3d2d95002894
+Build:               #691 / 30859103405 — expected FAILURE
+unit tests:          330 PASS / 1 expected FAIL
+violations:          brace-expansion@2.1.3, brace-expansion@5.0.8, undici@7.28.0
+```
+
+Final evidence:
+
+```text
+exact head:          ef47f18d52ca2d3e334e3c95d8fa312f167cc217
+squash:              2e1bbd8e4b8e8e77319691a785f5ce14402f3389
+Build:               #695 / 30859354170 — SUCCESS
+CodeQL:              #143 / 30859354188 — SUCCESS
+Dependency Review:   #123 / 30859354189 — SUCCESS
+Dependency Audit:    #7 / 30859354182 — SUCCESS
+unit tests:          331 PASS / 0 FAIL
+Lighthouse:          100 / 100 / 100 / 100
+quality artifact:    8873810664
+quality digest:      sha256:e2fb7c614257c4dbd7b5eaa091fca4eb236be8bf717eadc17b810d6bbaa3fd17
+audit artifact:      8873716981
+audit digest:        sha256:0fe1ca448dbe00eeeba54fe89bea1efbb99d6428c5e7fda2c110cf0814f9e765
+```
+
+Final audit:
+
+```text
+6 package records
+0 high
+6 moderate
+0 critical
+```
+
+The propagated minimatch high record disappeared with the corrected brace-expansion nodes. Issue #82 remains open only for the moderate markdown-it/Diplodoc compatibility blocker. No forced fix, local shim or unreviewed fork was used.
+
+---
 
 ## P2.4k — Restart and Persistence as Product Contract — DONE
 
@@ -18,122 +145,20 @@ Canonical route:
 
 `landing/notes/restart-persistence-is-a-product-contract.html`
 
-### Why
-
-Предыдущая Note описывала release gates и exact installed artifact. P2.4k фиксирует более узкую продуктовую границу: успешная serialization и совпадающий SHA-256 ещё не доказывают, что приложение после restart прочитало правильный canonical store, восстановило те же identities и сохранило пользовательское поведение.
-
-### Selected design
-
-- one Russian grounded Note in the existing static Notes platform;
-- four distinct levels: storage durability, structural readability, semantic continuity and behavioral continuity;
-- PR #66 and PR #67 as live identity/isolation/recall checkpoints;
-- PRs #92/#95/#102 as startup-failure and safe-rollback evidence;
-- PR #103 as GameTest lifecycle semantics;
-- PR #104 as exact production-JAR no-mutation restart oracle;
-- existing registry, build-time navigation, Atom feed and Diplodoc search;
-- no new schema, renderer, CSS, runtime, backend, API, analytics event or search engine.
-
-### Persistence pipeline
+The Note separates storage durability, structural readability, semantic continuity and behavioral continuity. Evidence uses VillAIgence PR #66/#67 live persistence checks, startup rollback PRs #92/#95/#102, PR #103 GameTest lifecycle and PR #104 exact production-JAR two-JVM restart.
 
 ```text
-write
-→ completed save
-→ controlled shutdown
-→ exact artifact restart
-→ unique canonical discovery
-→ parse and schema check
-→ semantic identity/isolation check
-→ user-visible continuity
+feature PR:          #89 — MERGED
+exact feature head:  e73a94d5d2b832d188e62b8790b4d039ac797a44
+squash:              40af9e52237f03da58355caa065a40b64ad597d8
+Build:               #680 / 30856377655 — SUCCESS
+CodeQL:              #124 / 30856377996 — SUCCESS
+Dependency Review:   #108 / 30856377653 — SUCCESS
+unit tests:          327 PASS / 0 FAIL
+Lighthouse:          100 / 100 / 100 / 100
 ```
 
-### Four evidence levels
-
-1. **Storage durability** — bytes exist after completed save.
-2. **Structural readability** — exactly one canonical file is found and accepted as UTF-8/JSON/root/schema.
-3. **Semantic continuity** — UUIDs, evidence links, ordering, ownership and per-entity isolation remain correct.
-4. **Behavioral continuity** — user-visible recall, identity, permissions and failure isolation remain correct after restart.
-
-Equal hashes establish byte continuity only in a no-mutation scenario. Intentional writes and migration may legitimately change bytes and therefore require separate read-back and semantic oracles.
-
-### Evidence
-
-PR #66 recorded Basiliso semantic UUID/`sourceEventIds`, decay ordering, relationship eviction and Basiliso/Casimiro isolation across pressure and restart. Five files were byte-identical; rejected-new-append remained automated-only rather than live-proven.
-
-PR #67 recorded hash continuity for all six stores:
-
-```text
-memory.json
-memory2.json
-semantic-memory.json
-relationships.json
-voices.json
-operator-lore.json
-```
-
-It also recorded Pio/Justino isolation, observable recall, controlled TTS failure without memory loss, hostile endpoint rejection without persistence mutation and byte-for-byte production configuration recovery.
-
-PRs #92, #95 and #102 demonstrated startup rejection before world load and safe rollback with unchanged persistent state and recovered service. Rollback proves recovery, not correctness of the rejected candidate.
-
-PR #103 added the GameTest `NPC → tombstone item → NPC` round trip with UUID, name and full inventory multiset continuity. This remains distinct from production-JAR restart evidence.
-
-PR #104 proved exact remapped production-JAR execution outside Loom/dev classpath, two independent JVM runs, controlled stop/save/exit `0`, exactly one valid JSON copy of every canonical store, stable no-mutation paths/hashes and no fixture leakage into the distributable JAR. It does not complete migration, provider, multiplayer or cumulative installed acceptance.
-
-### TDD RED
-
-```text
-RED head:              1dfddfa3a7750b62caef4618a6836f7778580a76
-Build:                 #670 / 30855380512 — expected FAILURE
-unit tests:            324 PASS / 3 expected FAIL
-CodeQL:                #114 / 30855380544 — SUCCESS
-Dependency Review:     #98 / 30855380504 — SUCCESS
-RED artifact:          8872239442
-artifact digest:       sha256:bf5f54ca116e53bfac237e6626bd6b996787ebac9d3ec63a7335086cef5eacb7
-```
-
-Only absent registry, Markdown and index/TOC/page-meta surfaces failed. Every pre-existing test passed.
-
-### Intermediate correction
-
-Build #676 produced `326 PASS / 1 FAIL`. The article contained a prohibited broad-claim phrase inside an explicit negation. The wording was narrowed without weakening the contract.
-
-### Final exact-head GREEN and merge
-
-```text
-feature PR:            #89 — MERGED
-exact feature head:    e73a94d5d2b832d188e62b8790b4d039ac797a44
-squash on master:      40af9e52237f03da58355caa065a40b64ad597d8
-Build:                 #680 / 30856377655 — SUCCESS
-CodeQL:                #124 / 30856377996 — SUCCESS
-Dependency Review:     #108 / 30856377653 — SUCCESS
-unit tests:            327 PASS / 0 FAIL
-Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8872727513
-artifact digest:       sha256:932a3275d3cd7d28b9ca117ad6548ce79efbc25fc195803a7cd44748e5a0c625
-artifact retention:    through 2026-08-17
-```
-
-The complete production build, integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio, Firefox/WebKit, generic search, exact `persistence contract` search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual-regression and custom-domain matrix passed.
-
-### Delivered
-
-- canonical Note registry record with 12-minute reading time;
-- grounded Markdown article;
-- Notes index and TOC entry;
-- metadata/OpenGraph identity;
-- previous/next/related navigation;
-- Atom feed inclusion;
-- exact generated-search route assertion;
-- permanent `restart-persistence-note` contract;
-- durable PROJECT_STATE/ROADMAP/CHANGELOG synchronization;
-- no runtime or dependency graph change.
-
-### Claim boundary
-
-P2.4k does not claim semantic correctness from hashes alone, unchanged hashes after intentional writes, complete historical migration coverage, equivalence between GameTests and production-JAR restart, completed provider/multiplayer/manual acceptance, zero data-loss probability or production deployment from PR CI.
-
-### Next
-
-Operational maintenance closure: fresh Content Freshness report for issue #78, exact `npm audit --json` triage for issue #82 and live Pages/route/feed/search verification where tooling permits.
+PR #104 remains automated no-mutation production-JAR restart evidence, not completed provider/multiplayer/manual cumulative acceptance.
 
 ---
 
@@ -143,75 +168,46 @@ Operational maintenance closure: fresh Content Freshness report for issue #78, e
 
 Published **«AI может предложить, но не применить: как строить deterministic authority»**.
 
-Accepted Vlezet M7.8B PR #41 remains separate from Draft M7.8C PR #42. VillAIgence operator-lore PR #85 keeps permission, identity resolution, revision conflict and persistence server-authoritative. PR #103 GameTests and PR #104 production-JAR lifecycle acceptance remain separate from real-provider, multiplayer and product-owner cumulative acceptance.
-
 ```text
-feature PR:            #87 — MERGED
-exact feature head:    b38d225d837e5e347184ca09c685a479923ba06e
-squash on master:      2fba404bbca9680d934f11f30c8a76347a5ab7b1
-Build:                 #668 / 30853751417 — SUCCESS
-CodeQL:                #110 / 30853751740 — SUCCESS
-Dependency Review:     #96 / 30853751469 — SUCCESS
-unit tests:            324 PASS / 0 FAIL
+feature PR:          #87 — MERGED
+exact feature head:  b38d225d837e5e347184ca09c685a479923ba06e
+squash:              2fba404bbca9680d934f11f30c8a76347a5ab7b1
+Build:               #668 / 30853751417 — SUCCESS
+unit tests:          324 PASS / 0 FAIL
 ```
+
+Accepted Vlezet M7.8B remains separate from Draft M7.8C. VillAIgence server authority remains separate from provider/model proposal and manual cumulative acceptance.
 
 ## P2.4i — Installed Acceptance Engineering Note — DONE
 
 Published **«От source tests к installed acceptance: что доказывает каждый release gate»**.
 
 ```text
-feature PR:            #85 — MERGED
-exact feature head:    9d9fcff92c9a9826391028b2f2e25c524e7463ea
-squash on master:      c03f8403b77df5a91238d62bd8a143c046511a92
-Build:                 #655 / 30833707629 — SUCCESS
-unit tests:            321 PASS / 0 FAIL
+feature PR:          #85 — MERGED
+exact feature head:  9d9fcff92c9a9826391028b2f2e25c524e7463ea
+squash:              c03f8403b77df5a91238d62bd8a143c046511a92
+Build:               #655 / 30833707629 — SUCCESS
+unit tests:          321 PASS / 0 FAIL
 ```
-
-The Note keeps source contracts, package identity, GameTests, exact production-JAR startup/restart, rollback and cumulative installed acceptance separate.
 
 ## P2.4h — Product Evidence Reconciliation — DONE
 
-- Vlezet M7.8B PR #41 recorded as accepted with geometry/topology F1 `0.837989`, `27 local / 19 AI-confirmed / 8 review` and openings deferred to M7.8C;
-- VillAIgence `0.1.20` partial PASS and `0.1.21` startup failure/rollback retained;
-- corrective PRs #99–#102 recorded;
-- PR #103 GameTests and PR #104 production-JAR startup/restart recorded separately;
-- candidate `0.1.23+1.21.1`, lifecycle `release-candidate`, label `ACCEPTANCE IN PROGRESS` preserved.
+Vlezet M7.8B was recorded as accepted with F1 `0.837989`; VillAIgence PR #103 GameTests and PR #104 production-JAR restart were recorded as separate evidence layers.
 
 ```text
-feature PR:            #83 — MERGED
-exact feature head:    e50495e7f988e362905c7b137efd6541e7f94e33
-squash:                5978f727206fa386e9cce18c26c9ba7b7eade2eb
-Build:                 #641 / 30829739512 — SUCCESS
-unit tests:            318 PASS / 0 FAIL
+feature PR:          #83 — MERGED
+exact feature head:  e50495e7f988e362905c7b137efd6541e7f94e33
+squash:              5978f727206fa386e9cce18c26c9ba7b7eade2eb
+Build:               #641 / 30829739512 — SUCCESS
+unit tests:          318 PASS / 0 FAIL
 ```
-
-## Repository hardening
-
-- PR #67 — governance, security policy, ownership, immutable Actions, CodeQL, Dependency Review and bounded Dependabot.
-- PRs #69/#71/#74/#76/#77 — compatible dependency/Action and durable hardening updates.
-- PR #79 — vulnerable `fast-xml-parser` 4.x path removed.
-- PR #80 — low-risk audit cleanup.
-- PR #81 — `linkify-it@5.0.2` remediation and measured `markdown-it@13.0.2` upstream blocker.
-- Issue #82 remains the dependency maintenance owner and requires exact triage of the current `6 moderate / 2 high` summary.
 
 ---
 
-# 2026-08-02
-
-- P2.4g `/now` synchronization — PR #65.
-- P2.4f VillAIgence flagship — PR #63.
-- P2.4e External Publications Showcase — PR #61.
-- P2.4d Vlezet flagship — PR #59.
-- P2.4c Search/Photo/rendered-asset stabilization — PRs #53/#54/#55/#57/#58.
-
-# 2026-08-01
-
-- P2.4b Header utility navigation and language consolidation — PR #51.
-- P2.4a Canonical rollout and custom-host telemetry — PRs #48–#50.
-- P2.3b HTTPS Production Cutover — run `30704218399`.
-
 # Earlier milestones
 
+- 2026-08-02 — `/now`, VillAIgence/Vlezet flagships, Publications and stabilized search/photo surfaces.
+- 2026-08-01 — canonical domain rollout, header/navigation consolidation and HTTPS production cutover.
 - 2026-07-30 — production analytics activation and legacy operational closure.
 - 2026-07-23 — privacy analytics, Minimal RU/EN and additional grounded Note.
 - 2026-07-22 — flagship format, metadata cleanup, browser harness, freshness, Notes, Evidence, Sources and Photo Stories foundation.
