@@ -13,18 +13,18 @@ The internal `LivingWorld / livingworld` names remain compatibility-sensitive en
 <!-- case-study:problem -->
 ## Problem: a convincing NPC must still obey the server
 
-The initial idea was simple: talk to an MCA villager through text or voice and make the character feel like part of the current Minecraft world rather than a separate chatbot.
-
-The provider call was not the hard part. The real system has to decide who owns the conversation, which context was actually observed, what the NPC may remember, whether an asynchronous answer is still current and where an LLM proposal ends before any authoritative game mutation begins.
+The provider call is not the hardest part. The real system must decide who owns a conversation, which context was actually observed, what the NPC may remember, whether an asynchronous answer is still current and where an LLM proposal ends before an authoritative game mutation begins.
 
 > The server owns identity, context, memory, relationships, actions and persistent evidence. The model may propose; it never becomes the authority.
+
+Release evidence has the same boundary problem. A green source pipeline does not automatically prove that the exact remapped JAR starts, saves, restarts and survives the real provider or multiplayer scenarios expected from the product.
 
 <!-- case-study:constraints -->
 ## Constraints that shaped the architecture
 
 ### Mutable game state cannot leak into asynchronous work
 
-STT, Chat and TTS may finish after the session, player or NPC state has changed. The server therefore captures an immutable bounded context before provider work and revalidates current state before applying any result.
+STT, Chat and TTS may finish after the session, player or NPC state has changed. The server captures an immutable bounded context before provider work and revalidates current state before applying any result.
 
 ### Text and voice share one conversation core
 
@@ -40,9 +40,21 @@ Voice is transport. A failed TTS stage must not erase a useful text response, an
 
 VillAIgence separates bounded legacy dialogue history, episodic Memory 2.0 events, semantic FACT/BELIEF entries, relationships, voice identity and operator-authored lore. Current server-observed world facts remain authoritative over recalled or authored context.
 
-### Release evidence has multiple boundaries
+### Release proof is layered
 
-Green source CI does not prove that a remapped distributable JAR starts on the installed server. Package structure, embedded identity, startup, focused gameplay regressions, restart and persistent hashes are separate gates.
+The acceptance chain is explicit:
+
+```text
+source tests
+→ real integration GameTests
+→ distributable package inspection
+→ exact embedded identity
+→ production-JAR startup
+→ controlled shutdown and restart
+→ focused live regressions
+→ cumulative provider and multiplayer acceptance
+→ promotion
+```
 
 <!-- case-study:decisions -->
 ## Key decisions
@@ -59,13 +71,17 @@ Episodic events describe what happened. Semantic entries distinguish server-obse
 
 The client editor never owns files or arbitrary identities. Permission checks, trusted target resolution, SHA-256 revision conflicts and atomic world-local writes remain server-authoritative. Operator lore is not automatically promoted into semantic FACT.
 
-### Provider failures degrade by capability
+### Risk-based acceptance covers architecture, not only known defects
 
-STT, Chat and TTS have independent bounded failure paths. Authenticated redirects are blocked, bodies and active PCM are limited, unsafe endpoints fail closed and diagnostics exclude credentials, prompts and transcripts.
+PR #103 introduced a validated 28-scenario catalogue across seven risk domains and seven real-server Fabric GameTests. The suite verifies MCA navigation wiring, NPC-to-tombstone-to-NPC identity and inventory preservation, real Silk Touch filled-grave drops, an empty-grave negative control and deterministic water-navigation properties.
 
-### Selective MCA synchronization protects authority boundaries
+The test mod is excluded from the distributable artifact. GameTest evidence remains development integration evidence; it is not represented as production-JAR startup or manual operator acceptance.
 
-Gameplay fixes are adopted as isolated packages instead of a broad upstream merge. Water navigation, tombstones, conversion identity, beds, ladders, pathfinding, mourning, gifts, fishing and mounted archers retain focused tests and acceptance scope.
+### The exact production JAR is tested outside the development classpath
+
+PR #104 installs the exact remapped Fabric candidate into an isolated Minecraft server. The harness validates a deterministic dependency manifest, waits for the ready marker, sends `stop`, requires a complete save and exit code 0, then repeats the lifecycle in a second JVM.
+
+It discovers exactly one valid copy of all six canonical stores and requires stable relative paths and identical SHA-256 values across restart. Fixture classes and metadata are forbidden from leaking into the player/server JAR.
 
 <!-- case-study:failures -->
 ## What real failures changed
@@ -74,43 +90,44 @@ The installed `0.1.20+1.21.1` candidate passed the main dialogue, voice, lore, p
 
 The following `0.1.21+1.21.1` candidate failed during startup because a tombstone Mixin could not resolve its production target. Safe rollback restored `0.1.20`, preserved six persistent hashes and recovered the server, voice and monitoring surfaces.
 
-These failures showed why a correct source-level intention and green package tests cannot be collapsed into installed acceptance. PR #102 moved tombstone preservation into owned source and removed the unsafe injection rather than weakening the startup gate.
+These failures showed why source-level intent and package checks cannot be collapsed into installed acceptance. The correction train narrowed water navigation, moved grave preservation into owned source and made embedded release identity fail closed.
+
+They also changed the acceptance strategy. Startup, shutdown, restart and persistence are now automated against the exact production artifact, while real provider, multiplayer and gameplay canaries remain explicit separate gates.
 
 <!-- case-study:current-state -->
 ## Current state
 
-The canonical source head represented by this page is `e13660f5998fa1ed343548252d573140adc5b0c9`.
+The canonical source head represented by this page is `61b66e38e99c1dc9bdc26089bfb345a250a881e2`.
 
-The merged correction train through PR #102 covers narrow water navigation, filled-grave preservation, exact release identity and direct tombstone wiring. Automated source and package gates are green.
+The current published candidate is `0.1.23+1.21.1`. Its bounded automated evidence includes:
 
-The exact `0.1.22+1.21.1` installed startup, water, grave, restart and cumulative acceptance are still pending. The project is therefore presented as a corrective candidate, not as an accepted production-ready release.
+- a validated 28-scenario risk catalogue;
+- seven real-server Fabric GameTests;
+- exact remapped production-JAR installation outside Loom/dev classpaths;
+- two separate JVM runs reaching the Minecraft ready marker;
+- controlled shutdown, complete world save and exit code 0;
+- unchanged relative paths and SHA-256 values for `memory.json`, `memory2.json`, `semantic-memory.json`, `relationships.json`, `voices.json` and `operator-lore.json` across restart;
+- fail-closed exclusion of test fixture code from the distributable JAR.
+
+Cumulative acceptance is still pending. This automated boundary does not prove real Text/STT/Chat/TTS and Voice Chat behavior, a global Chat deadline, logical two-client lore conflicts, focused live water and grave canaries or final product-owner acceptance.
+
+The public lifecycle therefore remains **release candidate — acceptance in progress**, not production-ready.
 
 <!-- case-study:evidence -->
 ## Evidence and verification boundary
 
-The complete machine-like Project Evidence snapshot and timeline remain on the [Russian canonical VillAIgence page](../../landing/projects/livingworld.md). They are generated from shared registries rather than copied into a second English evidence model.
+The complete Project Evidence snapshot and timeline remain on the [Russian canonical VillAIgence page](../../landing/projects/livingworld.md). They are generated from shared registries rather than copied into a second English evidence model.
 
-That snapshot distinguishes installed partial acceptance, automated corrective code and an installed startup failure. Green CI remains evidence with a bounded scope, not a universal readiness claim.
+That snapshot preserves historical `0.1.20` partial acceptance and the `0.1.21` startup failure, then adds separate scopes for PR #103 GameTests and PR #104 production-JAR startup/restart evidence. No automated signal is widened into cumulative manual acceptance.
 
 <!-- case-study:retrospective -->
 ## What I would change if I started today
 
 I would define the full authority map before deep provider integration: mutable server state → immutable snapshot → external proposal → revalidation → authoritative effect.
 
-I would also begin with episodic and semantic memory as separate models instead of evolving from a transcript, and I would define operator lore as background context from day one.
+I would begin with episodic and semantic memory as separate models instead of evolving from a transcript, and I would define operator lore as background context from day one.
 
-Finally, every release candidate would follow the same gate from the start:
-
-```text
-source tests
-→ distributable package inspection
-→ exact embedded identity
-→ installed startup
-→ focused regressions
-→ restart and persistent hashes
-→ cumulative acceptance
-→ promotion
-```
+I would also establish the full release gate before the first public candidate. Source tests, integration tests, package inspection, startup, restart and manual product acceptance answer different questions. Keeping those questions separate makes a failed gate useful evidence instead of something to hide behind an overall green badge.
 
 ---
 
