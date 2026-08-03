@@ -101,12 +101,11 @@ Delivered:
 
 Immediate operational follow-up:
 
-1. merge PR #84 continuity sync after exact-head CI;
-2. confirm latest Pages deployment;
-3. confirm production `/now`, Vlezet, VillAIgence and Publications routes;
-4. rerun/inspect Content Freshness Guard;
-5. close issue #78 only if reconciled drift is gone;
-6. keep issue #82 open.
+1. confirm latest Pages deployment;
+2. confirm production `/now`, Vlezet, VillAIgence and Publications routes;
+3. rerun/inspect Content Freshness Guard;
+4. close issue #78 only if reconciled drift is gone;
+5. keep issue #82 open.
 
 ---
 
@@ -326,7 +325,7 @@ Issue #82 is a separate upstream compatibility review. Do not run blind `npm aud
 # Оптимальная последовательность
 
 ```text
-P2.4h continuity sync + production confirmation
+P2.4h production/freshness confirmation
         ↓
 Engineering Note: source/package/exact artifact/installed acceptance
         ↓
