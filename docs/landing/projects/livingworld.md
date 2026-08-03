@@ -17,26 +17,27 @@
 
 Но LLM-вызов оказался наименее сложной частью. Как только у NPC появились память, отношения, голос и потенциальные действия, система должна была отвечать на более важные вопросы:
 
-- кто сейчас владеет разговором;
+- кто владеет разговором;
 - какой контекст действительно наблюдал сервер;
 - что можно считать фактом, а что остаётся рассказом или предположением;
-- как один и тот же NPC сохраняет идентичность после restart;
+- как NPC сохраняет идентичность после restart;
 - что делать со старым async-ответом после завершения сессии;
 - как пережить частичный отказ STT, Chat или TTS;
-- где заканчивается предложение модели и начинается authoritative изменение мира.
+- где заканчивается предложение модели и начинается authoritative изменение мира;
+- какой exact artifact действительно запускался и что именно его проверка доказала.
 
-Поэтому центральный принцип VillAIgence сформулирован жёстко:
+Центральный принцип сформулирован жёстко:
 
 > LLM никогда не является источником истины. Сервер владеет идентичностью, контекстом, памятью, отношениями, действиями и persistent evidence; модель только предлагает ответ или намерение.
 
-Это превращает проект не в «AI-чат внутри Minecraft», а в обычную распределённую систему с внешними провайдерами, изменяемым миром, конкурентными игроками, долговременным состоянием и обязательной процедурой выпуска.
+Поэтому VillAIgence — не только AI-чат внутри Minecraft. Это распределённая система с внешними провайдерами, изменяемым миром, конкурентными игроками, долговременным состоянием и отдельной процедурой выпуска.
 
 <!-- case-study:constraints -->
 ## Ограничения, которые определили архитектуру
 
 ### Mutable world нельзя передавать в async pipeline напрямую
 
-Пока выполняются STT, Chat и TTS, игрок может уйти, NPC — сменить состояние, сессия — завершиться, а отношения или мир — измениться. Поэтому provider request не должен читать живые mutable-объекты в произвольный момент.
+Пока выполняются STT, Chat и TTS, игрок может уйти, NPC — сменить состояние, сессия — завершиться, а отношения или мир — измениться.
 
 Перед внешним вызовом сервер собирает immutable bounded snapshot: идентичность участников, наблюдаемые факты, разрешённый операторский контекст и ограниченную выборку памяти. Ответ применяется только после повторной проверки актуального authoritative state.
 
@@ -50,32 +51,28 @@ voice PCM → STT → validated message ┐
 text command → validated message ────┘
 ```
 
-Если TTS не сработал, готовый текст остаётся полезным. Если STT недоступен, текстовый путь продолжает работать. Если Chat вернул ошибку, никакой незавершённый ответ не получает право изменить память или мир.
+Если TTS не сработал, готовый текст остаётся полезным. Если STT недоступен, текстовый путь продолжает работать. Если Chat вернул ошибку, незавершённый ответ не получает право изменить память или мир.
 
 ### Память не должна быть бесконечным transcript
 
-Обычная история реплик плохо отделяет эпизод от знания и быстро привязывает persistent state к prompt-формату одного провайдера.
+VillAIgence хранит разные слои:
 
-VillAIgence хранит несколько разных слоёв:
-
-- legacy `memory.json` как bounded dialogue history;
-- `memory2.json` для episodic `DIALOGUE`, `OBSERVATION`, `ACTION` и `RELATIONSHIP_CHANGE`;
-- `semantic-memory.json` для typed `FACT` и `BELIEF`;
-- `relationships.json` для player ↔ NPC relationship state;
-- `voices.json` для устойчивой voice identity;
-- `operator-lore.json` для явно заданного оператором background context.
+- `memory.json` — bounded legacy dialogue history;
+- `memory2.json` — episodic `DIALOGUE`, `OBSERVATION`, `ACTION` и `RELATIONSHIP_CHANGE`;
+- `semantic-memory.json` — typed `FACT` и `BELIEF`;
+- `relationships.json` — player ↔ NPC relationship state;
+- `voices.json` — устойчивая voice identity;
+- `operator-lore.json` — явно заданный оператором background context.
 
 ### FACT нельзя получить из убедительной фразы
 
 `FACT` требует server-owned evidence и provenance `SYSTEM_OBSERVED`. Сообщение игрока, реплика другого NPC или вывод модели могут стать `BELIEF`, но confidence не повышает их до факта.
 
-Текущие наблюдения мира имеют приоритет над conflicting operator lore и recalled memory.
+### Provider и release pipeline — внешние границы
 
-### Provider и release pipeline являются внешними границами
+Ответы ограничены по размеру и времени. Authenticated redirects блокируются. Небезопасные endpoint, loopback/SSRF-пути, malformed JSON, пустые ответы и oversized bodies должны завершаться bounded failure.
 
-Ответы ограничены по размеру и времени. Authenticated redirects блокируются. Небезопасные endpoint, loopback/SSRF-пути, malformed JSON, пустые ответы и oversized bodies должны завершаться bounded failure, а не неограниченным чтением или скрытым изменением состояния.
-
-Зелёный source CI также не доказывает, что remapped JAR запускается на реальном сервере. Для выпуска нужны отдельные уровни: package structure, embedded identity, installed startup, focused gameplay regressions, restart и persistent hashes.
+Зелёный source CI не доказывает, что remapped JAR запускается на реальном сервере. Для выпуска нужны отдельные уровни: source tests, package structure, embedded identity, production-JAR startup, focused regressions, restart, persistent hashes и cumulative acceptance.
 
 <!-- case-study:decisions -->
 ## Ключевые решения
@@ -90,7 +87,7 @@ VillAIgence хранит несколько разных слоёв:
 4. собирает immutable bounded context;
 5. передаёт провайдеру только подготовленное представление;
 6. после ответа повторно проверяет session, NPC и world state;
-7. отдельно валидирует любые proposed actions или relationship deltas.
+7. отдельно валидирует proposed actions и relationship deltas.
 
 Старый ответ может быть технически корректным, но уже не иметь права на применение. Cancellation и supersession поэтому являются нормальным control flow.
 
@@ -98,15 +95,11 @@ VillAIgence хранит несколько разных слоёв:
 
 Episodic memory отвечает на вопрос «что произошло», semantic memory — «что NPC считает знанием», а authoritative world state — «что действительно верно сейчас».
 
-У каждой записи есть owner NPC, provenance, deterministic identity и bounded retention. Consolidation объединяет источники, но не стирает source-event IDs. Forgetting определяется детерминированной storage policy и pressure внутри конкретного NPC, а не решением LLM.
-
-Text и voice создают одинаковые episodic `DIALOGUE` events. `ACTION` и `RELATIONSHIP_CHANGE` попадают в память только после server-owned execution. Это сохраняет multi-NPC isolation и не позволяет повторному provider response дублировать эффект.
+У каждой записи есть owner NPC, provenance, deterministic identity и bounded retention. Consolidation объединяет источники, но не стирает source-event IDs. Forgetting определяется детерминированной storage policy внутри конкретного NPC, а не решением LLM.
 
 ### Operator Lore — отдельный background layer
 
 Оператор может задать lore для `WORLD`, `PLAYER`, `VILLAGER` и `VILLAGE`, но клиент не получает файловую или идентификационную authority.
-
-Поток редактирования остаётся серверным:
 
 ```text
 operator UI
@@ -118,25 +111,53 @@ operator UI
 → canonical S2C value/status/revision
 ```
 
-Конфликт revision требует reload/review. Blind overwrite отсутствует. Lore не становится автоматически semantic FACT и не подменяет текущие наблюдения мира.
+Conflict требует reload/review. Blind overwrite отсутствует. Lore не становится автоматически semantic FACT и не подменяет текущие наблюдения мира.
 
-### Capability-level degradation вместо общего состояния «AI сломан»
+### Capability-level degradation вместо общего «AI сломан»
 
 STT, Chat и TTS имеют независимые failure boundaries. Retry не должен повторно записывать память, действие или изменение отношений. Диагностика не содержит ключи, prompts, transcripts или hidden reasoning.
 
-Network baseline включает HTTPS policy, endpoint-family binding, blocked authenticated redirects, bounded Chat/STT/TTS/error bodies, total body deadline и aggregate active PCM limit.
-
 ### Selective MCA synchronization вместо большого upstream merge
 
-Исправления MCA переносятся как отдельные проверяемые packages: tombstone integrity, UUID conversion, beds/tickets, water and ladder navigation, pathfinding, mourning, gifts, fishing и mounted archer behavior.
+Исправления MCA переносятся отдельными проверяемыми packages: tombstone integrity, UUID conversion, beds/tickets, water and ladder navigation, pathfinding, mourning, gifts, fishing и mounted archer behavior.
 
-Так AI/security/persistence boundaries не растворяются в массовом merge, а каждый пакет получает свой RED/GREEN и installed acceptance scope.
+Так AI/security/persistence boundaries не растворяются в массовом merge, а каждый пакет получает свой RED/GREEN и acceptance scope.
 
 ### Release identity является частью продукта
 
-Версия в имени файла недостаточна. Release candidate должен иметь согласованную Fabric metadata, manifest identity, remapped package structure и checksum. Только после этого тот же exact JAR устанавливается на сервер и проходит startup/gameplay/restart acceptance.
+Версия в имени файла недостаточна. Candidate должен иметь согласованную Fabric metadata, manifest identity, remapped package structure и checksum. Затем тот же exact JAR устанавливается в production-like server environment.
 
-Диаграмма выше показывает две независимые линии: authority внутри runtime и переход доказательств от source tests к installed acceptance. Их нельзя сокращать до одного зелёного badge.
+### Acceptance каталог строится от рисков, а не только от прошлых багов
+
+PR #103 добавил M11 Phase A: dependency-free каталог из 28 сценариев по семи risk domains и семь isolated real-server Fabric GameTests.
+
+Они проверяют:
+
+- реальную MCA navigation wiring;
+- NPC → tombstone item → NPC round trip с UUID, именем и inventory multiset;
+- настоящий Silk Touch `TombstoneBlock.getDrops(...)` для заполненной могилы;
+- empty-grave negative control;
+- deterministic water-navigation properties и возвращение на сухой маршрут;
+- отсутствие test-mod leakage в distributable JAR.
+
+GameTest доказывает конкретную integration/algorithm boundary. Он не выдаётся за installed production-JAR startup или ручную cumulative acceptance.
+
+### Production-JAR startup и restart стали автоматическим gate
+
+PR #104 добавил M11 Phase B. Exact remapped Fabric candidate устанавливается в изолированный сервер вне Loom/dev classpath вместе с pinned Fabric Installer, Fabric API и Simple Voice Chat.
+
+Harness:
+
+1. проверяет manifest с версиями, размерами и SHA-256;
+2. запускает настоящий Fabric 1.21.1 server;
+3. ждёт ready marker;
+4. отправляет `stop`;
+5. требует полного world save и exit code 0;
+6. повторяет запуск во втором JVM;
+7. сравнивает пути и SHA-256 всех шести canonical stores;
+8. запрещает fixture classes и mod ID в production JAR.
+
+Это production-JAR startup → controlled shutdown → restart evidence. Оно всё ещё не равно реальному provider, multiplayer и gameplay acceptance.
 
 <!-- case-study:failures -->
 ## Что пришлось исправлять по реальным отказам
@@ -145,77 +166,114 @@ Network baseline включает HTTPS policy, endpoint-family binding, blocked
 
 Пока память была в основном историей сообщений, сложно было различать наблюдение, действие, отношение и устойчивое знание. Memory 2.0 появился не ради более длинного prompt, а ради явной модели provenance, ownership, consolidation и retention.
 
-### Широкий hook может пройти package tests и сломать installed startup
+### Широкий hook прошёл source gates и сломал installed startup
 
-Исправление filled grave сначала было подключено через `MixinTombstoneBlock`. Exact `0.1.21+1.21.1` дошёл до installed проверки и упал на startup: production target для injection не разрешился.
+Исправление filled grave сначала было подключено через `MixinTombstoneBlock`. Exact `0.1.21+1.21.1` дошёл до установленной проверки и упал на startup: production target для injection не разрешился.
 
-Это важный отрицательный результат. Source-level намерение было правильным, но hook находился на неверной authority boundary. В PR #102 сохранение tombstone data перенесено напрямую в owned `TombstoneBlock` source, а obsolete Mixin удалён и запрещён package regression gate.
+PR #102 перенёс сохранение tombstone data напрямую в owned `TombstoneBlock` source. Obsolete Mixin удалён и запрещён package regression gate.
 
-### Корректная навигационная идея может переопределить vanilla contract слишком широко
+### Навигационная идея переопределила vanilla contract слишком широко
 
-В установленном `0.1.20+1.21.1` NPC застрял в воде и утонул. Причиной оказался слишком широкий water-navigation hook, который изменял inherited temporary path position. PR #99 оставил vanilla `GroundPathNavigation.getTempMobPos` и сузил MCA-aware логику до surface calculation.
+В установленном `0.1.20+1.21.1` NPC застрял в воде и утонул. PR #99 сохранил inherited `GroundPathNavigation.getTempMobPos` и сузил MCA-aware логику до surface calculation.
 
-Автоматическая проверка этого исправления не равна живой проверке выхода NPC из воды — она ещё должна пройти на exact candidate JAR.
+Phase A теперь даёт deterministic GameTest evidence для navigation properties, но реальный focused canary с полным MCA brain/goal behavior остаётся отдельной проверкой.
 
-### Loot path может уничтожить persistent gameplay object
+### Loot path мог уничтожить persistent gameplay object
 
-Заполненная могила при Silk Touch исчезала без item drop, вместе с риском потерять stored body/inventory data. PR #100 добавил filled-only preservation policy, а PR #102 перенёс wiring в owned source, чтобы исправление не зависело от хрупкой injection point.
+Заполненная могила при Silk Touch исчезала без item drop, вместе с риском потерять stored body/inventory data. PRs #100 и #102 добавили filled-only preservation policy и direct owned-source wiring.
 
-### Green dialogue path не отменяет операционную задержку
+GameTest подтверждает настоящий `getDrops(...)` round trip. Ручной installed gameplay canary всё равно остаётся самостоятельным gate.
 
-Один Chat request в `0.1.20` занял примерно 272 секунды. Запрос завершился, но такой результат остаётся release defect для пользовательского опыта. Success code без latency boundary не является полным success contract.
+### Green dialogue path не отменяет задержку
+
+Один Chat request в `0.1.20` занял примерно 272 секунды. Запрос завершился, но success code без user-visible deadline не является полным success contract.
 
 ### Snapshot identity разрушает exact-artifact evidence
 
-`0.1.20` был установлен как именованный release JAR, но runtime сообщал snapshot identity. PR #101 сделал release version обязательным входом и добавил fail-closed проверки metadata/manifest. Это устраняет двусмысленность между проверяемым файлом и тем, что сообщает запущенный мод.
+`0.1.20` был установлен как именованный release JAR, но runtime сообщал snapshot identity. PR #101 сделал release version обязательным входом и добавил fail-closed проверки metadata/manifest.
+
+### Safe rollback — часть результата, а не скрытая неудача
+
+После startup failure `0.1.21` сервер был возвращён на `0.1.20`. Все шесть persistent hashes совпали, сервер снова достиг `STARTED`, TCP 25565, UDP 24454, Voice Chat и monitor восстановились.
+
+Этот результат показывает, что acceptance должна доказывать не только promotion, но и безопасный отказ от promotion.
 
 <!-- case-study:current-state -->
 ## Где проект находится сейчас
 
-Канонический source head на момент этого snapshot: `e13660f5998fa1ed343548252d573140adc5b0c9`.
+Канонический source head на момент snapshot: `61b66e38e99c1dc9bdc26089bfb345a250a881e2`.
 
-`0.1.20+1.21.1 — PARTIAL PASS`: основной Text/STT/Chat/TTS/Voice Chat pipeline, Operator Lore, persistence, restart, rollback-world compatibility и большинство синхронизированных gameplay-сценариев прошли, но четыре дефекта не позволили считать релиз полностью принятым.
+Историческая installed boundary остаётся важной:
 
-`0.1.21+1.21.1` не дошёл до gameplay acceptance: startup остановился на `MixinTombstoneBlock`. После rollback шесть persistent hashes совпали, сервер снова достиг `STARTED`, а TCP, UDP, Voice Chat и monitor восстановились.
+- `0.1.20+1.21.1` — **PARTIAL PASS**: основной Text/STT/Chat/TTS/Voice Chat pipeline, Operator Lore, persistence, restart и большинство gameplay-сценариев прошли, но четыре дефекта заблокировали полную acceptance;
+- `0.1.21+1.21.1` — startup failure на production-unsafe tombstone Mixin с успешным safe rollback.
 
-После PRs #99–#102 сформирован corrective `0.1.22+1.21.1` code candidate. Automated source/package gates зелёные, но exact installed startup, water, grave, restart и cumulative acceptance всё ещё **pending**. Эта страница намеренно не называет кандидат принятым релизом.
+После corrective PRs #99–#102 и acceptance PRs #103–#104 опубликован candidate `0.1.23+1.21.1`.
 
-Следующий шаг находится не в добавлении новой функции: нужно собрать один exact artifact, установить его на backed-up world, повторить focused defects, проверить Text/STT/Chat/TTS, restart и persistent hashes и только затем принимать решение о promotion.
+Для exact production artifact уже подтверждено автоматикой:
 
-После этого можно возвращаться к additive migration legacy `memory.json`, controlled BELIEF producers, causal relationship reasons, long-horizon soak и NPC-to-NPC knowledge propagation.
+- validated 28-scenario risk catalogue;
+- семь real-server Fabric GameTests;
+- exact remapped production JAR вне dev classpath;
+- два отдельных JVM startup до ready marker;
+- controlled `stop`, полный save и exit code 0;
+- одинаковые relative paths и SHA-256 для `memory.json`, `memory2.json`, `semantic-memory.json`, `relationships.json`, `voices.json` и `operator-lore.json` после restart;
+- отсутствие fixture/test-mod leakage в distributable JAR.
+
+**Cumulative acceptance остаётся pending.** Автоматический production-JAR startup/restart gate не доказывает:
+
+- реальный Text/STT/Chat/TTS и Voice Chat с provider boundaries;
+- global Chat deadline под реальным transport;
+- logical two-client Operator Lore conflict;
+- focused live water and filled-grave gameplay canaries;
+- полную operator/product-owner acceptance установленного кандидата.
+
+Поэтому публичный lifecycle остаётся `release-candidate`, а статус страницы — `ACCEPTANCE IN PROGRESS`, не production-ready.
 
 <!-- case-study:evidence -->
 ## Что подтверждено, а что остаётся pending
 
 <div data-tr-project-evidence="livingworld"></div>
 
-Evidence snapshot разделяет три разных факта:
+Evidence snapshot разделяет пять фактов:
 
-- установленный `0.1.20` действительно прошёл большой cumulative scenario, но завершился partial PASS с конкретными дефектами;
-- corrective PR train действительно прошёл автоматические и package gates, но не доказывает installed behavior;
-- установленный `0.1.21` действительно не запустился, а безопасный rollback действительно восстановил сервис и persistent state.
+- установленный `0.1.20` прошёл большой cumulative scenario, но завершился partial PASS;
+- установленный `0.1.21` не запустился, а rollback восстановил сервис и persistent state;
+- corrective code действительно прошёл source/package gates;
+- Phase A действительно проверяет risk-based GameTest scope;
+- Phase B действительно проверяет exact production-JAR startup, shutdown, restart и persistent hashes.
 
-Такой negative evidence для меня не менее важен, чем зелёный CI. Он показывает, на каком именно переходе source → package → runtime перестало работать предположение, и не позволяет следующему документу незаметно превратить code fix в live acceptance.
+Ни один автоматический сигнал не получает права называться более широкой ручной acceptance, чем его scope.
 
 <!-- case-study:retrospective -->
 ## Что бы я сделал иначе, начиная проект сегодня
 
-Я бы раньше описал не только conversation state machine, но и полную authority map: mutable server state → immutable snapshot → provider proposal → revalidation → authoritative effect. Это сократило бы количество мест, где async-код мог случайно получить слишком широкие права.
+Я бы раньше описал полную authority map:
 
-Memory сразу проектировал бы как сочетание episodic events, semantic entries и текущего world truth, а не как постепенно усложняемый transcript. Операторский lore также сразу отделил бы от наблюдаемых фактов.
+```text
+mutable server state
+→ immutable bounded snapshot
+→ provider proposal
+→ revalidation
+→ authoritative effect
+→ persistent evidence
+```
 
-Для upstream gameplay fixes я бы с начала требовал narrow hook или direct owned-source wiring и отдельную проверку remapped JAR. Ошибка `0.1.21` показала, что compile-time и source-level tests не гарантируют корректную production injection point.
+Memory сразу проектировал бы как episodic events, semantic entries и текущий world truth, а не как постепенно усложняемый transcript. Operator Lore также сразу отделил бы от наблюдаемых фактов.
 
-Наконец, release gate я бы формализовал ещё до первых кандидатов:
+Для gameplay fixes я бы с начала требовал narrow hook или direct owned-source wiring и отдельную проверку remapped JAR. Ошибка `0.1.21` показала, что compile-time и source-level tests не гарантируют production injection point.
+
+Release gate я бы формализовал так:
 
 ```text
 source tests
+→ real integration GameTests
 → distributable package inspection
 → exact embedded identity
-→ installed startup
-→ focused regressions
-→ restart and persistent hashes
-→ cumulative acceptance
+→ production-JAR startup
+→ controlled shutdown and restart
+→ focused live regressions
+→ cumulative provider/multiplayer acceptance
 → promotion
 ```
 
