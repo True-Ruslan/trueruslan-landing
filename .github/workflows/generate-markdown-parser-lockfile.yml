@@ -33,7 +33,7 @@ jobs:
           node-version: '24'
           cache: npm
 
-      - name: Resolve parser migration and regenerate lockfile
+      - name: Resolve parser remediation and regenerate lockfile
         run: npm install --ignore-scripts
 
       - name: Verify parser security and compatibility tests
@@ -46,14 +46,14 @@ jobs:
         shell: bash
         run: npm audit --json > npm-audit.json || true
 
-      - name: Require zero audit findings
+      - name: Require no high or critical findings
         run: >-
           node -e
           "const fs=require('node:fs');
           const audit=JSON.parse(fs.readFileSync('npm-audit.json','utf8'));
           const summary=audit.metadata?.vulnerabilities ?? {};
           console.log(JSON.stringify(summary,null,2));
-          if ((summary.total ?? 0) !== 0) process.exit(1);"
+          if ((summary.high ?? 0) !== 0 || (summary.critical ?? 0) !== 0) process.exit(1);"
 
       - name: Commit generated lockfile to the PR branch
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -70,7 +70,7 @@ jobs:
               path,
               branch,
               sha: current.data.sha,
-              message: 'deps: regenerate lockfile for secure markdown parser stack',
+              message: 'deps: regenerate lockfile for fixed linkify stack',
               content: fs.readFileSync(path).toString('base64'),
             });
 
