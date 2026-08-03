@@ -28,3 +28,25 @@ test('Content Freshness workflow is scheduled/manual, minimally privileged and n
   assert.match(workflow, /<!-- content-freshness-guard -->/);
   assert.match(workflow, /state:\s*'closed'/);
 });
+
+test('Content Freshness produces reviewable PR evidence without mutating the maintenance issue', () => {
+  const workflow = fs.readFileSync(WORKFLOW_PATH, 'utf8');
+
+  assert.match(workflow, /pull_request:/);
+  for (const controlledPath of [
+    '.github/workflows/content-freshness.yml',
+    'data/projects.json',
+    'data/project-evidence.json',
+    'data/project-history/**',
+    'scripts/content-freshness*.js',
+  ]) {
+    assert.ok(workflow.includes(controlledPath), `missing PR freshness path: ${controlledPath}`);
+  }
+
+  const issueStep = workflow.match(/- name: Create, update or close freshness issue[\s\S]*?uses: actions\/github-script@[0-9a-f]{40}/i)?.[0];
+  assert.ok(issueStep, 'missing freshness issue mutation step');
+  assert.match(issueStep, /if:\s*github\.event_name\s*!=\s*'pull_request'/);
+
+  assert.match(workflow, /name:\s*content-freshness-report/);
+  assert.match(workflow, /retention-days:\s*30/);
+});
