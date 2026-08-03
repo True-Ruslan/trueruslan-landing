@@ -9,7 +9,7 @@ on:
       - .github/workflows/generate-security-lockfile.yml
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: generate-security-lockfile-${{ github.event.pull_request.number || github.ref }}
@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   generate:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -55,17 +56,36 @@ jobs:
           const entries = Object.entries(lockfile.packages ?? {})
             .filter(([name]) => /(^|\/)node_modules\/fast-xml-parser$/.test(name));
           const affected = entries.filter(([, metadata]) => {
-            const [major = 0, minor = 0, patch = 0] = String(metadata.version)
+            const [major = 0, minor = 0] = String(metadata.version)
               .split('-', 1)[0]
               .split('.')
               .map(Number);
-            return major < 5 || (major === 5 && (minor < 7 || (minor === 7 && patch < 0)));
+            return major < 5 || (major === 5 && minor < 7);
           });
           if (affected.length > 0) {
             console.error(affected);
             process.exit(1);
           }
           NODE
+
+      - name: Commit generated lockfile to the PR branch
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'package-lock.json';
+            const {owner, repo} = context.repo;
+            const branch = context.payload.pull_request.head.ref;
+            const current = await github.rest.repos.getContent({owner, repo, path, ref: branch});
+            await github.rest.repos.createOrUpdateFileContents({
+              owner,
+              repo,
+              path,
+              branch,
+              sha: current.data.sha,
+              message: 'deps: regenerate lockfile for safe XML parser',
+              content: fs.readFileSync(path).toString('base64'),
+            });
 
       - name: Upload generated lockfile
         if: always()
