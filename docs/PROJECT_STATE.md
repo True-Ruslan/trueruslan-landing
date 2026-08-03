@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-02**, после синхронизации `/now` с актуальными flagship и content milestones.
+> Последнее смысловое обновление: **2026-08-03**, после repository hardening и dependency security review.
 >
 > Durable snapshot для ответа на вопрос: **что представляет собой проект, что уже сделано и что дальше?**
 
@@ -306,7 +306,15 @@ Build #571 подтвердил custom-domain artifact contract и отсутс�
 - External profile Website/links требуют ручной проверки и обновления, если ещё stale.
 - First genuine Photo Story зависит от authentic material.
 - Publications расширяется только после появления подтверждаемой canonical external source.
-- Dependency audit сообщает транзитивные уязвимости в build toolchain; их нельзя исправлять blind `npm audit fix --force`, нужен отдельный compatibility review.
+- Dependency security review 2026-08-03:
+  - PR #79 удалил уязвимый `fast-xml-parser` 4.x и добавил постоянные regression gates;
+  - PR #80 устранил совместимые low-risk findings и удалил неиспользуемый `@gravity-ui/page-constructor`;
+  - PR #81 обновляет `linkify-it` до `5.0.2`, сохраняя полный Diplodoc compatibility contract;
+  - fresh audit после PR #81: **6 moderate, 0 high, 0 critical**;
+  - все шесть package-level записей сводятся к одному build-time узлу `markdown-it@13.0.2`;
+  - переход на fixed `markdown-it >14.1.1` сейчас блокируется `@diplodoc/translation@1.7.26`, который импортирует удалённые внутренние пути `markdown-it/lib/renderer` и `markdown-it/lib/token`;
+  - residual risk отслеживается в issue #82; upstream owner — `diplodoc-platform/translation`, local owner — `True-Ruslan`, next review — **2026-08-17**;
+  - нулевая уязвимость не заявляется до появления совместимого upstream release и полного exact-head evidence.
 
 Network caveat:
 

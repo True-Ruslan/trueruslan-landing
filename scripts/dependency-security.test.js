@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import MarkdownIt from 'markdown-it';
 import {XMLValidator} from 'fast-xml-parser';
 import {compose, extract} from '@diplodoc/translation';
 
@@ -122,4 +123,36 @@ test('low-risk audit packages remain on fixed patch or minor releases', () => {
     [],
     `Affected low-risk dependency versions remain in package-lock.json:\n${violations.join('\n')}`,
   );
+});
+
+test('linkify-it is beyond every currently affected advisory range', () => {
+  const lockfile = JSON.parse(fs.readFileSync(lockfilePath, 'utf8'));
+  const violations = lockfileEntriesFor(lockfile, 'linkify-it')
+    .filter(([, metadata]) => compareVersion(metadata?.version, [5, 0, 2]) < 0)
+    .map(([packagePath, metadata]) => `${packagePath}: ${metadata?.version ?? 'unknown'}`);
+
+  assert.deepEqual(
+    violations,
+    [],
+    `Affected linkify-it versions remain in package-lock.json:\n${violations.join('\n')}`,
+  );
+});
+
+test('the supported markdown-it line preserves core Diplodoc-facing rendering semantics', () => {
+  const markdown = new MarkdownIt({html: false, linkify: true, typographer: true});
+  const rendered = markdown.render([
+    '# Heading',
+    '',
+    'Visit https://example.com and "quoted text".',
+    '',
+    '| Name | Value |',
+    '| --- | --- |',
+    '| alpha | beta |',
+  ].join('\n'));
+
+  assert.match(rendered, /<h1>Heading<\/h1>/);
+  assert.match(rendered, /href="https:\/\/example\.com"/);
+  assert.match(rendered, /“quoted text”/);
+  assert.match(rendered, /<table>/);
+  assert.doesNotMatch(rendered, /<script\b/i);
 });
