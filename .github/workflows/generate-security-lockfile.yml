@@ -1,0 +1,63 @@
+name: Generate security lockfile
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - package.json
+      - .github/workflows/generate-security-lockfile.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: generate-security-lockfile-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6.1.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6.6.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Generate lockfile
+        run: npm install --package-lock-only --ignore-scripts
+
+      - name: Verify vulnerable parser is absent
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const lockfile = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          const entries = Object.entries(lockfile.packages ?? {})
+            .filter(([name]) => /(^|\/)node_modules\/fast-xml-parser$/.test(name));
+          const affected = entries.filter(([, metadata]) => {
+            const [major = 0, minor = 0, patch = 0] = String(metadata.version)
+              .split('-', 1)[0]
+              .split('.')
+              .map(Number);
+            return major < 5 || (major === 5 && (minor < 7 || (minor === 7 && patch < 0)));
+          });
+          if (affected.length > 0) {
+            console.error(affected);
+            process.exit(1);
+          }
+          NODE
+
+      - name: Upload generated lockfile
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: generated-security-lockfile
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 1
