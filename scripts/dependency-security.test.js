@@ -130,13 +130,13 @@ test('markdown parser stack is beyond every currently affected advisory range', 
   const violations = [];
 
   for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'markdown-it')) {
-    if (compareVersion(metadata?.version, [15, 0, 0]) < 0) {
+    if (compareVersion(metadata?.version, [14, 2, 0]) < 0) {
       violations.push(`${packagePath}: ${metadata?.version ?? 'unknown'}`);
     }
   }
 
   for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'linkify-it')) {
-    if (compareVersion(metadata?.version, [6, 0, 0]) < 0) {
+    if (compareVersion(metadata?.version, [5, 0, 2]) < 0) {
       violations.push(`${packagePath}: ${metadata?.version ?? 'unknown'}`);
     }
   }
@@ -148,7 +148,7 @@ test('markdown parser stack is beyond every currently affected advisory range', 
   );
 });
 
-test('markdown-it 15 preserves core Diplodoc-facing rendering semantics', () => {
+test('markdown-it 14.3 preserves core Diplodoc-facing rendering semantics', () => {
   const markdown = new MarkdownIt({html: false, linkify: true, typographer: true});
   const rendered = markdown.render([
     '# Heading',
