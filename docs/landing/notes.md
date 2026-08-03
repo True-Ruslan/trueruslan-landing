@@ -36,6 +36,12 @@
 
 [Читать заметку →](notes/green-ci-is-not-product-verification.md)
 
+### От source tests к installed acceptance: что доказывает каждый release gate
+
+На примере VillAIgence разбираю отдельные уровни release evidence: source contracts, remapped package и embedded identity, GameTests, exact production-JAR startup/restart, rollback и ручную cumulative acceptance. Главный вопрос здесь не «сколько jobs зелёные», а какой конкретный runtime fact доказывает каждый gate.
+
+[Читать заметку →](notes/source-tests-to-installed-acceptance.md)
+
 ---
 
 ## Static-first и доставка контента
