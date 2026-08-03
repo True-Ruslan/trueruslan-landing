@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-03**, во время P2.4i Installed Acceptance Engineering Note.
+> Последнее смысловое обновление: **2026-08-03**, после merge P2.4i Installed Acceptance Engineering Note.
 >
 > Durable snapshot для ответа на вопрос: **что представляет собой проект, что уже сделано, что доказано и что дальше?**
 
@@ -19,31 +19,11 @@
 
 `True-Ruslan/trueruslan-landing` — персональное инженерное портфолио и static-first knowledge platform Руслана Немыкина.
 
-Проект объединяет:
-
-- standalone homepage;
-- Diplodoc knowledge pages;
-- web-CV;
-- project hub и evidence-backed flagship case studies;
-- `/now` как authored current-focus snapshot;
-- Engineering Notes + Atom feed;
-- external Publications Showcase;
-- Engineering Map;
-- Diplodoc full-text search + Cmd/Ctrl+K palette;
-- Photo Stories;
-- Sources Knowledge Base;
-- Project Evidence Layer;
-- Content Freshness Guard;
-- bounded RU/EN layer;
-- privacy-friendly Cloudflare Web Analytics;
-- SEO/OpenGraph/JSON-LD;
-- production-oriented CI, accessibility, cross-browser, visual и custom-domain gates.
+Проект объединяет standalone homepage, Diplodoc knowledge pages, web-CV, project hub и evidence-backed case studies, `/now`, Engineering Notes + Atom feed, Publications, Engineering Map, full-text search, Photo Stories, Sources Knowledge Base, Project Evidence Layer, Content Freshness Guard, bounded RU/EN, Cloudflare Web Analytics и production-oriented CI.
 
 Главная продуктовая формула:
 
 **что я создаю → что изучаю → что публикую → какие инженерные выводы делаю → чем это подтверждено**.
-
-Публичный тон — спокойный инженерный дневник от первого лица, без fake demos, invented metrics и неподтверждённых claims.
 
 Архитектурная граница:
 
@@ -55,50 +35,37 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 
 ## 2. Текущее repository truth
 
-### Master baseline перед текущим milestone
-
 ```text
-master:               84fff6ceecbca5efb8019927b826c66cc19a50e2
-last content merge:   #83 — P2.4h Product Evidence Reconciliation
-continuity merge:     #84 — final P2.4h durable state
-open implementation:  #85 — P2.4i Installed Acceptance Engineering Note
-branch:                content/release-gates-installed-acceptance-note
-```
-
-### Последний завершённый product milestone
-
-```text
-milestone:             P2.4h — Product Evidence Reconciliation
-feature PR:            #83 — MERGED
-exact feature head:    e50495e7f988e362905c7b137efd6541e7f94e33
-squash on master:      5978f727206fa386e9cce18c26c9ba7b7eade2eb
-Build:                 #641 / 30829739512 — SUCCESS
-CodeQL:                #79 / 30829740495 — SUCCESS
-Dependency Review:     #69 / 30829738958 — SUCCESS
-unit tests:            318 PASS / 0 FAIL
+master after P2.4i:    c03f8403b77df5a91238d62bd8a143c046511a92
+feature PR:            #85 — MERGED
+exact feature head:    9d9fcff92c9a9826391028b2f2e25c524e7463ea
+Build:                 #655 / 30833707629 — SUCCESS
+CodeQL:                #95 / 30833706682 — SUCCESS
+Dependency Review:     #83 / 30833707121 — SUCCESS
+unit tests:            321 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8862581638
+quality artifact:      8864072101
+artifact digest:       sha256:b89fb185c7a2b8f54aa1dae81415cd28be92fe885c89e108a293894ae9cb2daa
+artifact retention:    through 2026-08-17
 ```
 
-P2.4h synchronized Vlezet M7.8B accepted evidence and VillAIgence PR #103/#104 production-JAR acceptance boundaries without changing schemas, renderers, routes, analytics or search ownership.
+Build #655 прошёл production build, generated-site integrity, mobile overflow, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, generated search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression и custom-domain artifact verification.
+
+A documentation-only continuity sync records this final squash. Its CI is repository evidence, not a new product milestone.
 
 ---
 
-## 3. Active milestone — P2.4i Installed Acceptance Engineering Note
+## 3. P2.4i — Installed Acceptance Engineering Note — DONE
 
-### Goal
+Published Note:
 
-Publish a grounded Note:
-
-**«От source tests к installed acceptance: что доказывает каждый release gate»**.
+**«От source tests к installed acceptance: что доказывает каждый release gate»**
 
 Canonical route:
 
 `landing/notes/source-tests-to-installed-acceptance.html`
 
-The article is a concrete VillAIgence release-engineering case study, not a rewrite of the general Note `Почему green CI не означает verified product`.
-
-### Evidence chain
+### Narrative boundary
 
 ```text
 0.1.20 installed PARTIAL PASS
@@ -107,78 +74,78 @@ The article is a concrete VillAIgence release-engineering case study, not a rewr
 → exact 0.1.21 installed STARTUP FAIL
 → safe rollback + six persistent hashes preserved
 → PR #102 direct owned-source startup correction
-→ PR #103 risk-based catalogue + seven GameTests
+→ PR #103 28-scenario catalogue + seven GameTests
 → PR #104 exact production-JAR two-JVM startup/restart PASS
 → real-provider / two-client / focused live gameplay / owner cumulative acceptance pending
 ```
 
-### Delivered on the implementation head
+The Note separates:
 
-- design spec and executable implementation plan;
-- permanent RED/GREEN content contract;
-- grounded Russian article with stable PR #98–#104 evidence links;
-- canonical `data/notes.json` registry entry;
-- Notes index and TOC discovery;
-- page metadata/OpenGraph entry;
-- existing build-time Note metadata and previous/next/related navigation;
-- Atom feed inclusion through the canonical manifest;
+- source/unit logic;
+- loader/build and remapped package shape;
+- exact embedded identity;
+- GameTest integration;
+- exact production-JAR startup;
+- controlled stop/save/restart;
+- six-store path/hash continuity;
+- manual cumulative acceptance and promotion.
+
+Rollback is recorded as a valid acceptance outcome with service recovery and persistence oracles.
+
+### Static integration
+
+Delivered:
+
+- canonical `data/notes.json` entry;
+- article Markdown source;
+- Notes index and TOC;
+- page metadata/OpenGraph;
+- build-time Note metadata and previous/next/related navigation;
+- Atom feed inclusion;
 - generated Diplodoc search coverage;
-- no new schema, renderer, CSS, runtime, backend, API, analytics event or search engine.
+- permanent `scripts/release-gates-note.test.js` contract;
+- durable state synchronization.
+
+No schema, renderer, CSS, browser runtime, backend, API, analytics event or second search engine was added.
 
 ### TDD RED
 
 ```text
-PR:                    #85
 RED head:              1687a00fcecb614df386eeceea1057fc63a9b2f4
 Build:                 #645 / 30832535417 — expected FAILURE
 unit tests:            318 PASS / 3 expected FAIL
-failures:              missing note registry, source Markdown and index/TOC/page-meta integration
+failures:              missing registry, Markdown and index/TOC/page-meta surfaces
 CodeQL:                #85 / 30832537884 — SUCCESS
 Dependency Review:     #73 / 30832535753 — SUCCESS
-RED artifact:          8863494780
 ```
 
-All pre-existing 318 tests passed. Only the three new Note contracts failed.
+All 318 pre-existing tests passed.
 
-### Implementation GREEN
+### Intermediate and final GREEN
 
 ```text
 implementation head:   a6e67fe9e94f8199eddb2500f500c4914ae45a7f
 Build:                 #651 / 30832936159 — SUCCESS
-CodeQL:                #91 / 30832936148 — SUCCESS
-Dependency Review:     #79 / 30832933816 — SUCCESS
+unit tests:            321 PASS / 0 FAIL
+
+final head:            9d9fcff92c9a9826391028b2f2e25c524e7463ea
+Build:                 #655 / 30833707629 — SUCCESS
+CodeQL:                #95 / 30833706682 — SUCCESS
+Dependency Review:     #83 / 30833707121 — SUCCESS
 unit tests:            321 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8863770773
-artifact digest:       sha256:39184bf7191e73c7e3b4c91c37cfead597b330fa5e2f30b030bb48b95acf287d
-artifact retention:    through 2026-08-17
 ```
 
-Build #651 passed the complete configured matrix:
-
-- production Diplodoc build and generated-site integrity;
-- mobile overflow;
-- Chromium/Axe/Lighthouse;
-- Publications, Sources KB and Project Evidence;
-- VillAIgence/NODE ZERO diagrams and Photo Stories;
-- portfolio v0.3;
-- Firefox/WebKit;
-- generated search and VillAIgence search;
-- Minimal RU/EN;
-- analytics, metadata/OpenGraph and Engineering Map;
-- visual regression;
-- custom-domain artifact verification for `https://trueruslan.ru`.
-
-This durable-doc update creates a new exact head. Final Build/CodeQL/Dependency Review and squash merge must be recorded after PR #85 completes.
+Build #654 exposed one stale durable-document contract requiring the explicit `exact artifact → installed acceptance` boundary in ROADMAP. The boundary was restored without weakening the test or changing production surfaces.
 
 ### Claim boundary
 
-The Note explicitly does **not** claim:
+P2.4i does not claim:
 
 - completed VillAIgence cumulative installed acceptance;
 - equivalence between GameTests and operator-server behavior;
-- that production-JAR startup/restart proves real Text/STT/Chat/TTS or Voice Chat;
-- that stable hashes prove semantic correctness of every stored record;
+- real Text/STT/Chat/TTS or Voice Chat proof from startup/restart evidence;
+- semantic correctness of every persistent record from stable hashes alone;
 - invented reliability, adoption or latency metrics.
 
 ---
@@ -187,53 +154,49 @@ The Note explicitly does **not** claim:
 
 ### P0 — foundation
 
-- P0.1 Photo Stories platform — DONE: PR #15 + #17.
-- P0.2 First genuine Photo Story — CONTENT DEPENDENT.
-- P0.3 Sources Registry / KB — DONE: PR #20.
-- P0.4 Project Evidence — DONE: PR #22.
-- P0.5 Grounded Notes — DONE: PR #25.
-- P0.6 Content Freshness Guard — DONE: PR #27.
+- Photo Stories platform — PRs #15/#17; first genuine story remains content-dependent.
+- Sources Registry / KB — PR #20.
+- Project Evidence — PR #22.
+- Grounded Notes — PR #25.
+- Content Freshness Guard — PR #27.
 
 ### P1 — maintainability / depth
 
-- P1.1 Browser Quality Harness — DONE: PR #29.
-- P1.2 Project Metadata Cleanup — DONE: PR #31.
-- P1.3 Flagship Case-Study Format — DONE: PR #34.
-- P1.4 Additional Grounded Note — DONE: PR #36.
+- Browser Quality Harness — PR #29.
+- Project Metadata Cleanup — PR #31.
+- Flagship Case-Study Format — PR #34.
+- Additional Grounded Note — PR #36.
 
 ### P2 — audience / operations / content
 
-- P2.1 Minimal RU/EN — DONE: PR #38.
-- P2.2 Privacy-friendly analytics — DONE: PR #40.
-- P2.2a Production analytics activation — DONE: PR #42.
-- P2.3a Custom Domain Readiness — DONE: PR #45.
-- P2.3b HTTPS Production Cutover — DONE: run `30704218399`.
-- P2.4a Canonical rollout and custom-host telemetry — DONE: PRs #48–#50.
-- P2.4b Header utility navigation and language consolidation — DONE: PR #51.
-- P2.4c Search, Photo shell and rendered-asset stabilization — DONE: PRs #53/#54/#55/#57/#58.
-- P2.4d Vlezet flagship case study — DONE: PR #59.
-- P2.4e External Publications Showcase — DONE: PR #61.
-- P2.4f VillAIgence flagship case study — DONE: PR #63.
-- P2.4g `/now` synchronization — DONE: PR #65.
-- P2.4h Product Evidence Reconciliation — DONE: PR #83.
-- P2.4i Installed Acceptance Engineering Note — IN PROGRESS: PR #85.
+- Minimal RU/EN — PR #38.
+- Privacy-friendly analytics — PRs #40/#42.
+- Custom domain and HTTPS — PR #45, run `30704218399`.
+- Canonical rollout/header/search/Photo stabilization — PRs #48–#58.
+- Vlezet flagship — PR #59.
+- Publications — PR #61.
+- VillAIgence flagship — PR #63.
+- `/now` synchronization — PR #65.
+- Product Evidence Reconciliation — PR #83.
+- Installed Acceptance Engineering Note — PR #85.
 
 ### Repository hardening
 
 - Governance/security/ownership/immutable Actions/CodeQL/Dependency Review — PR #67.
-- Compatible dependency and Action updates — PRs #69/#71/#76/#77.
-- Vulnerable `fast-xml-parser` 4.x removal — PR #79.
-- Low-risk dependency cleanup — PR #80.
+- Compatible dependency updates — PRs #69/#71/#76/#77.
+- Vulnerable `fast-xml-parser` path removed — PR #79.
+- Low-risk cleanup — PR #80.
 - `linkify-it@5.0.2` remediation and measured `markdown-it` blocker — PR #81.
 
 ---
 
-## 5. Current project boundaries
+## 5. Current product boundaries
 
 ### Vlezet
 
 ```text
 accepted milestones:       M0–M7.8B
+M7.8B status:               accepted / принят
 M7.8B PR:                   #41 — MERGED
 Source geometry F1:         0.837989
 Source topology F1:         0.837989
@@ -258,15 +221,11 @@ lifecycle:                   release-candidate
 public label:               ACCEPTANCE IN PROGRESS
 ```
 
-PR #104 proves exact remapped candidate startup outside Loom/dev classpath, two independent JVM runs, clean stop/save/exit and stable paths/hashes for six canonical stores. It does not complete real-provider, two-client, focused live gameplay or product-owner cumulative acceptance.
+PR #104 proves exact remapped candidate startup outside Loom/dev classpath, two independent JVM runs, clean stop/save/exit and stable paths/hashes for six canonical stores. Real-provider, two-client, focused live gameplay and product-owner cumulative acceptance remain pending.
 
-### Publications
+### Publications and Photo Stories
 
-Only completed, externally verifiable work is included. Drafts, future appearances and unverified scientific records remain excluded.
-
-### Photo Stories
-
-Platform is ready; first genuine story requires authentic material. Fake/demo album remains prohibited.
+Publications contains only completed, externally verifiable work. Photo Stories platform is ready, but the first genuine story requires authentic material; fake/demo albums remain prohibited.
 
 ---
 
@@ -276,16 +235,7 @@ Canonical public origin:
 
 `https://trueruslan.ru`
 
-Previously confirmed:
-
-- GitHub account domain verification;
-- GitHub Pages DNS check;
-- certificate and Enforce HTTPS;
-- `www → apex`;
-- strict custom deployment;
-- RU canonical `/` and EN canonical `/en/`;
-- one Cloudflare analytics beacon on RU and EN;
-- no legacy Pages origin leakage in custom-domain artifact.
+Previously confirmed: GitHub domain verification, Pages DNS, certificate and Enforce HTTPS, `www → apex`, RU/EN canonical identity, one Cloudflare beacon per localized homepage and no legacy Pages-origin leakage in custom-domain artifacts.
 
 PR quality gates verify the custom-domain artifact contract. Latest push-triggered Pages deployment and owner visual acceptance remain separate operational facts and must not be inferred from PR CI.
 
@@ -295,10 +245,10 @@ PR quality gates verify the custom-domain artifact contract. Latest push-trigger
 
 ### Operational follow-up
 
-- complete and merge PR #85 after final exact-head matrix;
-- confirm latest Pages deployment separately;
-- keep issue #78 open until a fresh Content Freshness Guard run confirms reconciliation;
-- keep issue #82 open until a compatible upstream Diplodoc release exists.
+- confirm latest Pages deployment and the new Note route;
+- confirm deployed feed and generated search;
+- keep issue #78 open until a fresh Content Freshness Guard report is clean;
+- keep issue #82 open until compatible upstream Diplodoc releases exist.
 
 ### Dependency residual risk
 
@@ -308,29 +258,23 @@ PR quality gates verify the custom-domain artifact contract. Latest push-trigger
 0 critical
 ```
 
-All package-level records reduce to build-time `markdown-it@13.0.2`. Upgrade above `14.1.1` is blocked by current `@diplodoc/translation` imports of removed internal paths. Next issue #82 review: **2026-08-17**.
+All package-level records reduce to build-time `markdown-it@13.0.2`. Upgrade above `14.1.1` is blocked by current `@diplodoc/translation` internal imports. Next review: **2026-08-17**.
 
 Do not use `npm audit fix --force`, a local `node_modules` shim or an unreviewed fork.
 
 ### Product/content debt
 
-- Vlezet M7.8C is external product work, not a landing claim;
+- Vlezet M7.8C remains external product work;
 - VillAIgence cumulative manual acceptance remains pending;
 - first genuine Photo Story requires authentic material;
-- Publications grows only from stable canonical evidence;
-- Cloudflare data needs deliberate distribution and a 3–4 week observation window before audience conclusions.
-
-### CI hygiene
-
-Some passing smoke tools still log expected missing optional resources such as `favicon.ico` or an intentionally absent English search index as `ENOENT`. Future maintenance may downgrade expected absence to explicit informational diagnostics.
+- Publications grows only from stable evidence;
+- Cloudflare data requires deliberate distribution and a 3–4 week observation window before audience conclusions.
 
 ---
 
 ## 8. Следующий оптимальный шаг
 
-After P2.4i merge and production continuity confirmation:
-
-### P2.4j — Engineering Note: deterministic authority around probabilistic proposals
+### P2.4j — deterministic authority around probabilistic proposals
 
 Use both flagship projects:
 
@@ -343,7 +287,7 @@ Core principle:
 
 After it:
 
-1. Engineering Note about restart/persistence as product contract;
+1. Note about restart/persistence as product contract;
 2. genuine Photo Story when authentic material exists;
 3. selective external-profile rollout and distribution;
 4. 3–4 weeks aggregate Cloudflare observation;
@@ -373,4 +317,4 @@ After it:
 
 ## 10. New-session handoff
 
-> Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md` and `docs/CUSTOM_DOMAIN.md` in `True-Ruslan/trueruslan-landing`. Then check actual open PRs, latest commits and exact-head CI. Separately verify latest Pages deployment, production routes, HTTPS/redirect state, Cloudflare telemetry, Content Freshness issue #78 and dependency blocker #82. For VillAIgence, distinguish source/package/GameTest/production-JAR evidence from manual cumulative installed acceptance.
+> Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md` and `docs/CUSTOM_DOMAIN.md` in `True-Ruslan/trueruslan-landing`. Check actual open PRs, latest commits and exact-head CI. Separately verify latest Pages deployment, production routes, HTTPS/redirect state, Cloudflare telemetry, Content Freshness issue #78 and dependency blocker #82. For VillAIgence distinguish source/package/GameTest/production-JAR evidence from manual cumulative installed acceptance.
