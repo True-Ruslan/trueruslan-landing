@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-03**, во время P2.4j Deterministic Authority Engineering Note.
+> Обновлено: **2026-08-03**, после merge P2.4j Deterministic Authority Engineering Note.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -8,13 +8,13 @@
 
 # 2026-08-03
 
-## P2.4j — Deterministic Authority Around Probabilistic Proposals — IN PROGRESS
+## P2.4j — Deterministic Authority Around Probabilistic Proposals — DONE
 
-Engineering Note:
+Published:
 
 **«AI может предложить, но не применить: как строить deterministic authority»**
 
-Canonical generated route:
+Canonical route:
 
 `landing/notes/probabilistic-proposals-deterministic-authority.html`
 
@@ -108,23 +108,23 @@ The failures were limited to the absent registry entry, Markdown source and inde
 - permanent `deterministic-authority-note` contract;
 - durable PROJECT_STATE/ROADMAP/CHANGELOG synchronization.
 
-### Implementation GREEN
+### Final exact-head GREEN and merge
 
 ```text
-head:                  e8cad3b7f0dbf468ffebb1d55ea4d269143a758d
-Build:                 #665 / 30853200992 — SUCCESS
-CodeQL:                #107 / 30853201468 — SUCCESS
-Dependency Review:     #93 / 30853201100 — SUCCESS
+feature PR:            #87 — MERGED
+exact feature head:    b38d225d837e5e347184ca09c685a479923ba06e
+squash on master:      2fba404bbca9680d934f11f30c8a76347a5ab7b1
+Build:                 #668 / 30853751417 — SUCCESS
+CodeQL:                #110 / 30853751740 — SUCCESS
+Dependency Review:     #96 / 30853751469 — SUCCESS
 unit tests:            324 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8871540363
-artifact digest:       sha256:ffafe7d916a39a25b6162f8fdc06656bc855ef3133ab2496c81ac0e5364a25e6
+quality artifact:      8871721514
+artifact digest:       sha256:af0a406ec92352ab356618a563e885cd8413818bfaa59326a83235db3f521838
 artifact retention:    through 2026-08-17
 ```
 
 The complete production build, integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio, Firefox/WebKit, generic search, exact deterministic-authority search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual-regression and custom-domain matrix passed.
-
-Durable document changes require one more final exact-head matrix before PR #87 can merge.
 
 ### Claim boundary
 
@@ -132,7 +132,7 @@ P2.4j does not claim accepted M7.8C, arbitrary-plan recognition accuracy, provid
 
 ### New maintenance signal
 
-`npm ci` on the unchanged dependency graph now reports `6 moderate / 2 high`. Dependency Review remains SUCCESS, so this content PR did not introduce a dependency delta. The previous durable `0 high` claim is stale; issue #82 must receive a fresh advisory/path triage after the feature milestone. `npm audit fix --force`, local shims and unreviewed forks remain rejected.
+`npm ci` on the unchanged dependency graph now reports `6 moderate / 2 high`. Dependency Review remains SUCCESS, so PR #87 introduced no dependency delta. The previous durable `0 high` claim is stale; issue #82 must receive a fresh advisory/path triage. `npm audit fix --force`, local shims and unreviewed forks remain rejected.
 
 ### Next
 
@@ -149,8 +149,6 @@ feature PR:            #85 — MERGED
 exact feature head:    9d9fcff92c9a9826391028b2f2e25c524e7463ea
 squash on master:      c03f8403b77df5a91238d62bd8a143c046511a92
 Build:                 #655 / 30833707629 — SUCCESS
-CodeQL:                #95 / 30833706682 — SUCCESS
-Dependency Review:     #83 / 30833707121 — SUCCESS
 unit tests:            321 PASS / 0 FAIL
 ```
 
