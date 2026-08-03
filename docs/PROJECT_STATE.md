@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-03**, после полного GREEN implementation matrix для P2.4h Product Evidence Reconciliation.
+> Последнее смысловое обновление: **2026-08-03**, после merge P2.4h Product Evidence Reconciliation.
 >
 > Durable snapshot для ответа на вопрос: **что представляет собой проект, что уже сделано, что доказано и что дальше?**
 
@@ -55,36 +55,24 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 
 ## 2. Текущее repository truth
 
-### Последний merged master baseline
-
-```text
-master before P2.4h:  a554a2b59fe6a6e6369530567e9beba445311e17
-merged PR:            #81 — dependency parser remediation
-Build:                30814355266 — SUCCESS
-CodeQL:               30814355897 — SUCCESS
-Dependency Review:    30814356860 — SUCCESS
-unit tests:           317 PASS / 0 FAIL
-Lighthouse:           100 / 100 / 100 / 100
-```
-
-### P2.4h implementation
+### Последний завершённый milestone
 
 ```text
 milestone:             P2.4h — Product Evidence Reconciliation
-implementation PR:     #83 — implementation complete, merge pending
-branch:                agent/sync-product-evidence-2026-08-03
-implementation head:   bf4bd811233ef90159cb90864c1dc8d79752486e
-Build:                 #638 / 30829054939 — SUCCESS
-CodeQL:                #76 / 30829056057 — SUCCESS
-Dependency Review:     #66 / 30829054307 — SUCCESS
+feature PR:            #83 — MERGED
+exact feature head:    e50495e7f988e362905c7b137efd6541e7f94e33
+squash on master:      5978f727206fa386e9cce18c26c9ba7b7eade2eb
+Build:                 #641 / 30829739512 — SUCCESS
+CodeQL:                #79 / 30829740495 — SUCCESS
+Dependency Review:     #69 / 30829738958 — SUCCESS
 unit tests:            318 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8862245353
-artifact digest:       sha256:ed04a93d4989a968514383c2e5d85097463f97f31446fe988e7300d11e8f8dff
+quality artifact:      8862581638
+artifact digest:       sha256:5c85da305745e2f66307c543cd3d356d1b6f2f7d5e459400ad54ae8d08432afe
 artifact retention:    through 2026-08-17
 ```
 
-Build #638 прошёл полный configured matrix:
+Build #641 прошёл полный configured matrix:
 
 - production Diplodoc build;
 - generated-site integrity;
@@ -104,7 +92,7 @@ Build #638 прошёл полный configured matrix:
 - visual regression;
 - custom-domain artifact verification для `https://trueruslan.ru`.
 
-A final docs-only exact-head matrix and squash merge still need to complete before the milestone becomes master truth.
+PR #84 is a minimal durable continuity sync that records the final squash and operational follow-up. Its exact-head CI must be checked separately.
 
 ### TDD evidence
 
@@ -128,11 +116,7 @@ The final fix made portfolio status checks derive expected labels from canonical
 
 ---
 
-## 3. Milestone state
-
-### P2.4h — Product Evidence Reconciliation — IMPLEMENTED IN PR #83
-
-P2.4h synchronizes the landing with newer accepted source-repository facts while preserving bounded evidence semantics.
+## 3. P2.4h result
 
 Delivered:
 
@@ -178,6 +162,7 @@ Delivered:
 - P2.4e External Publications Showcase — DONE: PR #61.
 - P2.4f VillAIgence flagship case study — DONE: PR #63.
 - P2.4g `/now` synchronization — DONE: PR #65.
+- P2.4h Product Evidence Reconciliation — DONE: PR #83.
 
 ### Repository hardening — DONE within current compatible boundary
 
@@ -195,8 +180,6 @@ Delivered:
 ## 4. Current product boundaries
 
 ### Vlezet
-
-Current source truth:
 
 ```text
 accepted milestones:       M0–M7.8B
@@ -220,8 +203,6 @@ Landing claim boundary:
 - private apartment plans/screenshots не публикуются.
 
 ### VillAIgence
-
-Current source truth:
 
 ```text
 canonical source head:      61b66e38e99c1dc9bdc26089bfb345a250a881e2
@@ -256,9 +237,7 @@ Not yet promoted to cumulative acceptance:
 - focused live water and filled-grave canaries;
 - full product-owner installed acceptance.
 
-Public name remains **VillAIgence**, stable route remains:
-
-`landing/projects/livingworld.html`
+Public name remains **VillAIgence**, stable route remains `landing/projects/livingworld.html`.
 
 ### Publications
 
@@ -292,7 +271,7 @@ Previously confirmed:
 - one Cloudflare analytics beacon on RU and EN;
 - no legacy GitHub Pages origin leakage in custom-domain artifact.
 
-Build #638 confirmed the custom-domain artifact contract for P2.4h.
+Build #641 confirmed the custom-domain artifact contract for P2.4h.
 
 A separate Timeweb TLS certificate is not used or required.
 
@@ -304,8 +283,7 @@ Latest Pages deployment and owner production visual acceptance after PR #83 rema
 
 ### Active operational follow-up
 
-- final docs-only exact-head Build, CodeQL and Dependency Review must pass;
-- PR #83 must be squash-merged;
+- PR #84 continuity sync must pass exact-head CI and merge;
 - latest Pages deployment and production visual acceptance require separate confirmation;
 - issue #78 should close only after a new Content Freshness run confirms no remaining Vlezet/VillAIgence drift.
 
@@ -355,7 +333,7 @@ Local plain-DNS `dig` from some Russian networks previously returned false `REFU
 
 ## 7. Следующий оптимальный шаг
 
-After P2.4h is merged and production continuity is confirmed, the next landing milestone is a narrow grounded Engineering Note:
+After continuity sync and production confirmation, the next landing milestone is a narrow grounded Engineering Note:
 
 ### Recommended topic
 
@@ -363,7 +341,7 @@ After P2.4h is merged and production continuity is confirmed, the next landing m
 
 This is not a duplicate of the existing general Note `Почему green CI не означает verified product`.
 
-The new article should focus on the exact transition:
+The new article should focus on:
 
 ```text
 source tests
