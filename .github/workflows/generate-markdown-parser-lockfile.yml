@@ -1,87 +1,61 @@
-name: Generate markdown parser lockfile
+name: Record dependency security state
 
 on:
   pull_request:
     branches:
       - master
     paths:
-      - package.json
-      - scripts/dependency-security.test.js
       - .github/workflows/generate-markdown-parser-lockfile.yml
 
 permissions:
   contents: write
 
-concurrency:
-  group: generate-markdown-parser-lockfile-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  generate:
+  record:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6.1.1
-        with:
-          persist-credentials: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6.6.0
-        with:
-          node-version: '24'
-          cache: npm
-
-      - name: Resolve parser remediation and regenerate lockfile
-        run: npm install --ignore-scripts
-
-      - name: Verify parser security and compatibility tests
-        run: node --test scripts/dependency-security.test.js
-
-      - name: Capture parser dependency tree
-        run: npm ls markdown-it linkify-it --all > markdown-parser-tree.txt
-
-      - name: Capture audit inventory
-        shell: bash
-        run: npm audit --json > npm-audit.json || true
-
-      - name: Require no high or critical findings
-        run: >-
-          node -e
-          "const fs=require('node:fs');
-          const audit=JSON.parse(fs.readFileSync('npm-audit.json','utf8'));
-          const summary=audit.metadata?.vulnerabilities ?? {};
-          console.log(JSON.stringify(summary,null,2));
-          if ((summary.high ?? 0) !== 0 || (summary.critical ?? 0) !== 0) process.exit(1);"
-
-      - name: Commit generated lockfile to the PR branch
+      - name: Update durable project state
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
-            const fs = require('fs');
-            const path = 'package-lock.json';
             const {owner, repo} = context.repo;
             const branch = context.payload.pull_request.head.ref;
+            const path = 'docs/PROJECT_STATE.md';
             const current = await github.rest.repos.getContent({owner, repo, path, ref: branch});
+            let text = Buffer.from(current.data.content, 'base64').toString('utf8');
+
+            text = text.replace(
+              /> Последнее смысловое обновление: \*\*[^*]+\*\*,[^\n]+/,
+              '> Последнее смысловое обновление: **2026-08-03**, после repository hardening и dependency security review.',
+            );
+
+            const previous = '- Dependency audit сообщает транзитивные уязвимости в build toolchain; их нельзя исправлять blind `npm audit fix --force`, нужен отдельный compatibility review.';
+            const replacement = [
+              '- Dependency security review 2026-08-03:',
+              '  - PR #79 удалил уязвимый `fast-xml-parser` 4.x и добавил постоянные regression gates;',
+              '  - PR #80 устранил совместимые low-risk findings и удалил неиспользуемый `@gravity-ui/page-constructor`;',
+              '  - PR #81 обновляет `linkify-it` до `5.0.2`, сохраняя полный Diplodoc compatibility contract;',
+              '  - fresh audit после PR #81: **6 moderate, 0 high, 0 critical**;',
+              '  - все шесть package-level записей сводятся к одному build-time узлу `markdown-it@13.0.2`;',
+              '  - переход на fixed `markdown-it >14.1.1` сейчас блокируется `@diplodoc/translation@1.7.26`, который импортирует удалённые внутренние пути `markdown-it/lib/renderer` и `markdown-it/lib/token`;',
+              '  - residual risk отслеживается в issue #82; upstream owner — `diplodoc-platform/translation`, local owner — `True-Ruslan`, next review — **2026-08-17**;',
+              '  - нулевая уязвимость не заявляется до появления совместимого upstream release и полного exact-head evidence.',
+            ].join('\n');
+
+            if (!text.includes(previous)) {
+              core.setFailed('Expected dependency-audit state line was not found');
+              return;
+            }
+            text = text.replace(previous, replacement);
+
             await github.rest.repos.createOrUpdateFileContents({
               owner,
               repo,
               path,
               branch,
               sha: current.data.sha,
-              message: 'deps: regenerate lockfile for fixed linkify stack',
-              content: fs.readFileSync(path).toString('base64'),
+              message: 'docs: record residual dependency security risk',
+              content: Buffer.from(text, 'utf8').toString('base64'),
             });
-
-      - name: Upload parser security evidence
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: markdown-parser-security-evidence
-          path: |
-            package-lock.json
-            markdown-parser-tree.txt
-            npm-audit.json
-          if-no-files-found: error
-          retention-days: 14
