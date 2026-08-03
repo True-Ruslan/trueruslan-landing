@@ -196,6 +196,7 @@ P2.4i does not claim:
 
 ```text
 accepted milestones:       M0–M7.8B
+M7.8B status:               accepted / принят
 M7.8B PR:                   #41 — MERGED
 Source geometry F1:         0.837989
 Source topology F1:         0.837989
