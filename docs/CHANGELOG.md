@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-03**, после merge P2.4i Installed Acceptance Engineering Note.
+> Обновлено: **2026-08-03**, во время P2.4j Deterministic Authority Engineering Note.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -8,87 +8,141 @@
 
 # 2026-08-03
 
-## P2.4i — Installed Acceptance Engineering Note — DONE
+## P2.4j — Deterministic Authority Around Probabilistic Proposals — IN PROGRESS
 
-Published:
+Engineering Note:
 
-**«От source tests к installed acceptance: что доказывает каждый release gate»**
+**«AI может предложить, но не применить: как строить deterministic authority»**
 
-Canonical route:
+Canonical generated route:
 
-`landing/notes/source-tests-to-installed-acceptance.html`
+`landing/notes/probabilistic-proposals-deterministic-authority.html`
 
 ### Why
 
-P2.4h already separated VillAIgence PR #103 GameTests from PR #104 production-JAR startup/restart evidence. P2.4i converted that evidence chain into a concrete release-engineering retrospective without rewriting the general Note `Почему green CI не означает verified product`.
+The previous Notes separated protocol parsing, CI evidence and installed acceptance. P2.4j records the next boundary: a probabilistic or otherwise untrusted component may create proposals, but only deterministic product authority may change canonical state.
 
 ### Selected design
 
 - one Russian grounded Note in the existing static Notes platform;
-- canonical `data/notes.json` ownership;
-- existing build-time metadata/navigation and Atom feed;
-- Diplodoc remains sole site-wide search owner;
-- stable evidence links to VillAIgence PR #98–#104;
-- no new schema, renderer, CSS, runtime, backend, API or analytics event.
+- one shared proposal-to-mutation pipeline;
+- accepted Vlezet M7.8B PR #41 as the public recognition foundation;
+- Vlezet M7.8C PR #42 used only as Draft evidence awaiting product-owner retest;
+- VillAIgence operator-lore PR #85 as the server-authority and revision-conflict case;
+- stable links to source PRs rather than transient workflow URLs;
+- existing Notes registry, build-time navigation, Atom feed and Diplodoc search;
+- no new schema, renderer, CSS, runtime, backend, API, analytics event or search engine.
 
-### Narrative
+### Authority pipeline
 
 ```text
-0.1.20 installed PARTIAL PASS
-→ water / filled-grave / embedded-version / approximately 272-second Chat defects
-→ corrective PRs #99–#101
-→ exact 0.1.21 installed STARTUP FAIL
-→ safe rollback + six persistent hashes preserved
-→ PR #102 direct owned-source startup correction
-→ PR #103 28-scenario catalogue + seven GameTests
-→ PR #104 exact production-JAR two-JVM startup/restart PASS
-→ real-provider / two-client / focused live gameplay / owner cumulative acceptance pending
+probabilistic or untrusted proposal
+→ known identity binding
+→ shape and bounds validation
+→ product-policy authorization
+→ current-state revalidation
+→ APPLY / CONFLICT / REJECT / UNCHANGED
+→ one atomic authoritative mutation
 ```
 
-The article distinguishes source logic, build/remapped package, exact identity, GameTests, production-JAR startup, controlled restart, persistence hashes, installed canaries and cumulative promotion. Rollback is recorded as a valid acceptance result with service/persistence oracles.
+### Vlezet evidence
+
+Accepted M7.8B PR #41:
+
+- `27 local / 19 AI-confirmed / 8 review`;
+- Source geometry/topology F1 `0.837989`;
+- exact local candidate IDs and coordinates sent to AI;
+- IDs and geometry remain immutable during verification;
+- unknown IDs, moved geometry, cloud-only geometry and unbounded responses fail closed;
+- no canonical `VlezetDocument` mutation before explicit Apply;
+- semantic Undo remains the recovery boundary;
+- stronger provider may confirm more existing candidates but cannot invent missing local geometry.
+
+Draft M7.8C PR #42:
+
+- strict-ID and geometry-immutable verification continues;
+- active geometry is separated from diagnostic geometry;
+- blocked candidates cannot enter topology, opening-host analysis or Apply;
+- AI cannot create, move, resize, thicken or re-host geometry;
+- automated gates are not substituted for the same real-plan owner retest;
+- no accepted/merged/product-ready claim is made.
+
+### VillAIgence evidence
+
+Merged operator-lore PR #85:
+
+- permission checked server-side;
+- WORLD/PLAYER/VILLAGER/VILLAGE targets resolved from authenticated/live server state;
+- arbitrary UUID/dimension/village identities absent from request authority;
+- payload bounds and canonicalization fail closed;
+- write compares expected and current SHA-256 revision;
+- stale edit returns `CONFLICT` plus current canonical value without mutation;
+- replay returns `UNCHANGED`;
+- persistent store changes only on `APPLY`.
+
+PR #103 GameTests and PR #104 production-JAR lifecycle acceptance remain separate automated evidence. Real-provider, multiplayer, focused live gameplay and product-owner cumulative acceptance remain pending.
 
 ### TDD RED
 
 ```text
-RED head:              1687a00fcecb614df386eeceea1057fc63a9b2f4
-Build:                 #645 / 30832535417 — expected FAILURE
-unit tests:            318 PASS / 3 expected FAIL
-CodeQL:                #85 / 30832537884 — SUCCESS
-Dependency Review:     #73 / 30832535753 — SUCCESS
-RED artifact:          8863494780
+RED head:              1422efbaa6f0d4791d511bfb71fa89f1712c6604
+Build:                 #658 / 30852218324 — expected FAILURE
+unit tests:            321 PASS / 3 expected FAIL
+CodeQL:                #100 / 30852218498 — SUCCESS
+Dependency Review:     #86 / 30852220087 — SUCCESS
+RED artifact:          8871091646
 ```
 
-The failures were limited to the missing registry entry, Markdown source and index/TOC/page-meta integration. All pre-existing tests passed.
+The failures were limited to the absent registry entry, Markdown source and index/TOC/page-meta integration. All pre-existing tests passed.
 
 ### Delivered
 
-- article Markdown source;
-- Note registry entry with related Notes and 11-minute reading time;
+- canonical Note registry record with related Notes and 12-minute reading time;
+- grounded Markdown article;
 - Notes index and TOC entry;
 - metadata/OpenGraph identity;
 - previous/next/related navigation;
 - Atom feed inclusion;
 - generated search coverage;
-- permanent `release-gates-note` contract;
-- durable PROJECT_STATE/ROADMAP/CHANGELOG sync.
+- exact browser search assertion for query `deterministic authority` and canonical Note route;
+- permanent `deterministic-authority-note` contract;
+- durable PROJECT_STATE/ROADMAP/CHANGELOG synchronization.
 
-### Intermediate GREEN
+### Implementation GREEN
 
 ```text
-head:                  a6e67fe9e94f8199eddb2500f500c4914ae45a7f
-Build:                 #651 / 30832936159 — SUCCESS
-CodeQL:                #91 / 30832936148 — SUCCESS
-Dependency Review:     #79 / 30832933816 — SUCCESS
-unit tests:            321 PASS / 0 FAIL
+head:                  e8cad3b7f0dbf468ffebb1d55ea4d269143a758d
+Build:                 #665 / 30853200992 — SUCCESS
+CodeQL:                #107 / 30853201468 — SUCCESS
+Dependency Review:     #93 / 30853201100 — SUCCESS
+unit tests:            324 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
-artifact:              8863770773
+quality artifact:      8871540363
+artifact digest:       sha256:ffafe7d916a39a25b6162f8fdc06656bc855ef3133ab2496c81ac0e5364a25e6
+artifact retention:    through 2026-08-17
 ```
 
-### Durable-contract correction
+The complete production build, integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio, Firefox/WebKit, generic search, exact deterministic-authority search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual-regression and custom-domain matrix passed.
 
-Build #654 found one stale documentation contract: ROADMAP no longer contained the explicit `exact artifact → installed acceptance` phrase required by P2.4h. The architecture boundary was restored without weakening the test or changing production code.
+Durable document changes require one more final exact-head matrix before PR #87 can merge.
 
-### Final exact-head GREEN and merge
+### Claim boundary
+
+P2.4j does not claim accepted M7.8C, arbitrary-plan recognition accuracy, provider repair of missing geometry, authorization from valid JSON alone, completed VillAIgence real-provider/multiplayer acceptance, universal AI-safety guarantees or invented reliability/adoption/latency metrics.
+
+### New maintenance signal
+
+`npm ci` on the unchanged dependency graph now reports `6 moderate / 2 high`. Dependency Review remains SUCCESS, so this content PR did not introduce a dependency delta. The previous durable `0 high` claim is stale; issue #82 must receive a fresh advisory/path triage after the feature milestone. `npm audit fix --force`, local shims and unreviewed forks remain rejected.
+
+### Next
+
+P2.4k — restart and persistence as product contract.
+
+---
+
+## P2.4i — Installed Acceptance Engineering Note — DONE
+
+Published `От source tests к installed acceptance: что доказывает каждый release gate`.
 
 ```text
 feature PR:            #85 — MERGED
@@ -98,46 +152,28 @@ Build:                 #655 / 30833707629 — SUCCESS
 CodeQL:                #95 / 30833706682 — SUCCESS
 Dependency Review:     #83 / 30833707121 — SUCCESS
 unit tests:            321 PASS / 0 FAIL
-Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8864072101
-artifact digest:       sha256:b89fb185c7a2b8f54aa1dae81415cd28be92fe885c89e108a293894ae9cb2daa
-artifact retention:    through 2026-08-17
 ```
 
-The full production build, integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagram, Photo Stories, portfolio, Firefox/WebKit, search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual-regression and custom-domain matrix passed.
-
-### Claim boundary
-
-P2.4i does not claim completed cumulative VillAIgence acceptance, equivalence between GameTests and operator-server behavior, real provider/Voice Chat proof from startup/restart evidence, semantic correctness of every record from stable hashes or invented reliability/adoption/latency metrics.
-
-### Next
-
-P2.4j — grounded Note about deterministic authority around probabilistic LLM/CV proposals in Vlezet and VillAIgence.
+The Note keeps source contracts, package identity, GameTests, exact production-JAR startup/restart, rollback and cumulative installed acceptance separate. PR #103 and PR #104 remain distinct evidence layers.
 
 ---
 
 ## P2.4h — Product Evidence Reconciliation — DONE
 
-- Vlezet M7.8B PR #41 recorded as accepted/merged with geometry/topology F1 `0.837989`, 27 local / 19 AI-confirmed / 8 review and known limitations;
-- timeline advanced to M7.8C;
+- Vlezet M7.8B PR #41 recorded as accepted/merged with geometry/topology F1 `0.837989`, `27 local / 19 AI-confirmed / 8 review` and known limitations;
 - VillAIgence `0.1.20` partial PASS and `0.1.21` startup failure/rollback retained;
 - corrective PRs #99–#102 recorded;
 - PR #103 GameTests and PR #104 production-JAR startup/restart recorded separately;
 - candidate `0.1.23+1.21.1`, lifecycle `release-candidate`, label `ACCEPTANCE IN PROGRESS` preserved;
-- `/now`, RU/EN narratives, evidence, timelines and durable state synchronized;
-- registry-owned status browser tests introduced.
+- `/now`, RU/EN narratives, evidence, timelines and durable state synchronized.
 
 ```text
 feature PR:            #83 — MERGED
 exact feature head:    e50495e7f988e362905c7b137efd6541e7f94e33
 squash:                5978f727206fa386e9cce18c26c9ba7b7eade2eb
 Build:                 #641 / 30829739512 — SUCCESS
-CodeQL:                #79 / 30829740495 — SUCCESS
-Dependency Review:     #69 / 30829738958 — SUCCESS
 unit tests:            318 PASS / 0 FAIL
 ```
-
-PR #84 persisted final P2.4h continuity as squash `84fff6ceecbca5efb8019927b826c66cc19a50e2` after its own complete matrix.
 
 ---
 
@@ -148,8 +184,7 @@ PR #84 persisted final P2.4h continuity as squash `84fff6ceecbca5efb8019927b826c
 - PR #79 — vulnerable `fast-xml-parser` 4.x path removed with compatibility contracts.
 - PR #80 — low-risk audit cleanup.
 - PR #81 — `linkify-it@5.0.2` remediation and measured `markdown-it@13.0.2` upstream blocker.
-
-Residual audit remains `6 moderate / 0 high / 0 critical`, all build-time through current Diplodoc. Issue #82 review: **2026-08-17**. Local shim, unreviewed fork and `npm audit fix --force` remain rejected.
+- Issue #82 remains the dependency maintenance owner and now requires fresh triage of the newly observed high-severity audit signal.
 
 ---
 
