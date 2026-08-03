@@ -1,8 +1,251 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-02**, после синхронизации `/now` с актуальными flagship и content milestones.
+> Обновлено: **2026-08-03**, во время P2.4h Product Evidence Reconciliation.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
+
+---
+
+# 2026-08-03
+
+## P2.4h — Product Evidence Reconciliation
+
+Content Freshness Guard issue #78 обнаружил, что public landing отстал от source repositories:
+
+- Vlezet PR #41 уже был product-owner accepted и squash-merged, но landing продолжал показывать M7.8B как failed Draft;
+- VillAIgence получил release/tag `0.1.23+1.21.1`, M11 risk-based GameTests и production-JAR startup/restart acceptance, но landing останавливался на `0.1.22 live acceptance pending`.
+
+### Selected design
+
+Выбрана manual, bounded reconciliation без runtime GitHub API и без automatic public truth mutation.
+
+Source-of-truth boundaries сохранены:
+
+```text
+data/projects.json
+→ project identity / lifecycle / route
+
+data/project-history/*.json
+→ public evolution timeline
+
+data/project-evidence.json
+→ dated bounded evidence signals
+
+docs/landing/projects/*.md
+→ authored case-study narrative
+
+data/now.json
+→ short-lived editorial snapshot
+```
+
+Не изменяются:
+
+- schemas;
+- renderers;
+- CSS;
+- routes;
+- search ownership;
+- analytics policy;
+- visual thresholds;
+- backend/runtime architecture.
+
+### TDD RED
+
+```text
+implementation PR:     #83
+RED head:              fe269ad4a0207968b87aaff4901bffce25ae58f5
+Build:                 30826688736 — expected FAILURE
+unit tests:            317 PASS / 1 expected FAIL
+failure:               Vlezet M7.8B state `failed`, expected `merged`
+CodeQL:                30826688612 — SUCCESS
+Dependency Review:     30826689352 — SUCCESS
+```
+
+The failure occurred only in the new repository reconciliation contract. All 317 pre-existing tests passed.
+
+### Vlezet reconciliation
+
+Source evidence:
+
+```text
+PR:                     #41 — MERGED
+accepted head:          a5003371f2feb4fa37edbd2513b0b5312bc5dd07
+squash:                 08800dd66fa298ff31d1a7e6b33e91964cdb8d16
+Standard CI:            30767495988 / #2834 — PASS
+Recognition Benchmark: 30767496002 / #165 — PASS
+M7 Browser Audit:       30767495992 / #618 — PASS
+Source geometry F1:     0.837989
+Source topology F1:     0.837989
+```
+
+Representative accepted result:
+
+```text
+local wall candidates: 27
+confirmed after AI:     19
+remaining for review:   8
+openings:               0 — deferred to M7.8C
+```
+
+Landing changes:
+
+- M7.8B signal changed from `failed` to `merged`;
+- failed-Draft current narrative replaced by accepted-with-limitations state;
+- initial 417-candidate failure retained as historical negative evidence;
+- region-first extraction, bounded fallback, overload protection and verification-only AI recorded;
+- timeline advanced to **M7.8C Opening Classification and Host-Wall Validation**;
+- lifecycle remains `pre-production`;
+- accurate arbitrary-plan recognition is not claimed.
+
+### VillAIgence reconciliation
+
+Historical evidence retained:
+
+- `0.1.20+1.21.1` partial PASS with water, grave, identity and latency defects;
+- `0.1.21+1.21.1` startup FAIL on the tombstone Mixin;
+- safe rollback preserving six persistent hashes and restoring service;
+- corrective PRs #99–#102.
+
+New evidence:
+
+#### PR #103 — M11 Phase A
+
+- validated 28-scenario acceptance catalogue across seven risk domains;
+- seven real-server Fabric GameTests;
+- MCA navigation wiring;
+- NPC → tombstone item → NPC identity/inventory round trip;
+- real Silk Touch filled-grave drops;
+- empty-grave negative control;
+- deterministic water-navigation properties;
+- fail-closed test-mod leakage guard.
+
+#### PR #104 — M11 Phase B
+
+```text
+exact head:            9a03a6535e1d6349ddcfa62d6edbe67fbc7f6cfa
+squash/source head:    61b66e38e99c1dc9bdc26089bfb345a250a881e2
+published candidate:   0.1.23+1.21.1
+```
+
+Automated scope:
+
+- exact remapped Fabric candidate installed outside Loom/dev classpath;
+- two separate JVM runs reached Minecraft ready state;
+- controlled `stop`, complete world save and exit code 0;
+- stable relative paths and SHA-256 values across restart for:
+  - `memory.json`;
+  - `memory2.json`;
+  - `semantic-memory.json`;
+  - `relationships.json`;
+  - `voices.json`;
+  - `operator-lore.json`;
+- fixture classes and mod ID absent from distributable JAR.
+
+Landing changes:
+
+- lifecycle remains `release-candidate`;
+- public label advanced from `CORRECTIVE CANDIDATE` to `ACCEPTANCE IN PROGRESS`;
+- PR #103 and PR #104 added as separate automated evidence signals;
+- RU and EN VillAIgence case studies synchronized;
+- timeline advanced to M11 risk-based production-JAR acceptance;
+- cumulative real-provider, multiplayer, focused water/grave and product-owner acceptance remains pending.
+
+### `/now` synchronization
+
+Date advanced to `2026-08-03`.
+
+The snapshot now distinguishes:
+
+- Vlezet M7.8B accepted progress with Source F1 `0.837989` and retained uncertainty;
+- VillAIgence automated production-JAR startup/restart proof;
+- manual cumulative acceptance still pending;
+- manual deterministic reconciliation as the owner of public truth.
+
+### Durable documentation
+
+Updated:
+
+- `docs/PROJECT_STATE.md`;
+- `docs/ROADMAP.md`;
+- `docs/CHANGELOG.md`.
+
+The next landing milestone is a narrow Engineering Note about source tests, integration GameTests, package identity, exact artifact, installed startup/restart and cumulative acceptance. It is explicitly distinct from the existing general green-CI/Evidence Layer Note.
+
+### Final GREEN
+
+To be recorded after the exact final PR #83 head passes Build, CodeQL and Dependency Review.
+
+---
+
+## Repository hardening and dependency security review
+
+### PR #67 — repository governance
+
+Added:
+
+- `SECURITY.md`;
+- ownership and pull-request contracts;
+- bounded Dependabot configuration;
+- CodeQL;
+- Dependency Review;
+- immutable full-SHA GitHub Actions;
+- fixed runner and concurrency policy;
+- removal of redundant Docker deployment workflow;
+- permanent repository invariants.
+
+### PR #69 — parse5 major update
+
+Accepted after the complete unit, build, browser, accessibility, visual, custom-domain, CodeQL and dependency-review matrix passed.
+
+### PR #71 — pinned GitHub Actions update
+
+Updated checkout, setup-node and CodeQL immutable SHAs after complete matrix verification.
+
+### PR #74 — durable hardening sync
+
+Recorded governance, CI, Dependabot and dependency-review outcomes and separated source-controlled readiness from GitHub administrative state.
+
+### PRs #76 and #77 — compatible indirect updates
+
+Updated `postcss` and `fast-uri` within the existing compatibility boundary.
+
+### PR #79 — remove vulnerable fast-xml-parser 4.x
+
+- removed the vulnerable 4.x dependency path;
+- bounded override to `fast-xml-parser@5.10.1`;
+- preserved Diplodoc translation behavior;
+- added permanent security and compatibility regression coverage.
+
+### PR #80 — low-risk audit remediation
+
+- removed unused `@gravity-ui/page-constructor`;
+- applied compatible patch/minor overrides;
+- added lockfile and dependency invariants.
+
+### PR #81 — linkify remediation and markdown-it blocker
+
+```text
+exact head:          14f44204fbf8cc8f0452eadf6722157aba0e8120
+squash:              a554a2b59fe6a6e6369530567e9beba445311e17
+Build:               30814355266 — SUCCESS
+CodeQL:              30814355897 — SUCCESS
+Dependency Review:   30814356860 — SUCCESS
+unit tests:          317 PASS / 0 FAIL
+fresh audit:         6 moderate / 0 high / 0 critical
+```
+
+Delivered:
+
+- `linkify-it@5.0.2`;
+- parser security and compatibility regression coverage;
+- measured residual risk;
+- issue #82 with owner and next review date.
+
+The six residual package-level records reduce to build-time `markdown-it@13.0.2`.
+
+Upgrade above `14.1.1` is blocked by `@diplodoc/translation@1.7.26` imports of removed internal paths. A local shim, unreviewed fork and `npm audit fix --force` were rejected.
+
+Next review: **2026-08-17**.
 
 ---
 
@@ -10,261 +253,34 @@
 
 ## P2.4g — `/now` synchronization after flagship milestones
 
-PR #65 обновил authored snapshot текущего инженерного фокуса после Vlezet flagship, External Publications Showcase и VillAIgence flagship.
-
 ```text
 feature PR:          #65
 exact feature head:  fdc2d2ddf54f67aacf1e730f210fb6aae7325cdf
 Build / run:         #571 / 30763586234 — SUCCESS
 squash on master:    2ef556a6e910be001355193d9d96f499131d5094
 unit tests:          307 PASS / 0 FAIL
-artifact id:         8838265730
-artifact digest:     sha256:917d75578563a23a8a7b9186dcb143ec890a98d81f3823460251ffcf4be997a8
-artifact retention:  through 2026-08-16
 ```
 
-### Problem
-
-`data/now.json` оставался на snapshot `2026-07-22` и больше не соответствовал опубликованной структуре портфолио:
-
-- public project уже называется VillAIgence, но `/now` всё ещё упоминал LivingWorld;
-- Vlezet flagship и recognition acceptance boundary не были отражены;
-- External Publications Showcase и новый content/distribution phase отсутствовали;
-- planned writing не опирался на свежие реальные acceptance failures.
-
-### Selected design
-
-Выбран минимальный data-only refresh.
-
-Сохранены две независимые source-of-truth области:
-
-```text
-data/projects.json
-→ project identity / status / href / active cards
-
-data/now.json
-→ date / focus / learning / writing
-```
-
-Не добавлялись:
-
-- `recentlyCompleted` или `next` schema;
-- второй roadmap;
-- commit-driven automatic public truth;
-- новый renderer;
-- CSS redesign;
-- runtime API/CMS/backend.
-
-### Editorial snapshot
-
-Дата обновлена до:
-
-`2026-08-02`
-
-Focus теперь фиксирует переход:
-
-- от наращивания portfolio infrastructure;
-- к real product acceptance;
-- к явным accepted/unaccepted boundaries;
-- к grounded authored content;
-- к постепенному external distribution;
-- без преждевременных выводов по короткому analytics sample.
-
-### Learning lines
-
-Добавлены три текущие области:
-
-1. **VillAIgence** — модель как proposal, authoritative server state, source/package gates, installed acceptance, rollback и persistent evidence.
-2. **Vlezet** — CV/LLM proposals, confidence, manual review, deterministic validation и explicit Apply.
-3. **Static-first distribution** — один источник истины и aggregate telemetry после достаточного observation window.
-
-### Writing lines
-
-Зафиксированы три будущие Engineering Notes:
-
-1. зелёный exact-head CI не равен успешной приёмке установленного продукта;
-2. deterministic authority вокруг LLM/CV proposals;
-3. restart/persistence как product contract.
-
-### Public identity compatibility
-
-Test fixture и repository snapshot contract теперь требуют:
-
-- public name `VillAIgence`;
-- отсутствие public `LivingWorld` copy в `/now`;
-- stable slug `livingworld`;
-- stable href `landing/projects/livingworld.html`.
-
-Project Registry продолжает автоматически выводить active cards для:
-
-- Vlezet;
-- VillAIgence;
-- NODE ZERO;
-- Engineering Portfolio Platform.
-
-### Explicit non-claims
-
-Copy не заявляет:
-
-- установленную acceptance VillAIgence `0.1.22+1.21.1`;
-- accurate arbitrary-plan recognition для Vlezet;
-- meaningful audience validation по ранней Cloudflare telemetry.
-
-### TDD
-
-RED:
-
-```text
-head:        d4cfd2d0b9d961efcdcedb8eddca197aadbe7e32
-Build/run:   #569 / 30763497159
-result:      306 PASS / 1 expected FAIL
-failure:     current date 2026-07-22, expected 2026-08-02
-```
-
-После первого data update тест обнаружил внутреннее противоречие implementation plan:
-
-```text
-head:        7d89d4c0aedfb6a8672e484eee2e6550467b5fb8
-Build/run:   #570 / 30763542736
-result:      306 PASS / 1 FAIL
-cause:       assertion required plural "Engineering Notes"
-actual copy: singular "Engineering Note"
-resolution:  test expectation corrected; production data unchanged
-```
-
-GREEN:
-
-```text
-head:        fdc2d2ddf54f67aacf1e730f210fb6aae7325cdf
-Build/run:   #571 / 30763586234 — SUCCESS
-result:      307 PASS / 0 FAIL
-squash:      2ef556a6e910be001355193d9d96f499131d5094
-```
-
-### Exact-head quality gates
-
-Build #571 прошёл:
-
-- production Diplodoc build;
-- generated-site integrity;
-- mobile overflow;
-- Chromium/Axe/Lighthouse;
-- Publications;
-- Sources Knowledge Base;
-- Project Evidence;
-- VillAIgence and NODE ZERO diagram raster gates;
-- Photo Stories;
-- portfolio v0.3, включая `/now`;
-- Firefox/WebKit;
-- generated search;
-- dedicated VillAIgence search;
-- Minimal RU/EN;
-- privacy analytics;
-- metadata/OpenGraph;
-- Engineering Map + accessibility;
-- visual regression;
-- custom-domain artifact verification.
-
-### Manual artifact review
-
-Проверены:
-
-- `v03-now.png`;
-- `now-generated.html`.
-
-Подтверждено:
-
-- date `2026-08-02`;
-- active cards registry-derived;
-- stable VillAIgence route;
-- no stale public LivingWorld name;
-- корректный перенос длинных learning/writing пунктов;
-- no horizontal overflow;
-- no serious/critical Axe violations;
-- no misleading release/adoption claims;
-- no visual baseline update required.
-
-### Architecture impact
-
-Не изменены:
-
-- `docs/landing/now.md`;
-- `scripts/now-page.js`;
-- JSON schema;
-- CSS;
-- routes;
-- search ownership;
-- metadata/OpenGraph registry;
-- visual thresholds;
-- analytics/custom-domain contracts.
-
----
+Refreshed the authored current-focus snapshot after Vlezet, External Publications and VillAIgence flagship milestones while preserving registry-owned project state and stable `livingworld.html` compatibility.
 
 ## P2.4f — VillAIgence flagship case study
 
-PR #63 обновил существующий `livingworld` flagship до актуального публичного проекта VillAIgence при сохранённом stable route/key compatibility.
-
-```text
-exact head:      90e03b4a793bde9d8088ee930da74ebc19edfa3c
-Build / run:     #567 / 30761930974 — SUCCESS
-squash:          00da9ee983f17f8f5e1b5e5f353fad852fee337c
-unit tests:      306 PASS / 0 FAIL
-artifact:        8837765509
-artifact digest: sha256:3aa538f9bad7eeeefd54ff24511fe700b90eedc7c872e85ffe5bd673322fa78c
-```
-
-Главные результаты:
-
-- Memory 2.0, FACT/BELIEF provenance и Operator Lore narrative;
-- server-authoritative text/voice/action boundary;
-- provider network/security constraints;
-- exact-artifact release evidence lane;
-- `0.1.20` partial PASS, `0.1.21` startup FAIL и pending `0.1.22` installed acceptance;
-- production-safe authority/acceptance SVG;
-- dedicated search, diagram, Evidence и browser gates.
-
----
+PR #63 published the public VillAIgence identity, Memory 2.0/operator-lore/security/release evidence and authority/acceptance diagram while preserving the stable `livingworld` route.
 
 ## P2.4e — External Publications Showcase
 
-PR #61 опубликовал самостоятельный раздел **«Публикации и выступления»** для completed, externally verifiable work.
-
-```text
-exact head:      1386df46b57d5c9164a13039a286cafb1f296037
-Build / run:     #539 / 30757856207 — SUCCESS
-squash:          4036df1744840e558a6514ce6ae09eceb624b69e
-unit tests:      300 PASS / 0 FAIL
-artifact:        8836540794
-artifact digest: sha256:d69dd36389ab7f6aa59120a2355e34962af2188e8dea733e9ed93826d59ac4d5
-```
-
-Initial catalogue содержит три externally verified Habr-статьи. Drafts, future appearances и непроверенные scientific records не добавлены.
-
----
+PR #61 published a static-first catalogue of three externally verified Habr articles. Drafts and unverified records remained excluded.
 
 ## P2.4d — Vlezet flagship case study
 
-PR #59 опубликовал Vlezet как controlled flagship с explicit authority и failed-recognition boundaries.
-
-```text
-exact head:      a409a152f60ea9d11dce8790920d84c3b70c1633
-Build / run:     #486 / 30752888855 — SUCCESS
-squash:          aa32ce01e3345612fa9ebdad2b2b096399225b5f
-unit tests:      265 PASS
-artifact:        8835053206
-artifact digest: sha256:7a3dde6a0a36ebaeed6ea59c3c0e477a8522c786eb6703a5044567bddb767ddc
-```
-
-M7.7 и M7.8A приняты; M7.8B остаётся `FAIL — DO NOT MERGE`. Arbitrary-plan recognition не заявляется.
-
----
+PR #59 published Vlezet as a controlled flagship with explicit geometry/recognition authority boundaries.
 
 ## P2.4c — Search, Photo shell and rendered-asset stabilization
 
 - Search Back navigation — PR #53.
 - Single-contour search field and centered button — PR #54.
 - Photo index moved into shared Diplodoc shell — PR #55.
-- NODE ZERO SVG critical paint moved to presentation attributes — PR #57.
+- NODE ZERO SVG critical paint stabilization — PR #57.
 - Durable state sync — PR #58.
 
 ---
@@ -273,37 +289,15 @@ M7.7 и M7.8A приняты; M7.8B остаётся `FAIL — DO NOT MERGE`. Ar
 
 ## P2.4b — Header utility navigation and language consolidation
 
-PR #51:
+PR #51 established canonical utility order, accessible icon-only controls, bounded RU/EN menu and removed the duplicate floating switch.
 
-- utility order `GitHub → Habr → Telegram → Search → Language`;
-- accessible icon-only controls;
-- bounded RU/EN menu;
-- floating duplicate switch removed;
-- simplified hero actions.
+## P2.4a — Canonical rollout and custom-host telemetry
 
-```text
-exact:  8bd77b90f778f6384be3b9de93e69c9bc4b77e21
-Build:  #418 / 30719138639 — SUCCESS
-squash: c6a7b74e8b0f7d07f44794505d348ab6ef5afb4e
-```
-
-## P2.4a — Canonical rollout and first custom-host telemetry
-
-- Landing README/CV updated to `https://trueruslan.ru/`;
-- Vlezet and VillAIgence READMEs updated;
-- first Cloudflare custom-host telemetry observed;
-- sample remained insufficient for audience/product conclusions.
+Landing, CV and flagship repository links moved to `https://trueruslan.ru/`; first Cloudflare custom-host telemetry was observed without drawing audience conclusions.
 
 ## P2.3b — HTTPS Production Cutover
 
-Strict custom deployment run `30704218399` succeeded:
-
-- custom origin `https://trueruslan.ru`;
-- analytics required;
-- production smoke `ok: true`;
-- RU/EN canonical identity verified;
-- one analytics beacon on RU and EN;
-- owner confirmed HTTPS apex and `www → apex`.
+Strict custom deployment run `30704218399` confirmed custom origin, production smoke, RU/EN canonical identity and one analytics beacon per localized homepage.
 
 ---
 
@@ -340,4 +334,4 @@ After each major milestone synchronize:
 2. `docs/ROADMAP.md`;
 3. `docs/CHANGELOG.md`.
 
-These files are snapshots, not substitutes for actual repository state, exact-head CI, Pages deployment reports, production DNS/TLS and provider telemetry.
+These files are snapshots, not substitutes for actual repository state, exact-head CI, Pages deployment reports, production DNS/TLS, source-project acceptance or provider telemetry.
