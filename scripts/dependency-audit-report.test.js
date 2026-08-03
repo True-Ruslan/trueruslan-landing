@@ -29,6 +29,15 @@ test('dependency audit generator normalizes advisories and explain evidence', as
             severity: 'high',
             range: '<=14.1.1',
           },
+          {
+            source: 1100002,
+            name: 'markdown-it',
+            dependency: 'markdown-it',
+            title: 'Example quadratic complexity advisory',
+            url: 'https://github.com/advisories/GHSA-example-0001',
+            severity: 'high',
+            range: '>=13.0.0 <14.1.1',
+          },
         ],
         effects: ['@diplodoc/translation'],
         range: '<=14.1.1',
@@ -88,7 +97,11 @@ test('dependency audit generator normalizes advisories and explain evidence', as
   assert.equal(report.auditExitCode, 1);
   assert.equal(report.vulnerabilities.length, 2);
   assert.equal(report.advisories.length, 1);
-  assert.equal(report.advisories[0].id, 'GHSA-example-0001');
+  assert.equal(report.advisories[0].id, 'GHSA-EXAMPLE-0001');
+  assert.deepEqual(report.advisories[0].instances, [
+    {source: 1100001, range: '<=14.1.1'},
+    {source: 1100002, range: '>=13.0.0 <14.1.1'},
+  ]);
   assert.equal(report.vulnerabilities[0].explain.length, 1);
   assert.deepEqual(report.vulnerabilities[1].fixAvailable, {
     name: '@diplodoc/cli',
@@ -97,7 +110,9 @@ test('dependency audit generator normalizes advisories and explain evidence', as
   });
 
   const markdown = renderMarkdown(report);
-  assert.match(markdown, /GHSA-example-0001/);
+  assert.match(markdown, /GHSA-EXAMPLE-0001/);
+  assert.match(markdown, /<=14\.1\.1/);
+  assert.match(markdown, />=13\.0\.0 <14\.1\.1/);
   assert.match(markdown, /markdown-it/);
   assert.match(markdown, /2 high/);
   assert.match(markdown, /evidence only/i);
