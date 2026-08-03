@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-03**, после merge P2.4h Product Evidence Reconciliation.
+> Обновлено: **2026-08-03**, во время P2.4i Installed Acceptance Engineering Note.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -19,14 +19,14 @@
 - bounded Evidence semantics;
 - Publications только для completed, externally verifiable work;
 - one RU/EN site/build/search architecture;
-- analytics как optional aggregate telemetry;
-- no behavioural/user tracking без explicit privacy review;
+- optional aggregate analytics;
+- no behavioural tracking без explicit privacy review;
 - quality gates без ослабления;
-- repository readiness, deployed state, external-project acceptance и provider telemetry как разные факты.
+- repository readiness, generated artifact, deployed state, external-project acceptance и provider telemetry как разные факты.
 
 Главная продуктовая формула:
 
-**что я создаю → что я изучаю → что публикую → какие инженерные выводы делаю → чем это подтверждено**.
+**что я создаю → что изучаю → что публикую → какие инженерные выводы делаю → чем это подтверждено**.
 
 ---
 
@@ -66,126 +66,135 @@
 
 ## Repository hardening
 
-- Governance, security policy, ownership, PR contracts, immutable Action SHAs, CodeQL, Dependency Review and bounded Dependabot — DONE: PR #67.
-- Compatible dependency updates and cleanup — DONE: PRs #69/#71/#76/#77/#79/#80/#81.
-- Residual `markdown-it@13.0.2` risk — TRACKED: issue #82, next review 2026-08-17.
+- Governance, security policy, ownership, immutable Actions, CodeQL, Dependency Review and bounded Dependabot — DONE: PR #67.
+- Compatible dependency and Action updates — DONE: PRs #69/#71/#76/#77/#79/#80/#81.
+- Residual `markdown-it@13.0.2` risk — TRACKED: issue #82, review 2026-08-17.
 
 ---
 
-# P2.4h final evidence
+# NOW — P2.4i Installed Acceptance Engineering Note
 
-```text
-feature PR:            #83 — MERGED
-exact feature head:    e50495e7f988e362905c7b137efd6541e7f94e33
-squash on master:      5978f727206fa386e9cce18c26c9ba7b7eade2eb
-Build:                 #641 / 30829739512 — SUCCESS
-CodeQL:                #79 / 30829740495 — SUCCESS
-Dependency Review:     #69 / 30829738958 — SUCCESS
-unit tests:            318 PASS / 0 FAIL
-Lighthouse:            100 / 100 / 100 / 100
-quality artifact:      8862581638
-artifact digest:       sha256:5c85da305745e2f66307c543cd3d356d1b6f2f7d5e459400ad54ae8d08432afe
-```
+## Goal
 
-Delivered:
+Publish one grounded Russian Engineering Note:
 
-- Vlezet M7.8B PR #41 recorded as accepted and merged with Source geometry/topology F1 `0.837989` and known limitations;
-- Vlezet timeline advanced to M7.8C Opening Classification and Host-Wall Validation;
-- VillAIgence PR #103 risk-based GameTests and PR #104 production-JAR startup/restart recorded as separate automated scopes;
-- current candidate `0.1.23+1.21.1` recorded;
-- lifecycle preserved as `release-candidate`, label advanced to `ACCEPTANCE IN PROGRESS`;
-- cumulative provider, multiplayer, focused gameplay and product-owner acceptance remains pending;
-- `/now`, RU/EN case studies, Project Evidence, timelines and durable documents synchronized;
-- status smoke now derives expected labels from canonical Project Registry;
-- schemas, renderers, CSS, routes, search ownership, analytics and visual thresholds unchanged.
+**От source tests к installed acceptance: что доказывает каждый release gate**.
 
-Immediate operational follow-up:
+This is a concrete VillAIgence release-engineering case study and does not duplicate the general Evidence Layer Note `Почему green CI не означает verified product`.
 
-1. confirm latest Pages deployment;
-2. confirm production `/now`, Vlezet, VillAIgence and Publications routes;
-3. rerun/inspect Content Freshness Guard;
-4. close issue #78 only if reconciled drift is gone;
-5. keep issue #82 open.
-
----
-
-# Priority content sprint
-
-## 1. Engineering Note: exact artifact and installed acceptance — NEXT
-
-### Working title
-
-**От source tests к installed acceptance: что именно доказывает каждый release gate**.
-
-### Why this is not a duplicate
-
-The existing Note `Почему green CI не означает verified product` explains bounded Evidence semantics generally.
-
-The new Note must be a concrete release-engineering case study about:
-
-```text
-source tests
-→ integration GameTests
-→ distributable package
-→ exact embedded identity
-→ production-JAR startup
-→ controlled shutdown and restart
-→ persistent hashes
-→ focused live regressions
-→ cumulative provider/multiplayer acceptance
-→ promotion
-```
-
-### Evidence base
+## Required narrative
 
 ```text
 0.1.20 installed PARTIAL PASS
-        ↓
-0.1.21 installed STARTUP FAIL
-        ↓
-safe rollback + six persistent hashes preserved
-        ↓
-corrective PRs #99–#102
-        ↓
-PR #103 risk-based GameTests
-        ↓
-PR #104 exact production-JAR startup/restart PASS
-        ↓
-cumulative real-provider and gameplay acceptance pending
+→ water / grave / identity / Chat-duration defects
+→ source and package corrections PR #99–#101
+→ 0.1.21 installed STARTUP FAIL
+→ safe rollback + six persistent hashes preserved
+→ PR #102 startup correction
+→ PR #103 28-scenario catalogue + seven GameTests
+→ PR #104 exact production-JAR two-JVM startup/restart PASS
+→ cumulative provider/multiplayer/live gameplay acceptance pending
 ```
 
-### Required narrative boundaries
+The Note must explain:
 
-- explain what source, integration, package, exact artifact and installed acceptance each prove;
-- distinguish development GameTests from production-JAR lifecycle evidence;
-- explain why startup blockers outrank downstream gameplay checks;
-- treat rollback as a valid acceptance outcome;
-- keep automated restart/hash proof separate from cumulative provider and operator acceptance;
-- avoid invented reliability, latency or adoption metrics.
+- source tests as deterministic logic evidence;
+- loader/build and remapped package as artifact-shape evidence;
+- exact embedded identity as release traceability;
+- installed startup as a separate production namespace/classpath gate;
+- startup blockers as prerequisites that stop downstream gameplay checks;
+- rollback as a valid acceptance outcome with its own service/persistence oracles;
+- GameTests as integration evidence, not production-JAR lifecycle proof;
+- two separate JVM runs, controlled stop/save/exit and six-store hash evidence;
+- real-provider, two-client, focused live gameplay and product-owner cumulative acceptance as pending.
 
-### Expected deliverables
+## Static integration
 
-- canonical Note registry entry;
-- grounded article page with source/evidence links;
-- previous/next/related navigation;
-- Atom feed inclusion;
-- generated search coverage;
-- metadata/OpenGraph;
-- browser/accessibility/visual acceptance;
-- continuity sync after merge.
+Required surfaces:
 
-## 2. Engineering Note: deterministic authority around LLM/CV proposals
+- `data/notes.json`;
+- article Markdown source;
+- Notes index;
+- TOC;
+- page metadata/OpenGraph;
+- build-time Note metadata/navigation;
+- Atom feed;
+- generated Diplodoc search;
+- standard browser/accessibility/visual/custom-domain gates.
 
-Use both products:
+No new schema, renderer, CSS, runtime, backend, API, analytics event or search engine.
 
-- Vlezet M7.8B: local CV proposes bounded candidates; AI verifies existing IDs; deterministic validation and explicit Apply own mutation;
-- VillAIgence: provider output remains proposal until server policy and current-state revalidation.
+## TDD evidence
+
+```text
+PR:                    #85
+RED head:              1687a00fcecb614df386eeceea1057fc63a9b2f4
+RED Build:             #645 / 30832535417 — expected FAILURE
+RED tests:             318 PASS / 3 expected FAIL
+failure scope:         missing registry, Markdown and index/TOC/page-meta surfaces
+RED CodeQL:            #85 / 30832537884 — SUCCESS
+RED Dependency Review: #73 / 30832535753 — SUCCESS
+```
+
+## Implementation GREEN
+
+```text
+implementation head:   a6e67fe9e94f8199eddb2500f500c4914ae45a7f
+Build:                 #651 / 30832936159 — SUCCESS
+CodeQL:                #91 / 30832936148 — SUCCESS
+Dependency Review:     #79 / 30832933816 — SUCCESS
+unit tests:            321 PASS / 0 FAIL
+Lighthouse:            100 / 100 / 100 / 100
+quality artifact:      8863770773
+artifact digest:       sha256:39184bf7191e73c7e3b4c91c37cfead597b330fa5e2f30b030bb48b95acf287d
+```
+
+Final exact-head matrix must run after durable documentation changes. Merge and production continuity remain separate facts.
+
+## Completion criteria
+
+1. article preserves every accepted evidence boundary;
+2. generated Note has metadata, previous/next/related navigation;
+3. Atom feed contains the new entry;
+4. generated search finds the title and release-engineering terms;
+5. Build, CodeQL and Dependency Review pass on the final exact head;
+6. PR #85 is squash-merged with expected-head protection;
+7. final squash is recorded through a docs-only continuity sync only if needed.
+
+---
+
+# Immediate operational follow-up
+
+1. Confirm latest Pages deployment after merge.
+2. Confirm production Notes index and new Note route.
+3. Confirm feed and generated search on the deployed artifact.
+4. Run or inspect Content Freshness Guard; close issue #78 only when the generated report is clean.
+5. Keep issue #82 open until upstream compatibility exists.
+
+---
+
+# Next content milestones
+
+## P2.4j — deterministic authority around probabilistic proposals — NEXT
+
+Use both flagship projects:
+
+- Vlezet M7.8B: local CV proposes bounded candidates; AI may verify known candidate IDs; deterministic validation and explicit Apply own authoritative mutation.
+- VillAIgence: provider output remains proposal until strict parsing, domain bounds, server policy and current-state revalidation.
 
 Core principle:
 
 **Probabilistic systems may propose; deterministic product boundaries decide what becomes authoritative.**
 
-## 3. Engineering Note: restart and persistence as product contract
+Required boundaries:
+
+- distinguish generation/verification from authoritative mutation;
+- show why AI cannot create missing Vlezet geometry outside candidate IDs;
+- show why valid VillAIgence JSON still does not authorize state/world mutation;
+- include stale-decision/current-state revalidation;
+- avoid generic AI-safety claims unsupported by project evidence.
+
+## P2.4k — restart and persistence as product contract
 
 Explain:
 
@@ -195,7 +204,7 @@ Explain:
 - schema/migration compatibility;
 - difference between storage implementation and user-visible continuity.
 
-## 4. First genuine Photo Story
+## First genuine Photo Story
 
 Only authentic material. No fake/demo album.
 
@@ -206,47 +215,39 @@ Required input:
 - publishable alt text and captions;
 - explicit hero/layout selection.
 
-## 5. External profile rollout and distribution
+## External profile rollout and distribution
 
-After the first new Note:
+After the new Note is deployed:
 
-- update canonical site links in external profiles;
+- update canonical site links in external profiles where stale;
 - announce selectively, not as bulk promotion;
-- link directly to the relevant case study or Note;
-- verify routes and aggregate referrers without behavioural tracking.
+- link directly to the relevant Note or case study;
+- observe aggregate referrers without behavioural tracking.
 
-## 6. Aggregate observation window
+## Aggregate observation window
 
 Observe for 3–4 weeks:
 
 - aggregate requests/page views;
-- country/device data only within the current Cloudflare privacy boundary;
+- country/device data within the current Cloudflare privacy boundary;
 - which content surfaces attract meaningful visits;
 - whether discovery paths identify a concrete improvement.
 
-Do not treat owner test traffic as audience validation.
+Owner test traffic is not audience validation.
 
 ---
 
 # External product dependencies
 
-## Vlezet M7.8C — ACTIVE PRODUCT WORK, NOT LANDING IMPLEMENTATION
+## Vlezet M7.8C
 
-Landing may update again only after source-project evidence exists for:
+Landing updates only after source-project evidence exists for opening classification, known host-wall identity, bounded placement, stale-decision protection, exact-head benchmark/browser evidence and product-owner acceptance.
 
-1. door/window/unknown classification;
-2. known host-wall identity;
-3. bounded placement validation;
-4. zero unknown-host accepted openings;
-5. no stale decisions;
-6. exact-head benchmark/browser evidence;
-7. product-owner acceptance.
+Until then M7.8B remains the latest accepted public recognition slice.
 
-Until then, M7.8B remains the latest accepted public recognition slice.
+## VillAIgence cumulative acceptance
 
-## VillAIgence cumulative acceptance — EXTERNAL DEPENDENCY
-
-Automated Phase A/B evidence is accepted within scope. Promotion beyond release-candidate requires exact installed evidence for:
+Automated Phase A/B evidence is accepted within scope. Promotion beyond `release-candidate` requires exact installed evidence for:
 
 1. real Text/STT/Chat/TTS and Voice Chat;
 2. Chat deadline behavior;
@@ -262,9 +263,9 @@ Do not edit `/now` as a substitute for updating canonical project registry/evide
 
 # Publications growth rules
 
-The catalogue may expand only when all conditions hold:
+The catalogue expands only when:
 
-1. material is already published/completed;
+1. material is already completed/published;
 2. the user has a substantive public role;
 3. official title/date/platform/role are known;
 4. stable canonical external evidence exists;
@@ -276,25 +277,11 @@ Do not add drafts, submitted papers, future appearances, attendance-only events 
 
 # Conditional future branches
 
-## Selective RU/EN expansion
-
-Only when actual usage or content value identifies a concrete page. Do not create parallel content merely for symmetry.
-
-## Secondary analytics / Yandex Metrica
-
-Re-open only when Cloudflare systematically undercounts a relevant audience or missing data blocks a real decision. Consent-controlled loading and privacy review are required. Replay, Webvisor, click maps and identifiers remain excluded unless separately approved.
-
-## Richer architecture explorer
-
-Only with enough real artifacts and demonstrated content value.
-
-## Publication filters/local detail pages
-
-Do not add while the catalogue remains small.
-
-## Dependency modernization
-
-Issue #82 is a separate upstream compatibility review. Do not run blind `npm audit fix --force` and do not mix dependency churn with content work.
+- Selective RU/EN expansion only when a concrete page has demonstrated value.
+- Secondary analytics only when missing aggregate data blocks a real decision and after privacy review.
+- Richer architecture explorer only with enough real artifacts.
+- Publication filters/local detail pages only after the catalogue meaningfully grows.
+- Dependency modernization only through issue #82 upstream compatibility review; never blind `npm audit fix --force`.
 
 ---
 
@@ -308,38 +295,28 @@ Issue #82 is a separate upstream compatibility review. Do not run blind `npm aud
 - separate EN build/CMS;
 - second site-wide search engine;
 - runtime publication APIs or scrapers;
-- advertising analytics;
-- custom-event explosion;
-- fingerprinting/session replay/cross-site tracking;
+- advertising analytics or session replay;
 - AI chat поверх резюме;
 - accounts/comments/likes;
 - backend/database ради static content;
 - runtime GitHub API;
 - automatic public-state mutation;
 - giant QA runner;
-- decorative version bumps;
-- performance optimization while real P75 metrics remain healthy.
+- decorative version bumps.
 
 ---
 
 # Оптимальная последовательность
 
 ```text
-P2.4h production/freshness confirmation
-        ↓
-Engineering Note: source/package/exact artifact/installed acceptance
-        ↓
-Engineering Note: deterministic authority around AI proposals
-        ↓
-Engineering Note: restart/persistence product contract
-        ↓
-genuine Photo Story when authentic material is ready
-        ↓
-external-profile rollout + public distribution
-        ↓
-3–4 weeks aggregate observation
-        ↓
-choose further content/product work from evidence
+P2.4i installed-acceptance Note
+→ final CI + merge + deployment confirmation
+→ P2.4j deterministic authority around AI proposals
+→ P2.4k restart/persistence product contract
+→ genuine Photo Story when authentic material exists
+→ external-profile rollout and selective distribution
+→ 3–4 weeks aggregate observation
+→ choose further work from evidence
 ```
 
 ## Правило для нового чата
@@ -348,10 +325,9 @@ choose further content/product work from evidence
 
 1. открыть `PROJECT_STATE`, `ROADMAP`, `CHANGELOG`, `CUSTOM_DOMAIN`;
 2. проверить actual open PR/latest commits/exact-head CI;
-3. проверить latest Pages deployment reports;
+3. проверить latest Pages deployment reports and production routes;
 4. проверить HTTPS/redirects and RU/EN canonical identity;
-5. проверить production `/now`, Publications, Vlezet и VillAIgence routes;
-6. проверить Cloudflare telemetry current hostname;
-7. проверить current Vlezet and VillAIgence source truth;
-8. различать automated GameTest/package/production-JAR evidence и manual cumulative acceptance;
-9. проверить latest Content Freshness runs/issues.
+5. проверить Cloudflare telemetry current hostname;
+6. проверить current Vlezet and VillAIgence source truth;
+7. различать source/package/GameTest/production-JAR/manual cumulative evidence;
+8. проверить Content Freshness issue #78 and dependency issue #82.
