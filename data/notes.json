@@ -78,5 +78,19 @@
     "readingMinutes": 7,
     "tags": ["AI", "Protocols", "Validation", "Reliability"],
     "related": ["server-authoritative-ai-npcs", "green-ci-is-not-product-verification"]
+  },
+  {
+    "slug": "source-tests-to-installed-acceptance",
+    "title": "От source tests к installed acceptance: что доказывает каждый release gate",
+    "description": "Практическая ретроспектива VillAIgence: чем отличаются source tests, package identity, GameTests, exact production-JAR startup/restart, rollback и cumulative installed acceptance.",
+    "published": "2026-08-03",
+    "updated": "2026-08-03",
+    "readingMinutes": 11,
+    "tags": ["Release Engineering", "CI", "Acceptance", "Reliability"],
+    "related": [
+      "green-ci-is-not-product-verification",
+      "static-site-quality-gates",
+      "server-authoritative-ai-npcs"
+    ]
   }
 ]
