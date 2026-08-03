@@ -190,6 +190,16 @@
     "accent": "violet"
   },
   {
+    "path": "landing/notes/source-tests-to-installed-acceptance.html",
+    "card": "note-installed-acceptance",
+    "title": "От source tests к installed acceptance: что доказывает каждый release gate",
+    "description": "VillAIgence release-engineering case study: source tests, package identity, GameTests, exact production-JAR startup/restart, rollback and bounded cumulative acceptance.",
+    "displayTitle": "INSTALLED ACCEPTANCE",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["RELEASE ENGINEERING", "CI", "RELIABILITY"],
+    "accent": "green"
+  },
+  {
     "path": "en/index.html",
     "card": "home-en",
     "title": "Ruslan Nemykin — Backend Engineer",

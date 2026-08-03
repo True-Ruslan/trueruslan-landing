@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-03**, после merge P2.4h Product Evidence Reconciliation.
+> Обновлено: **2026-08-03**, во время P2.4i Installed Acceptance Engineering Note.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -8,170 +8,149 @@
 
 # 2026-08-03
 
-## P2.4h — Product Evidence Reconciliation
+## P2.4i — Installed Acceptance Engineering Note
 
-Content Freshness Guard issue #78 обнаружил, что public landing отстал от source repositories:
+### Purpose
 
-- Vlezet PR #41 уже был product-owner accepted и squash-merged, но landing продолжал показывать M7.8B как failed Draft;
-- VillAIgence получил release/tag `0.1.23+1.21.1`, M11 risk-based GameTests и production-JAR startup/restart acceptance, но landing останавливался на `0.1.22 live acceptance pending`.
+После P2.4h landing уже корректно различал VillAIgence PR #103 GameTests и PR #104 production-JAR startup/restart evidence. Следующий milestone превратил эту evidence chain в отдельную grounded Engineering Note:
+
+**«От source tests к installed acceptance: что доказывает каждый release gate»**.
+
+The existing Note `Почему green CI не означает verified product` remains the general explanation of bounded Evidence semantics. P2.4i is a concrete VillAIgence release-engineering retrospective.
 
 ### Selected design
 
-Выбрана manual, bounded reconciliation без runtime GitHub API и без automatic public truth mutation.
+- one Russian Note in the existing static Notes platform;
+- no new schema, renderer, CSS, browser runtime, backend, API, analytics event or search engine;
+- canonical slug `source-tests-to-installed-acceptance`;
+- existing manifest owns metadata, Atom feed and previous/next/related navigation;
+- Diplodoc remains the only site-wide full-text search owner;
+- stable source links point to accepted VillAIgence PR #98–#104 and the canonical startup validation document.
 
-Source-of-truth boundaries сохранены:
+### Evidence narrative
+
+The Note records:
 
 ```text
-data/projects.json
-→ project identity / lifecycle / route
-
-data/project-history/*.json
-→ public evolution timeline
-
-data/project-evidence.json
-→ dated bounded evidence signals
-
-docs/landing/projects/*.md
-→ authored case-study narrative
-
-data/now.json
-→ short-lived editorial snapshot
+0.1.20 installed PARTIAL PASS
+→ water / filled-grave / embedded-version / approximately 272-second Chat defects
+→ corrective PRs #99–#101
+→ exact 0.1.21 installed STARTUP FAIL
+→ safe rollback + six persistent hashes preserved
+→ PR #102 removes the production-unsafe Mixin
+→ PR #103 adds 28 scenarios and seven GameTests
+→ PR #104 proves exact production-JAR startup/restart across two JVMs
+→ cumulative provider/multiplayer/live gameplay acceptance remains pending
 ```
 
-Не изменены schemas, renderers, CSS, routes, search ownership, analytics policy, visual thresholds и backend/runtime architecture.
+The article explicitly separates:
+
+- source/unit logic;
+- loader/build and remapped package shape;
+- exact embedded identity;
+- development GameTest integration;
+- exact production-JAR startup;
+- controlled shutdown/restart;
+- six-store path/hash continuity;
+- focused installed canaries;
+- cumulative product-owner promotion.
+
+Rollback is treated as a valid acceptance outcome with service recovery and persistence oracles, not as evidence to hide.
 
 ### TDD RED
 
+A permanent repository contract was added before the content:
+
 ```text
-implementation PR:     #83
+PR:                    #85
+RED head:              1687a00fcecb614df386eeceea1057fc63a9b2f4
+Build:                 #645 / 30832535417 — expected FAILURE
+unit tests:            318 PASS / 3 expected FAIL
+CodeQL:                #85 / 30832537884 — SUCCESS
+Dependency Review:     #73 / 30832535753 — SUCCESS
+RED artifact:          8863494780
+```
+
+The three failures were exact and intentional:
+
+1. missing Note registry entry;
+2. missing canonical Markdown source;
+3. missing Notes index, TOC and page metadata integration.
+
+All 318 pre-existing tests passed.
+
+### Delivered implementation
+
+- `docs/landing/notes/source-tests-to-installed-acceptance.md`;
+- `data/notes.json` entry with 11-minute reading time and bounded related Notes;
+- Notes index entry under reliability/testing;
+- TOC discovery;
+- `data/page-meta.json` OpenGraph/metadata identity;
+- permanent `scripts/release-gates-note.test.js` contract;
+- canonical grounded-note requirement in `scripts/notes-content.test.js`;
+- generated Note metadata and previous/next/related navigation;
+- Atom feed inclusion;
+- generated search coverage.
+
+### Implementation GREEN
+
+```text
+implementation head:   a6e67fe9e94f8199eddb2500f500c4914ae45a7f
+Build:                 #651 / 30832936159 — SUCCESS
+CodeQL:                #91 / 30832936148 — SUCCESS
+Dependency Review:     #79 / 30832933816 — SUCCESS
+unit tests:            321 PASS / 0 FAIL
+Lighthouse:            100 / 100 / 100 / 100
+quality artifact:      8863770773
+artifact digest:       sha256:39184bf7191e73c7e3b4c91c37cfead597b330fa5e2f30b030bb48b95acf287d
+artifact retention:    through 2026-08-17
+```
+
+Build #651 passed production build, generated-site integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression and custom-domain artifact verification.
+
+### Claim boundary
+
+P2.4i does not claim:
+
+- completed VillAIgence cumulative installed acceptance;
+- equivalence between GameTests and operator-server behavior;
+- real Text/STT/Chat/TTS or Voice Chat proof from startup/restart evidence;
+- semantic correctness of every persistent record from stable hashes alone;
+- invented reliability, adoption or latency metrics.
+
+### Finalization state
+
+Durable docs were synchronized after implementation GREEN. This produces a new exact PR head; final Build, CodeQL, Dependency Review, artifact evidence and squash must be recorded after PR #85 completes.
+
+### Next milestone
+
+P2.4j — grounded Note about deterministic authority around probabilistic LLM/CV proposals, using both Vlezet and VillAIgence.
+
+---
+
+## P2.4h — Product Evidence Reconciliation
+
+Content Freshness Guard issue #78 found that landing evidence had drifted from Vlezet and VillAIgence source repositories.
+
+### Delivered
+
+- Vlezet M7.8B PR #41 recorded as accepted/merged with geometry/topology F1 `0.837989`, 27 local / 19 AI-confirmed / 8 review and known limitations;
+- Vlezet timeline advanced to M7.8C;
+- VillAIgence `0.1.20` partial PASS and `0.1.21` startup failure/rollback retained;
+- corrective PRs #99–#102 recorded;
+- PR #103 risk-based GameTests and PR #104 production-JAR startup/restart recorded as separate scopes;
+- current candidate `0.1.23+1.21.1` recorded;
+- lifecycle remains `release-candidate`, public label `ACCEPTANCE IN PROGRESS`;
+- `/now`, RU/EN flagship narratives, Project Evidence, timelines and durable state synchronized;
+- portfolio status tests derive expected labels from canonical `data/projects.json`.
+
+### TDD and final evidence
+
+```text
 RED head:              fe269ad4a0207968b87aaff4901bffce25ae58f5
-Build:                 30826688736 — expected FAILURE
-unit tests:            317 PASS / 1 expected FAIL
-failure:               Vlezet M7.8B state `failed`, expected `merged`
-CodeQL:                30826688612 — SUCCESS
-Dependency Review:     30826689352 — SUCCESS
-```
+RED Build:             30826688736 — expected FAILURE
+RED tests:             317 PASS / 1 expected FAIL
 
-The failure occurred only in the new repository reconciliation contract. All 317 pre-existing tests passed.
-
-### Vlezet reconciliation
-
-```text
-PR:                     #41 — MERGED
-accepted head:          a5003371f2feb4fa37edbd2513b0b5312bc5dd07
-squash:                 08800dd66fa298ff31d1a7e6b33e91964cdb8d16
-Standard CI:            30767495988 / #2834 — PASS
-Recognition Benchmark: 30767496002 / #165 — PASS
-M7 Browser Audit:       30767495992 / #618 — PASS
-Source geometry F1:     0.837989
-Source topology F1:     0.837989
-```
-
-Representative accepted result:
-
-```text
-local wall candidates: 27
-confirmed after AI:     19
-remaining for review:   8
-openings:               0 — deferred to M7.8C
-```
-
-Landing changes:
-
-- M7.8B signal changed from `failed` to `merged`;
-- failed-Draft current narrative replaced by accepted-with-limitations state;
-- initial 417-candidate failure retained as historical negative evidence;
-- region-first extraction, bounded fallback, overload protection and verification-only AI recorded;
-- timeline advanced to **M7.8C Opening Classification and Host-Wall Validation**;
-- lifecycle remains `pre-production`;
-- accurate arbitrary-plan recognition is not claimed.
-
-### VillAIgence reconciliation
-
-Historical evidence retained:
-
-- `0.1.20+1.21.1` partial PASS with water, grave, identity and latency defects;
-- `0.1.21+1.21.1` startup FAIL on the tombstone Mixin;
-- safe rollback preserving six persistent hashes and restoring service;
-- corrective PRs #99–#102.
-
-New evidence:
-
-#### PR #103 — M11 Phase A
-
-- validated 28-scenario acceptance catalogue across seven risk domains;
-- seven real-server Fabric GameTests;
-- MCA navigation wiring;
-- NPC → tombstone item → NPC identity/inventory round trip;
-- real Silk Touch filled-grave drops;
-- empty-grave negative control;
-- deterministic water-navigation properties;
-- fail-closed test-mod leakage guard.
-
-#### PR #104 — M11 Phase B
-
-```text
-exact head:            9a03a6535e1d6349ddcfa62d6edbe67fbc7f6cfa
-squash/source head:    61b66e38e99c1dc9bdc26089bfb345a250a881e2
-published candidate:   0.1.23+1.21.1
-```
-
-Automated scope:
-
-- exact remapped Fabric candidate installed outside Loom/dev classpath;
-- two separate JVM runs reached Minecraft ready state;
-- controlled `stop`, complete world save and exit code 0;
-- stable relative paths and SHA-256 values across restart for six canonical stores;
-- fixture classes and mod ID absent from distributable JAR.
-
-Landing changes:
-
-- lifecycle remains `release-candidate`;
-- public label advanced from `CORRECTIVE CANDIDATE` to `ACCEPTANCE IN PROGRESS`;
-- PR #103 and PR #104 added as separate automated evidence signals;
-- RU and EN VillAIgence case studies synchronized;
-- timeline advanced to M11 risk-based production-JAR acceptance;
-- cumulative real-provider, multiplayer, focused water/grave and product-owner acceptance remains pending.
-
-### `/now` synchronization
-
-Date advanced to `2026-08-03`.
-
-The snapshot now distinguishes:
-
-- Vlezet M7.8B accepted progress with Source F1 `0.837989` and retained uncertainty;
-- VillAIgence automated production-JAR startup/restart proof;
-- manual cumulative acceptance still pending;
-- manual deterministic reconciliation as the owner of public truth.
-
-### Test-contract corrections
-
-Intermediate candidates revealed stale test assumptions rather than production defects:
-
-```text
-Build #634 / 30827956405
-→ Russian page was checked with an English-only cumulative-acceptance phrase
-
-Build #635 / 30828062261
-→ browser-quality still required VillAIgence 0.1.22
-
-Build #636 / 30828352405
-→ Project Evidence smoke still expected three VillAIgence signals
-
-Build #637 / 30828673190
-→ portfolio v0.3 hard-coded CORRECTIVE CANDIDATE
-```
-
-Corrections:
-
-- cumulative acceptance assertion accepts localized wording;
-- browser scenario requires `0.1.23+1.21.1`, `production-JAR` and cumulative boundary;
-- Project Evidence smoke requires five signals, state counts `accepted=1 / failed=1 / merged=3`, PR #103 and PR #104 in enhanced and no-JS output;
-- Projects hub and `/now` status checks now derive expected labels from canonical `data/projects.json` instead of duplicating lifecycle copy.
-
-### Final exact-head verification and merge
-
-```text
 feature PR:            #83 — MERGED
 exact feature head:    e50495e7f988e362905c7b137efd6541e7f94e33
 squash on master:      5978f727206fa386e9cce18c26c9ba7b7eade2eb
@@ -181,17 +160,9 @@ Dependency Review:     #69 / 30829738958 — SUCCESS
 unit tests:            318 PASS / 0 FAIL
 Lighthouse:            100 / 100 / 100 / 100
 quality artifact:      8862581638
-artifact digest:       sha256:5c85da305745e2f66307c543cd3d356d1b6f2f7d5e459400ad54ae8d08432afe
-artifact retention:    through 2026-08-17
 ```
 
-Build #641 passed production build, site integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression and custom-domain artifact verification.
-
-PR #83 was squash-merged into `master` on 2026-08-03. PR #84 records this final state as a minimal continuity sync.
-
-### Next milestone
-
-The next landing milestone is a narrow Engineering Note about source tests, integration GameTests, package identity, exact artifact, installed startup/restart and cumulative acceptance. It is explicitly distinct from the existing general green-CI/Evidence Layer Note.
+PR #84 recorded the final P2.4h continuity state as squash `84fff6ceecbca5efb8019927b826c66cc19a50e2` after its own complete exact-head matrix.
 
 ---
 
@@ -203,111 +174,68 @@ Added `SECURITY.md`, ownership and pull-request contracts, bounded Dependabot, C
 
 ### PRs #69/#71/#74/#76/#77
 
-Accepted compatible dependency, pinned Action and durable hardening updates after their configured verification matrices.
+Accepted compatible dependency, pinned Action and durable hardening updates after configured verification matrices.
 
 ### PR #79 — remove vulnerable fast-xml-parser 4.x
 
-- removed the vulnerable 4.x dependency path;
-- bounded override to `fast-xml-parser@5.10.1`;
-- preserved Diplodoc translation behavior;
-- added permanent security and compatibility regression coverage.
+Removed the vulnerable 4.x path, bounded `fast-xml-parser@5.10.1`, preserved Diplodoc translation and added permanent security/compatibility regression coverage.
 
 ### PR #80 — low-risk audit remediation
 
-- removed unused `@gravity-ui/page-constructor`;
-- applied compatible patch/minor overrides;
-- added lockfile and dependency invariants.
+Removed unused `@gravity-ui/page-constructor`, applied compatible patch/minor overrides and added lockfile invariants.
 
 ### PR #81 — linkify remediation and markdown-it blocker
 
 ```text
-exact head:          14f44204fbf8cc8f0452eadf6722157aba0e8120
 squash:              a554a2b59fe6a6e6369530567e9beba445311e17
 Build:               30814355266 — SUCCESS
-CodeQL:              30814355897 — SUCCESS
-Dependency Review:   30814356860 — SUCCESS
-unit tests:          317 PASS / 0 FAIL
-fresh audit:         6 moderate / 0 high / 0 critical
+CodeQL:               30814355897 — SUCCESS
+Dependency Review:    30814356860 — SUCCESS
+unit tests:           317 PASS / 0 FAIL
+fresh audit:          6 moderate / 0 high / 0 critical
 ```
 
-The six residual package-level records reduce to build-time `markdown-it@13.0.2`. Upgrade above `14.1.1` is blocked by current Diplodoc internal imports. A local shim, unreviewed fork and `npm audit fix --force` were rejected. Issue #82 remains open with next review on **2026-08-17**.
+All residual package records reduce to build-time `markdown-it@13.0.2`. Upgrade above `14.1.1` is blocked by current Diplodoc internal imports. Issue #82 remains open; next review **2026-08-17**. Local shim, unreviewed fork and `npm audit fix --force` remain rejected.
 
 ---
 
 # 2026-08-02
 
-## P2.4g — `/now` synchronization after flagship milestones
+## P2.4g — `/now` synchronization
 
-```text
-feature PR:          #65
-exact feature head:  fdc2d2ddf54f67aacf1e730f210fb6aae7325cdf
-Build / run:         #571 / 30763586234 — SUCCESS
-squash on master:    2ef556a6e910be001355193d9d96f499131d5094
-unit tests:          307 PASS / 0 FAIL
-```
-
-Refreshed the authored current-focus snapshot after Vlezet, External Publications and VillAIgence flagship milestones while preserving registry-owned project state and stable `livingworld.html` compatibility.
+PR #65 refreshed the current-focus snapshot after Vlezet, Publications and VillAIgence flagship milestones while preserving registry-owned project state.
 
 ## P2.4f — VillAIgence flagship case study
 
-PR #63 published the public VillAIgence identity, Memory 2.0/operator-lore/security/release evidence and authority/acceptance diagram while preserving the stable `livingworld` route.
+PR #63 published VillAIgence identity, Memory 2.0/operator-lore/security/release evidence and the authority/acceptance diagram under the stable `livingworld` route.
 
 ## P2.4e — External Publications Showcase
 
-PR #61 published a static-first catalogue of three externally verified Habr articles. Drafts and unverified records remained excluded.
+PR #61 published three externally verified Habr articles. Drafts and unverified records remained excluded.
 
 ## P2.4d — Vlezet flagship case study
 
-PR #59 published Vlezet as a controlled flagship with explicit geometry/recognition authority boundaries.
+PR #59 published Vlezet with explicit geometry/recognition authority boundaries.
 
-## P2.4c — Search, Photo shell and rendered-asset stabilization
+## P2.4c — search, Photo shell and rendered-asset stabilization
 
-- Search Back navigation — PR #53.
-- Single-contour search field and centered button — PR #54.
-- Photo index moved into shared Diplodoc shell — PR #55.
-- NODE ZERO SVG critical paint stabilization — PR #57.
-- Durable state sync — PR #58.
+PRs #53/#54/#55/#57/#58 stabilized Search Back, search UI, Photo shared shell, NODE ZERO SVG paint and durable state.
 
 ---
 
 # 2026-08-01
 
-## P2.4b — Header utility navigation and language consolidation
-
-PR #51 established canonical utility order, accessible icon-only controls, bounded RU/EN menu and removed the duplicate floating switch.
-
-## P2.4a — Canonical rollout and custom-host telemetry
-
-Landing, CV and flagship repository links moved to `https://trueruslan.ru/`; first Cloudflare custom-host telemetry was observed without drawing audience conclusions.
-
-## P2.3b — HTTPS Production Cutover
-
-Strict custom deployment run `30704218399` confirmed custom origin, production smoke, RU/EN canonical identity and one analytics beacon per localized homepage.
+- P2.4b Header utility navigation and language consolidation — PR #51.
+- P2.4a Canonical rollout and custom-host telemetry — PRs #48–#50.
+- P2.3b HTTPS Production Cutover — run `30704218399`.
 
 ---
 
 # Earlier milestones
 
-## 2026-07-30
-
-- P2.2a production analytics activation and legacy operational closure.
-
-## 2026-07-23
-
-- P2.2 Privacy-friendly analytics — PR #40.
-- P2.1 Minimal RU/EN — PR #38.
-- P1.4 Additional Grounded Engineering Note — PR #36.
-
-## 2026-07-22
-
-- P1.3 Flagship Case-Study Format — PR #34.
-- P1.2 Project Metadata Cleanup — PR #31.
-- P1.1 Browser Quality Harness — PR #29.
-- P0.6 Content Freshness Guard — PR #27.
-- P0.5 Grounded Engineering Notes — PR #25.
-- P0.4 Project Evidence Layer — PR #22.
-- P0.3 Sources Knowledge Base — PR #20.
-- P0.1 Photo Stories platform — PR #15 + #17.
+- 2026-07-30 — production analytics activation and legacy operational closure.
+- 2026-07-23 — P2.2 analytics, P2.1 Minimal RU/EN, P1.4 additional grounded Note.
+- 2026-07-22 — flagship format, metadata cleanup, browser harness, freshness, Notes, Evidence, Sources and Photo Stories foundation.
 
 ---
 
@@ -319,4 +247,4 @@ After each major milestone synchronize:
 2. `docs/ROADMAP.md`;
 3. `docs/CHANGELOG.md`.
 
-These files are snapshots, not substitutes for actual repository state, exact-head CI, Pages deployment reports, production DNS/TLS, source-project acceptance or provider telemetry.
+These snapshots never substitute for actual repository state, exact-head CI, Pages deployment reports, production DNS/TLS, source-project acceptance or provider telemetry.
