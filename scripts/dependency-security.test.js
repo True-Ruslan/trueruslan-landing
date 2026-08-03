@@ -79,7 +79,7 @@ test('unused page-constructor dependency and its vulnerable-only graph are absen
   assert.deepEqual(lockfileEntriesFor(lockfile, '@gravity-ui/page-constructor'), []);
 });
 
-test('low-risk audit packages remain on fixed patch or minor releases', () => {
+test('brace-expansion and undici are beyond every current high-severity advisory range', () => {
   const lockfile = JSON.parse(fs.readFileSync(lockfilePath, 'utf8'));
   const violations = [];
 
@@ -87,13 +87,28 @@ test('low-risk audit packages remain on fixed patch or minor releases', () => {
     const version = metadata?.version;
     const [major] = versionParts(version);
     const affected =
-      (major === 2 && compareVersion(version, [2, 1, 3]) < 0) ||
+      (major === 2 && compareVersion(version, [2, 1, 4]) < 0) ||
       (major >= 3 && major < 5) ||
-      (major === 5 && compareVersion(version, [5, 0, 8]) < 0);
-    if (affected) {
-      violations.push(`${packagePath}: ${version}`);
+      (major === 5 && compareVersion(version, [5, 0, 9]) < 0);
+    if (affected) violations.push(`${packagePath}: ${version}`);
+  }
+
+  for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'undici')) {
+    if (compareVersion(metadata?.version, [7, 29, 0]) < 0) {
+      violations.push(`${packagePath}: ${metadata?.version ?? 'unknown'}`);
     }
   }
+
+  assert.deepEqual(
+    violations,
+    [],
+    `High-severity dependency versions remain in package-lock.json:\n${violations.join('\n')}`,
+  );
+});
+
+test('low-risk audit packages remain on fixed patch or minor releases', () => {
+  const lockfile = JSON.parse(fs.readFileSync(lockfilePath, 'utf8'));
+  const violations = [];
 
   const minimums = new Map([
     ['katex', [0, 16, 21]],
