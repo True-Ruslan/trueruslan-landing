@@ -102,8 +102,13 @@ test('dependency audit generator normalizes advisories and explain evidence', as
     {source: 1100001, range: '<=14.1.1'},
     {source: 1100002, range: '>=13.0.0 <14.1.1'},
   ]);
-  assert.equal(report.vulnerabilities[0].explain.length, 1);
-  assert.deepEqual(report.vulnerabilities[1].fixAvailable, {
+
+  const markdownIt = report.vulnerabilities.find((record) => record.package === 'markdown-it');
+  const translation = report.vulnerabilities.find((record) => record.package === '@diplodoc/translation');
+  assert.ok(markdownIt);
+  assert.ok(translation);
+  assert.equal(markdownIt.explain.length, 1);
+  assert.deepEqual(translation.fixAvailable, {
     name: '@diplodoc/cli',
     version: '6.0.0',
     isSemVerMajor: true,
