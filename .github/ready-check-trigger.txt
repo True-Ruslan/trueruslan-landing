@@ -1,1 +1,0 @@
-Temporary trigger for required checks after draft transition.
