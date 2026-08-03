@@ -25,48 +25,66 @@ test('VillAIgence public identity preserves the stable livingworld route', () =>
   assert.equal(project.href, 'landing/projects/livingworld.html');
   assert.equal(project.timeline, 'livingworld');
   assert.equal(project.links.github, 'https://github.com/True-Ruslan/villAIgence');
-  assert.equal(project.statusLabel, 'CORRECTIVE CANDIDATE');
+  assert.equal(project.status, 'release-candidate');
+  assert.equal(project.statusLabel, 'ACCEPTANCE IN PROGRESS');
 });
 
-test('VillAIgence page records current source and installed-acceptance boundaries', () => {
+test('VillAIgence page records current automated and cumulative acceptance boundaries', () => {
   const page = fs.readFileSync(PAGE_PATH, 'utf8');
 
   assert.match(page, /^# VillAIgence/m);
   assert.match(page, /https:\/\/github\.com\/True-Ruslan\/villAIgence/);
-  assert.match(page, /e13660f5998fa1ed343548252d573140adc5b0c9/);
-  assert.match(page, /0\.1\.20\+1\.21\.1[\s\S]{0,220}PARTIAL PASS/i);
+  assert.match(page, /61b66e38e99c1dc9bdc26089bfb345a250a881e2/);
+  assert.match(page, /0\.1\.20\+1\.21\.1[\s\S]{0,240}PARTIAL PASS/i);
   assert.match(page, /0\.1\.21\+1\.21\.1[\s\S]{0,260}startup/i);
-  assert.match(page, /0\.1\.22\+1\.21\.1[\s\S]{0,260}pending/i);
+  assert.match(page, /0\.1\.23\+1\.21\.1/);
+  assert.match(page, /PR #103[\s\S]{0,500}28/);
+  assert.match(page, /PR #104[\s\S]{0,700}production-JAR/i);
+  assert.match(page, /production-JAR[\s\S]{0,360}restart/i);
+  assert.match(page, /Cumulative acceptance remains pending/i);
   assert.match(page, /LivingWorld\s*\/\s*livingworld[\s\S]{0,220}compatib/i);
-  assert.doesNotMatch(page, /0\.1\.22\+1\.21\.1[^\n]{0,120}(accepted|full pass|production-ready)/i);
+  assert.doesNotMatch(page, /0\.1\.23\+1\.21\.1[^\n]{0,160}(production-ready|full pass|fully accepted)/i);
 });
 
-test('VillAIgence timeline has one current corrective-candidate milestone', () => {
+test('VillAIgence timeline has one current risk-based production-JAR milestone', () => {
   const history = readJson(HISTORY_PATH);
   const current = history.filter(({state}) => state === 'current');
 
   assert.equal(history.length, 5);
   assert.equal(current.length, 1);
-  assert.match(current[0].title, /0\.1\.22|corrective/i);
-  assert.equal(current[0].evidence, 'https://github.com/True-Ruslan/villAIgence/pull/102');
-  assert.match(history.at(-1).description, /installed|startup|water|grave|restart|acceptance/i);
+  assert.match(current[0].title, /M11|production-JAR|risk-based/i);
+  assert.equal(current[0].version, '0.1.23+1.21.1');
+  assert.equal(current[0].evidence, 'https://github.com/True-Ruslan/villAIgence/pull/104');
+  assert.match(history.at(-1).description, /Text|STT|Chat|TTS|two-client|water|grave|acceptance/i);
 });
 
-test('VillAIgence evidence separates partial acceptance, corrective code and failed startup', () => {
+test('VillAIgence evidence separates historical failures, GameTests and production-JAR restart proof', () => {
   const evidence = readJson(EVIDENCE_PATH).find(({project}) => project === 'livingworld');
 
   assert.ok(evidence, 'livingworld evidence snapshot must remain present');
-  assert.equal(evidence.lastVerified, '2026-08-02');
-  assert.equal(evidence.signals.length, 3);
-  assert.deepEqual(evidence.signals.map(({state}) => state), ['accepted', 'merged', 'failed']);
+  assert.equal(evidence.lastVerified, '2026-08-03');
+  assert.equal(evidence.signals.length, 5);
+  assert.deepEqual(evidence.signals.map(({state}) => state), [
+    'accepted',
+    'failed',
+    'merged',
+    'merged',
+    'merged',
+  ]);
   assert.match(evidence.signals[0].scope, /0\.1\.20[\s\S]{0,260}partial/i);
   assert.match(evidence.signals[0].scope, /water|drown/i);
   assert.match(evidence.signals[0].scope, /grave|Silk Touch/i);
   assert.match(evidence.signals[0].scope, /272/);
-  assert.match(evidence.signals[1].scope, /#99|PRs #99–#102|PRs #99-#102/);
-  assert.match(evidence.signals[1].scope, /installed acceptance remains pending/i);
-  assert.match(evidence.signals[2].scope, /0\.1\.21[\s\S]{0,260}startup/i);
-  assert.match(evidence.signals[2].scope, /six|6[\s-]persistent/i);
+  assert.match(evidence.signals[1].scope, /0\.1\.21[\s\S]{0,260}startup/i);
+  assert.match(evidence.signals[1].scope, /six|6[\s-]persistent/i);
+  assert.match(evidence.signals[2].scope, /#99|PRs #99–#102|PRs #99-#102/);
+  assert.match(evidence.signals[3].label, /PR #103/);
+  assert.match(evidence.signals[3].scope, /28-scenario/);
+  assert.match(evidence.signals[3].scope, /GameTest/i);
+  assert.match(evidence.signals[4].label, /PR #104/);
+  assert.match(evidence.signals[4].scope, /two separate JVM runs/i);
+  assert.match(evidence.signals[4].scope, /SHA-256 values across restart/i);
+  assert.match(evidence.signals[4].scope, /does not complete/i);
 });
 
 test('VillAIgence metadata uses the stable public route', () => {
