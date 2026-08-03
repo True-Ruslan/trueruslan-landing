@@ -17,8 +17,9 @@ const PROJECTS = [
     status: 'verified',
     label: 'ПРОВЕРЕНО',
     borderStyle: 'solid',
-    signals: 3,
-    states: ['accepted', 'merged', 'failed'],
+    signals: 5,
+    stateCounts: {accepted: 1, failed: 1, merged: 3},
+    requiredText: ['PR #103', 'PR #104', '0.1.23+1.21.1', 'production-JAR'],
   },
   {project: 'node-zero', route: '/landing/projects/node-zero.html', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
 ];
@@ -34,6 +35,9 @@ async function assertEvidence(page, expected, prefix) {
   const text = await root.textContent();
   if (!text?.includes(expected.label)) throw new Error(`${prefix}: ${expected.project} trust label is missing`);
   if (!text?.includes('Что подтверждает:')) throw new Error(`${prefix}: ${expected.project} bounded evidence scope is missing`);
+  for (const requiredText of expected.requiredText || []) {
+    if (!text?.includes(requiredText)) throw new Error(`${prefix}: ${expected.project} evidence text is missing ${requiredText}`);
+  }
 
   if (expected.status !== 'verified') {
     if (await root.getAttribute('class').then((value) => value?.includes('tr-project-evidence--verified'))) {
@@ -60,17 +64,19 @@ async function assertEvidence(page, expected, prefix) {
     throw new Error(`${prefix}: expected ${expected.signals} evidence signals, got ${signalCount}`);
   }
 
-  if (expected.states) {
+  const renderedStateCounts = {};
+  if (expected.stateCounts) {
     const renderedStates = await root.locator('.tr-project-evidence__signal-state').evaluateAll((nodes) => nodes.map((node) => node.textContent || ''));
-    for (const state of expected.states) {
+    for (const [state, expectedCount] of Object.entries(expected.stateCounts)) {
       const count = renderedStates.filter((value) => value.includes(state)).length;
-      if (count !== 1) throw new Error(`${prefix}: expected state ${state} exactly once, got ${count}`);
+      renderedStateCounts[state] = count;
+      if (count !== expectedCount) throw new Error(`${prefix}: expected state ${state} ${expectedCount} time(s), got ${count}`);
     }
   }
 
   return {
     signals: signalCount,
-    states: expected.states || [],
+    stateCounts: renderedStateCounts,
     status: expected.status,
     trustBorder: trustTreatment,
   };

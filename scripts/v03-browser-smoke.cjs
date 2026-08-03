@@ -1,3 +1,6 @@
+const fs = require('node:fs');
+const path = require('node:path');
+
 const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cjs');
 const {startStaticServer} = require('./quality-harness/static-server.cjs');
 const {createScenarioPage} = require('./quality-harness/browser.cjs');
@@ -9,6 +12,13 @@ const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 const PORT = Number(process.env.V03_QUALITY_PORT || 4178);
 const {chromium} = requireQualityTool('playwright');
 const AxeBuilder = requireQualityTool('@axe-core/playwright').default;
+const PROJECTS = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', 'data', 'projects.json'), 'utf8'));
+
+function expectedProjectStatus(slug) {
+  const project = PROJECTS.find((candidate) => candidate.slug === slug);
+  if (!project) throw new Error(`Project Registry is missing ${slug}.`);
+  return project.statusLabel;
+}
 
 async function assertCommandPalette(page) {
   const trigger = page.locator('.tr-command-trigger').first();
@@ -96,10 +106,10 @@ async function main() {
         const nodeZeroStatus = page.locator('[data-project-status="node-zero"]');
         await villaigenceStatus.waitFor({state: 'visible'});
         await nodeZeroStatus.waitFor({state: 'visible'});
-        if ((await villaigenceStatus.innerText()).trim() !== 'CORRECTIVE CANDIDATE') {
+        if ((await villaigenceStatus.innerText()).trim() !== expectedProjectStatus('livingworld')) {
           throw new Error('VillAIgence status on Projects hub drifted from Project Registry.');
         }
-        if ((await nodeZeroStatus.innerText()).trim() !== 'PRE-PRODUCTION') {
+        if ((await nodeZeroStatus.innerText()).trim() !== expectedProjectStatus('node-zero')) {
           throw new Error('NODE ZERO status on Projects hub drifted from Project Registry.');
         }
       },
@@ -114,8 +124,10 @@ async function main() {
         const activeCards = await page.locator('[data-tr-now] .tr-active-card').count();
         if (activeCards < 1) throw new Error('Now page contains no registry-derived active project cards.');
         const nowText = await page.locator('[data-tr-now]').innerText();
-        if (!nowText.includes('CORRECTIVE CANDIDATE') || !nowText.includes('PRE-PRODUCTION')) {
-          throw new Error('Now page project statuses drifted from Project Registry.');
+        for (const slug of ['livingworld', 'node-zero']) {
+          if (!nowText.includes(expectedProjectStatus(slug))) {
+            throw new Error(`Now page ${slug} status drifted from Project Registry.`);
+          }
         }
         await assertCommandPalette(page);
       },

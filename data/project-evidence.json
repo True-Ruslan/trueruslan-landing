@@ -2,13 +2,15 @@
   {
     "project": "vlezet",
     "status": "verified",
-    "lastVerified": "2026-08-02",
+    "lastVerified": "2026-08-03",
     "versions": [
       {"label": "Web application", "value": "Next.js 16 + React + TypeScript"},
       {"label": "2D projection", "value": "Konva / react-konva"},
       {"label": "3D projection", "value": "Three.js"},
       {"label": "Persistence", "value": "IndexedDB"},
-      {"label": "Canonical geometry", "value": "millimetres"}
+      {"label": "Canonical geometry", "value": "millimetres"},
+      {"label": "Accepted recognition slice", "value": "M7.8B"},
+      {"label": "Next recognition slice", "value": "M7.8C"}
     ],
     "signals": [
       {
@@ -27,23 +29,23 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/vlezet/pull/40",
         "observedAt": "2026-08-02",
-        "scope": "M7.8A established an eight-fixture public-safe benchmark, deterministic geometry/topology/opening/room/area/confidence metrics and real Chromium/OpenCV source execution. Product-owner calibration acceptance covered image-rectangle coordinates and undirected horizontal/vertical calibration. The accepted baseline intentionally exposed zero Source wall and opening F1 before quality tuning."
+        "scope": "M7.8A established a versioned public-safe recognition corpus, deterministic geometry/topology/opening/room/area/confidence metrics and real Chromium/OpenCV source execution. It provides a reproducible measurement authority; it does not by itself prove arbitrary real-plan accuracy."
       },
       {
         "kind": "pr",
         "mode": "automated",
-        "label": "M7.8B wall topology PR #41",
-        "state": "failed",
+        "label": "M7.8B source normalization and wall topology PR #41",
+        "state": "merged",
         "url": "https://github.com/True-Ruslan/vlezet/pull/41",
-        "observedAt": "2026-08-02",
-        "scope": "Product-owner review failed on a representative clear apartment plan: the local Draft contained 417 wall candidates, zero openings and a symbol/furniture network instead of an architectural wall graph; AI reconciliation retained the polluted network and added unsupported long lines. Corrective structural masking reduced an isolated reproduction from about 948 to 115 unique segments and from 12,346 to 249 admissible parallel pairs, but current aggregate Source geometry/topology F1 is only approximately 0.492537/0.462687. PR #41 remains Draft and must not be described as accepted recognition quality."
+        "observedAt": "2026-08-03",
+        "scope": "M7.8B was product-owner accepted with known precision limitations and squash-merged after exact-head Standard CI, Recognition Benchmark and M7 Browser Audit passed. It proves region-first source normalization, bounded wall topology, fail-closed overload protection and verification-only AI. The accepted Source geometry and topology F1 are both 0.837989; the representative source produced 27 local wall candidates, 19 AI-confirmed and 8 pending review. Openings are deferred to M7.8C, and the milestone does not prove accurate arbitrary-plan recognition."
       }
     ]
   },
   {
     "project": "livingworld",
     "status": "verified",
-    "lastVerified": "2026-08-02",
+    "lastVerified": "2026-08-03",
     "versions": [
       {"label": "Public name", "value": "VillAIgence"},
       {"label": "Minecraft Java", "value": "1.21.1"},
@@ -51,8 +53,10 @@
       {"label": "Primary package", "value": "Fabric"},
       {"label": "Compatibility build", "value": "NeoForge"},
       {"label": "Persistent context", "value": "Memory 2.0 + Operator Lore"},
-      {"label": "Installed checkpoint", "value": "0.1.20 partial PASS"},
-      {"label": "Corrective code candidate", "value": "0.1.22 live acceptance pending"}
+      {"label": "Historical installed checkpoint", "value": "0.1.20 partial PASS"},
+      {"label": "Current published candidate", "value": "0.1.23+1.21.1"},
+      {"label": "Automated installed boundary", "value": "production-JAR startup + restart PASS"},
+      {"label": "Cumulative manual acceptance", "value": "pending"}
     ],
     "signals": [
       {
@@ -65,22 +69,40 @@
         "scope": "Exact 0.1.20+1.21.1 installed acceptance ended as a partial PASS, not a full release acceptance. Text, STT, Chat, TTS, Voice Chat, Operator Lore scopes, restart, rollback-world loading and most synchronized gameplay scenarios passed. Release defects remained: an NPC became trapped in water and drowned; a filled grave broken with Silk Touch disappeared without an item; embedded identity reported a snapshot; and one Chat request took approximately 272 seconds."
       },
       {
-        "kind": "pr",
-        "mode": "automated",
-        "label": "Corrective PRs #99–#102",
-        "state": "merged",
-        "url": "https://github.com/True-Ruslan/villAIgence/pull/102",
-        "observedAt": "2026-08-02",
-        "scope": "PRs #99–#102 preserve vanilla water path positioning, retain filled-tombstone data, enforce exact embedded release identity and replace the production-unsafe tombstone Mixin with direct owned-source wiring. Exact-head repository, Fabric/NeoForge, remapped-package, security and applicable supply-chain gates passed. Installed acceptance remains pending for the exact 0.1.22+1.21.1 artifact."
-      },
-      {
         "kind": "manual",
         "mode": "manual",
         "label": "Installed 0.1.21 startup blocker and safe rollback",
         "state": "failed",
         "url": "https://github.com/True-Ruslan/villAIgence/blob/1.21.1/docs/livingworld/VALIDATION_0.1.22_TOMBSTONE_STARTUP_FIX.md",
         "observedAt": "2026-08-02",
-        "scope": "Exact 0.1.21+1.21.1 failed during startup before world and gameplay acceptance because MixinTombstoneBlock could not resolve the production getDrops target. The operator rolled back to 0.1.20; six persistent file hashes matched, the server reached STARTED, TCP 25565, UDP 24454, Voice Chat and monitoring recovered. This failure is not upgraded by the later automated correction."
+        "scope": "Exact 0.1.21+1.21.1 failed during startup before world and gameplay acceptance because MixinTombstoneBlock could not resolve the production getDrops target. The operator rolled back to 0.1.20; six persistent file hashes matched, the server reached STARTED, TCP 25565, UDP 24454, Voice Chat and monitoring recovered. This failure remains historical negative evidence and is not erased by later automated correction."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Corrective PRs #99–#102",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/102",
+        "observedAt": "2026-08-02",
+        "scope": "PRs #99–#102 preserve vanilla water path positioning, retain filled-tombstone data, enforce exact embedded release identity and replace the production-unsafe tombstone Mixin with direct owned-source wiring. Exact-head repository, Fabric/NeoForge, remapped-package, security and applicable supply-chain gates passed."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M11 Phase A risk-based acceptance PR #103",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/103",
+        "observedAt": "2026-08-03",
+        "scope": "PR #103 introduced a validated 28-scenario acceptance catalogue and seven isolated real-server Fabric GameTests covering MCA navigation wiring, NPC-to-tombstone-to-NPC identity and inventory preservation, real Silk Touch filled-grave drops, an empty-grave negative control and deterministic water-navigation properties. This is development GameTest evidence, not production-JAR startup or cumulative operator acceptance."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M11 Phase B production-JAR acceptance PR #104",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/104",
+        "observedAt": "2026-08-03",
+        "scope": "PR #104 installed the exact remapped Fabric candidate into an isolated production server outside the Loom development classpath. The candidate reached the ready marker in two separate JVM runs, stopped cleanly, saved the world and exited with code 0. memory.json, memory2.json, semantic-memory.json, relationships.json, voices.json and operator-lore.json retained identical relative paths and SHA-256 values across restart. Test fixture code was excluded from the distributable JAR. This automated proof does not complete real-provider Text/STT/Chat/TTS, two-client, focused live water/grave or product-owner cumulative acceptance."
       }
     ]
   },

@@ -12,7 +12,7 @@ const CORE_SCENARIOS = Object.freeze({
     slug: 'villaigence',
     path: '/landing/projects/livingworld.html',
     heading: 'VillAIgence',
-    requiredText: ['Memory 2.0', 'PARTIAL PASS', '0.1.22+1.21.1'],
+    requiredText: ['Memory 2.0', 'PARTIAL PASS', '0.1.23+1.21.1', 'production-JAR', 'Cumulative acceptance'],
   }),
   publications: Object.freeze({slug: 'publications', path: '/landing/publications.html', heading: 'Публикации и выступления'}),
   resume: Object.freeze({slug: 'resume', path: '/landing/resume.html', heading: 'Резюме'}),
