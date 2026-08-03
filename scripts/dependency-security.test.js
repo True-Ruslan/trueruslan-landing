@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {XMLValidator} from 'fast-xml-parser';
+import {compose, extract} from '@diplodoc/translation';
 
 const root = path.resolve(import.meta.dirname, '..');
 const lockfilePath = path.join(root, 'package-lock.json');
@@ -39,4 +41,20 @@ test('lockfile contains no fast-xml-parser release affected by GHSA-gh4j-gqv2-49
     [],
     `Affected fast-xml-parser versions remain in package-lock.json:\n${violations.join('\n')}`,
   );
+});
+
+test('fast-xml-parser 5.x remains compatible with the Diplodoc translation round trip', () => {
+  assert.equal(XMLValidator.validate('<root><value>safe</value></root>'), true);
+  assert.notEqual(XMLValidator.validate('<root>'), true);
+
+  const markdown = '# Heading\n\nParagraph';
+  const {skeleton, xliff} = extract(markdown, {
+    source: {language: 'en', locale: 'US'},
+    target: {language: 'ru', locale: 'RU'},
+  });
+  const composed = compose(skeleton, xliff, {useSource: true});
+
+  assert.match(xliff, /<xliff\b/);
+  assert.match(composed, /Heading/);
+  assert.match(composed, /Paragraph/);
 });
