@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-03**, во время P2.4h Product Evidence Reconciliation.
+> Обновлено: **2026-08-03**, после полного GREEN implementation matrix для P2.4h Product Evidence Reconciliation.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -38,7 +38,7 @@ data/now.json
 → short-lived editorial snapshot
 ```
 
-Не изменяются:
+Не изменены:
 
 - schemas;
 - renderers;
@@ -161,6 +161,49 @@ The snapshot now distinguishes:
 - manual cumulative acceptance still pending;
 - manual deterministic reconciliation as the owner of public truth.
 
+### Test-contract corrections
+
+Intermediate candidates revealed stale test assumptions rather than production defects:
+
+```text
+Build #634 / 30827956405
+→ Russian page was checked with an English-only cumulative-acceptance phrase
+
+Build #635 / 30828062261
+→ browser-quality still required VillAIgence 0.1.22
+
+Build #636 / 30828352405
+→ Project Evidence smoke still expected three VillAIgence signals
+
+Build #637 / 30828673190
+→ portfolio v0.3 hard-coded CORRECTIVE CANDIDATE
+```
+
+Corrections:
+
+- cumulative acceptance assertion accepts localized wording;
+- browser scenario requires `0.1.23+1.21.1`, `production-JAR` and cumulative boundary;
+- Project Evidence smoke requires five signals, state counts `accepted=1 / failed=1 / merged=3`, PR #103 and PR #104 in enhanced and no-JS output;
+- Projects hub and `/now` status checks now derive expected labels from canonical `data/projects.json` instead of duplicating lifecycle copy.
+
+### Implementation GREEN
+
+```text
+implementation head:   bf4bd811233ef90159cb90864c1dc8d79752486e
+Build:                 #638 / 30829054939 — SUCCESS
+CodeQL:                #76 / 30829056057 — SUCCESS
+Dependency Review:     #66 / 30829054307 — SUCCESS
+unit tests:            318 PASS / 0 FAIL
+Lighthouse:            100 / 100 / 100 / 100
+quality artifact:      8862245353
+artifact digest:       sha256:ed04a93d4989a968514383c2e5d85097463f97f31446fe988e7300d11e8f8dff
+artifact retention:    through 2026-08-17
+```
+
+Build #638 passed production build, site integrity, mobile, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, search, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression and custom-domain artifact verification.
+
+A final docs-only exact-head matrix and squash merge remain before P2.4h becomes master truth.
+
 ### Durable documentation
 
 Updated:
@@ -170,10 +213,6 @@ Updated:
 - `docs/CHANGELOG.md`.
 
 The next landing milestone is a narrow Engineering Note about source tests, integration GameTests, package identity, exact artifact, installed startup/restart and cumulative acceptance. It is explicitly distinct from the existing general green-CI/Evidence Layer Note.
-
-### Final GREEN
-
-To be recorded after the exact final PR #83 head passes Build, CodeQL and Dependency Review.
 
 ---
 
