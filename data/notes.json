@@ -92,5 +92,19 @@
       "static-site-quality-gates",
       "server-authoritative-ai-npcs"
     ]
+  },
+  {
+    "slug": "probabilistic-proposals-deterministic-authority",
+    "title": "AI может предложить, но не применить: как строить deterministic authority",
+    "description": "Два практических кейса — Vlezet и VillAIgence — о том, как immutable identities, deterministic validation, current-state revalidation и explicit Apply отделяют probabilistic proposal от authoritative mutation.",
+    "published": "2026-08-03",
+    "updated": "2026-08-03",
+    "readingMinutes": 12,
+    "tags": ["AI", "Authority", "Validation", "Reliability"],
+    "related": [
+      "server-authoritative-ai-npcs",
+      "green-ci-is-not-product-verification",
+      "source-tests-to-installed-acceptance"
+    ]
   }
 ]
