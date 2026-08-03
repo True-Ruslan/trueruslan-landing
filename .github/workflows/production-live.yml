@@ -16,7 +16,7 @@ on:
 permissions:
   contents: read
   pages: read
-  actions: read
+  deployments: read
 
 concurrency:
   group: production-live-${{ github.event_name }}
@@ -50,48 +50,64 @@ jobs:
             const expected = process.env.GITHUB_SHA;
             const attempts = isPush ? 80 : 40;
             let deployed = null;
+            let deployedStatus = null;
 
-            for (let attempt = 1; attempt <= attempts; attempt += 1) {
-              const response = await github.request('GET /repos/{owner}/{repo}/actions/runs', {
+            async function latestStatus(deployment) {
+              const response = await github.request('GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
                 owner,
                 repo,
-                branch: 'master',
-                event: 'push',
+                deployment_id: deployment.id,
                 per_page: 100,
               });
-              const pageRuns = response.data.workflow_runs.filter((run) => {
-                const path = run.path || '';
-                const name = (run.name || '').toLowerCase();
-                return path.includes('pages-build-deployment')
-                  || name.includes('pages build and deployment')
-                  || name.includes('pages-build-deployment');
+              return response.data[0] || null;
+            }
+
+            for (let attempt = 1; attempt <= attempts; attempt += 1) {
+              const response = await github.request('GET /repos/{owner}/{repo}/deployments', {
+                owner,
+                repo,
+                environment: 'github-pages',
+                per_page: 100,
               });
-              deployed = isPush
-                ? pageRuns.find((run) => run.head_sha === expected && run.status === 'completed')
-                : pageRuns.find((run) => run.status === 'completed' && run.conclusion === 'success');
+              const deployments = response.data;
+              const candidates = isPush
+                ? deployments.filter((deployment) => deployment.sha === expected)
+                : deployments;
 
-              const newest = pageRuns[0];
-              core.info(`Pages Actions attempt ${attempt}/${attempts}: newest=${newest?.head_sha || 'none'} ${newest?.status || 'unknown'}/${newest?.conclusion || 'unknown'}`);
-
-              if (deployed?.conclusion === 'success') break;
-              if (deployed && deployed.conclusion !== 'success') {
-                core.setFailed(`Pages deployment run ${deployed.id} for ${deployed.head_sha} concluded ${deployed.conclusion}.`);
-                return;
+              deployed = null;
+              deployedStatus = null;
+              for (const deployment of candidates.slice(0, 20)) {
+                const status = await latestStatus(deployment);
+                if (status?.state === 'success') {
+                  deployed = deployment;
+                  deployedStatus = status;
+                  break;
+                }
+                if (isPush && ['error', 'failure'].includes(status?.state)) {
+                  core.setFailed(`github-pages deployment ${deployment.id} for ${deployment.sha} concluded ${status.state}.`);
+                  return;
+                }
               }
+
+              const newest = deployments[0];
+              const newestStatus = newest ? await latestStatus(newest) : null;
+              core.info(`Deployment attempt ${attempt}/${attempts}: newest=${newest?.sha || 'none'} state=${newestStatus?.state || 'unknown'}`);
+
+              if (deployed && deployedStatus) break;
               if (attempt === attempts) {
-                const target = isPush ? `exact pushed SHA ${expected}` : 'latest successful deployment';
-                core.setFailed(`Timed out waiting for ${target} in pages-build-deployment Actions runs.`);
+                const target = isPush ? `exact pushed SHA ${expected}` : 'latest successful github-pages deployment';
+                core.setFailed(`Timed out waiting for ${target}.`);
                 return;
               }
               await new Promise((resolve) => setTimeout(resolve, 15000));
             }
 
-            core.setOutput('deployed_sha', deployed.head_sha);
-            core.setOutput('pages_status', `${deployed.status}/${deployed.conclusion}`);
+            core.setOutput('deployed_sha', deployed.sha);
+            core.setOutput('pages_status', deployedStatus.state);
             core.setOutput('pages_build_id', String(deployed.id));
             core.setOutput('pages_created_at', deployed.created_at || '');
             core.setOutput('pages_updated_at', deployed.updated_at || '');
-            core.setOutput('pages_run_url', deployed.html_url || '');
+            core.setOutput('pages_run_url', deployedStatus.environment_url || deployedStatus.target_url || deployed.url || '');
 
       - name: Install pinned browser quality tool
         run: npm install --prefix .quality-tools --package-lock=false --no-save playwright@1.61.1
