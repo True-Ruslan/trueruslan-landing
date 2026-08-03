@@ -19,7 +19,7 @@
     "slug": "livingworld",
     "name": "VillAIgence",
     "status": "release-candidate",
-    "statusLabel": "CORRECTIVE CANDIDATE",
+    "statusLabel": "ACCEPTANCE IN PROGRESS",
     "summary": "Server-authoritative Minecraft society layer with text and voice dialogue, Memory 2.0, operator lore, bounded AI actions and exact-artifact acceptance gates.",
     "featured": true,
     "active": true,
