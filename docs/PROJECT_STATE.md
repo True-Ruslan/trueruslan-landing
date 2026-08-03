@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-03**, во время P2.4j Deterministic Authority Engineering Note.
+> Последнее смысловое обновление: **2026-08-03**, после merge P2.4j Deterministic Authority Engineering Note.
 >
 > Durable snapshot для ответа на вопрос: **что представляет собой проект, что уже сделано, что доказано и что дальше?**
 
@@ -36,33 +36,32 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 ## 2. Текущее repository truth
 
 ```text
-master before P2.4j:       5637388b117e5bef7624a2c83ad9d4a78906c1b0
-feature PR:                #87 — DRAFT / IN PROGRESS
-RED head:                  1422efbaa6f0d4791d511bfb71fa89f1712c6604
-implementation head:       e8cad3b7f0dbf468ffebb1d55ea4d269143a758d
-Build:                     #665 / 30853200992 — SUCCESS
-CodeQL:                    #107 / 30853201468 — SUCCESS
-Dependency Review:         #93 / 30853201100 — SUCCESS
+master after P2.4j:        2fba404bbca9680d934f11f30c8a76347a5ab7b1
+feature PR:                #87 — MERGED
+exact feature head:        b38d225d837e5e347184ca09c685a479923ba06e
+Build:                     #668 / 30853751417 — SUCCESS
+CodeQL:                    #110 / 30853751740 — SUCCESS
+Dependency Review:         #96 / 30853751469 — SUCCESS
 unit tests:                324 PASS / 0 FAIL
 Lighthouse:                100 / 100 / 100 / 100
-quality artifact:          8871540363
-artifact digest:           sha256:ffafe7d916a39a25b6162f8fdc06656bc855ef3133ab2496c81ac0e5364a25e6
+quality artifact:          8871721514
+artifact digest:           sha256:af0a406ec92352ab356618a563e885cd8413818bfaa59326a83235db3f521838
 artifact retention:        through 2026-08-17
 ```
 
-Build #665 прошёл production build, generated-site integrity, mobile overflow, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, generated search, exact `deterministic authority` search-route check, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression и custom-domain artifact verification.
+Build #668 прошёл production build, generated-site integrity, mobile overflow, Chromium/Axe/Lighthouse, Publications, Sources KB, Project Evidence, diagrams, Photo Stories, portfolio v0.3, Firefox/WebKit, generated search, exact `deterministic authority` search-route check, RU/EN, analytics, metadata/OpenGraph, Engineering Map, visual regression и custom-domain artifact verification.
 
-Durable-document changes require a fresh final exact-head matrix before PR #87 can leave Draft and merge. Feature merge and production Pages deployment remain separate facts.
+Documentation-only continuity sync records this final feature squash. Its CI is repository evidence, not a new product milestone. Feature merge and production Pages deployment remain separate facts.
 
 ---
 
-## 3. P2.4j — Deterministic Authority Around Probabilistic Proposals — IN PROGRESS
+## 3. P2.4j — Deterministic Authority Around Probabilistic Proposals — DONE
 
-Engineering Note:
+Published Engineering Note:
 
 **«AI может предложить, но не применить: как строить deterministic authority»**
 
-Canonical route after build:
+Canonical route:
 
 `landing/notes/probabilistic-proposals-deterministic-authority.html`
 
@@ -120,20 +119,27 @@ Evidence base: merged operator-lore PR #85 plus separate automated acceptance PR
 
 Это не утверждение о fully autonomous world mutation. Real-provider, two-client, focused live gameplay и cumulative product-owner acceptance остаются отдельными pending gates.
 
-### TDD RED
+### TDD evidence
 
 ```text
 RED head:              1422efbaa6f0d4791d511bfb71fa89f1712c6604
-Build:                 #658 / 30852218324 — expected FAILURE
-unit tests:            321 PASS / 3 expected FAIL
-CodeQL:                #100 / 30852218498 — SUCCESS
-Dependency Review:     #86 / 30852220087 — SUCCESS
+RED Build:             #658 / 30852218324 — expected FAILURE
+RED tests:             321 PASS / 3 expected FAIL
+RED CodeQL:            #100 / 30852218498 — SUCCESS
+RED Dependency Review: #86 / 30852220087 — SUCCESS
 failure scope:         missing registry, Markdown and index/TOC/page-meta surfaces
+
+final head:            b38d225d837e5e347184ca09c685a479923ba06e
+Build:                 #668 / 30853751417 — SUCCESS
+CodeQL:                #110 / 30853751740 — SUCCESS
+Dependency Review:     #96 / 30853751469 — SUCCESS
+unit tests:            324 PASS / 0 FAIL
+Lighthouse:            100 / 100 / 100 / 100
 ```
 
-Все pre-existing tests прошли. Падали только три новых contracts.
+Все pre-existing tests прошли на RED. Финальный exact head прошёл полный matrix.
 
-### Delivered on implementation head
+### Delivered
 
 - canonical `data/notes.json` record;
 - grounded Markdown article;
@@ -189,6 +195,7 @@ P2.4j does not claim:
 - `/now` synchronization — PR #65.
 - Product Evidence Reconciliation — PR #83.
 - Installed Acceptance Engineering Note — PR #85.
+- Deterministic Authority Engineering Note — PR #87.
 
 ### Repository hardening
 
@@ -241,7 +248,7 @@ PR quality gates verify the custom-domain artifact contract. Latest push-trigger
 
 ### Operational follow-up
 
-- after merge confirm latest Pages deployment and the new Note route;
+- confirm latest Pages deployment and the new Note route;
 - confirm deployed Atom feed and exact generated search result;
 - keep issue #78 open until a fresh Content Freshness Guard report is clean;
 - keep issue #82 open and re-triage the current audit signal.
