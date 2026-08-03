@@ -47,7 +47,7 @@
   "dependencies": {
     "@diplodoc/cli": "^5.47.3",
     "@diplodoc/search-extension": "^3.0.6",
-    "@diplodoc/transform": "^4.76.2",
+    "@diplodoc/transform": "^4.77.5",
     "@gravity-ui/page-constructor": "^8.13.2"
   },
   "devDependencies": {
@@ -58,5 +58,8 @@
     "parse5": "^8.0.1",
     "parse5-utils": "^2.0.0",
     "serve-static": "^2.2.1"
+  },
+  "overrides": {
+    "fast-xml-parser": "5.10.1"
   }
 }
