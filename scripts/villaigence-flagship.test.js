@@ -41,7 +41,7 @@ test('VillAIgence page records current automated and cumulative acceptance bound
   assert.match(page, /PR #103[\s\S]{0,500}28/);
   assert.match(page, /PR #104[\s\S]{0,700}production-JAR/i);
   assert.match(page, /production-JAR[\s\S]{0,360}restart/i);
-  assert.match(page, /Cumulative acceptance remains pending/i);
+  assert.match(page, /Cumulative acceptance (?:remains pending|остаётся pending)/i);
   assert.match(page, /LivingWorld\s*\/\s*livingworld[\s\S]{0,220}compatib/i);
   assert.doesNotMatch(page, /0\.1\.23\+1\.21\.1[^\n]{0,160}(production-ready|full pass|fully accepted)/i);
 });
