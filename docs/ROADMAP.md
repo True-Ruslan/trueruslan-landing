@@ -82,6 +82,8 @@ Publish one grounded Russian Engineering Note:
 
 This is a concrete VillAIgence release-engineering case study and does not duplicate the general Evidence Layer Note `Почему green CI не означает verified product`.
 
+The roadmap preserves **exact artifact → installed acceptance** as an explicit boundary: knowing which release JAR was built and inspected is required evidence, but it is not equivalent to proving that the same artifact starts, stops, saves and restarts in the production runtime.
+
 ## Required narrative
 
 ```text
@@ -149,7 +151,9 @@ quality artifact:      8863770773
 artifact digest:       sha256:39184bf7191e73c7e3b4c91c37cfead597b330fa5e2f30b030bb48b95acf287d
 ```
 
-Final exact-head matrix must run after durable documentation changes. Merge and production continuity remain separate facts.
+Build #654 exposed one stale durable-document contract: ROADMAP no longer contained the explicit phrase linking exact artifact and installed acceptance. The boundary above restores that architecture statement without weakening the test.
+
+Final exact-head matrix must run after this correction. Merge and production continuity remain separate facts.
 
 ## Completion criteria
 
