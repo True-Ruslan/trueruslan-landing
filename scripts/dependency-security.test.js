@@ -10,11 +10,15 @@ const lockfilePath = path.join(root, 'package-lock.json');
 const packageJsonPath = path.join(root, 'package.json');
 const minimumSafeFastXmlParser = [5, 7, 0];
 
-function compareVersion(version, minimum) {
-  const parts = String(version)
+function versionParts(version) {
+  return String(version)
     .split('-', 1)[0]
     .split('.')
     .map((part) => Number.parseInt(part, 10));
+}
+
+function compareVersion(version, minimum) {
+  const parts = versionParts(version);
 
   if (parts.length < 3 || parts.some(Number.isNaN)) {
     return -1;
@@ -80,7 +84,7 @@ test('low-risk audit packages remain on fixed patch or minor releases', () => {
 
   for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'brace-expansion')) {
     const version = metadata?.version;
-    const major = Number.parseInt(String(version).split('.', 1)[0], 10);
+    const [major] = versionParts(version);
     const affected =
       (major === 2 && compareVersion(version, [2, 1, 3]) < 0) ||
       (major >= 3 && major < 5) ||
@@ -91,7 +95,6 @@ test('low-risk audit packages remain on fixed patch or minor releases', () => {
   }
 
   const minimums = new Map([
-    ['js-yaml', [4, 3, 0]],
     ['katex', [0, 16, 21]],
     ['lodash', [4, 18, 0]],
     ['sanitize-html', [2, 17, 5]],
@@ -104,6 +107,13 @@ test('low-risk audit packages remain on fixed patch or minor releases', () => {
       if (compareVersion(metadata?.version, minimum) < 0) {
         violations.push(`${packagePath}: ${metadata?.version ?? 'unknown'}`);
       }
+    }
+  }
+
+  for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'js-yaml')) {
+    const [major] = versionParts(metadata?.version);
+    if (major === 4 && compareVersion(metadata?.version, [4, 3, 0]) < 0) {
+      violations.push(`${packagePath}: ${metadata?.version ?? 'unknown'}`);
     }
   }
 
