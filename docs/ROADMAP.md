@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-03**, во время P2.4h Product Evidence Reconciliation.
+> Обновлено: **2026-08-03**, после полного GREEN implementation matrix для P2.4h Product Evidence Reconciliation.
 >
 > Текущее состояние — `docs/PROJECT_STATE.md`; история — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
 
@@ -62,6 +62,7 @@
 - P2.4e External Publications Showcase — DONE: PR #61.
 - P2.4f VillAIgence flagship case study — DONE: PR #63.
 - P2.4g `/now` synchronization — DONE: PR #65.
+- P2.4h Product Evidence Reconciliation — IMPLEMENTED: PR #83, merge pending.
 
 ## Repository hardening
 
@@ -71,63 +72,45 @@
 
 ---
 
-# NOW — P2.4h Product Evidence Reconciliation
-
-## Goal
-
-Update public Vlezet and VillAIgence truth after source repositories advanced beyond the 2026-08-02 landing snapshot.
-
-## Required result
-
-### Vlezet
-
-- record M7.8B PR #41 as accepted and merged;
-- retain Source geometry/topology F1 `0.837989` and known limitations;
-- retain explicit Apply and non-authoritative AI boundary;
-- advance timeline to **M7.8C Opening Classification and Host-Wall Validation**;
-- do not claim accurate arbitrary-plan recognition.
-
-### VillAIgence
-
-- record M11 Phase A PR #103 risk-based GameTests;
-- record M11 Phase B PR #104 exact production-JAR startup/restart and six-store hash evidence;
-- record current published candidate `0.1.23+1.21.1`;
-- keep lifecycle `release-candidate` and label `ACCEPTANCE IN PROGRESS`;
-- keep cumulative provider, multiplayer, focused gameplay and product-owner acceptance pending.
-
-### Landing
-
-- refresh `/now` date and editorial focus to 2026-08-03;
-- synchronize RU Vlezet, RU VillAIgence and paired EN VillAIgence narrative;
-- synchronize Project Evidence, timelines and durable documents;
-- preserve schemas, renderers, CSS, routes, search ownership, analytics and visual thresholds;
-- pass exact-head Build, CodeQL and Dependency Review;
-- confirm production deployment separately after merge.
-
-## TDD evidence
+# P2.4h implementation evidence
 
 ```text
 PR:                    #83
-RED head:              fe269ad4a0207968b87aaff4901bffce25ae58f5
-RED Build:             30826688736 — expected FAILURE
-RED tests:             317 PASS / 1 expected FAIL
-failure:               stale Vlezet M7.8B state `failed`, expected `merged`
-RED CodeQL:            30826688612 — SUCCESS
-RED Dependency Review: 30826689352 — SUCCESS
+implementation head:   bf4bd811233ef90159cb90864c1dc8d79752486e
+Build:                 #638 / 30829054939 — SUCCESS
+CodeQL:                #76 / 30829056057 — SUCCESS
+Dependency Review:     #66 / 30829054307 — SUCCESS
+unit tests:            318 PASS / 0 FAIL
+Lighthouse:            100 / 100 / 100 / 100
+quality artifact:      8862245353
+artifact digest:       sha256:ed04a93d4989a968514383c2e5d85097463f97f31446fe988e7300d11e8f8dff
 ```
 
-Final GREEN evidence will be recorded after the exact final head passes.
+Delivered:
 
----
+- Vlezet M7.8B PR #41 recorded as accepted and merged with Source geometry/topology F1 `0.837989` and known limitations;
+- Vlezet timeline advanced to M7.8C Opening Classification and Host-Wall Validation;
+- VillAIgence PR #103 risk-based GameTests and PR #104 production-JAR startup/restart recorded as separate automated scopes;
+- current candidate `0.1.23+1.21.1` recorded;
+- lifecycle preserved as `release-candidate`, label advanced to `ACCEPTANCE IN PROGRESS`;
+- cumulative provider, multiplayer, focused gameplay and product-owner acceptance remains pending;
+- `/now`, RU/EN case studies, Project Evidence, timelines and durable documents synchronized;
+- status smoke now derives expected labels from canonical Project Registry;
+- schemas, renderers, CSS, routes, search ownership, analytics and visual thresholds unchanged.
 
-# Immediate operational follow-up after P2.4h
+Before merge:
 
-1. Confirm latest Pages deployment after PR #83.
-2. Confirm production `/now` date and copy.
-3. Confirm production Vlezet, VillAIgence and Publications routes.
-4. Run or inspect Content Freshness Guard and close issue #78 only if drift is gone.
-5. Keep issue #82 open until compatible upstream Diplodoc releases exist.
-6. Verify external profile Website links if stale.
+1. pass the final docs-only exact-head Build, CodeQL and Dependency Review;
+2. mark PR #83 ready;
+3. squash-merge with expected head protection.
+
+After merge:
+
+1. confirm latest Pages deployment;
+2. confirm production `/now`, Vlezet, VillAIgence and Publications routes;
+3. rerun/inspect Content Freshness Guard;
+4. close issue #78 only if reconciled drift is gone;
+5. keep issue #82 open.
 
 ---
 
@@ -160,8 +143,6 @@ source tests
 
 ### Evidence base
 
-Use VillAIgence:
-
 ```text
 0.1.20 installed PARTIAL PASS
         ↓
@@ -180,7 +161,7 @@ cumulative real-provider and gameplay acceptance pending
 
 ### Required narrative boundaries
 
-- explain what source, package, exact artifact and installed acceptance each prove;
+- explain what source, integration, package, exact artifact and installed acceptance each prove;
 - distinguish development GameTests from production-JAR lifecycle evidence;
 - explain why startup blockers outrank downstream gameplay checks;
 - treat rollback as a valid acceptance outcome;
@@ -308,7 +289,7 @@ Only when actual usage or content value identifies a concrete page. Do not creat
 
 Re-open only when Cloudflare systematically undercounts a relevant audience or missing data blocks a real decision. Consent-controlled loading and privacy review are required. Replay, Webvisor, click maps and identifiers remain excluded unless separately approved.
 
-## Rericher architecture explorer
+## Richer architecture explorer
 
 Only with enough real artifacts and demonstrated content value.
 
@@ -349,7 +330,7 @@ Issue #82 is a separate upstream compatibility review. Do not run blind `npm aud
 # Оптимальная последовательность
 
 ```text
-P2.4h Product Evidence Reconciliation
+P2.4h final exact-head verification + merge
         ↓
 production deployment + freshness confirmation
         ↓
