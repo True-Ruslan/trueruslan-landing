@@ -210,6 +210,16 @@
     "accent": "violet"
   },
   {
+    "path": "landing/notes/restart-persistence-is-a-product-contract.html",
+    "card": "note-restart-persistence",
+    "title": "Restart — это часть продукта: почему сохранённый JSON ещё не доказывает persistence",
+    "description": "VillAIgence persistence case study: controlled shutdown, exact-artifact restart, six canonical stores, schema/read-back, identity isolation and user-visible continuity.",
+    "displayTitle": "RESTART AND PERSISTENCE",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["PERSISTENCE", "RECOVERY", "RELIABILITY"],
+    "accent": "green"
+  },
+  {
     "path": "en/index.html",
     "card": "home-en",
     "title": "Ruslan Nemykin — Backend Engineer",
