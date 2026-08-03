@@ -11,7 +11,9 @@ Create a read-only production gate that proves the deployed custom-domain site i
 - manual dispatch;
 - path-scoped pull requests for the workflow/script/test themselves.
 
-Push runs must wait until the GitHub Pages latest build reports the pushed `GITHUB_SHA` as built. Pull-request, scheduled and manual runs inspect the latest built Pages commit without claiming that the caller SHA is deployed.
+Push runs must wait until the `github-pages` deployment for the pushed `GITHUB_SHA` reaches status `success`. Pull-request, scheduled and manual runs inspect the latest successful `github-pages` deployment without claiming that the caller SHA is deployed.
+
+Deployment identity is resolved through the standard GitHub Deployments API rather than the Pages builds endpoint, which returns `404` for the repository's current Pages source configuration.
 
 ## Live assertions
 
@@ -33,18 +35,18 @@ Upload for 30 days:
 - normalized JSON summary;
 - note and search screenshots;
 - selected HTML/response metadata;
-- the Pages build commit/status resolved by the workflow.
+- the `github-pages` deployment SHA/status/id resolved by the workflow.
 
 ## Permissions and safety
 
-- `contents: read` and `pages: read` only;
+- `contents: read`, `pages: read` and `deployments: read` only;
 - no deployment, issue, content, lockfile, git or DNS mutation;
-- no secrets beyond the standard GitHub token for Pages build metadata;
+- no secrets beyond the standard GitHub token for deployment metadata;
 - live-production evidence remains separate from repository Build/CodeQL/Dependency Review.
 
 ## Failure policy
 
-- On push, timeout if Pages never reaches the exact pushed SHA;
-- on PR/schedule/manual, record the latest built Pages SHA and test that deployment;
+- on push, timeout if a successful `github-pages` deployment never appears for the exact pushed SHA;
+- on PR/schedule/manual, record the latest successful deployment SHA and test that deployment;
 - search must be exercised through the actual browser UI, not inferred from query-string extraction;
 - transient third-party beacon request failures are recorded, while absence/duplication of the beacon element fails the contract.
