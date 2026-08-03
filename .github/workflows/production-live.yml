@@ -16,6 +16,7 @@ on:
 permissions:
   contents: read
   pages: read
+  actions: read
 
 concurrency:
   group: production-live-${{ github.event_name }}
@@ -48,36 +49,49 @@ jobs:
             const isPush = process.env.PUSH_EVENT === 'true';
             const expected = process.env.GITHUB_SHA;
             const attempts = isPush ? 80 : 40;
-            let latest = null;
+            let deployed = null;
 
             for (let attempt = 1; attempt <= attempts; attempt += 1) {
-              const response = await github.request('GET /repos/{owner}/{repo}/pages/builds/latest', {
+              const response = await github.request('GET /repos/{owner}/{repo}/actions/runs', {
                 owner,
                 repo,
+                branch: 'master',
+                event: 'push',
+                per_page: 100,
               });
-              latest = response.data;
-              const status = latest.status;
-              const commit = latest.commit;
-              core.info(`Pages build attempt ${attempt}/${attempts}: status=${status}, commit=${commit}`);
+              const pageRuns = response.data.workflow_runs.filter((run) => {
+                const path = run.path || '';
+                const name = (run.name || '').toLowerCase();
+                return path.includes('pages-build-deployment')
+                  || name.includes('pages build and deployment')
+                  || name.includes('pages-build-deployment');
+              });
+              deployed = isPush
+                ? pageRuns.find((run) => run.head_sha === expected && run.status === 'completed')
+                : pageRuns.find((run) => run.status === 'completed' && run.conclusion === 'success');
 
-              if (status === 'built' && (!isPush || commit === expected)) break;
-              if (isPush && status === 'errored' && commit === expected) {
-                core.setFailed(`Pages build for ${expected} failed.`);
+              const newest = pageRuns[0];
+              core.info(`Pages Actions attempt ${attempt}/${attempts}: newest=${newest?.head_sha || 'none'} ${newest?.status || 'unknown'}/${newest?.conclusion || 'unknown'}`);
+
+              if (deployed?.conclusion === 'success') break;
+              if (deployed && deployed.conclusion !== 'success') {
+                core.setFailed(`Pages deployment run ${deployed.id} for ${deployed.head_sha} concluded ${deployed.conclusion}.`);
                 return;
               }
               if (attempt === attempts) {
-                const target = isPush ? `exact pushed SHA ${expected}` : 'latest built deployment';
-                core.setFailed(`Timed out waiting for ${target}; latest status=${status}, commit=${commit}.`);
+                const target = isPush ? `exact pushed SHA ${expected}` : 'latest successful deployment';
+                core.setFailed(`Timed out waiting for ${target} in pages-build-deployment Actions runs.`);
                 return;
               }
               await new Promise((resolve) => setTimeout(resolve, 15000));
             }
 
-            core.setOutput('deployed_sha', latest.commit);
-            core.setOutput('pages_status', latest.status);
-            core.setOutput('pages_build_id', String(latest.id));
-            core.setOutput('pages_created_at', latest.created_at || '');
-            core.setOutput('pages_updated_at', latest.updated_at || '');
+            core.setOutput('deployed_sha', deployed.head_sha);
+            core.setOutput('pages_status', `${deployed.status}/${deployed.conclusion}`);
+            core.setOutput('pages_build_id', String(deployed.id));
+            core.setOutput('pages_created_at', deployed.created_at || '');
+            core.setOutput('pages_updated_at', deployed.updated_at || '');
+            core.setOutput('pages_run_url', deployed.html_url || '');
 
       - name: Install pinned browser quality tool
         run: npm install --prefix .quality-tools --package-lock=false --no-save playwright@1.61.1
@@ -92,6 +106,7 @@ jobs:
           PAGES_BUILD_ID: ${{ steps.pages.outputs.pages_build_id }}
           PAGES_CREATED_AT: ${{ steps.pages.outputs.pages_created_at }}
           PAGES_UPDATED_AT: ${{ steps.pages.outputs.pages_updated_at }}
+          PAGES_RUN_URL: ${{ steps.pages.outputs.pages_run_url }}
         run: node scripts/production-live-smoke.cjs
 
       - name: Preserve Pages deployment identity
@@ -104,6 +119,7 @@ jobs:
             "deployedSha": "${{ steps.pages.outputs.deployed_sha }}",
             "status": "${{ steps.pages.outputs.pages_status }}",
             "buildId": "${{ steps.pages.outputs.pages_build_id }}",
+            "runUrl": "${{ steps.pages.outputs.pages_run_url }}",
             "createdAt": "${{ steps.pages.outputs.pages_created_at }}",
             "updatedAt": "${{ steps.pages.outputs.pages_updated_at }}",
             "trigger": "${{ github.event_name }}",
