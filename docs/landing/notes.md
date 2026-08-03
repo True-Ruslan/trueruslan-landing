@@ -42,6 +42,12 @@
 
 [Читать заметку →](notes/source-tests-to-installed-acceptance.md)
 
+### Restart — это часть продукта: почему сохранённый JSON ещё не доказывает persistence
+
+Совпадающий SHA-256 подтверждает byte continuity, но ещё не доказывает, что приложение прочитало правильный store, сохранило identity, не смешало состояние разных NPC и восстановило ожидаемое поведение. На evidence VillAIgence разбираю controlled shutdown, exact-artifact restart, schema/read-back, semantic continuity, behavioral continuity и safe rollback.
+
+[Читать заметку →](notes/restart-persistence-is-a-product-contract.md)
+
 ---
 
 ## Static-first и доставка контента
