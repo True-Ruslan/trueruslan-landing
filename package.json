@@ -58,5 +58,8 @@
     "parse5": "^8.0.1",
     "parse5-utils": "^2.0.0",
     "serve-static": "^2.2.1"
+  },
+  "overrides": {
+    "fast-xml-parser": "5.10.1"
   }
 }
