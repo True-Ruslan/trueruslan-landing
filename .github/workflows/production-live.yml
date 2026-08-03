@@ -1,0 +1,121 @@
+name: Production Live Smoke
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '53 7 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/production-live.yml'
+      - 'scripts/production-live-smoke.cjs'
+      - 'scripts/production-live-workflow.test.js'
+
+permissions:
+  contents: read
+  pages: read
+
+concurrency:
+  group: production-live-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+
+      - name: Resolve deployed Pages build
+        id: pages
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          PUSH_EVENT: ${{ github.event_name == 'push' }}
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const isPush = process.env.PUSH_EVENT === 'true';
+            const expected = process.env.GITHUB_SHA;
+            const attempts = isPush ? 80 : 40;
+            let latest = null;
+
+            for (let attempt = 1; attempt <= attempts; attempt += 1) {
+              const response = await github.request('GET /repos/{owner}/{repo}/pages/builds/latest', {
+                owner,
+                repo,
+              });
+              latest = response.data;
+              const status = latest.status;
+              const commit = latest.commit;
+              core.info(`Pages build attempt ${attempt}/${attempts}: status=${status}, commit=${commit}`);
+
+              if (status === 'built' && (!isPush || commit === expected)) break;
+              if (isPush && status === 'errored' && commit === expected) {
+                core.setFailed(`Pages build for ${expected} failed.`);
+                return;
+              }
+              if (attempt === attempts) {
+                const target = isPush ? `exact pushed SHA ${expected}` : 'latest built deployment';
+                core.setFailed(`Timed out waiting for ${target}; latest status=${status}, commit=${commit}.`);
+                return;
+              }
+              await new Promise((resolve) => setTimeout(resolve, 15000));
+            }
+
+            core.setOutput('deployed_sha', latest.commit);
+            core.setOutput('pages_status', latest.status);
+            core.setOutput('pages_build_id', String(latest.id));
+            core.setOutput('pages_created_at', latest.created_at || '');
+            core.setOutput('pages_updated_at', latest.updated_at || '');
+
+      - name: Install pinned browser quality tool
+        run: npm install --prefix .quality-tools --package-lock=false --no-save playwright@1.61.1
+
+      - name: Install Chromium
+        run: node .quality-tools/node_modules/playwright/cli.js install --with-deps chromium
+
+      - name: Run deployed production smoke
+        env:
+          EXPECTED_DEPLOYED_SHA: ${{ steps.pages.outputs.deployed_sha }}
+          PAGES_STATUS: ${{ steps.pages.outputs.pages_status }}
+          PAGES_BUILD_ID: ${{ steps.pages.outputs.pages_build_id }}
+          PAGES_CREATED_AT: ${{ steps.pages.outputs.pages_created_at }}
+          PAGES_UPDATED_AT: ${{ steps.pages.outputs.pages_updated_at }}
+        run: node scripts/production-live-smoke.cjs
+
+      - name: Preserve Pages deployment identity
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p production-artifacts
+          cat > production-artifacts/pages-build.json <<'JSON'
+          {
+            "deployedSha": "${{ steps.pages.outputs.deployed_sha }}",
+            "status": "${{ steps.pages.outputs.pages_status }}",
+            "buildId": "${{ steps.pages.outputs.pages_build_id }}",
+            "createdAt": "${{ steps.pages.outputs.pages_created_at }}",
+            "updatedAt": "${{ steps.pages.outputs.pages_updated_at }}",
+            "trigger": "${{ github.event_name }}",
+            "callerSha": "${{ github.sha }}"
+          }
+          JSON
+
+      - name: Upload production live evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: production-live-evidence
+          path: production-artifacts
+          if-no-files-found: error
+          retention-days: 30
