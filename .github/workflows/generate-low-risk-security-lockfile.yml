@@ -57,7 +57,7 @@ jobs:
 
       - name: Summarize current audit inventory
         run: >-
-          node --input-type=module -e
+          node -e
           "const a=JSON.parse(require('node:fs').readFileSync('npm-audit.json','utf8'));
           console.log(JSON.stringify(a.metadata?.vulnerabilities ?? {}, null, 2));"
 
