@@ -90,8 +90,7 @@ export function createLegacyRedirect(route, siteUrl = DEFAULT_SITE_URL) {
   return `<!doctype html>\n<html lang="en" data-tr-clean-url-redirect>\n<head>\n<meta charset="utf-8">\n<meta name="robots" content="noindex,follow">\n<meta http-equiv="refresh" content="0; url=${escapedCanonical}">\n<link rel="canonical" href="${escapedCanonical}">\n<title>Redirecting…</title>\n<script>location.replace(${JSON.stringify(canonical)} + location.search + location.hash);</script>\n</head>\n<body><p><a href="${escapedCanonical}">Continue</a></p></body>\n</html>\n`;
 }
 
-function patchGeneratedRuntime(content, relativePath) {
-  if (relativePath !== '_assets/script/custom.js') return content;
+function patchCustomRuntime(content) {
   return content
     .replace(
       "if (path === '/' || path === '/index.html' || path.endsWith('/index.html')) return 'home';",
@@ -115,10 +114,31 @@ function patchGeneratedRuntime(content, relativePath) {
     );
 }
 
+export function patchSearchWorker(content) {
+  const source = 'link: `${base.replace(/\\/?$/, "")}/${entry.ref.replace(/&\\/?/, "")}`,';
+  const target = 'link: `${base.replace(/\\/?$/, "")}/${entry.ref.replace(/&\\/?/, "").replace(/index\\.html$/, "").replace(/\\.html$/, "/")}`,';
+  const patched = String(content).replace(source, target);
+  if (patched === content) {
+    throw new Error('Diplodoc search worker link formatter no longer matches the reviewed clean URL contract.');
+  }
+  return patched;
+}
+
+function patchGeneratedRuntime(content, relativePath) {
+  if (relativePath === '_assets/script/custom.js') return patchCustomRuntime(content);
+  if (relativePath === '_search/api.js') return patchSearchWorker(content);
+  return content;
+}
+
+function isSearchIdentityResource(relativePath) {
+  return /^_search\/[^/]+\/(?:[^/]+-)?(?:index|registry)\.js$/.test(relativePath);
+}
+
 function shouldRewriteResource(relativePath) {
   const normalized = relativePath.replaceAll(path.sep, '/');
   if (normalized.startsWith('_bundle/')) return false;
   if (normalized.startsWith('assets/')) return false;
+  if (isSearchIdentityResource(normalized)) return false;
   return TEXT_RESOURCE_EXTENSIONS.has(path.extname(normalized).toLowerCase());
 }
 
