@@ -26,12 +26,12 @@ test('production favicon smoke checks the root SVG and rendered root-absolute li
     'favicon.svg',
     'landing/resume.html',
     'link[rel="icon"]',
-    'image/svg+xml',
     'production-artifacts',
   ]) {
     assert.ok(source.includes(marker), `missing production favicon marker: ${marker}`);
   }
 
+  assert.ok(source.includes('image\\/svg\\+xml'), 'favicon smoke must require the SVG MIME type');
   assert.match(source, /response\.ok\(\)/);
   assert.match(source, /normalizeUrl/);
   assert.match(source, /writeFileSync/);
