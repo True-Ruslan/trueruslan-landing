@@ -85,11 +85,9 @@ function escapeHtml(value) {
 }
 
 export function createLegacyRedirect(route, siteUrl = DEFAULT_SITE_URL) {
-  const targetPath = `/${route}`;
-  const canonical = new URL(targetPath, siteUrl).href;
-  const escapedPath = escapeHtml(targetPath);
+  const canonical = new URL(route, siteUrl.endsWith('/') ? siteUrl : `${siteUrl}/`).href;
   const escapedCanonical = escapeHtml(canonical);
-  return `<!doctype html>\n<html lang="en" data-tr-clean-url-redirect>\n<head>\n<meta charset="utf-8">\n<meta name="robots" content="noindex,follow">\n<meta http-equiv="refresh" content="0; url=${escapedPath}">\n<link rel="canonical" href="${escapedCanonical}">\n<title>Redirecting…</title>\n<script>location.replace(${JSON.stringify(targetPath)} + location.search + location.hash);</script>\n</head>\n<body><p><a href="${escapedPath}">Continue</a></p></body>\n</html>\n`;
+  return `<!doctype html>\n<html lang="en" data-tr-clean-url-redirect>\n<head>\n<meta charset="utf-8">\n<meta name="robots" content="noindex,follow">\n<meta http-equiv="refresh" content="0; url=${escapedCanonical}">\n<link rel="canonical" href="${escapedCanonical}">\n<title>Redirecting…</title>\n<script>location.replace(${JSON.stringify(canonical)} + location.search + location.hash);</script>\n</head>\n<body><p><a href="${escapedCanonical}">Continue</a></p></body>\n</html>\n`;
 }
 
 function patchGeneratedRuntime(content, relativePath) {
@@ -105,7 +103,7 @@ function patchGeneratedRuntime(content, relativePath) {
     )
     .replace(
       "return new URL('../assets/documents/cv.pdf', currentHref).href;",
-      "return new URL('/assets/documents/cv.pdf', currentHref).href;",
+      "return new URL('assets/documents/cv.pdf', document.baseURI || currentHref).href;",
     )
     .replace(
       "if (/landing\\/projects\\.(md|html)$/.test(href) || /\\/projects\\.html$/.test(href)) {",
@@ -168,8 +166,9 @@ export function publishDirectoryRoutes({outputDir, siteUrl = DEFAULT_SITE_URL} =
 function main() {
   const scriptDir = path.dirname(fileURLToPath(import.meta.url));
   const root = path.join(scriptDir, '..');
+  const siteUrl = String(process.env.SITE_URL || DEFAULT_SITE_URL).trim();
   try {
-    const result = publishDirectoryRoutes({outputDir: path.join(root, 'docs-html')});
+    const result = publishDirectoryRoutes({outputDir: path.join(root, 'docs-html'), siteUrl});
     console.log(`Published ${result.routes.length} clean directory route(s).`);
     console.log(`Rewrote clean URL references in ${result.rewritten.length} generated resource(s).`);
   } catch (error) {
