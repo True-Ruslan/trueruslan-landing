@@ -169,18 +169,19 @@ jobs:
           cp custom-domain-integrity.log quality-artifacts/custom-domain-integrity.log 2>/dev/null || true
           cp custom-domain-artifact.log quality-artifacts/custom-domain-artifact.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
-          cp docs-html/landing/resume.html quality-artifacts/resume-generated.html 2>/dev/null || true
-          cp docs-html/landing/publications.html quality-artifacts/publications-generated.html 2>/dev/null || true
+          cp docs-html/landing/resume/index.html quality-artifacts/resume-generated.html 2>/dev/null || true
+          cp docs-html/landing/resume.html quality-artifacts/resume-legacy-redirect.html 2>/dev/null || true
+          cp docs-html/landing/publications/index.html quality-artifacts/publications-generated.html 2>/dev/null || true
           cp docs-html/en/index.html quality-artifacts/en-home-generated.html 2>/dev/null || true
-          cp docs-html/en/projects/livingworld.html quality-artifacts/en-livingworld-generated.html 2>/dev/null || true
-          cp docs-html/landing/now.html quality-artifacts/now-generated.html 2>/dev/null || true
-          cp docs-html/landing/bibliography.html quality-artifacts/sources-knowledge-base-generated.html 2>/dev/null || true
-          cp docs-html/landing/projects/vlezet.html quality-artifacts/vlezet-generated.html 2>/dev/null || true
-          cp docs-html/landing/projects/livingworld.html quality-artifacts/villaigence-generated.html 2>/dev/null || true
-          cp docs-html/landing/projects/node-zero.html quality-artifacts/node-zero-generated.html 2>/dev/null || true
+          cp docs-html/en/projects/livingworld/index.html quality-artifacts/en-livingworld-generated.html 2>/dev/null || true
+          cp docs-html/landing/now/index.html quality-artifacts/now-generated.html 2>/dev/null || true
+          cp docs-html/landing/bibliography/index.html quality-artifacts/sources-knowledge-base-generated.html 2>/dev/null || true
+          cp docs-html/landing/projects/vlezet/index.html quality-artifacts/vlezet-generated.html 2>/dev/null || true
+          cp docs-html/landing/projects/livingworld/index.html quality-artifacts/villaigence-generated.html 2>/dev/null || true
+          cp docs-html/landing/projects/node-zero/index.html quality-artifacts/node-zero-generated.html 2>/dev/null || true
           cp docs-html/feed.xml quality-artifacts/feed.xml 2>/dev/null || true
-          cp docs-html/landing/engineering-map.html quality-artifacts/engineering-map-generated.html 2>/dev/null || true
-          cp docs-html/landing/photos.html quality-artifacts/photo-stories-generated.html 2>/dev/null || true
+          cp docs-html/landing/engineering-map/index.html quality-artifacts/engineering-map-generated.html 2>/dev/null || true
+          cp docs-html/landing/photos/index.html quality-artifacts/photo-stories-generated.html 2>/dev/null || true
           cp artifacts/browser-summary.json quality-artifacts/browser-summary.json 2>/dev/null || true
           cp artifacts/vlezet-desktop.png quality-artifacts/vlezet-desktop.png 2>/dev/null || true
           cp artifacts/vlezet-mobile.png quality-artifacts/vlezet-mobile.png 2>/dev/null || true
