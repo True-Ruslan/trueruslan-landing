@@ -30,13 +30,15 @@ test('copyRootFavicon publishes byte-equal SVG at the generated root', async () 
   assert.equal(fs.readFileSync(path.join(outputDir, 'favicon.svg'), 'utf8'), svg);
 });
 
-test('normalizeFaviconLinks makes root and nested pages independent of base href', async () => {
+test('normalizeFaviconLinks makes generated pages independent of depth, base href and link syntax', async () => {
   const {normalizeFaviconLinks} = await loadFaviconModule();
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'favicon-links-'));
-  const nestedPath = path.join(outputDir, 'landing', 'resume.html');
   const rootPath = path.join(outputDir, 'index.html');
+  const nestedPath = path.join(outputDir, 'landing', 'resume.html');
+  const searchPath = path.join(outputDir, '_search', 'ru', 'index.html');
 
   fs.mkdirSync(path.dirname(nestedPath), {recursive: true});
+  fs.mkdirSync(path.dirname(searchPath), {recursive: true});
   fs.writeFileSync(
     rootPath,
     '<html><head><link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="app.css"></head></html>',
@@ -45,11 +47,17 @@ test('normalizeFaviconLinks makes root and nested pages independent of base href
     nestedPath,
     '<html><head><base href="../"><link type="image/svg+xml" href="assets/images/favicon.svg" rel="icon"></head></html>',
   );
+  fs.writeFileSync(
+    searchPath,
+    "<html><head><link rel='shortcut icon' type='image/svg+xml' /></head></html>",
+  );
 
   const updated = normalizeFaviconLinks(outputDir);
 
-  assert.deepEqual(updated.sort(), ['index.html', 'landing/resume.html']);
+  assert.deepEqual(updated, ['_search/ru/index.html', 'index.html', 'landing/resume.html']);
   assert.match(fs.readFileSync(rootPath, 'utf8'), /<link rel="icon" href="\/favicon\.svg" type="image\/svg\+xml">/);
   assert.match(fs.readFileSync(nestedPath, 'utf8'), /href="\/favicon\.svg"/);
   assert.match(fs.readFileSync(rootPath, 'utf8'), /<link rel="stylesheet" href="app\.css">/);
+  const searchHtml = fs.readFileSync(searchPath, 'utf8');
+  assert.equal((searchHtml.match(/href="\/favicon\.svg"/g) ?? []).length, 1);
 });
