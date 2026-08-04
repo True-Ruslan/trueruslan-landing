@@ -38,9 +38,13 @@ test('canonical distribution targets resolve only through page metadata', async 
   assert.equal(new Set(resolved.map(({id}) => id)).size, resolved.length);
   assert.equal(new Set(resolved.map(({pagePath}) => pagePath)).size, resolved.length);
   assert.deepEqual(resolved.map(({priority}) => priority), [1, 2, 3, 4, 5, 6, 7, 8]);
-  assert.ok(resolved.every(({canonicalUrl}) => canonicalUrl.startsWith('https://trueruslan.ru/')));
-  assert.ok(resolved.every(({canonicalUrl}) => !canonicalUrl.includes('?')));
-  assert.ok(resolved.every(({canonicalUrl}) => !canonicalUrl.includes('true-ruslan.github.io')));
+  assert.ok(resolved.every(({canonicalUrl}) => {
+    const parsed = new URL(canonicalUrl);
+    return parsed.protocol === 'https:'
+      && parsed.hostname === 'trueruslan.ru'
+      && parsed.search === ''
+      && parsed.hash === '';
+  }));
 });
 
 test('external profile audit exposes measured verified and stale states', async () => {
