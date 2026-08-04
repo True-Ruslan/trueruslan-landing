@@ -106,7 +106,7 @@ I teach software module development and testing. My postgraduate research concer
 
 ## PDF version
 
-The current three-page PDF resume is available below for applications, direct sharing and printing.
+A current compact PDF resume is available below for applications, direct sharing and printing.
 
 <p><a href="https://raw.githubusercontent.com/True-Ruslan/trueruslan-landing/master/docs/assets/documents/cv.pdf" data-tr-resume-link target="_blank" rel="noopener noreferrer">Open PDF in a new tab ↗</a></p>
 
