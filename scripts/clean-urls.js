@@ -156,8 +156,11 @@ function patchCustomRuntime(content) {
 export function patchSearchWorker(content) {
   const source = 'link: `${base.replace(/\\/?$/, "")}/${entry.ref.replace(/&\\/?/, "")}`,';
   const target = 'link: `${base.replace(/\\/?$/, "")}/${entry.ref.replace(/&\\/?/, "").replace(/index\\.html$/, "").replace(/\\.html$/, "/")}`,';
-  const patched = String(content).replace(source, target);
-  if (patched === content) {
+  const value = String(content);
+  if (value.includes(target)) return value;
+
+  const patched = value.replace(source, target);
+  if (patched === value) {
     throw new Error('Diplodoc search worker link formatter no longer matches the reviewed clean URL contract.');
   }
   return patched;
