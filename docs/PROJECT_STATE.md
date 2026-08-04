@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-04**, после публикации актуального резюме и exact-SHA production verification.
+> Последнее смысловое обновление: **2026-08-05**, после Yandex Webmaster favicon reconciliation, exact-SHA Pages deployment и deployment-driven Production Live Smoke.
 >
 > Durable snapshot: что представляет собой проект, что доказано, какие границы остаются и что делать дальше.
 
@@ -12,7 +12,7 @@
 4. `docs/CUSTOM_DOMAIN.md`;
 5. `docs/DISTRIBUTION.md`.
 
-После чтения отдельно проверять actual open PR, latest commits, exact-head CI, latest `github-pages` deployment, Production Live Smoke, Cloudflare aggregate telemetry и external-project acceptance. Repository readiness, generated artifact, deployed production, profile snapshot и provider/gameplay evidence — разные факты.
+После чтения отдельно проверять actual open PR, latest commits, exact-head CI, latest `github-pages` deployment, Production Live Smoke, Cloudflare aggregate telemetry и external-project acceptance. Repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance — разные факты.
 
 ---
 
@@ -20,7 +20,7 @@
 
 `True-Ruslan/trueruslan-landing` — персональное инженерное портфолио и static-first knowledge platform Руслана Немыкина.
 
-Платформа объединяет standalone homepage, Diplodoc knowledge pages, web-CV и downloadable PDF resume, evidence-backed case studies, `/now`, Engineering Notes + Atom feed, Publications, Engineering Map, full-text search, Photo Stories, Sources Knowledge Base, Project Evidence, Content Freshness, bounded RU/EN, privacy-friendly Cloudflare Web Analytics и production-oriented quality gates.
+Платформа объединяет standalone homepage, Diplodoc knowledge pages, RU/EN web-CV и downloadable PDF resume, evidence-backed case studies, `/now`, Engineering Notes + Atom feed, Publications, Engineering Map, full-text search, Photo Stories, Sources Knowledge Base, Project Evidence, Content Freshness, bounded RU/EN, privacy-friendly Cloudflare Web Analytics и production-oriented quality gates.
 
 Главная продуктовая формула:
 
@@ -30,77 +30,131 @@
 
 **static-first + build-time intelligence + progressive enhancement**.
 
-Core content не зависит от runtime API. Diplodoc остаётся единственным site-wide full-text search owner. Public truth и внешние профили не изменяются автоматически.
+Core content не зависит от runtime API. Diplodoc остаётся единственным site-wide full-text search owner. Public truth, external profiles и search-engine state не изменяются автоматически.
 
 ---
 
 ## 2. Latest accepted product and production truth
 
-Последний принятый продуктовый milestone — обновление профессионального профиля и резюме в PR #108.
+Последний принятый продуктовый milestone — Yandex Webmaster favicon reconciliation в PR #112.
 
 ```text
-feature PR:                      #108 — MERGED
-exact PR head:                   3055c82dc7f6c58d723a5f5c60e0af9f344c240b
-accepted product squash:         a85b24d220f9bbfd57176a081f7bce59e41782e8
-Build:                           #756 / 30938001730 — SUCCESS
-CodeQL:                          #218 / 30938008191 — SUCCESS
-Dependency Review:               #184 / 30937995608 — SUCCESS
-Distribution Readiness:          #24 / 30937995575 — SUCCESS
-unit tests:                      340 PASS / 0 FAIL
-Lighthouse:                      100 / 100 / 100 / 100
+feature PR:                      #112 — MERGED
+exact PR head:                   00e7823d558c7a3473ee9fcf96692d583552f578
+accepted product squash:         18358a4939dc4062669dbcb45850e9beb26e1cac
+Build:                           #778 / 30953202266 — SUCCESS
+CodeQL:                          #243 / 30953202233 — SUCCESS
+Dependency Review:               #206 / 30953202243 — SUCCESS
+Dependency Audit Evidence:       #17 / 30953202563 — SUCCESS
+unit tests:                      345 PASS / 0 FAIL
+site integrity:                  36 HTML / 1115 references — PASS
+browser/accessibility:           PASS
+Firefox/WebKit:                  PASS
+search/RU-EN/analytics:          PASS
 visual regression:               PASS
-quality artifact:                8904045978
-quality digest:                  sha256:43b0e5fa5eaf56f1dc3604215c3ac1b0454fbd67d460f134a2d6342a489cc3c7
-review threads:                  5 resolved / 0 open
+custom-domain artifact:          PASS
+review threads:                  0 open
+quality artifact:                8910068861
+quality digest:                  sha256:d309cff946ce4473f8aec309531df7124787c864bd139693cf5ddc31ddac1f80
 ```
 
 Exact post-merge production proof:
 
 ```text
-source Pages workflow:            #139 / 30938565671 — SUCCESS
-Production Live Smoke:             #33 / 30938639622 — SUCCESS
-event:                             workflow_run
-deployed/caller SHA:               a85b24d220f9bbfd57176a081f7bce59e41782e8
-github-pages deployment id:        5749294655
-deployment state:                  success
-live artifact:                     8904183580
-live digest:                       sha256:14d81aba0d281cf9a36e67a83b467871f7c2442c2e9937169d7fb22f1c26b93e
+source Pages workflow:           #142 / 30953599246 — SUCCESS
+Production Live Smoke:            #45 / 30953667481 — SUCCESS
+event:                            workflow_run
+deployed/caller SHA:              18358a4939dc4062669dbcb45850e9beb26e1cac
+github-pages deployment id:       5752049616
+deployment state:                 success
+live artifact:                    8910151878
+live digest:                      sha256:fe0ce39de71919915edc3760ac0768bf62e21b922312688a1d6cf8d7fd4c01e1
 ```
 
-The durable documentation closure can produce a later docs-only `master` SHA. Therefore `a85b24d...` is recorded as the latest accepted product/deployment identity, while actual `master` must still be checked directly.
-
-Live assertions independently passed for the exact deployed bundle, including apex/www routing, canonical metadata, Atom feed, generated search interaction, Cloudflare beacon and absence of page/console/request failures. Generated artifact CI, controlled evidence and deployed browser proof remain separate layers.
+The deployment-driven live run checked out the exact squash SHA and resolved the identical successful Pages deployment. Apex/www routing, canonical metadata, Atom feed, generated search, Cloudflare beacon and absence of browser/request errors passed independently.
 
 ---
 
-## 3. August 2026 Resume Refresh — DONE
+## 3. Yandex Webmaster favicon reconciliation — DONE in repository
 
-PR #108 replaced stale professional-profile surfaces with the supplied August 2026 facts.
+Yandex Webmaster reported that the favicon was unavailable to the robot and separately recommended SVG/120×120 favicon.
 
-Delivered:
+Root cause established from the generated Pages artifact:
 
-- current RU/EN web-CV;
-- compact downloadable `docs/assets/documents/cv.pdf`;
-- 5+ years of commercial experience;
-- current QWEP role and products;
-- Java 21–25 / Spring Boot 3.5–4 current stack;
-- Runet Business Systems, Bell Integrator and earlier experience;
-- AI-tool adoption and corporate MCP-server work;
-- updated education, teaching and research context;
-- synchronized About pages, homepage Java range and metadata;
-- reviewed desktop/mobile resume visual baselines.
+- canonical SVG existed at `assets/images/favicon.svg`;
+- generated artifact had no root `/favicon.svg`;
+- generated pages depended on a relative URL and `<base>` behavior;
+- Sitemap and HTTPS were already valid production contracts and were not the favicon root cause.
 
-Permanent regression evidence validates both text surfaces and the binary PDF. PDF links are parsed structurally and require the exact canonical `https://trueruslan.ru/` identity; legacy `.com` and GitHub Pages origins are rejected.
+PR #112 delivered:
 
-Boundaries preserved:
+- byte-equal publication of `docs/assets/images/favicon.svg` as generated `/favicon.svg`;
+- deterministic post-processing of every generated icon link to `/favicon.svg`;
+- coverage for root, nested, search, self-closing and reordered link syntax;
+- root-absolute Diplodoc configuration;
+- deployment-only Playwright verification preserved inside Production Live Smoke.
 
-- no route/runtime/search/analytics/dependency/infrastructure change;
-- no invented metrics, leadership claims or proprietary implementation details;
-- no quality-gate weakening.
+Exact deployed favicon evidence:
+
+```text
+URL:                              https://trueruslan.ru/favicon.svg
+HTTP:                             200
+Content-Type:                     image/svg+xml
+bytes:                            591
+homepage href:                    /favicon.svg
+resume href:                      /favicon.svg
+resolved URL:                     https://trueruslan.ru/favicon.svg
+```
+
+Repository work for YW-01/YW-05 is complete. Issue #111 remains open only for authenticated Yandex Webmaster operator state:
+
+- confirm `https://trueruslan.ru/sitemap.xml` in the HTTPS property;
+- confirm HTTP→HTTPS move/main mirror state;
+- select “No region”;
+- submit homepage recrawl;
+- recheck diagnostics after 10–14 days.
+
+Yandex Metrica, Yandex Business and an artificial regional-commercial claim remain explicit non-goals without a separate product/privacy requirement. A green live contract does not prove that Yandex has already refreshed its cached diagnosis.
 
 ---
 
-## 4. Distribution and external profiles — DONE
+## 4. August 2026 Resume baseline — DONE
+
+PR #108 synchronized the current professional profile and original August PDF/web surfaces. PR #110 then replaced the user-managed PDF and corrected resume timeline alignment.
+
+Latest resume milestone:
+
+```text
+feature PR:                      #110 — MERGED
+exact head:                      4f224975928a42bd8ea5f311e5e8e1598a87dc28
+squash:                          4b5bf97d749b9c9bc1d41167da5f860d9c87760e
+Build:                           #765 / 30942487224 — SUCCESS
+CodeQL:                          #229 / 30942487265 — SUCCESS
+Dependency Review:               #193 / 30942487179 — SUCCESS
+source Pages:                    #141 / 30950087819 — SUCCESS
+Production Live Smoke:           #37 / 30950157904 — SUCCESS
+```
+
+Delivered by PR #110:
+
+- current downloadable `docs/assets/documents/cv.pdf`;
+- timeline line and markers share one horizontal coordinate;
+- markers align with the first line of job headings;
+- Diplodoc anchor padding is removed only from direct resume job headings;
+- generator-independent binary PDF checks.
+
+Current permanent resume contract is intentionally split:
+
+- RU/EN web-CV and metadata receive semantic content checks;
+- binary PDF receives structural/passive checks: valid PDF header and EOF, meaningful size, and absence of JavaScript, Launch or EmbeddedFile payloads;
+- compressed PDF text and URLs are not inferred through unsafe raw-byte substring matching;
+- semantic PDF extraction may be added later only through a reviewed real PDF parser.
+
+No metrics, leadership claims or proprietary implementation details are invented.
+
+---
+
+## 5. Distribution and external profiles — DONE
 
 PR #98 delivered deterministic distribution targets and operator evidence. PRs #102/#104 completed external-profile canonicalization.
 
@@ -120,41 +174,39 @@ Verified identities:
 - Telegram personal;
 - Telegram Blog.
 
-Any future state change requires fresh rendered evidence and must not be inferred from an owner report alone. Distribution readiness is not an engagement or audience-growth claim.
+Any future state change requires fresh rendered evidence. Distribution readiness is not an engagement or audience-growth claim.
 
 ---
 
-## 5. Vlezet Draft Freshness Reconciliation — DONE
+## 6. Vlezet Draft freshness reconciliation — DONE
 
-Content Freshness reopened issue #78 after repository activity became newer than the controlled Vlezet snapshot. Inspection showed that the activity belonged to M7.8C PR #42, which remains an open Draft awaiting the same real-plan product-owner retest.
-
-PR #106 recorded only bounded evidence:
-
-- Vlezet `lastVerified` → `2026-08-04`;
-- M7.8B remains the accepted recognition slice;
-- M7.8C remains the next slice;
-- PR #42 at observed head `c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a` is `pending` Draft evidence;
-- no acceptance, merge or public lifecycle promotion claim was added.
+PR #106 recorded M7.8C PR #42 only as bounded pending Draft evidence while preserving M7.8B as the accepted recognition slice.
 
 ```text
-Content Freshness:                 #15 / 30906476451 — SUCCESS
-report:                            0 findings / 0 warnings / 0 errors
-artifact:                          8891241809
-digest:                            sha256:4e2db8777b44a3678e8cc8a77153cfe00887b93c9d7b838a71a3b7c70182a5f1
+accepted recognition slice:       M7.8B
+next recognition slice:           M7.8C
+PR #42 state:                      open Draft / pending evidence
+observed head:                     c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a
+product-owner acceptance:          pending
+Content Freshness report:          0 findings / 0 warnings / 0 errors
 issue #78:                         CLOSED / COMPLETED
 ```
 
+Draft evidence does not authorize merge, acceptance or public lifecycle promotion.
+
 ---
 
-## 6. Production Live Smoke orchestration — DONE
+## 7. Production Live Smoke orchestration — DONE
 
 PR #99 changed the primary production-verification boundary to the completed `Deploy static content to Pages` workflow through `workflow_run`; direct push remains a fallback. PR #100 proved activation order.
 
-Latest exact proof is Live Smoke #33 for `a85b24d...`. The workflow resolved successful deployment `5749294655`, checked out the identical SHA and passed the deployed browser smoke before preserving evidence.
+PR #112 extended the same read-only workflow rather than creating another verifier. The favicon assertion runs only for deployable events and is skipped on pull requests so an undeployed branch is never judged against current production.
+
+Generated artifact CI, Pages deployment and deployed browser proof remain distinct layers.
 
 ---
 
-## 7. Operational and security state
+## 8. Operational and security state
 
 ### Content Freshness
 
@@ -173,21 +225,24 @@ Latest exact proof is Live Smoke #33 for `a85b24d...`. The workflow resolved suc
 
 All six moderate records reduce to build-time `markdown-it@13.0.2` / Diplodoc compatibility. Issue #82 remains open. Next planned review: **2026-08-17**. Do not use `npm audit fix --force`, local `node_modules` shims or an unreviewed fork.
 
-### Resume-specific security review
+### Search-engine diagnostics
 
-Five CodeQL review threads around URL matching were fixed before merge. The final contract parses `/URI (...)` values through `URL` and compares protocol, hostname, port and pathname structurally. Final CodeQL #218 passed with zero open review threads.
+- repository favicon defect — fixed and deployed;
+- Sitemap — available and declared by `robots.txt`, external Webmaster usage state pending;
+- HTTPS — canonical production contract, external main-mirror refresh may lag;
+- region — intentionally “No region”;
+- Metrica/Business — accepted non-goals.
 
 ---
 
-## 8. External project boundaries
+## 9. External project boundaries
 
 ### Vlezet
 
 - public lifecycle: `pre-production`;
-- M7.8B accepted / принят as the latest public recognition slice;
-- M7.8C PR #42 remains open Draft and pending evidence;
-- automated gates do not replace the same real-plan product-owner retest;
-- do not merge or update public completion state before explicit owner acceptance.
+- M7.8B accepted / принят as latest public recognition slice;
+- M7.8C remains pending Draft until exact-head automation and the same real-plan owner retest;
+- do not update public completion state before explicit owner acceptance.
 
 ### VillAIgence
 
@@ -198,7 +253,7 @@ lifecycle:                    release-candidate
 public label:                 ACCEPTANCE IN PROGRESS
 ```
 
-Source/package/GameTest/production-JAR/persistence/server-authority evidence remain separate from real-provider/gameplay/manual cumulative acceptance. Exact artifact and installed acceptance remain separate release gates.
+Source/package/GameTest/production-JAR/persistence/server-authority evidence remain separate from real-provider/gameplay/manual cumulative acceptance.
 
 ### Publications and Photo Stories
 
@@ -208,24 +263,26 @@ Source/package/GameTest/production-JAR/persistence/server-authority evidence rem
 
 ---
 
-## 9. Current gate and next decisions
+## 10. Current gate and next decisions
 
-The resume-refresh gate is closed. There is no active external-profile or freshness gate.
+The repository-side Yandex favicon gate is closed. There is no active resume, external-profile or freshness feature gate.
 
-Next autonomous product work should not fabricate urgency. Candidate milestones:
+Immediate operating priorities:
 
-- P2.5d public share UI only after a concrete user-facing need;
-- genuine Photo Story only after authentic material arrives;
-- Vlezet reconciliation only after M7.8C owner acceptance;
-- VillAIgence promotion only after cumulative manual/provider/gameplay acceptance;
-- dependency blocker review on/after 2026-08-17;
-- analytics conclusions only after 3–4 weeks of meaningful aggregate Cloudflare traffic.
+1. complete the authenticated Yandex Webmaster actions in issue #111 and wait for recrawl/diagnostic refresh;
+2. preserve exact production, favicon, resume and all-verified distribution snapshots;
+3. review dependency issue #82 on or after **2026-08-17**;
+4. reconcile Vlezet only after M7.8C owner acceptance;
+5. promote VillAIgence only after cumulative manual/provider/gameplay acceptance;
+6. draw analytics conclusions only after 3–4 weeks of meaningful aggregate Cloudflare traffic;
+7. create a genuine Photo Story only after authentic material exists;
+8. accept concrete owner-proposed product/content ideas that preserve static-first architecture.
 
-The optimal immediate state is operational stability: preserve verified production/distribution/evidence snapshots and continue only when an evidence-backed gate changes or the owner introduces a concrete content/product idea.
+P2.5d public share UI remains conditional on a concrete user-facing need. Do not fabricate urgency or add generic share buttons merely because a registry exists.
 
 ---
 
-## 10. Invariants
+## 11. Invariants
 
 - static-first;
 - build-time intelligence;
@@ -234,22 +291,21 @@ The optimal immediate state is operational stability: preserve verified producti
 - deterministic generation;
 - semantic/no-JS content;
 - Diplodoc as sole site-wide search owner;
-- no automatic public truth or profile mutation;
+- no automatic public truth, profile or search-engine mutation;
 - bounded Evidence semantics;
 - one RU/EN site/build/search architecture;
 - optional aggregate analytics only;
 - no behavioural tracking without privacy review;
-- exact artifact → installed acceptance remains explicit;
-- byte continuity is not semantic or behavioral continuity;
+- exact artifact → installed/deployed acceptance remains explicit;
 - generated artifact, deployment and browser proof remain distinct;
 - dependency evidence never authorizes an unverified fix;
-- distribution readiness is not an engagement claim;
 - Draft evidence is not accepted evidence;
-- binary resume and web-CV must remain synchronized through permanent tests;
+- PDF structural validity is not semantic PDF extraction;
+- search-engine diagnosis refresh is not implied by a green production check;
 - no weakening quality gates for speed.
 
 ---
 
-## 11. New-session handoff
+## 12. New-session handoff
 
-> Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md`, `docs/CUSTOM_DOMAIN.md` and `docs/DISTRIBUTION.md`. Check actual open PRs, latest commits and exact-head CI. Confirm accepted resume product SHA `a85b24d220f9bbfd57176a081f7bce59e41782e8` was deployed by Pages #139 and verified by Production Live Smoke #33; issue #78 remains closed with a clean report; issue #82 remains the markdown-it/Diplodoc blocker; profile snapshot is `4 verified / 0 stale`; Vlezet M7.8B remains accepted while M7.8C PR #42 remains pending Draft until owner acceptance; and VillAIgence automated evidence remains separate from cumulative acceptance.
+> Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md`, `docs/CUSTOM_DOMAIN.md` and `docs/DISTRIBUTION.md`. Check actual open PRs, latest commits and exact-head CI. Confirm PR #112 squash `18358a4939dc4062669dbcb45850e9beb26e1cac` was deployed by Pages #142 and verified by deployment-driven Production Live Smoke #45; root favicon is HTTP 200 SVG and both homepage/Resume resolve `/favicon.svg` exactly; issue #111 remains open only for authenticated Yandex Webmaster actions; PR #110 is the latest resume/PDF layout baseline; issue #82 remains the markdown-it/Diplodoc blocker; profile snapshot is `4 verified / 0 stale`; Vlezet M7.8B remains accepted while M7.8C is pending Draft; VillAIgence automation remains separate from cumulative acceptance.
