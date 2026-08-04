@@ -1,10 +1,10 @@
 # Yandex Webmaster Diagnostics Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Publish a robot-stable root favicon, normalize every generated page to the same absolute favicon URL, preserve the current Sitemap/HTTPS/privacy decisions, and record Yandex Webmaster diagnostics as bounded operational evidence.
 
-**Architecture:** Keep the canonical SVG source in `docs/assets/images/favicon.svg`. During deterministic post-processing, copy the same bytes to `docs-html/favicon.svg` and rewrite every generated HTML favicon link to `/favicon.svg`, independent of page depth or `<base>`. Validate the transformation at unit/integration level and in production live smoke without adding runtime services, analytics, or regional/commercial metadata.
+**Architecture:** Keep the canonical SVG source in `docs/assets/images/favicon.svg`. The normal build finishes its existing post-processing and then runs a dedicated deterministic favicon postprocessor. It copies the same bytes to `docs-html/favicon.svg` and rewrites every generated icon link to `/favicon.svg`, independent of page depth, standalone templates or `<base>`. A deployment-only Playwright smoke verifies the exact root asset and rendered links after Pages publication.
 
 **Tech Stack:** Node.js 24, node:test, Diplodoc static build, GitHub Actions, Playwright production smoke.
 
@@ -22,49 +22,23 @@
 ### Task 1: Record the external diagnostic boundary
 
 **Files:**
-- Create: GitHub issue `Yandex Webmaster diagnostic reconciliation`
+- Create: GitHub issue #111 `Yandex Webmaster diagnostic reconciliation`
 
-**Interfaces:**
-- Consumes: current Yandex Webmaster screenshots and verified production state.
-- Produces: one operational checklist separating code defects, external pending states, duplicates, accepted decisions, and non-applicable recommendations.
-
-- [x] **Step 1: Create the issue**
-
-Record seven diagnostics as `YW-01` through `YW-07` with classification, evidence, action, and exit criterion.
-
-- [x] **Step 2: Record immutable product decisions**
-
-State that Yandex Metrica, Yandex Business, and a regional commercial claim are out of scope unless a concrete product requirement changes.
-
-- [x] **Step 3: Record external operator actions**
-
-Keep Sitemap submission, HTTP→HTTPS migration state, “No region”, homepage recrawl, and the 10–14 day recheck as explicit manual Webmaster actions.
+- [x] Classify `YW-01` through `YW-07` as repository defect, external pending state, duplicate, accepted non-goal or not applicable.
+- [x] Preserve Yandex Metrica, Yandex Business and artificial regional claims as explicit non-goals.
+- [x] Record Sitemap submission, HTTP→HTTPS state, “No region”, recrawl and 10–14 day recheck as operator actions requiring the authenticated Webmaster UI.
 
 ---
 
-### Task 2: Add a failing favicon regression contract
+### Task 2: Establish the favicon contract through TDD
 
 **Files:**
-- Modify: `scripts/copy-assets.test.js`
 - Create: `scripts/favicon.test.js`
 
-**Interfaces:**
-- Consumes: generated HTML files containing relative favicon links and the canonical SVG source.
-- Produces: failing assertions requiring `docs-html/favicon.svg` and `href="/favicon.svg"` on root and nested pages.
-
-- [ ] **Step 1: Write the pure transformation test**
-
-Create temporary root and nested HTML documents with relative favicon links, invoke the favicon normalizer, and assert that only favicon links become `/favicon.svg`.
-
-- [ ] **Step 2: Run the test to verify RED**
-
-Run: `node --test scripts/favicon.test.js`
-
-Expected: FAIL because `scripts/favicon.js` does not exist yet.
-
-- [ ] **Step 3: Extend post-processing integration coverage**
-
-Add a fixture favicon source and assert that `postprocessOutput` writes a byte-equal root favicon and reports normalized HTML pages.
+- [x] Add tests for a byte-equal root SVG publication.
+- [x] Add root, nested and search-page fixtures with different link syntax and `<base>` behavior.
+- [x] Verify RED on exact head `6c2a267d1c5f0f16c6d25747ebb78f2fcf00a2d1` through Build #766 / `30952175051`.
+- [x] Preserve unrelated resource links and reject duplicate favicon `href` insertion.
 
 ---
 
@@ -72,101 +46,48 @@ Add a fixture favicon source and assert that `postprocessOutput` writes a byte-e
 
 **Files:**
 - Create: `scripts/favicon.js`
-- Modify: `scripts/copy-assets.js`
+- Modify: `package.json`
 - Modify: `docs/.yfm`
-- Modify: `templates/index.html`
-- Modify: `templates/index.en.html`
+- Modify: `scripts/visual-config.test.js`
 
 **Interfaces:**
-- Produces: `copyRootFavicon({docsDir, outputDir}) -> string` and `normalizeFaviconLinks(outputDir, href = '/favicon.svg') -> string[]`.
-- Consumes: `docs/assets/images/favicon.svg` and generated `**/*.html`.
+- `copyRootFavicon({docsDir, outputDir}) -> 'favicon.svg'`
+- `normalizeFaviconLinks(outputDir, href = '/favicon.svg') -> string[]`
 
-- [ ] **Step 1: Implement the pure helper**
-
-Use only Node core modules. Recursively enumerate generated HTML, replace the `href` of `<link rel="icon">` tags, preserve unrelated links, and write only changed files.
-
-- [ ] **Step 2: Implement root publication**
-
-Copy the canonical SVG bytes from `docs/assets/images/favicon.svg` to `docs-html/favicon.svg`; fail clearly if the source is missing.
-
-- [ ] **Step 3: Wire post-processing**
-
-Call root publication and link normalization after all generated pages, including Photo Stories, exist. Return and log `rootFaviconPath` and `faviconLinksUpdated`.
-
-- [ ] **Step 4: Make source configuration canonical**
-
-Set `favicon-src: /favicon.svg` in Diplodoc config and use `/favicon.svg` in both standalone homepage templates.
-
-- [ ] **Step 5: Run focused tests to verify GREEN**
-
-Run: `node --test scripts/favicon.test.js`
-
-Expected: PASS.
+- [x] Implement recursive generated-HTML discovery using Node core modules only.
+- [x] Copy `docs/assets/images/favicon.svg` byte-for-byte to `docs-html/favicon.svg` and fail clearly when inputs are missing.
+- [x] Normalize every generated `<link rel="...icon...">` to `/favicon.svg`, including self-closing and reordered attributes.
+- [x] Run the postprocessor after the existing `copy-assets.js` stage through `npm run postprocess:favicon`.
+- [x] Set Diplodoc `favicon-src` to `/favicon.svg`.
+- [x] Confirm the generated build reports root publication and normalized standalone pages.
 
 ---
 
 ### Task 4: Extend exact production verification
 
 **Files:**
-- Modify: the existing Production Live Smoke assertion owner.
+- Create: `scripts/production-favicon-smoke.cjs`
+- Create: `scripts/production-favicon-workflow.test.js`
+- Modify: `.github/workflows/production-live.yml`
 
-**Interfaces:**
-- Consumes: deployed `https://trueruslan.ru/favicon.svg`, homepage HTML, and a nested page HTML.
-- Produces: exact-head evidence that the root favicon returns successfully and deployed pages reference `/favicon.svg`.
-
-- [ ] **Step 1: Locate the existing live assertion owner**
-
-Follow the current Production Live Smoke pattern rather than adding a second verifier.
-
-- [ ] **Step 2: Add root favicon assertions**
-
-Require an HTTP-successful SVG response with non-empty SVG content.
-
-- [ ] **Step 3: Add rendered link assertions**
-
-Check the homepage and `landing/resume.html` for a favicon link resolving exactly to `https://trueruslan.ru/favicon.svg`.
-
-- [ ] **Step 4: Run the existing production verifier against current production**
-
-Expected before deployment: FAIL only on missing root favicon or relative link contract.
+- [x] Reuse the existing read-only, deployment-aware Production Live Smoke workflow.
+- [x] Require an HTTP-successful `https://trueruslan.ru/favicon.svg` response with SVG MIME type, SVG markup and a meaningful body size.
+- [x] Require the homepage and `landing/resume.html` favicon links to resolve exactly to the root canonical asset.
+- [x] Keep the new assertion deployment-only so PR checks do not test an undeployed branch against current production.
+- [x] Preserve `production-favicon-summary.json` inside the existing production evidence artifact.
 
 ---
 
-### Task 5: Synchronize durable state and verify the branch
+### Task 5: Verify, merge and close durable state
 
-**Files:**
-- Modify: `docs/PROJECT_STATE.md`
-- Modify: `docs/ROADMAP.md`
-- Modify: `docs/CHANGELOG.md`
+**Feature PR:** #112 `fix: reconcile Yandex Webmaster favicon diagnostics`
 
-**Interfaces:**
-- Consumes: PR #110 accepted state and the new favicon/Yandex diagnostic evidence.
-- Produces: durable state that no longer claims PR #108 as the latest product baseline and accurately describes PDF and favicon contracts.
-
-- [ ] **Step 1: Record PR #110 drift closure**
-
-Update the latest accepted product baseline from PR #108 to PR #110 before documenting the new PR.
-
-- [ ] **Step 2: Record the diagnostic classifications**
-
-Document favicon as repository work, Sitemap/HTTPS/region as external Webmaster state, and Metrica/Business as accepted non-goals.
-
-- [ ] **Step 3: Run full verification**
-
-Run:
-
-```bash
-npm test
-npm run build:docs
-npm run check:site
-```
-
-Expected: all tests pass, build succeeds, and site integrity reports no broken local references.
-
-- [ ] **Step 4: Open a draft PR and inspect exact-head CI**
-
-Require Build, CodeQL, Dependency Review, browser/accessibility/compatibility, visual regression, and applicable operational workflows to pass before marking ready.
-
-- [ ] **Step 5: Merge only after evidence is green**
-
-After merge, require Pages deployment and the deployment-driven Production Live Smoke to pass for the exact squash SHA.
+- [x] Open a draft PR and preserve the intentional RED evidence.
+- [x] Pass 345/345 unit tests, build generation and site integrity on implementation head `dce732767057f472b2d0ef05e400a0e184230649`.
+- [x] Pass browser, accessibility, Lighthouse, Firefox/WebKit, search, RU/EN, analytics, visual regression and custom-domain artifact checks on Build #777 / `30952796831`.
+- [x] Pass CodeQL #242, Dependency Review #205, Dependency Audit Evidence #16 and the existing PR Production Live Smoke #42.
+- [ ] Re-run the complete exact-head matrix after this plan synchronization.
+- [ ] Mark PR #112 ready and merge only with all required checks green.
+- [ ] Verify exact squash SHA through Pages deployment and deployment-driven Production Live Smoke, including `production-favicon-summary.json`.
+- [ ] Update issue #111 with repository evidence while retaining only authenticated Webmaster operator actions.
+- [ ] Synchronize `docs/PROJECT_STATE.md`, `docs/ROADMAP.md` and `docs/CHANGELOG.md` in a post-merge documentation closure, including the prior PR #110 drift and the accurate structural PDF contract.
