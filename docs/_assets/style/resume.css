@@ -181,6 +181,7 @@ html[data-tr-page='resume'] .tr-resume-hero {
 
 .tr-resume-item > h3 {
   margin: 0 !important;
+  padding-top: 0 !important;
   font-size: 1.06rem;
 }
 
