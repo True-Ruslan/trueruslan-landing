@@ -34,8 +34,8 @@ test('publishDirectoryRoutes creates directory indexes, rewrites references and 
   fs.mkdirSync(path.dirname(nestedPath), {recursive: true});
   fs.mkdirSync(path.dirname(searchRegistry), {recursive: true});
 
-  fs.writeFileSync(pagePath, '<html><head><base href="../"><link rel="canonical" href="https://trueruslan.ru/landing/resume.html"></head><body><a href="landing/projects.html#work">Projects</a></body></html>');
-  fs.writeFileSync(nestedPath, '<html><head><base href="../../"></head><body><a href="landing/resume.html">Resume</a></body></html>');
+  fs.writeFileSync(pagePath, '<html><head><base href="../"><link rel="canonical" href="https://trueruslan.ru/landing/resume.html"></head><body><script id="diplodoc-state" type="application/json">{"router":{"pathname":"landing/resume","depth":2,"base":"../"},"search":{"api":"_search/api.js","link":"_search/ru/"}}</script><a href="landing/projects.html#work">Projects</a></body></html>');
+  fs.writeFileSync(nestedPath, '<html><head><base href="../../"></head><body><script id="diplodoc-state" type="application/json">{"router":{"pathname":"landing/projects/vlezet","depth":3,"base":"../../"},"search":{"api":"_search/api.js"}}</script><a href="landing/resume.html">Resume</a></body></html>');
   fs.writeFileSync(path.join(outputDir, 'index.html'), '<a href="landing/resume.html">Resume</a>');
   fs.writeFileSync(path.join(outputDir, 'sitemap.xml'), '<loc>https://trueruslan.ru/landing/resume.html</loc>');
   fs.writeFileSync(searchRegistry, 'self.registry={"landing/resume.html":{"href":"landing/resume.html#profile"}};');
@@ -48,8 +48,13 @@ test('publishDirectoryRoutes creates directory indexes, rewrites references and 
 
   const cleanPage = fs.readFileSync(path.join(outputDir, 'landing', 'resume', 'index.html'), 'utf8');
   assert.match(cleanPage, /<base href="\.\.\/\.\.\/">/);
+  assert.match(cleanPage, /"router":\{"pathname":"landing\/resume","depth":2,"base":"\.\.\/\.\.\/"\}/);
   assert.match(cleanPage, /https:\/\/trueruslan\.ru\/landing\/resume\//);
   assert.match(cleanPage, /landing\/projects\/#work/);
+
+  const nestedCleanPage = fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet', 'index.html'), 'utf8');
+  assert.match(nestedCleanPage, /<base href="\.\.\/\.\.\/\.\.\/">/);
+  assert.match(nestedCleanPage, /"base":"\.\.\/\.\.\/\.\.\/"/);
 
   const legacyPage = fs.readFileSync(pagePath, 'utf8');
   assert.match(legacyPage, /http-equiv="refresh"/i);
