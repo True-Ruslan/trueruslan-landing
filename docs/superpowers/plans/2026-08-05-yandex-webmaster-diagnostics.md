@@ -1,6 +1,6 @@
 # Yandex Webmaster Diagnostics Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Status:** repository implementation, deployment proof and durable documentation closure are complete. Authenticated Yandex Webmaster operator actions remain tracked in issue #111.
 
 **Goal:** Publish a robot-stable root favicon, normalize every generated page to the same absolute favicon URL, preserve the current Sitemap/HTTPS/privacy decisions, and record Yandex Webmaster diagnostics as bounded operational evidence.
 
@@ -8,86 +8,97 @@
 
 **Tech Stack:** Node.js 24, node:test, Diplodoc static build, GitHub Actions, Playwright production smoke.
 
-## Global Constraints
+## Global constraints preserved
 
-- Preserve static-first and build-time-only architecture.
-- Do not add Yandex Metrica, behavioural analytics, session replay, cookies, or runtime APIs.
-- Do not create a Yandex Business or regional-commercial claim for a personal engineering portfolio.
-- Keep `https://trueruslan.ru/` as the only canonical public origin.
-- Keep `robots.txt` and `sitemap.xml` deterministic and canonical.
-- Do not weaken existing unit, browser, accessibility, visual, security, or production gates.
-
----
-
-### Task 1: Record the external diagnostic boundary
-
-**Files:**
-- Create: GitHub issue #111 `Yandex Webmaster diagnostic reconciliation`
-
-- [x] Classify `YW-01` through `YW-07` as repository defect, external pending state, duplicate, accepted non-goal or not applicable.
-- [x] Preserve Yandex Metrica, Yandex Business and artificial regional claims as explicit non-goals.
-- [x] Record Sitemap submission, HTTP→HTTPS state, “No region”, recrawl and 10–14 day recheck as operator actions requiring the authenticated Webmaster UI.
+- static-first and build-time-only architecture;
+- no Yandex Metrica, behavioural analytics, session replay, cookies or runtime APIs;
+- no Yandex Business or regional-commercial claim without a real product requirement;
+- `https://trueruslan.ru/` remains the only canonical public origin;
+- `robots.txt` and `sitemap.xml` remain deterministic and canonical;
+- no weakening of unit, browser, accessibility, visual, security or production gates.
 
 ---
 
-### Task 2: Establish the favicon contract through TDD
+## Task 1 — External diagnostic boundary
 
-**Files:**
-- Create: `scripts/favicon.test.js`
+- [x] Created issue #111 `Yandex Webmaster diagnostic reconciliation`.
+- [x] Classified `YW-01` through `YW-07` as repository defect, external pending state, duplicate, accepted non-goal or not applicable.
+- [x] Preserved Yandex Metrica, Yandex Business and artificial regional claims as explicit non-goals.
+- [x] Recorded Sitemap submission, HTTP→HTTPS state, “No region”, recrawl and 10–14 day recheck as authenticated operator actions.
 
-- [x] Add tests for a byte-equal root SVG publication.
-- [x] Add root, nested and search-page fixtures with different link syntax and `<base>` behavior.
-- [x] Verify RED on exact head `6c2a267d1c5f0f16c6d25747ebb78f2fcf00a2d1` through Build #766 / `30952175051`.
-- [x] Preserve unrelated resource links and reject duplicate favicon `href` insertion.
+## Task 2 — TDD favicon contract
 
----
+- [x] Added byte-equal root SVG publication tests.
+- [x] Added root, nested and search-page fixtures with different link syntax and `<base>` behavior.
+- [x] Verified RED on head `6c2a267d1c5f0f16c6d25747ebb78f2fcf00a2d1` through Build #766 / `30952175051`.
+- [x] Preserved unrelated resource links and rejected duplicate favicon `href` insertion.
 
-### Task 3: Implement deterministic root favicon publication
+## Task 3 — Deterministic publication
 
-**Files:**
-- Create: `scripts/favicon.js`
-- Modify: `package.json`
-- Modify: `docs/.yfm`
-- Modify: `scripts/visual-config.test.js`
-
-**Interfaces:**
-- `copyRootFavicon({docsDir, outputDir}) -> 'favicon.svg'`
-- `normalizeFaviconLinks(outputDir, href = '/favicon.svg') -> string[]`
-
-- [x] Implement recursive generated-HTML discovery using Node core modules only.
-- [x] Copy `docs/assets/images/favicon.svg` byte-for-byte to `docs-html/favicon.svg` and fail clearly when inputs are missing.
-- [x] Normalize every generated `<link rel="...icon...">` to `/favicon.svg`, including self-closing and reordered attributes.
-- [x] Run the postprocessor after the existing `copy-assets.js` stage through `npm run postprocess:favicon`.
+- [x] Added `scripts/favicon.js` using Node core modules only.
+- [x] Added `copyRootFavicon({docsDir, outputDir})`.
+- [x] Added `normalizeFaviconLinks(outputDir, '/favicon.svg')`.
+- [x] Copied the canonical SVG byte-for-byte to generated `/favicon.svg`.
+- [x] Normalized generated icon links after existing asset/page post-processing.
 - [x] Set Diplodoc `favicon-src` to `/favicon.svg`.
-- [x] Confirm the generated build reports root publication and normalized standalone pages.
+- [x] Covered self-closing and reordered icon-link syntax.
 
----
+## Task 4 — Production verification
 
-### Task 4: Extend exact production verification
+- [x] Added `scripts/production-favicon-smoke.cjs`.
+- [x] Added permanent workflow-structure tests.
+- [x] Reused the existing deployment-aware Production Live Smoke workflow.
+- [x] Required HTTP 200, `image/svg+xml`, SVG markup and meaningful response size.
+- [x] Required homepage and Resume favicon links to resolve exactly to `https://trueruslan.ru/favicon.svg`.
+- [x] Kept the new assertion deployment-only so pull requests do not test undeployed code against current production.
+- [x] Preserved `production-favicon-summary.json` in the existing live evidence artifact.
 
-**Files:**
-- Create: `scripts/production-favicon-smoke.cjs`
-- Create: `scripts/production-favicon-workflow.test.js`
-- Modify: `.github/workflows/production-live.yml`
+## Task 5 — Exact verification and merge
 
-- [x] Reuse the existing read-only, deployment-aware Production Live Smoke workflow.
-- [x] Require an HTTP-successful `https://trueruslan.ru/favicon.svg` response with SVG MIME type, SVG markup and a meaningful body size.
-- [x] Require the homepage and `landing/resume.html` favicon links to resolve exactly to the root canonical asset.
-- [x] Keep the new assertion deployment-only so PR checks do not test an undeployed branch against current production.
-- [x] Preserve `production-favicon-summary.json` inside the existing production evidence artifact.
+```text
+feature PR:                     #112 — MERGED
+exact head:                     00e7823d558c7a3473ee9fcf96692d583552f578
+squash:                         18358a4939dc4062669dbcb45850e9beb26e1cac
+Build:                          #778 / 30953202266 — SUCCESS
+unit tests:                     345 PASS / 0 FAIL
+CodeQL:                         #243 / 30953202233 — SUCCESS
+Dependency Review:              #206 / 30953202243 — SUCCESS
+Dependency Audit Evidence:      #17 / 30953202563 — SUCCESS
+quality artifact:               8910068861
+quality digest:                 sha256:d309cff946ce4473f8aec309531df7124787c864bd139693cf5ddc31ddac1f80
+```
 
----
+- [x] Passed site integrity, browser, accessibility, Lighthouse, Firefox/WebKit, search, RU/EN, analytics, visual regression and custom-domain checks.
+- [x] Confirmed zero open review threads.
+- [x] Marked PR #112 ready and squash-merged with exact-head protection.
 
-### Task 5: Verify, merge and close durable state
+## Task 6 — Exact production closure
 
-**Feature PR:** #112 `fix: reconcile Yandex Webmaster favicon diagnostics`
+```text
+source Pages:                   #142 / 30953599246 — SUCCESS
+Production Live Smoke:          #45 / 30953667481 — SUCCESS
+event:                          workflow_run
+deployed/caller SHA:            18358a4939dc4062669dbcb45850e9beb26e1cac
+github-pages deployment id:     5752049616
+live artifact:                  8910151878
+live digest:                    sha256:fe0ce39de71919915edc3760ac0768bf62e21b922312688a1d6cf8d7fd4c01e1
+```
 
-- [x] Open a draft PR and preserve the intentional RED evidence.
-- [x] Pass 345/345 unit tests, build generation and site integrity on implementation head `dce732767057f472b2d0ef05e400a0e184230649`.
-- [x] Pass browser, accessibility, Lighthouse, Firefox/WebKit, search, RU/EN, analytics, visual regression and custom-domain artifact checks on Build #777 / `30952796831`.
-- [x] Pass CodeQL #242, Dependency Review #205, Dependency Audit Evidence #16 and the existing PR Production Live Smoke #42.
-- [ ] Re-run the complete exact-head matrix after this plan synchronization.
-- [ ] Mark PR #112 ready and merge only with all required checks green.
-- [ ] Verify exact squash SHA through Pages deployment and deployment-driven Production Live Smoke, including `production-favicon-summary.json`.
-- [ ] Update issue #111 with repository evidence while retaining only authenticated Webmaster operator actions.
-- [ ] Synchronize `docs/PROJECT_STATE.md`, `docs/ROADMAP.md` and `docs/CHANGELOG.md` in a post-merge documentation closure, including the prior PR #110 drift and the accurate structural PDF contract.
+- [x] Verified root favicon HTTP 200.
+- [x] Verified `Content-Type: image/svg+xml` and 591-byte SVG response.
+- [x] Verified homepage and Resume `href="/favicon.svg"`.
+- [x] Verified exact resolution to `https://trueruslan.ru/favicon.svg`.
+- [x] Added exact evidence to issue #111.
+- [x] Synchronized `PROJECT_STATE`, `ROADMAP` and `CHANGELOG`, including the prior PR #110 drift and accurate PDF validation boundary.
+
+## Remaining external operator actions
+
+These are intentionally not marked complete by repository evidence:
+
+- [ ] confirm `https://trueruslan.ru/sitemap.xml` in the HTTPS Webmaster property;
+- [ ] confirm HTTP→HTTPS move/main mirror state;
+- [ ] select “No region”;
+- [ ] submit the homepage for recrawl;
+- [ ] recheck diagnostics after 10–14 days.
+
+A green repository/deployment contract does not imply that Yandex has already refreshed cached diagnostics.
