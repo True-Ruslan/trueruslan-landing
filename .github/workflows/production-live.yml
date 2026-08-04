@@ -19,6 +19,8 @@ on:
       - '.github/workflows/production-live.yml'
       - 'scripts/production-live-smoke.cjs'
       - 'scripts/production-live-workflow.test.js'
+      - 'scripts/production-favicon-smoke.cjs'
+      - 'scripts/production-favicon-workflow.test.js'
 
 permissions:
   contents: read
@@ -141,6 +143,12 @@ jobs:
           PAGES_UPDATED_AT: ${{ steps.pages.outputs.pages_updated_at }}
           PAGES_RUN_URL: ${{ steps.pages.outputs.pages_run_url }}
         run: node scripts/production-live-smoke.cjs
+
+      - name: Run deployed favicon smoke
+        if: github.event_name != 'pull_request'
+        env:
+          EXPECTED_DEPLOYED_SHA: ${{ steps.pages.outputs.deployed_sha }}
+        run: node scripts/production-favicon-smoke.cjs
 
       - name: Preserve Pages deployment identity
         if: always()
