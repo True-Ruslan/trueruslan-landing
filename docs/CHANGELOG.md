@@ -191,7 +191,13 @@ unit tests:                 321 PASS / 0 FAIL
 
 ## P2.4h — Product Evidence Reconciliation — DONE
 
-Recorded Vlezet M7.8B accepted evidence and separated VillAIgence automated layers. M7.8C remained a separate owner-acceptance boundary.
+Recorded Vlezet M7.8B accepted evidence and separated VillAIgence automated layers:
+
+- VillAIgence PR #103 — 28-scenario risk catalogue and seven development GameTests;
+- VillAIgence PR #104 — exact production-JAR startup, clean shutdown and restart proof;
+- exact artifact and installed acceptance remain separate;
+- cumulative real-provider/gameplay acceptance remains pending;
+- M7.8C remains a separate owner-acceptance boundary.
 
 ```text
 feature PR:                 #83 — MERGED
