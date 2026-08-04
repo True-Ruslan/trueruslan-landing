@@ -37,7 +37,7 @@ async function main() {
     });
     const {page} = runtime;
     try {
-      const response = await page.goto(`${server.baseUrl}/_search/ru/index.html`, {waitUntil: 'networkidle'});
+      const response = await page.goto(`${server.baseUrl}/_search/ru/`, {waitUntil: 'networkidle'});
       if (!response?.ok()) throw new Error(`search page returned HTTP ${response?.status() ?? 'none'}`);
 
       const input = page.locator('.tr-search-input').first();
@@ -46,7 +46,7 @@ async function main() {
 
       const villaigenceRoutes = await searchForRoute(page, input, button, {
         query: 'VillAIgence',
-        routeFragment: 'landing/projects/livingworld',
+        routeFragment: 'landing/projects/livingworld/',
         textFragment: 'VillAIgence',
       });
       const inventedRoutes = await page.locator('a[href*="projects/villaigence"]').count();
@@ -55,13 +55,13 @@ async function main() {
 
       const authorityRoutes = await searchForRoute(page, input, button, {
         query: 'deterministic authority',
-        routeFragment: 'landing/notes/probabilistic-proposals-deterministic-authority',
+        routeFragment: 'landing/notes/probabilistic-proposals-deterministic-authority/',
         textFragment: 'AI может предложить, но не применить',
       });
 
       const persistenceRoutes = await searchForRoute(page, input, button, {
         query: 'persistence contract',
-        routeFragment: 'landing/notes/restart-persistence-is-a-product-contract',
+        routeFragment: 'landing/notes/restart-persistence-is-a-product-contract/',
         textFragment: 'Restart',
       });
 
