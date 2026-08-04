@@ -142,9 +142,13 @@ jobs:
           PAGES_CREATED_AT: ${{ steps.pages.outputs.pages_created_at }}
           PAGES_UPDATED_AT: ${{ steps.pages.outputs.pages_updated_at }}
           PAGES_RUN_URL: ${{ steps.pages.outputs.pages_run_url }}
-        run: |
-          node scripts/production-live-smoke.cjs
-          node scripts/production-favicon-smoke.cjs
+        run: node scripts/production-live-smoke.cjs
+
+      - name: Run deployed favicon smoke
+        if: github.event_name != 'pull_request'
+        env:
+          EXPECTED_DEPLOYED_SHA: ${{ steps.pages.outputs.deployed_sha }}
+        run: node scripts/production-favicon-smoke.cjs
 
       - name: Preserve Pages deployment identity
         if: always()
