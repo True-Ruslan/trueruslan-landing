@@ -1,47 +1,72 @@
 [
   {
+    "id": "github-profile",
     "name": "GitHub profile",
     "category": "profile",
-    "url": "https://github.com/True-Ruslan"
+    "url": "https://github.com/True-Ruslan",
+    "distributionState": "verified",
+    "lastVerified": "2026-08-04",
+    "verificationScope": "Public profile exposes the canonical https://trueruslan.ru/ backlink.",
+    "requiredAction": "No change required; re-verify after public profile edits."
   },
   {
+    "id": "taskhub-backend",
     "name": "TaskHub backend",
     "category": "project",
     "url": "https://github.com/True-Ruslan/TaskHub-backend"
   },
   {
+    "id": "taskhub-frontend",
     "name": "TaskHub frontend",
     "category": "project",
     "url": "https://github.com/True-Ruslan/taskhub-frontend"
   },
   {
+    "id": "minichess",
     "name": "MiniChess",
     "category": "project",
     "url": "https://github.com/True-Ruslan/MiniChess"
   },
   {
+    "id": "godot-atmospheric-horror-template",
     "name": "Godot Atmospheric Horror Template",
     "category": "project",
     "url": "https://github.com/True-Ruslan/godot-simple-tamplate"
   },
   {
+    "id": "marketdb",
     "name": "MarketDB",
     "category": "production-project",
     "url": "https://marketdb.pro/"
   },
   {
+    "id": "telegram-personal",
     "name": "Telegram",
     "category": "profile",
-    "url": "https://t.me/TrueRuslan"
+    "url": "https://t.me/TrueRuslan",
+    "distributionState": "stale",
+    "lastVerified": "2026-08-04",
+    "verificationScope": "Public profile is reachable and exposes a legacy GitHub Pages backlink.",
+    "requiredAction": "Replace the legacy backlink with https://trueruslan.ru/ and verify the rendered profile."
   },
   {
+    "id": "telegram-blog",
     "name": "Telegram Blog",
     "category": "profile",
-    "url": "https://t.me/TrueRuslan_Blog"
+    "url": "https://t.me/TrueRuslan_Blog",
+    "distributionState": "stale",
+    "lastVerified": "2026-08-04",
+    "verificationScope": "Public channel is reachable and exposes a legacy GitHub Pages backlink.",
+    "requiredAction": "Replace the legacy backlink with https://trueruslan.ru/ and verify the rendered channel description."
   },
   {
+    "id": "habr-profile",
     "name": "Habr",
     "category": "profile",
-    "url": "https://habr.com/ru/users/TrueRuslan/"
+    "url": "https://habr.com/ru/users/TrueRuslan/",
+    "distributionState": "stale",
+    "lastVerified": "2026-08-04",
+    "verificationScope": "Public profile is reachable; the canonical site backlink was not observed in the measured profile content.",
+    "requiredAction": "Add https://trueruslan.ru/ to the public profile and verify the rendered link."
   }
 ]
