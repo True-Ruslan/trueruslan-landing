@@ -8,11 +8,13 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WORKFLOW = path.join(ROOT, '.github', 'workflows', 'production-live.yml');
 const SMOKE = path.join(ROOT, 'scripts', 'production-favicon-smoke.cjs');
 
-test('production workflow runs the dedicated favicon deployment contract', () => {
+test('production workflow runs the favicon contract only after a deployable event', () => {
   const workflow = fs.readFileSync(WORKFLOW, 'utf8');
 
   assert.ok(workflow.includes('scripts/production-favicon-smoke.cjs'));
-  assert.match(workflow, /node scripts\/production-live-smoke\.cjs\s*\n\s*node scripts\/production-favicon-smoke\.cjs/);
+  assert.match(workflow, /name:\s*Run deployed favicon smoke/);
+  assert.match(workflow, /if:\s*github\.event_name != 'pull_request'/);
+  assert.match(workflow, /run:\s*node scripts\/production-favicon-smoke\.cjs/);
 });
 
 test('production favicon smoke checks the root SVG and rendered root-absolute links', () => {
