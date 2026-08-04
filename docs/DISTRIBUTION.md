@@ -109,7 +109,7 @@
 - ID: `telegram-personal`
 - URL: https://t.me/TrueRuslan
 - Last verified: 2026-08-04
-- Verification scope: Rendered public profile exposes the canonical https://trueruslan.ru backlink and no legacy GitHub Pages backlink was observed.
+- Verification scope: Rendered public profile exposes the canonical https://trueruslan.ru backlink as the current public website.
 - Required action: Current canonical backlink is valid; re-verification is required after public profile edits.
 - [ ] Post-update verification
 
