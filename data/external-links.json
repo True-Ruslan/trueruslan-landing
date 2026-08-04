@@ -7,7 +7,7 @@
     "distributionState": "verified",
     "lastVerified": "2026-08-04",
     "verificationScope": "Public profile exposes the canonical https://trueruslan.ru/ backlink.",
-    "requiredAction": "No change required; re-verify after public profile edits."
+    "requiredAction": "Current canonical backlink is valid; re-verification is required after public profile edits."
   },
   {
     "id": "taskhub-backend",
@@ -47,7 +47,7 @@
     "distributionState": "stale",
     "lastVerified": "2026-08-04",
     "verificationScope": "Public profile is reachable and exposes a legacy GitHub Pages backlink.",
-    "requiredAction": "Replace the legacy backlink with https://trueruslan.ru/ and verify the rendered profile."
+    "requiredAction": "Target backlink: https://trueruslan.ru/; legacy backlink cleanup and rendered-profile verification remain pending."
   },
   {
     "id": "telegram-blog",
@@ -57,7 +57,7 @@
     "distributionState": "stale",
     "lastVerified": "2026-08-04",
     "verificationScope": "Public channel is reachable and exposes a legacy GitHub Pages backlink.",
-    "requiredAction": "Replace the legacy backlink with https://trueruslan.ru/ and verify the rendered channel description."
+    "requiredAction": "Target backlink: https://trueruslan.ru/; legacy backlink cleanup and rendered-channel verification remain pending."
   },
   {
     "id": "habr-profile",
@@ -67,6 +67,6 @@
     "distributionState": "stale",
     "lastVerified": "2026-08-04",
     "verificationScope": "Public profile is reachable; the canonical site backlink was not observed in the measured profile content.",
-    "requiredAction": "Add https://trueruslan.ru/ to the public profile and verify the rendered link."
+    "requiredAction": "Canonical backlink https://trueruslan.ru/ and rendered-link verification remain pending."
   }
 ]
