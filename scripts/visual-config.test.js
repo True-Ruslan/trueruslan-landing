@@ -18,7 +18,7 @@ test('visual theme and custom resources are wired into Diplodoc', () => {
   const contentLicense = read('CONTENT-LICENSE.md');
 
   assert.match(yfm, /allowCustomResources:\s*true/);
-  assert.match(yfm, /assets\/images\/favicon\.svg/);
+  assert.match(yfm, /favicon-src:\s*\/favicon\.svg/);
   assert.match(yfm, /_assets\/style\/custom\.css/);
   assert.match(yfm, /_assets\/style\/accessibility\.css/);
   assert.match(yfm, /_assets\/style\/standalone\.css/);
