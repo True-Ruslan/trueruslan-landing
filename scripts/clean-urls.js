@@ -58,11 +58,20 @@ export function rewriteUrlReferences(content, siteUrl = DEFAULT_SITE_URL) {
   return String(content).replace(URL_TOKEN_PATTERN, (value) => toDirectoryUrl(value, siteUrl));
 }
 
+function incrementBaseValue(value) {
+  return `${value}../`;
+}
+
 export function incrementRelativeBase(html) {
-  return String(html).replace(
-    /(<base\b[^>]*\bhref=(["']))((?:\.\.\/)+|\.\/)(\2[^>]*>)/i,
-    (_match, prefix, _quote, href, suffix) => `${prefix}${href}../${suffix}`,
-  );
+  return String(html)
+    .replace(
+      /(<base\b[^>]*\bhref=(["']))((?:\.\.\/)+|\.\/)(\2[^>]*>)/i,
+      (_match, prefix, _quote, href, suffix) => `${prefix}${incrementBaseValue(href)}${suffix}`,
+    )
+    .replace(
+      /("router"\s*:\s*\{[^{}]*?"base"\s*:\s*")((?:\.\.\/)+|\.\/)(")/g,
+      (_match, prefix, routerBase, suffix) => `${prefix}${incrementBaseValue(routerBase)}${suffix}`,
+    );
 }
 
 function escapeHtml(value) {
