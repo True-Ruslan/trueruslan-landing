@@ -213,7 +213,7 @@ All six remaining records reduce to the known build-time `markdown-it@13.0.2` / 
 ### Vlezet
 
 - public lifecycle: `pre-production`;
-- latest accepted public recognition slice: M7.8B;
+- M7.8B remains accepted as the latest public recognition slice;
 - M7.8C PR #42 remains open Draft;
 - automated gates are green, but the same real-plan product-owner retest remains mandatory;
 - do not merge or update public completion state before explicit owner acceptance.
