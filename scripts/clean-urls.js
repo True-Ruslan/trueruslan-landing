@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-const DEFAULT_SITE_URL = 'https://trueruslan.ru';
+const DEFAULT_SITE_URL = 'https://trueruslan.ru/';
 const TEXT_RESOURCE_EXTENSIONS = new Set(['.html', '.xml', '.js', '.json']);
 
 function walkFiles(dir) {
@@ -14,6 +14,44 @@ function walkFiles(dir) {
     else if (entry.isFile()) files.push(entryPath);
   }
   return files;
+}
+
+function htmlAttribute(tag, name) {
+  const match = String(tag).match(new RegExp(`\\b${name}\\s*=\\s*(["'])(.*?)\\1`, 'i'));
+  return match?.[2] ?? null;
+}
+
+function canonicalHref(html) {
+  for (const tag of String(html).match(/<link\b[^>]*>/gi) ?? []) {
+    const rel = htmlAttribute(tag, 'rel');
+    if (!rel?.toLowerCase().split(/\s+/).includes('canonical')) continue;
+    return htmlAttribute(tag, 'href');
+  }
+  return null;
+}
+
+function normalizeSiteUrl(value) {
+  const parsed = new URL(value);
+  if (parsed.protocol !== 'https:' || parsed.username || parsed.password || parsed.search || parsed.hash) {
+    throw new Error(`Invalid generated site URL: ${value}`);
+  }
+  parsed.pathname = parsed.pathname.replace(/index\.html$/, '');
+  if (!parsed.pathname.endsWith('/')) parsed.pathname += '/';
+  return parsed.href;
+}
+
+export function detectSiteUrl(outputDir, fallback = DEFAULT_SITE_URL) {
+  const homepagePath = path.join(outputDir, 'index.html');
+  if (!fs.existsSync(homepagePath)) return normalizeSiteUrl(fallback);
+
+  const canonical = canonicalHref(fs.readFileSync(homepagePath, 'utf8'));
+  if (!canonical) return normalizeSiteUrl(fallback);
+
+  try {
+    return normalizeSiteUrl(canonical);
+  } catch {
+    return normalizeSiteUrl(fallback);
+  }
 }
 
 function splitSuffix(value) {
@@ -37,11 +75,12 @@ export function toDirectoryUrl(value, siteUrl = DEFAULT_SITE_URL) {
     let site;
     try {
       parsed = new URL(raw);
-      site = new URL(siteUrl);
+      site = new URL(normalizeSiteUrl(siteUrl));
     } catch {
       return raw;
     }
     if (!/^https?:$/.test(parsed.protocol) || parsed.origin !== site.origin) return raw;
+    if (!parsed.pathname.startsWith(site.pathname)) return raw;
     parsed.pathname = cleanPathname(parsed.pathname);
     return parsed.toString();
   }
@@ -85,7 +124,7 @@ function escapeHtml(value) {
 }
 
 export function createLegacyRedirect(route, siteUrl = DEFAULT_SITE_URL) {
-  const canonical = new URL(route, siteUrl.endsWith('/') ? siteUrl : `${siteUrl}/`).href;
+  const canonical = new URL(route, normalizeSiteUrl(siteUrl)).href;
   const escapedCanonical = escapeHtml(canonical);
   return `<!doctype html>\n<html lang="en" data-tr-clean-url-redirect>\n<head>\n<meta charset="utf-8">\n<meta name="robots" content="noindex,follow">\n<meta http-equiv="refresh" content="0; url=${escapedCanonical}">\n<link rel="canonical" href="${escapedCanonical}">\n<title>Redirecting…</title>\n<script>location.replace(${JSON.stringify(canonical)} + location.search + location.hash);</script>\n</head>\n<body><p><a href="${escapedCanonical}">Continue</a></p></body>\n</html>\n`;
 }
@@ -142,12 +181,15 @@ function shouldRewriteResource(relativePath) {
   return TEXT_RESOURCE_EXTENSIONS.has(path.extname(normalized).toLowerCase());
 }
 
-export function publishDirectoryRoutes({outputDir, siteUrl = DEFAULT_SITE_URL} = {}) {
+export function publishDirectoryRoutes({outputDir, siteUrl} = {}) {
   if (!outputDir || !fs.existsSync(outputDir)) {
     throw new Error(`Generated site directory missing: ${outputDir}`);
   }
 
   const normalizedOutput = path.resolve(outputDir);
+  const resolvedSiteUrl = siteUrl
+    ? normalizeSiteUrl(siteUrl)
+    : detectSiteUrl(normalizedOutput, DEFAULT_SITE_URL);
   const sourcePages = walkFiles(normalizedOutput)
     .filter((filePath) => filePath.toLowerCase().endsWith('.html'))
     .filter((filePath) => path.basename(filePath).toLowerCase() !== 'index.html')
@@ -157,15 +199,15 @@ export function publishDirectoryRoutes({outputDir, siteUrl = DEFAULT_SITE_URL} =
   const routes = [];
   for (const sourcePath of sourcePages) {
     const relativeSource = path.relative(normalizedOutput, sourcePath).replaceAll(path.sep, '/');
-    const route = toDirectoryUrl(relativeSource, siteUrl);
+    const route = toDirectoryUrl(relativeSource, resolvedSiteUrl);
     if (!route.endsWith('/')) throw new Error(`Unable to derive directory route for ${relativeSource}`);
 
     const targetPath = path.join(normalizedOutput, route, 'index.html');
     const sourceHtml = fs.readFileSync(sourcePath, 'utf8');
-    const cleanHtml = incrementRelativeBase(rewriteUrlReferences(sourceHtml, siteUrl));
+    const cleanHtml = incrementRelativeBase(rewriteUrlReferences(sourceHtml, resolvedSiteUrl));
     fs.mkdirSync(path.dirname(targetPath), {recursive: true});
     fs.writeFileSync(targetPath, cleanHtml, 'utf8');
-    fs.writeFileSync(sourcePath, createLegacyRedirect(route, siteUrl), 'utf8');
+    fs.writeFileSync(sourcePath, createLegacyRedirect(route, resolvedSiteUrl), 'utf8');
     routes.push(route);
   }
 
@@ -174,21 +216,22 @@ export function publishDirectoryRoutes({outputDir, siteUrl = DEFAULT_SITE_URL} =
     const relativePath = path.relative(normalizedOutput, resourcePath).replaceAll(path.sep, '/');
     if (!shouldRewriteResource(relativePath)) continue;
     const current = fs.readFileSync(resourcePath, 'utf8');
-    const next = patchGeneratedRuntime(rewriteUrlReferences(current, siteUrl), relativePath);
+    const next = patchGeneratedRuntime(rewriteUrlReferences(current, resolvedSiteUrl), relativePath);
     if (next === current) continue;
     fs.writeFileSync(resourcePath, next, 'utf8');
     rewritten.push(relativePath);
   }
 
-  return {routes: routes.sort(), rewritten: rewritten.sort()};
+  return {siteUrl: resolvedSiteUrl, routes: routes.sort(), rewritten: rewritten.sort()};
 }
 
 function main() {
   const scriptDir = path.dirname(fileURLToPath(import.meta.url));
   const root = path.join(scriptDir, '..');
-  const siteUrl = String(process.env.SITE_URL || DEFAULT_SITE_URL).trim();
+  const siteUrl = String(process.env.SITE_URL || '').trim() || undefined;
   try {
     const result = publishDirectoryRoutes({outputDir: path.join(root, 'docs-html'), siteUrl});
+    console.log(`Clean URL site base: ${result.siteUrl}`);
     console.log(`Published ${result.routes.length} clean directory route(s).`);
     console.log(`Rewrote clean URL references in ${result.rewritten.length} generated resource(s).`);
   } catch (error) {
