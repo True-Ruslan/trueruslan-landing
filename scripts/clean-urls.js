@@ -69,8 +69,10 @@ export function incrementRelativeBase(html) {
       (_match, prefix, _quote, href, suffix) => `${prefix}${incrementBaseValue(href)}${suffix}`,
     )
     .replace(
-      /("router"\s*:\s*\{[^{}]*?"base"\s*:\s*")((?:\.\.\/)+|\.\/)(")/g,
-      (_match, prefix, routerBase, suffix) => `${prefix}${incrementBaseValue(routerBase)}${suffix}`,
+      /("router"\s*:\s*\{[^{}]*?"depth"\s*:\s*)(\d+)(\s*,[^{}]*?"base"\s*:\s*")((?:\.\.\/)+|\.\/)(")/g,
+      (_match, prefix, depth, middle, routerBase, suffix) => (
+        `${prefix}${Number(depth) + 1}${middle}${incrementBaseValue(routerBase)}${suffix}`
+      ),
     );
 }
 
