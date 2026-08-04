@@ -47,23 +47,28 @@ test('canonical distribution targets resolve only through page metadata', async 
   }));
 });
 
-test('external profile audit exposes measured verified and stale states', async () => {
+test('external profile audit exposes the fresh three-verified one-stale snapshot', async () => {
   const api = await loadModule();
   const entries = readJson(EXTERNAL_PATH);
   const profiles = api.validateExternalProfileAudit(entries);
   const byId = new Map(profiles.map((profile) => [profile.id, profile]));
 
-  assert.equal(byId.get('github-profile')?.distributionState, 'verified');
-  assert.match(byId.get('github-profile')?.verificationScope ?? '', /canonical.*trueruslan\.ru/i);
-
-  assert.equal(byId.get('habr-profile')?.distributionState, 'stale');
-  assert.match(byId.get('habr-profile')?.requiredAction ?? '', /trueruslan\.ru/i);
-
-  for (const id of ['telegram-blog', 'telegram-personal']) {
-    assert.equal(byId.get(id)?.distributionState, 'stale');
-    assert.match(byId.get(id)?.verificationScope ?? '', /legacy|github pages/i);
-    assert.match(byId.get(id)?.requiredAction ?? '', /https:\/\/trueruslan\.ru\//i);
+  for (const id of ['github-profile', 'habr-profile', 'telegram-personal']) {
+    assert.equal(byId.get(id)?.distributionState, 'verified');
+    assert.match(byId.get(id)?.verificationScope ?? '', /canonical.*trueruslan\.ru|trueruslan\.ru.*canonical/i);
+    assert.doesNotMatch(byId.get(id)?.verificationScope ?? '', /legacy|github pages/i);
   }
+
+  assert.equal(byId.get('telegram-blog')?.distributionState, 'stale');
+  assert.match(byId.get('telegram-blog')?.verificationScope ?? '', /legacy|github pages/i);
+  assert.match(byId.get('telegram-blog')?.requiredAction ?? '', /https:\/\/trueruslan\.ru\//i);
+
+  const summary = api.buildDistributionSummary({targets: [], profiles});
+  assert.deepEqual(summary.profileStateCounts, {
+    verified: 3,
+    stale: 1,
+    unverified: 0,
+  });
 });
 
 test('tracked distribution runbook is deterministic and registry-backed', async () => {
@@ -79,7 +84,8 @@ test('tracked distribution runbook is deterministic and registry-backed', async 
 
   assert.equal(fs.readFileSync(RUNBOOK_PATH, 'utf8'), expected);
   assert.match(expected, /GitHub.*verified/is);
-  assert.match(expected, /Habr.*stale/is);
+  assert.match(expected, /Habr.*verified/is);
+  assert.match(expected, /### Telegram — verified/is);
   assert.match(expected, /Telegram Blog.*stale/is);
   assert.match(expected, /post-update verification/i);
   assert.doesNotMatch(expected, /utm_|session replay|automatic posting/i);
