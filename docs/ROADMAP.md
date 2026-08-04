@@ -1,8 +1,8 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-04**, после exact post-merge Production Live Smoke.
+> Обновлено: **2026-08-04**, после P2.5a Distribution Readiness и deployment-trigger acceptance.
 >
-> Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; custom-domain operations — `docs/CUSTOM_DOMAIN.md`.
+> Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; operator kit — `docs/DISTRIBUTION.md`.
 
 ## Principles
 
@@ -14,13 +14,13 @@
 - core content без runtime API;
 - one canonical source of truth;
 - Diplodoc как единственный site-wide full-text search owner;
-- no automatic public truth mutation;
+- no automatic public truth or profile mutation;
 - bounded Evidence semantics;
 - Publications только для completed, externally verifiable work;
 - one RU/EN site/build/search architecture;
 - optional aggregate analytics;
 - no behavioural tracking без explicit privacy review;
-- repository readiness, generated artifact, deployed production, external-project acceptance и provider telemetry как разные факты;
+- repository readiness, generated artifact, deployed production, profile snapshot, external-project acceptance и provider telemetry как разные факты;
 - exact artifact → installed acceptance как явную release boundary;
 - byte continuity ≠ structural readability ≠ semantic continuity ≠ behavioral continuity;
 - dependency evidence не является автоматическим разрешением на fix;
@@ -57,145 +57,150 @@
 - VillAIgence flagship — PR #63.
 - `/now` synchronization — PR #65.
 - Product Evidence Reconciliation — PR #83.
-- Installed Acceptance Engineering Note — PR #85.
-- Deterministic Authority Engineering Note — PR #87.
-- Restart and Persistence Engineering Note — PR #89.
+- Installed Acceptance Note — PR #85.
+- Deterministic Authority Note — PR #87.
+- Restart and Persistence Note — PR #89.
+- Distribution Contract & Profile Audit — PR #98.
 
 ## Operational / security hardening
 
 - Freshness PR evidence and clean issue #78 closure — PR #91.
-- Exact full-lockfile dependency audit evidence — PR #93.
-- High-severity `brace-expansion` / `undici` remediation — PR #94.
+- Exact dependency audit evidence — PR #93.
+- High-severity dependency remediation — PR #94.
 - Production Live Smoke — PR #96.
+- Deployment-driven live trigger repair — PR #99.
+- Trigger model activation-order proof — PR #100.
 - Remaining markdown-it/Diplodoc blocker — issue #82.
 
 ---
 
-# O3 — Production Deployment Verification — DONE
-
-PR #96 added a permanent read-only Playwright gate.
+# P2.5a — Distribution Contract & Profile Audit — DONE
 
 ```text
-feature PR:                     #96 — MERGED
-exact PR head:                  593377c24c6af8bbfb044bd6f20bac622e27b270
-squash:                         ba4e51810dd532ca0a144fef084276dcba82a02e
-Build:                          #706 / 30861085205 — SUCCESS
-CodeQL:                         #156 / 30861085202 — SUCCESS
-Dependency Review:              #134 / 30861085223 — SUCCESS
-PR Production Live Smoke:       #7 / 30861085240 — SUCCESS
-post-merge Live Smoke:          #8 / 30861417601 — SUCCESS
-unit tests:                     333 PASS / 0 FAIL
+feature PR:                     #98 — MERGED
+exact head:                     87685e94f2f81f72510555bb4b613c77bce34d36
+squash:                         6973f09ff4613aaa809600f09711d274dbf44cec
+Build:                          #719 / 30885477166 — SUCCESS
+CodeQL:                         #171 / 30885477170 — SUCCESS
+Dependency Review:              #147 / 30885477189 — SUCCESS
+Distribution Readiness:         #3 / 30885477173 — SUCCESS
+unit tests:                     337 PASS / 0 FAIL
 Lighthouse:                     100 / 100 / 100 / 100
-live artifact:                  8874490022
-live digest:                    sha256:cbc5b4099e9e08e0392f996a2434e219a216aac863f2c342b79c129096a0d7b8
 ```
 
-Exact production proof:
+Delivered:
+
+- eight controlled canonical targets derived from `data/page-meta.json`;
+- exact canonical-host validation without tracking query/hash;
+- external profile audit states in existing `data/external-links.json`;
+- deterministic JSON/Markdown evidence;
+- byte-equal tracked `docs/DISTRIBUTION.md`;
+- weekly/manual/path-scoped read-only workflow;
+- no automatic posting, profile mutation, redirect service or user-level attribution.
+
+Measured snapshot:
 
 ```text
-deployed SHA:                   ba4e51810dd532ca0a144fef084276dcba82a02e
-caller SHA:                     ba4e51810dd532ca0a144fef084276dcba82a02e
-github-pages deployment id:     5735124034
-state:                          success
+verified:                       1
+stale:                          3
+unverified:                     0
 ```
 
-Verified live surfaces:
+P2.5a production proof:
 
-- apex homepage;
-- `www → apex` path preservation;
-- persistence Note canonical/OpenGraph metadata;
-- Atom feed;
-- interactive search exact route;
-- single Cloudflare beacon;
-- no legacy-origin leakage;
-- no browser/request failures.
-
-Generated artifact and deployed production remain distinct evidence layers.
+```text
+Production Live Smoke:          #12 / 30886377666 — SUCCESS
+deployed SHA:                   6973f09ff4613aaa809600f09711d274dbf44cec
+deployment id:                  5739340422
+artifact:                       8883255231
+```
 
 ---
 
-# NOW — P2.5 Distribution Readiness
+# Production Live Smoke trigger repair — DONE
 
-## Goal
+The direct-push-only exact-deployment trigger was not reliable after P2.5a. PR #99 added completed Pages `workflow_run` as the primary orchestration boundary and retained push as fallback.
 
-Prepare canonical, deterministic distribution surfaces for the portfolio without automatic posting, behavioural tracking or fake engagement claims.
+```text
+repair PR:                      #99 — MERGED
+repair squash:                  0ec1faef21cf528ecc54d5a16d99552ed3d4805e
+Build:                          #721 / 30886377658 — SUCCESS
+CodeQL:                         #174 / 30886377653 — SUCCESS
+Dependency Review:              #149 / 30886377654 — SUCCESS
+fallback Live Smoke:            #13 / 30886807440 — SUCCESS
+```
 
-## Planned scope
+Activation-order acceptance:
 
-### D1 — Canonical share-target registry
+```text
+design PR:                      #100 — MERGED
+exact design squash:            c2de903eabd34ed7d07ace5e3f1eabca48b720e5
+source Pages run:               #131 / 30887587364 — SUCCESS
+Production Live Smoke:          #16 / 30887639653 — SUCCESS
+event:                          workflow_run
+deployment id:                  5739649211
+artifact:                       8883727019
+```
 
-Create one controlled registry for:
-
-- homepage;
-- Vlezet flagship;
-- VillAIgence flagship;
-- Engineering Notes index;
-- selected grounded Notes;
-- Publications index.
-
-Each record must define stable canonical URL, title, short bounded summary, audience and allowed channels.
-
-### D2 — Deterministic validation
-
-Add tests that require:
-
-- unique IDs and URLs;
-- exact canonical metadata coverage;
-- no legacy Pages origin;
-- no unpublished/non-verifiable target;
-- safe channel vocabulary;
-- no automatic UTM/user-level identifiers;
-- deterministic rendering/output.
-
-### D3 — External-profile link audit
-
-Create a reviewable registry/report with states:
-
-- `verified`;
-- `stale`;
-- `unverified`.
-
-Scope: GitHub profile/README, Habr profile, Telegram channel and other explicitly configured public identities. No automatic profile mutation.
-
-### D4 — Human distribution checklist
-
-Generate a static checklist for deliberate manual publication:
-
-- destination;
-- canonical URL;
-- recommended framing;
-- evidence boundary;
-- verification date;
-- post-publication link confirmation.
-
-### D5 — Quality and production proof
-
-Require:
-
-- unit tests;
-- production build;
-- generated-site integrity;
-- Chromium/Axe/Lighthouse;
-- Firefox/WebKit;
-- search;
-- RU/EN;
-- metadata/OpenGraph;
-- visual regression;
-- custom-domain artifact;
-- exact post-merge Production Live Smoke.
-
-## Explicit non-goals
-
-- automatic social posting;
-- behavioural analytics/session replay;
-- per-user attribution;
-- engagement promises;
-- fake/demo Photo Story;
-- public project-status promotion without source acceptance.
+The deployment listener is now proven independently from the direct-push fallback.
 
 ---
 
-# Conditional parallel work
+# NOW — external profile canonicalization gate
+
+Repository automation is complete for P2.5a. The next useful work requires deliberate owner edits outside GitHub.
+
+## Required profile updates
+
+### Habr
+
+Current state: `stale`.
+
+Required outcome:
+
+- public profile contains `https://trueruslan.ru/`;
+- rendered link is verified;
+- registry state changes to `verified` only after observation.
+
+### Telegram personal
+
+Current state: `stale` because the visible profile exposes the legacy GitHub Pages backlink.
+
+Required outcome:
+
+- legacy backlink removed;
+- canonical `https://trueruslan.ru/` exposed;
+- rendered profile verified.
+
+### Telegram Blog
+
+Current state: `stale` because the visible channel description exposes the legacy GitHub Pages backlink.
+
+Required outcome:
+
+- legacy backlink removed;
+- canonical `https://trueruslan.ru/` exposed;
+- rendered channel verified.
+
+## Acceptance after owner edits
+
+1. fetch public rendered profiles;
+2. verify exact canonical backlink;
+3. update `lastVerified`, `verificationScope` and state;
+4. regenerate `docs/DISTRIBUTION.md`;
+5. run Distribution Readiness workflow;
+6. run complete Build/CodeQL/Dependency Review matrix;
+7. merge and require exact `workflow_run` Production Live Smoke.
+
+Automatic profile mutation is prohibited and unavailable through current repository tools.
+
+---
+
+# Conditional next work
+
+## P2.5b public share UI
+
+Do not implement by default. Consider only after profile cleanup and an explicit product need. The current operator kit already provides canonical URLs, audiences, framing and evidence boundaries.
 
 ## Genuine Photo Story
 
@@ -203,8 +208,8 @@ Start only when authentic material, chronology, captions/alt text and hero/layou
 
 ## External product updates
 
-- Vlezet public truth changes only after exact-head automation plus same real-plan owner acceptance. M7.8C PR #42 remains Draft.
-- VillAIgence promotion beyond `release-candidate` still requires real Text/STT/Chat/TTS and Voice Chat, deadline behavior, logical two-client conflict, focused gameplay canaries and product-owner cumulative acceptance.
+- Vlezet public truth changes only after exact-head automation plus same real-plan owner acceptance. M7.8C PR #42 remains Draft; M7.8B remains accepted.
+- VillAIgence promotion beyond `release-candidate` still requires real Text/STT/Chat/TTS and Voice Chat, deadline behavior, logical two-client conflict, focused gameplay canaries and product-owner cumulative acceptance. PR #103 and PR #104 remain separate automated evidence layers.
 
 ## Dependency blocker
 
@@ -218,7 +223,7 @@ Use only aggregate Cloudflare data. Wait 3–4 weeks of meaningful traffic befor
 
 # Not priority
 
-Without a new evidence-backed design decision, do not plan:
+Without a new evidence-backed decision, do not plan:
 
 - migration from GitHub Pages;
 - paid hosting merely for the custom domain;
@@ -228,9 +233,9 @@ Without a new evidence-backed design decision, do not plan:
 - behavioural analytics/session replay;
 - accounts/comments/likes;
 - backend/database for static content;
-- automatic public-state mutation;
+- automatic public/profile mutation;
 - decorative version bumps.
 
 ## New-session rule
 
-Open durable docs, check actual open PR/latest commits/exact-head CI, separately verify latest `github-pages` deployment and Production Live Smoke, confirm issue #78 is closed, issue #82 is the only open repository issue, Vlezet M7.8C remains Draft until owner acceptance, and VillAIgence automation remains separate from manual cumulative acceptance.
+Open durable docs and `docs/DISTRIBUTION.md`; check actual open PR/latest commits/exact-head CI; separately verify latest `github-pages` deployment and event `workflow_run` Production Live Smoke; confirm issue #78 is closed, issue #82 is the remaining repository blocker, external profile states are accurate, Vlezet M7.8C remains Draft and VillAIgence automated evidence remains separate from cumulative acceptance.
