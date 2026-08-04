@@ -82,10 +82,13 @@ function normalizePageMeta(pageMeta) {
 }
 
 function canonicalUrl(siteUrl, pagePath) {
-  const origin = validateHttpsUrl(siteUrl, 'siteUrl').replace(/\/$/, '');
-  if (pagePath === 'index.html') return `${origin}/`;
-  if (pagePath.endsWith('/index.html')) return `${origin}/${pagePath.slice(0, -'index.html'.length)}`;
-  return `${origin}/${pagePath}`;
+  const parsedOrigin = new URL(validateHttpsUrl(siteUrl, 'siteUrl'));
+  if (parsedOrigin.origin !== DEFAULT_SITE_URL || parsedOrigin.pathname !== '/' || parsedOrigin.search || parsedOrigin.hash) {
+    throw new Error(`siteUrl must match the canonical production origin ${DEFAULT_SITE_URL}.`);
+  }
+  if (pagePath === 'index.html') return `${parsedOrigin.origin}/`;
+  if (pagePath.endsWith('/index.html')) return `${parsedOrigin.origin}/${pagePath.slice(0, -'index.html'.length)}`;
+  return `${parsedOrigin.origin}/${pagePath}`;
 }
 
 export function validateDistributionTargets(rawTargets, {pageMeta} = {}) {
@@ -143,11 +146,9 @@ export function resolveDistributionTargets(targets, pageMeta, siteUrl = DEFAULT_
     const page = pages.get(target.pagePath);
     if (!page) throw new Error(`Missing page metadata for ${target.pagePath}`);
     const resolvedUrl = canonicalUrl(siteUrl, target.pagePath);
-    if (resolvedUrl.includes('?') || resolvedUrl.includes('#')) {
-      throw new Error(`Distribution URL must not contain query or hash: ${resolvedUrl}`);
-    }
-    if (resolvedUrl.includes('true-ruslan.github.io')) {
-      throw new Error(`Distribution URL leaks legacy origin: ${resolvedUrl}`);
+    const parsedResolvedUrl = new URL(resolvedUrl);
+    if (parsedResolvedUrl.hostname !== 'trueruslan.ru' || parsedResolvedUrl.search || parsedResolvedUrl.hash) {
+      throw new Error(`Distribution URL must remain on the exact canonical host: ${resolvedUrl}`);
     }
     return {
       ...target,
