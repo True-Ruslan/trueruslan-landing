@@ -70,6 +70,7 @@ test('patchSearchWorker converts public result links without mutating search ide
   assert.match(patched, /entry\.ref\.replace\(\/&\\\/\?\//);
   assert.match(patched, /replace\(\/index\\\.html\$\/, ""\)/);
   assert.match(patched, /replace\(\/\\\.html\$\/, "\/"\)/);
+  assert.equal(patchSearchWorker(patched), patched);
   assert.throws(
     () => patchSearchWorker('const item = {link: entry.ref};'),
     /search worker link formatter no longer matches/i,
