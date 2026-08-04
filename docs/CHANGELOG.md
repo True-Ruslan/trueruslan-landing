@@ -1,12 +1,79 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-04**, после external-profile verification и Vlezet freshness reconciliation.
+> Обновлено: **2026-08-04**, после публикации August 2026 resume refresh и exact-SHA production closure.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; operator kit — `docs/DISTRIBUTION.md`.
 
 ---
 
 # 2026-08-04
+
+## August 2026 Resume Refresh — DONE
+
+### PR #108 — synchronize web-CV and downloadable PDF
+
+The supplied current resume established a new professional-profile baseline:
+
+- more than 5 years of commercial development experience;
+- current QWEP role and key products;
+- Java 21–25 / Spring Boot 3.5–4 current stack;
+- Runet Business Systems, Bell Integrator and earlier experience;
+- AI-tool adoption and corporate MCP-server work;
+- updated education, teaching and research context;
+- canonical personal site `https://trueruslan.ru/`.
+
+Delivered:
+
+- replaced `docs/assets/documents/cv.pdf` with a current compact resume;
+- synchronized Russian and English Resume pages;
+- synchronized Russian and English About pages;
+- updated homepage Java range and RU/EN page metadata;
+- added a permanent regression contract covering both web surfaces and the binary PDF;
+- parsed PDF `/URI (...)` links structurally through `URL` and validated exact protocol/hostname/port/path;
+- rejected legacy `.com` and GitHub Pages origins;
+- reviewed and accepted only the intended desktop/mobile resume visual baselines;
+- preserved routes, runtime, search, analytics, dependencies and infrastructure unchanged.
+
+Review found and corrected two important gaps before merge:
+
+1. the initial PR updated web content but had not actually replaced the binary PDF;
+2. initial negative URL checks used unsafe regex/substring matching and generated five CodeQL threads.
+
+All five security threads were fixed, resolved and marked outdated before final acceptance.
+
+Final exact-head evidence:
+
+```text
+head:                       3055c82dc7f6c58d723a5f5c60e0af9f344c240b
+squash:                     a85b24d220f9bbfd57176a081f7bce59e41782e8
+Build:                      #756 / 30938001730 — SUCCESS
+CodeQL:                     #218 / 30938008191 — SUCCESS
+Dependency Review:          #184 / 30937995608 — SUCCESS
+Distribution Readiness:     #24 / 30937995575 — SUCCESS
+unit tests:                 340 PASS / 0 FAIL
+Lighthouse:                 100 / 100 / 100 / 100
+visual regression:          PASS
+review threads:             5 resolved / 0 open
+quality artifact:           8904045978
+quality digest:             sha256:43b0e5fa5eaf56f1dc3604215c3ac1b0454fbd67d460f134a2d6342a489cc3c7
+```
+
+Exact post-merge production evidence:
+
+```text
+source Pages run:           #139 / 30938565671 — SUCCESS
+Production Live Smoke:      #33 / 30938639622 — SUCCESS
+event:                      workflow_run
+deployed/caller SHA:        a85b24d220f9bbfd57176a081f7bce59e41782e8
+deployment id:              5749294655
+deployment state:           success
+live artifact:              8904183580
+live digest:                sha256:14d81aba0d281cf9a36e67a83b467871f7c2442c2e9937169d7fb22f1c26b93e
+```
+
+Production Live Smoke checked out the exact squash SHA, resolved the identical successful Pages deployment and passed the deployed browser assertions before preserving evidence.
+
+---
 
 ## Vlezet Draft Freshness Reconciliation — DONE
 
@@ -64,10 +131,10 @@ event:                      workflow_run
 deployed/caller SHA:        5742a25b16ec4c1128fc0bcf03227cf6e4666f60
 deployment id:              5743302605
 live artifact:              8891509306
-live digest:                sha256:b5d5531d942af9239fa8e4b1ce26feba15f70b1b4c0c197a15ec7417568a301b
+live digest:                sha256:b5d5531d942af9239fae4b1ce26feba15f70b1b4c0c197a15ec7417568a301b
 ```
 
-Issue #78 was closed/completed from the clean report and identical merged evidence blob. Public Vlezet status was not promoted.
+Issue #78 was closed/completed from clean evidence. Public Vlezet status was not promoted.
 
 ---
 
