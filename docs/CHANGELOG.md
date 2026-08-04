@@ -165,6 +165,10 @@ unit tests:                 321 PASS / 0 FAIL
 
 Recorded Vlezet M7.8B accepted evidence and separated VillAIgence GameTest from production-JAR restart proof.
 
+- VillAIgence PR #103 — 28-scenario catalogue and seven Fabric GameTests;
+- VillAIgence PR #104 — exact production-JAR startup, controlled shutdown and restart acceptance;
+- cumulative real-provider/gameplay acceptance remained pending.
+
 ```text
 feature PR:                 #83 — MERGED
 squash:                     5978f727206fa386e9cce18c26c9ba7b7eade2eb
