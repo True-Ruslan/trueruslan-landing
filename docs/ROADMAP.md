@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-04**, после финальной проверки всех внешних профилей.
+> Обновлено: **2026-08-04**, после проверки внешних профилей и Vlezet freshness reconciliation.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; distribution operator kit — `docs/DISTRIBUTION.md`.
 
@@ -16,6 +16,7 @@
 - Diplodoc как единственный site-wide full-text search owner;
 - no automatic public truth or external-profile mutation;
 - bounded Evidence semantics;
+- Draft evidence не является accepted evidence;
 - Publications только для completed, externally verifiable work;
 - one RU/EN site/build/search architecture;
 - optional aggregate analytics;
@@ -66,11 +67,12 @@
 
 ## Operational / security hardening
 
-- Freshness PR evidence and clean issue #78 closure — PR #91.
+- Freshness PR evidence and issue #78 closure — PR #91.
 - Exact dependency audit evidence — PR #93.
 - High-severity dependency remediation — PR #94.
 - Production Live Smoke — PR #96.
 - Deployment-driven live trigger repair — PRs #99/#100.
+- Vlezet Draft freshness reconciliation — PR #106.
 - Remaining markdown-it/Diplodoc blocker — issue #82.
 
 ---
@@ -100,46 +102,64 @@ Verified:
 
 Telegram Blog verification is grounded in the public `/s/` channel representation and multiple fresh preview endpoints exposing `https://trueruslan.ru/`. One initial bare-card response was stale cache and is not treated as current public truth.
 
-Exact implementation evidence:
-
 ```text
 feature PR:                     #104 — MERGED
 exact head:                     5972236eac07325bf3bf1d8cf42ad24455c9a600
 squash:                         b5766cfa9cba20fb9588c05e6e6d891ded329357
 Build:                          #732 / 30904009048 — SUCCESS
-CodeQL:                         #190 / 30904008962 — SUCCESS
-Dependency Review:              #160 / 30904008979 — SUCCESS
 Distribution Readiness:         #11 / 30904008961 — SUCCESS
-unit tests:                     337 PASS / 0 FAIL
-Lighthouse:                     100 / 100 / 100 / 100
-```
-
-Exact production proof:
-
-```text
-Pages workflow:                 #135 / 30904603958 — SUCCESS
 Production Live Smoke:          #25 / 30904659212 — SUCCESS
-event:                          workflow_run
-deployed/caller SHA:            b5766cfa9cba20fb9588c05e6e6d891ded329357
-deployment id:                  5742823833
-live artifact:                  8890532780
 ```
 
 The external-profile canonicalization gate is closed. Any future state change requires fresh rendered evidence.
 
 ---
 
+# Vlezet Draft Freshness Reconciliation — DONE
+
+Freshness issue #78 reopened because repository activity on 2026-08-04 was newer than the previous controlled Vlezet snapshot. Inspection confirmed that the activity belonged to M7.8C PR #42, which remains Draft and still requires the same real-plan product-owner retest.
+
+PR #106 recorded only a bounded pending signal:
+
+```text
+accepted recognition slice:     M7.8B
+next recognition slice:         M7.8C
+PR #42 state:                    open Draft / pending evidence
+observed head:                   c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a
+product-owner acceptance:        pending
+```
+
+Exact evidence:
+
+```text
+feature PR:                      #106 — MERGED
+exact head:                      c749a2fe3e9fdae789e6902bab266bf324c69b2d
+squash:                          5742a25b16ec4c1128fc0bcf03227cf6e4666f60
+Build:                           #735 / 30906476472 — SUCCESS
+CodeQL:                          #195 / 30906476404 — SUCCESS
+Dependency Review:               #163 / 30906476638 — SUCCESS
+Content Freshness:               #15 / 30906476451 — SUCCESS
+unit tests:                      338 PASS / 0 FAIL
+freshness report:                0 findings / 0 warnings / 0 errors
+Production Live Smoke:           #29 / 30907129018 — SUCCESS
+```
+
+Issue #78 is closed/completed from clean evidence. This reconciliation does not authorize merging PR #42 or changing Vlezet public lifecycle.
+
+---
+
 # NOW — operational stability
 
-There is no active repository or profile migration gate that justifies another automatic feature immediately.
+There is no active external-profile or freshness gate that justifies another automatic feature immediately.
 
 Current operating priorities:
 
 1. preserve exact production verification and all-verified profile snapshot;
-2. review dependency issue #82 on or after **2026-08-17**;
-3. wait for real evidence before changing Vlezet or VillAIgence public status;
-4. use aggregate Cloudflare data only after enough meaningful traffic exists;
-5. create a genuine Photo Story only after authentic material and chronology are available.
+2. keep M7.8B accepted while M7.8C remains pending Draft until owner retest;
+3. review dependency issue #82 on or after **2026-08-17**;
+4. wait for real evidence before changing VillAIgence public status;
+5. use aggregate Cloudflare data only after enough meaningful traffic exists;
+6. create a genuine Photo Story only after authentic material and chronology are available.
 
 ---
 
@@ -155,7 +175,7 @@ Start only when authentic material, chronology, captions/alt text and hero/layou
 
 ## External product updates
 
-- Vlezet M7.8B status: accepted / принят. M7.8C PR #42 remains Draft until exact-head automation plus the same real-plan owner acceptance.
+- Vlezet M7.8B status: accepted / принят. M7.8C PR #42 remains pending Draft until exact-head automation plus the same real-plan owner acceptance.
 - VillAIgence M11 Phase A PR #103 and M11 Phase B PR #104 remain separate from real-provider/gameplay/manual cumulative acceptance.
 
 ## Dependency blocker
@@ -185,4 +205,4 @@ Without a new evidence-backed design decision, do not plan:
 
 ## New-session rule
 
-Open durable docs, check actual open PR/latest commits/exact-head CI, separately verify latest `github-pages` deployment and Production Live Smoke, confirm issue #78 is closed, issue #82 is the only open repository issue, the profile snapshot is `4 verified / 0 stale`, Vlezet M7.8C remains Draft until owner acceptance, and VillAIgence automation remains separate from manual cumulative acceptance.
+Open durable docs, check actual open PR/latest commits/exact-head CI, separately verify latest `github-pages` deployment and Production Live Smoke, confirm issue #78 is closed with a clean report, issue #82 is the only open repository issue, the profile snapshot is `4 verified / 0 stale`, Vlezet M7.8B remains accepted while M7.8C PR #42 remains pending Draft until owner acceptance, and VillAIgence automation remains separate from manual cumulative acceptance.

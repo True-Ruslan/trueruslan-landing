@@ -1,12 +1,75 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-04**, после финальной canonical-проверки всех внешних профилей.
+> Обновлено: **2026-08-04**, после external-profile verification и Vlezet freshness reconciliation.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; operator kit — `docs/DISTRIBUTION.md`.
 
 ---
 
 # 2026-08-04
+
+## Vlezet Draft Freshness Reconciliation — DONE
+
+### PR #106 — record Draft activity without public promotion
+
+Content Freshness issue #78 reopened because Vlezet repository activity was newer than the controlled evidence date. Inspection established:
+
+- accepted recognition slice remains M7.8B;
+- M7.8C PR #42 remains open Draft;
+- observed current head: `c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a`;
+- the same real-plan product-owner retest remains mandatory;
+- no merge, acceptance or lifecycle promotion is justified.
+
+Delivered:
+
+- updated Vlezet `lastVerified` to `2026-08-04` after inspection;
+- added PR #42 as a bounded `pending` signal;
+- preserved M7.8B as the accepted slice and M7.8C as the next slice;
+- added a permanent regression contract preventing Draft evidence from becoming an acceptance claim.
+
+TDD RED:
+
+```text
+head:                       a75014d3e779726a66dca06140381eaa1fc21a3b
+Build:                      #734 / 30906317477 — expected FAILURE
+unit tests:                 337 PASS / 1 expected FAIL
+failure scope:              stale evidence date and missing Draft signal
+artifact:                   8891173838
+```
+
+Final exact-head evidence:
+
+```text
+head:                       c749a2fe3e9fdae789e6902bab266bf324c69b2d
+squash:                     5742a25b16ec4c1128fc0bcf03227cf6e4666f60
+Build:                      #735 / 30906476472 — SUCCESS
+CodeQL:                     #195 / 30906476404 — SUCCESS
+Dependency Review:          #163 / 30906476638 — SUCCESS
+Content Freshness:          #15 / 30906476451 — SUCCESS
+unit tests:                 338 PASS / 0 FAIL
+freshness report:           0 findings / 0 warnings / 0 errors
+Lighthouse:                 100 / 100 / 100 / 100
+quality artifact:           8891350070
+quality digest:             sha256:22b58bcfe2654516404782f52761de8301e52723fcb176eab99fac7a6c0bffbe
+freshness artifact:         8891241809
+freshness digest:           sha256:4e2db8777b44a3678e8cc8a77153cfe00887b93c9d7b838a71a3b7c70182a5f1
+```
+
+Exact post-merge production evidence:
+
+```text
+source Pages run:           #137 / 30907086802 — SUCCESS
+Production Live Smoke:      #29 / 30907129018 — SUCCESS
+event:                      workflow_run
+deployed/caller SHA:        5742a25b16ec4c1128fc0bcf03227cf6e4666f60
+deployment id:              5743302605
+live artifact:              8891509306
+live digest:                sha256:b5d5531d942af9239fa8e4b1ce26feba15f70b1b4c0c197a15ec7417568a301b
+```
+
+Issue #78 was closed/completed from the clean report and identical merged evidence blob. Public Vlezet status was not promoted.
+
+---
 
 ## P2.5c — Final External Profile Verification — DONE
 
@@ -32,18 +95,6 @@ Delivered:
 - strengthened the measured-state contract to require all four profiles verified;
 - preserved manual external-profile mutation and no engagement claims.
 
-TDD RED:
-
-```text
-head:                       7295d6957517532044293842109d66e1061fdb43
-Build:                      #730 / 30903818174 — expected FAILURE
-unit tests:                 335 PASS / 2 expected FAIL
-failure scope:              Telegram Blog registry state and generated runbook
-artifact:                   8890180365
-```
-
-Final exact-head evidence:
-
 ```text
 head:                       5972236eac07325bf3bf1d8cf42ad24455c9a600
 squash:                     b5766cfa9cba20fb9588c05e6e6d891ded329357
@@ -53,64 +104,31 @@ Dependency Review:          #160 / 30904008979 — SUCCESS
 Distribution Readiness:     #11 / 30904008961 — SUCCESS
 unit tests:                 337 PASS / 0 FAIL
 Lighthouse:                 100 / 100 / 100 / 100
-quality artifact:           8890358619
-quality digest:             sha256:7e659d44a5878b537b3f2f76ad6769bc9a6b1822c7024fd0804a3e404eb34bc3
-distribution artifact:      8890251981
-distribution digest:        sha256:07f3d5c99916b8fb84d792aae787c64150277f1bdfc74bba4f43094a0a997956
-```
-
-Exact post-merge production evidence:
-
-```text
-source Pages run:           #135 / 30904603958 — SUCCESS
 Production Live Smoke:      #25 / 30904659212 — SUCCESS
-event:                      workflow_run
-deployed/caller SHA:        b5766cfa9cba20fb9588c05e6e6d891ded329357
-deployment id:              5742823833
-live artifact:              8890532780
-live digest:                sha256:ecfde690fcc55c05b5b071c93d0542ceba5beccc1ae47dd424ac087307691be6
 ```
-
-Browser assertions passed for apex, www→apex, persistence Note metadata, Atom feed, real search interaction and Cloudflare beacon, with no page/console/request failures.
 
 ---
 
 ## P2.5b — External Profile Reverification — 3/4 VERIFIED
 
-### PR #102 — reconcile rendered public profiles
-
-Intermediate state after the first owner-edit pass:
+PR #102 recorded the intermediate `3 verified / 1 stale / 0 unverified` snapshot. It was superseded by P2.5c after fresh Telegram Blog preview evidence appeared.
 
 ```text
-GitHub profile:             verified
-Habr:                       verified
-Telegram personal:          verified
-Telegram Blog:              stale
-summary:                    3 verified / 1 stale / 0 unverified
-```
-
-```text
-head:                       ee6c9d5c08c5eee67c3ae7d7ff8fa3723af1458a
 squash:                     5cd846e4c618d1f6d10aab21c844a26e41fc0777
 Build:                      #728 / 30900062771 — SUCCESS
 Production Live Smoke:      #21 / 30900609547 — SUCCESS
 ```
 
-This intermediate snapshot was superseded by P2.5c after fresh Telegram Blog preview evidence appeared.
-
 ---
 
 ## P2.5a — Distribution Contract & Profile Audit — DONE
 
-### PR #98 — canonical distribution readiness
-
-Delivered eight canonical distribution targets, exact-host validation, profile audit states, deterministic JSON/Markdown evidence, byte-equal `docs/DISTRIBUTION.md` and a read-only evidence workflow.
+PR #98 delivered eight canonical distribution targets, exact-host validation, profile audit states, deterministic evidence, byte-equal `docs/DISTRIBUTION.md` and a read-only workflow.
 
 ```text
 exact head:                 87685e94f2f81f72510555bb4b613c77bce34d36
 squash:                     6973f09ff4613aaa809600f09711d274dbf44cec
 Build:                      #719 / 30885477166 — SUCCESS
-CodeQL:                     #171 / 30885477170 — SUCCESS
 Distribution Readiness:     #3 / 30885477173 — SUCCESS
 initial snapshot:           1 verified / 3 stale / 0 unverified
 ```
@@ -126,14 +144,14 @@ repair squash:              0ec1faef21cf528ecc54d5a16d99552ed3d4805e
 activation squash:          c2de903eabd34ed7d07ace5e3f1eabca48b720e5
 source Pages run:           #131 / 30887587364 — SUCCESS
 Production Live Smoke:      #16 / 30887639653 — SUCCESS
-event:                      workflow_run
 ```
 
 ---
 
 ## Operational Maintenance Closure — DONE
 
-- PR #91 — clean Content Freshness evidence; issue #78 closed.
+- PR #91 — original clean Content Freshness evidence.
+- PR #106 — later Vlezet Draft drift inspection and clean closure of reopened #78.
 - PR #93 — exact dependency audit evidence.
 - PR #94 — high-severity remediation; final audit `0 high / 6 moderate / 0 critical`.
 - Issue #82 remains open only for the build-time markdown-it/Diplodoc blocker.
@@ -175,11 +193,11 @@ unit tests:                 321 PASS / 0 FAIL
 
 Recorded Vlezet M7.8B accepted evidence and separated VillAIgence automated layers:
 
-- PR #103 — 28-scenario catalogue + seven GameTests;
-- PR #104 — exact production-JAR startup/shutdown/restart acceptance;
+- VillAIgence PR #103 — 28-scenario risk catalogue and seven development GameTests;
+- VillAIgence PR #104 — exact production-JAR startup, clean shutdown and restart proof;
 - exact artifact and installed acceptance remain separate;
-- cumulative real-provider/gameplay acceptance remained pending;
-- M7.8C remained a separate owner-acceptance boundary.
+- cumulative real-provider/gameplay acceptance remains pending;
+- M7.8C remains a separate owner-acceptance boundary.
 
 ```text
 feature PR:                 #83 — MERGED
