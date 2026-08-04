@@ -17,6 +17,19 @@ const pages = [
   {path: '/landing/notes/', title: 'Engineering Notes — Руслан Немыкин', card: 'notes'},
 ];
 
+function assertCleanCanonicalPath(canonical, expectedPath) {
+  const pathname = new URL(canonical).pathname;
+  if (pathname.includes('.html')) {
+    throw new Error(`${expectedPath}: canonical still contains .html: ${canonical}`);
+  }
+  if (!pathname.endsWith('/')) {
+    throw new Error(`${expectedPath}: canonical must end with a directory slash: ${canonical}`);
+  }
+  if (expectedPath !== '/' && !pathname.endsWith(expectedPath)) {
+    throw new Error(`${expectedPath}: canonical path mismatch ${canonical}`);
+  }
+}
+
 async function assertMetadata(page, context, baseUrl, expected) {
   const response = await page.goto(`${baseUrl}${expected.path}`, {waitUntil: 'networkidle'});
   if (!response?.ok()) throw new Error(`${expected.path} returned HTTP ${response?.status() ?? 'no response'}`);
@@ -43,9 +56,7 @@ async function assertMetadata(page, context, baseUrl, expected) {
   if (ogWidth !== '1200' || ogHeight !== '630') throw new Error(`${expected.path}: wrong OG dimensions metadata`);
   if (twitterCard !== 'summary_large_image') throw new Error(`${expected.path}: wrong twitter:card`);
   if (!canonical?.startsWith('http')) throw new Error(`${expected.path}: canonical must be absolute`);
-  if (new URL(canonical).pathname !== expected.path) {
-    throw new Error(`${expected.path}: canonical path mismatch ${canonical}`);
-  }
+  assertCleanCanonicalPath(canonical, expected.path);
 
   const imageResponse = await context.request.get(`${baseUrl}${ogLocalPath}`);
   if (!imageResponse.ok()) throw new Error(`${expected.path}: OG image HTTP ${imageResponse.status()}`);
