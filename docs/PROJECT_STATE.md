@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-04**, после P2.5b External Profile Reverification.
+> Последнее смысловое обновление: **2026-08-04**, после финальной canonical-проверки внешних профилей.
 >
 > Durable snapshot: что представляет собой проект, что доказано, какие границы остаются и что делать дальше.
 
@@ -37,31 +37,30 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 ## 2. Current repository and production truth
 
 ```text
-master:                          5cd846e4c618d1f6d10aab21c844a26e41fc0777
-profile reverification PR:       #102 — MERGED
-exact PR head:                   ee6c9d5c08c5eee67c3ae7d7ff8fa3723af1458a
-Build:                           #728 / 30900062771 — SUCCESS
-CodeQL:                          #184 / 30900062963 — SUCCESS
-Dependency Review:               #156 / 30900062754 — SUCCESS
-Distribution Readiness:          #8 / 30900062778 — SUCCESS
+master:                          b5766cfa9cba20fb9588c05e6e6d891ded329357
+final profile PR:                #104 — MERGED
+exact PR head:                   5972236eac07325bf3bf1d8cf42ad24455c9a600
+Build:                           #732 / 30904009048 — SUCCESS
+CodeQL:                          #190 / 30904008962 — SUCCESS
+Dependency Review:               #160 / 30904008979 — SUCCESS
+Distribution Readiness:          #11 / 30904008961 — SUCCESS
 unit tests:                      337 PASS / 0 FAIL
 Lighthouse:                      100 / 100 / 100 / 100
-quality artifact:                8888803364
-distribution artifact:           8888677537
+quality artifact:                8890358619
+distribution artifact:           8890251981
 ```
 
 Exact post-merge production proof:
 
 ```text
-source Pages workflow:            #136 / 30900569283 — SUCCESS
-Production Live Smoke:             #21 / 30900609547 — SUCCESS
+source Pages workflow:            #135 / 30904603958 — SUCCESS
+Production Live Smoke:             #25 / 30904659212 — SUCCESS
 event:                             workflow_run
-deployed/caller SHA:               5cd846e4c618d1f6d10aab21c844a26e41fc0777
-github-pages deployment id:        5742059989
+deployed/caller SHA:               b5766cfa9cba20fb9588c05e6e6d891ded329357
+github-pages deployment id:        5742823833
 deployment state:                  success
-live artifact:                     8888917544
-live digest:                       sha256:b9864ed34717b446ab3faccecf5386b53722bf16acd6f4c23d9c266b0b23d2f4
-checked at:                        2026-08-04T10:26:41Z
+live artifact:                     8890532780
+live digest:                       sha256:ecfde690fcc55c05b5b071c93d0542ceba5beccc1ae47dd424ac087307691be6
 ```
 
 Live assertions independently passed:
@@ -70,7 +69,7 @@ Live assertions independently passed:
 - exactly one Cloudflare Web Analytics beacon;
 - `www` Note URL resolves to apex with path preserved;
 - persistence Note HTTP 200 with exact H1/title/canonical/`og:url`;
-- legacy Pages origin absent from the tested site surfaces;
+- legacy Pages origin absent from tested site surfaces;
 - Atom feed HTTP 200 and contains the Note title/canonical URL;
 - real browser query `persistence contract` returns the exact Note route;
 - page errors, console errors and request failures — none.
@@ -92,48 +91,50 @@ Canonical data model:
 
 Controlled target set: **8** — homepage, Vlezet, VillAIgence, Notes index, three grounded Notes and Publications.
 
-Security review corrected incomplete URL substring checks. Canonical targets require the parsed exact `https://trueruslan.ru` origin/hostname with empty search/hash.
+Security review corrected incomplete URL substring checks. Canonical targets require parsed exact `https://trueruslan.ru` origin/hostname with empty search/hash.
 
 P2.5a improves readiness; it does not claim audience growth or engagement.
 
 ---
 
-## 4. P2.5b — External Profile Reverification — PARTIAL EXTERNAL COMPLETION
+## 4. P2.5b/P2.5c — External Profile Reverification — DONE
 
-Fresh rendered public evidence after owner edits produced:
+Final controlled snapshot:
 
 ```text
 profiles:                          4
-verified:                          3
-stale:                             1
+verified:                          4
+stale:                             0
 unverified:                        0
 ```
 
 Measured states:
 
-- GitHub profile — `verified`: canonical `https://trueruslan.ru/` backlink visible;
-- Habr — `verified`: rendered public profile exposes `https://trueruslan.ru`;
-- Telegram personal — `verified`: rendered public profile exposes `https://trueruslan.ru` as the public website;
-- Telegram Blog — `stale`: rendered public channel description still exposes the legacy GitHub Pages backlink and does not yet expose the canonical site backlink.
+- GitHub profile — `verified`;
+- Habr profile — `verified`;
+- Telegram personal — `verified`;
+- Telegram Blog — `verified` from the public channel feed and multiple fresh preview representations exposing `https://trueruslan.ru/`.
 
-TDD evidence:
+The first bare Telegram card probe returned an older cached representation, while cache-busted previews and the public `/s/` channel representation consistently exposed the canonical site. The repository records the independently fresh rendered evidence, not the stale cache response.
+
+Final TDD evidence:
 
 ```text
-RED head:                          f281c4fd91c0ef171f13ab092c484eb4c828585c
+RED head:                          7295d6957517532044293842109d66e1061fdb43
 RED result:                        335 PASS / 2 expected FAIL
-GREEN head:                        ee6c9d5c08c5eee67c3ae7d7ff8fa3723af1458a
-Build:                             #728 / 30900062771 — SUCCESS
-Distribution Readiness:            #8 / 30900062778 — SUCCESS
-profile counts:                    3 verified / 1 stale / 0 unverified
+GREEN head:                        5972236eac07325bf3bf1d8cf42ad24455c9a600
+Build:                             #732 / 30904009048 — SUCCESS
+Distribution Readiness:            #11 / 30904008961 — SUCCESS
+profile counts:                    4 verified / 0 stale / 0 unverified
 ```
 
-Owner-reported edits do not become `verified` until rendered public output exposes the canonical backlink. Telegram Blog therefore remains the only external-profile gate.
+External-profile canonicalization is complete. Future state changes still require fresh rendered evidence and must not be inferred from an owner report alone.
 
 ---
 
 ## 5. Production Live Smoke trigger — DONE
 
-PR #99 changed the primary exact-deployment orchestration boundary to completed `Deploy static content to Pages` via `workflow_run`; direct push remains a fallback. PR #100 proved activation order. The current profile reconciliation was independently verified by Production Live Smoke #21 for exact SHA `5cd846e4...`.
+PR #99 changed the primary exact-deployment orchestration boundary to completed `Deploy static content to Pages` via `workflow_run`; direct push remains a fallback. PR #100 proved activation order. The final profile reconciliation was independently verified by Production Live Smoke #25 for exact SHA `b5766cfa...`.
 
 ---
 
@@ -176,7 +177,7 @@ lifecycle:                    release-candidate
 public label:                 ACCEPTANCE IN PROGRESS
 ```
 
-Source/package/GameTest/production-JAR/persistence/server-authority evidence remain separate from real-provider/gameplay/manual cumulative acceptance. The exact artifact and installed acceptance remain separate release gates.
+Source/package/GameTest/production-JAR/persistence/server-authority evidence remain separate from real-provider/gameplay/manual cumulative acceptance. Exact artifact and installed acceptance remain separate release gates.
 
 ### Publications and Photo Stories
 
@@ -188,25 +189,18 @@ Source/package/GameTest/production-JAR/persistence/server-authority evidence rem
 
 ## 8. Current gate and next decisions
 
-Only one profile remains stale:
-
-1. Telegram Blog — ensure the rendered public channel description exposes `https://trueruslan.ru/` and no longer exposes the legacy Pages URL.
-
-After the rendered public preview changes:
-
-- re-fetch it;
-- update `telegram-blog` from `stale` to `verified`;
-- regenerate `docs/DISTRIBUTION.md`;
-- require Distribution Readiness, full CI and exact Production Live Smoke.
+There is no active external-profile gate. All four controlled profiles expose the canonical site in fresh rendered public representations.
 
 Next autonomous product work should not fabricate urgency. Candidate milestones:
 
-- P2.5c public share UI only after a concrete product need;
+- P2.5d public share UI only after a concrete product need;
 - genuine Photo Story only after authentic material arrives;
 - Vlezet reconciliation only after M7.8C owner acceptance;
 - VillAIgence promotion only after cumulative manual/provider/gameplay acceptance;
 - dependency blocker review on/after 2026-08-17;
 - analytics conclusions only after 3–4 weeks of meaningful aggregate Cloudflare traffic.
+
+The optimal immediate state is operational stability: preserve the verified distribution snapshot and continue only when one of the evidence-backed gates changes.
 
 ---
 
@@ -235,4 +229,4 @@ Next autonomous product work should not fabricate urgency. Candidate milestones:
 
 ## 10. New-session handoff
 
-> Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md`, `docs/CUSTOM_DOMAIN.md` and `docs/DISTRIBUTION.md`. Check actual open PRs, latest commits and exact-head CI. Confirm Production Live Smoke event `workflow_run` verifies current `master`, issue #78 remains closed, issue #82 remains the moderate markdown-it/Diplodoc blocker, the profile snapshot is `3 verified / 1 stale`, Vlezet M7.8C remains Draft until owner acceptance, and VillAIgence automated evidence remains separate from cumulative acceptance.
+> Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md`, `docs/CUSTOM_DOMAIN.md` and `docs/DISTRIBUTION.md`. Check actual open PRs, latest commits and exact-head CI. Confirm Production Live Smoke event `workflow_run` verifies current `master`, issue #78 remains closed, issue #82 remains the moderate markdown-it/Diplodoc blocker, the profile snapshot is `4 verified / 0 stale`, Vlezet M7.8C remains Draft until owner acceptance, and VillAIgence automated evidence remains separate from cumulative acceptance.
