@@ -2,7 +2,7 @@
   {
     "project": "vlezet",
     "status": "verified",
-    "lastVerified": "2026-08-03",
+    "lastVerified": "2026-08-04",
     "versions": [
       {"label": "Web application", "value": "Next.js 16 + React + TypeScript"},
       {"label": "2D projection", "value": "Konva / react-konva"},
@@ -39,6 +39,15 @@
         "url": "https://github.com/True-Ruslan/vlezet/pull/41",
         "observedAt": "2026-08-03",
         "scope": "M7.8B was product-owner accepted with known precision limitations and squash-merged after exact-head Standard CI, Recognition Benchmark and M7 Browser Audit passed. It proves region-first source normalization, bounded wall topology, fail-closed overload protection and verification-only AI. The accepted Source geometry and topology F1 are both 0.837989; the representative source produced 27 local wall candidates, 19 AI-confirmed and 8 pending review. Openings are deferred to M7.8C, and the milestone does not prove accurate arbitrary-plan recognition."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M7.8C Draft opening classification PR #42",
+        "state": "pending",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/42",
+        "observedAt": "2026-08-04",
+        "scope": "PR #42 remains an open Draft at current observed head c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a. It records automated work on opening classification, host-wall validation and deterministic recognition stabilization, but the same real-plan product-owner retest is still mandatory. This pending signal does not promote M7.8C, does not replace accepted M7.8B and is not an acceptance or merge claim."
       }
     ]
   },
