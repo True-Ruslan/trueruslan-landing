@@ -23,6 +23,17 @@ test('toDirectoryUrl converts generated HTML routes while preserving query and f
   assert.equal(toDirectoryUrl('assets/example.html.png'), 'assets/example.html.png');
 });
 
+test('legacy redirect targets preserve the configured Pages deployment base', async () => {
+  const {createLegacyRedirect} = await loadCleanUrlsModule();
+  const redirect = createLegacyRedirect(
+    'landing/resume/',
+    'https://true-ruslan.github.io/trueruslan-landing/',
+  );
+
+  assert.match(redirect, /https:\/\/true-ruslan\.github\.io\/trueruslan-landing\/landing\/resume\//);
+  assert.match(redirect, /rel="canonical" href="https:\/\/true-ruslan\.github\.io\/trueruslan-landing\/landing\/resume\/"/);
+});
+
 test('publishDirectoryRoutes creates directory indexes, rewrites references and preserves legacy entrypoints', async () => {
   const {publishDirectoryRoutes} = await loadCleanUrlsModule();
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'clean-urls-'));
@@ -58,7 +69,7 @@ test('publishDirectoryRoutes creates directory indexes, rewrites references and 
 
   const legacyPage = fs.readFileSync(pagePath, 'utf8');
   assert.match(legacyPage, /http-equiv="refresh"/i);
-  assert.match(legacyPage, /url=\/landing\/resume\//i);
+  assert.match(legacyPage, /url=https:\/\/trueruslan\.ru\/landing\/resume\//i);
   assert.match(legacyPage, /rel="canonical" href="https:\/\/trueruslan\.ru\/landing\/resume\/"/);
 
   assert.equal(fs.readFileSync(path.join(outputDir, 'sitemap.xml'), 'utf8'), '<loc>https://trueruslan.ru/landing/resume/</loc>');
