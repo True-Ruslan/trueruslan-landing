@@ -64,7 +64,7 @@ test('downloadable CV is current, canonical and content-complete', () => {
   assert.match(latin1, /QWEP/);
   assert.match(latin1, /Java 21-25/);
   assert.match(latin1, /corporate MCP server/);
-  assert.match(latin1, /https:\/\/trueruslan\.ru\//);
-  assert.doesNotMatch(latin1, /https:\/\/trueruslan\.com/);
-  assert.doesNotMatch(latin1, /https:\/\/true-ruslan\.github\.io\/trueruslan-landing\//);
+  assert.equal(latin1.includes('https://trueruslan.ru/'), true);
+  assert.equal(latin1.includes('https://trueruslan.com'), false);
+  assert.equal(latin1.includes('https://true-ruslan.github.io/trueruslan-landing/'), false);
 });
