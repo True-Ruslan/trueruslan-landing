@@ -113,13 +113,13 @@
 - Required action: Current canonical backlink is valid; re-verification is required after public profile edits.
 - [ ] Post-update verification
 
-### Telegram Blog — stale
+### Telegram Blog — verified
 
 - ID: `telegram-blog`
 - URL: https://t.me/TrueRuslan_Blog
 - Last verified: 2026-08-04
-- Verification scope: Rendered public channel description still exposes the legacy GitHub Pages backlink; the canonical site backlink is not yet observable.
-- Required action: Target backlink: https://trueruslan.ru/; confirm the channel description update or public preview refresh, then re-verify that the legacy URL is absent.
+- Verification scope: Rendered public channel feed and fresh preview representations expose the canonical https://trueruslan.ru backlink.
+- Required action: Current canonical backlink is valid; re-verification is required after public channel edits.
 - [ ] Post-update verification
 
 ## Operator boundary
