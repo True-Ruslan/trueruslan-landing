@@ -9,6 +9,7 @@ const {ensureArtifactsDir, artifactPath, captureScreenshot, writeJsonArtifact} =
 const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 
 const PORT = Number(process.env.PHOTO_STORIES_SMOKE_PORT || 4184);
+const CANONICAL_ROUTE = '/landing/photos/';
 const {chromium} = requireQualityTool('playwright', 'Photo Stories smoke tool');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Photo Stories smoke tool');
 
@@ -53,7 +54,7 @@ function classifyHeaderControl(item) {
   if (haystack.includes('github.com/true-ruslan') || haystack.includes('github')) return 'github';
   if (haystack.includes('habr.com/ru/users/trueruslan') || /(^|\s)habr(\s|$)/.test(haystack)) return 'habr';
   if (haystack.includes('t.me/trueruslan_blog') || haystack.includes('telegram')) return 'telegram';
-  if (haystack.includes('_search/ru/index.html') || haystack.includes('поиск') || haystack.includes('search')) return 'search';
+  if (haystack.includes('_search/ru/') || haystack.includes('поиск') || haystack.includes('search')) return 'search';
   if (item.tag === 'summary' && (/^ru\b/i.test(item.text) || item.dataLanguage)) return 'language';
   return null;
 }
@@ -169,7 +170,7 @@ async function assertArchiveAndLightbox(page, name, baseUrl) {
   const focusId = await page.evaluate(() => document.activeElement?.dataset?.photoId || null);
   if (focusId !== 'archive-semihatov') throw new Error(`${name}: focus was not restored to the originating photo link`);
 
-  await page.goto(`${baseUrl}/landing/photos.html#archive-magister`, {waitUntil: 'networkidle'});
+  await page.goto(`${baseUrl}${CANONICAL_ROUTE}#archive-magister`, {waitUntil: 'networkidle'});
   await page.locator('[data-tr-photo-page="index"]').waitFor({state: 'visible'});
   await root.waitFor({state: 'visible'});
   const directTitle = await page.locator('[data-tr-photo-lightbox-title]').textContent();
@@ -180,8 +181,8 @@ async function assertArchiveAndLightbox(page, name, baseUrl) {
 
 async function assertLegacyRedirect(page, name, baseUrl) {
   await page.goto(`${baseUrl}/photos/`, {waitUntil: 'domcontentloaded'});
-  await page.waitForURL(/\/landing\/photos\.html$/, {timeout: 5000});
-  if (!page.url().endsWith('/landing/photos.html')) {
+  await page.waitForURL(new RegExp(`${CANONICAL_ROUTE.replaceAll('/', '\\/')}$`), {timeout: 5000});
+  if (!page.url().endsWith(CANONICAL_ROUTE)) {
     throw new Error(`${name}: legacy photo route did not redirect to the canonical index`);
   }
 }
@@ -224,7 +225,7 @@ async function runScenario(browser, baseUrl, name, viewport, reducedMotion = 'no
   });
 
   try {
-    const response = await page.goto(`${baseUrl}/landing/photos.html`, {waitUntil: 'networkidle'});
+    const response = await page.goto(`${baseUrl}${CANONICAL_ROUTE}`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`${name}: navigation HTTP ${response?.status() ?? 'none'}`);
     await page.locator('[data-tr-photo-page="index"]').waitFor({state: 'visible'});
 
@@ -245,7 +246,7 @@ async function runScenario(browser, baseUrl, name, viewport, reducedMotion = 'no
     diagnostics.assertClean(name);
 
     await assertLegacyRedirect(page, name, baseUrl);
-    await page.goto(`${baseUrl}/landing/photos.html`, {waitUntil: 'networkidle'});
+    await page.goto(`${baseUrl}${CANONICAL_ROUTE}`, {waitUntil: 'networkidle'});
     await page.locator('[data-tr-photo-page="index"]').waitFor({state: 'visible'});
     await prepareVisualEvidence(page, name);
     await captureScreenshot(page, `photo-stories-${name}.png`);
