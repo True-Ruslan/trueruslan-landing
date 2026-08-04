@@ -22,7 +22,7 @@ function createFetch({siteUrl, canonicalSiteUrl = siteUrl}) {
         body: '<main><h1>Руслан Немыкин</h1><p>Backend Engineer</p></main>',
       }), {status: 200, headers: {'content-type': 'text/html'}});
     }
-    if (relative === 'en/index.html') {
+    if (relative === 'en/') {
       return new Response(html({
         title: 'TrueRuslan EN',
         canonical: `${canonicalBase}/en/`,
@@ -59,8 +59,8 @@ test('production smoke verifies custom root canonical identity on RU and EN', as
   assert.equal(report.siteIdentity.expectedOrigin, 'https://trueruslan.ru');
   assert.equal(report.siteIdentity.ok, true);
   assert.deepEqual(report.siteIdentity.routes, [
-    {route: 'index.html', expectedCanonical: 'https://trueruslan.ru/', actualCanonical: 'https://trueruslan.ru/', ok: true, errors: []},
-    {route: 'en/index.html', expectedCanonical: 'https://trueruslan.ru/en/', actualCanonical: 'https://trueruslan.ru/en/', ok: true, errors: []},
+    {route: '/', expectedCanonical: 'https://trueruslan.ru/', actualCanonical: 'https://trueruslan.ru/', ok: true, errors: []},
+    {route: 'en/', expectedCanonical: 'https://trueruslan.ru/en/', actualCanonical: 'https://trueruslan.ru/en/', ok: true, errors: []},
   ]);
 });
 
