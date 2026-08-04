@@ -15,6 +15,9 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
   assert.match(workflow, /^name: Production Live Smoke$/m);
   assert.match(workflow, /push:/);
   assert.match(workflow, /branches:\s*\n\s*- master/);
+  assert.match(workflow, /workflow_run:/);
+  assert.match(workflow, /workflows:\s*\n\s*- ['"]?Deploy static content to Pages['"]?/);
+  assert.match(workflow, /types:\s*\n\s*- completed/);
   assert.match(workflow, /schedule:/);
   assert.match(workflow, /workflow_dispatch:/);
   assert.match(workflow, /pull_request:/);
@@ -35,8 +38,10 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
   assert.match(workflow, /GET \/repos\/\{owner\}\/\{repo\}\/deployments\/\{deployment_id\}\/statuses/);
   assert.match(workflow, /github-pages/);
   assert.match(workflow, /deployment\.sha/);
-  assert.match(workflow, /github\.event_name\s*==\s*'push'/);
-  assert.match(workflow, /GITHUB_SHA/);
+  assert.match(workflow, /github\.event\.workflow_run\.head_sha/);
+  assert.match(workflow, /github\.event\.workflow_run\.conclusion/);
+  assert.match(workflow, /EXACT_DEPLOYMENT/);
+  assert.match(workflow, /EXPECTED_SHA/);
   assert.match(workflow, /playwright@1\.61\.1/);
   assert.match(workflow, /install --with-deps chromium/);
   assert.match(workflow, /production-live-smoke\.cjs/);
