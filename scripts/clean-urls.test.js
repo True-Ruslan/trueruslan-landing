@@ -57,9 +57,10 @@ test('legacy redirect targets preserve the configured Pages deployment base', as
     'landing/resume/',
     'https://true-ruslan.github.io/trueruslan-landing/',
   );
+  const expected = 'https://true-ruslan.github.io/trueruslan-landing/landing/resume/';
 
-  assert.match(redirect, /https:\/\/true-ruslan\.github\.io\/trueruslan-landing\/landing\/resume\//);
-  assert.match(redirect, /rel="canonical" href="https:\/\/true-ruslan\.github\.io\/trueruslan-landing\/landing\/resume\/"/);
+  assert.ok(redirect.includes(expected));
+  assert.ok(redirect.includes(`<link rel="canonical" href="${expected}">`));
 });
 
 test('patchSearchWorker converts public result links without mutating search identities', async () => {
