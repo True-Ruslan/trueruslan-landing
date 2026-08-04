@@ -48,13 +48,13 @@ test('publishDirectoryRoutes creates directory indexes, rewrites references and 
 
   const cleanPage = fs.readFileSync(path.join(outputDir, 'landing', 'resume', 'index.html'), 'utf8');
   assert.match(cleanPage, /<base href="\.\.\/\.\.\/">/);
-  assert.match(cleanPage, /"router":\{"pathname":"landing\/resume","depth":2,"base":"\.\.\/\.\.\/"\}/);
+  assert.match(cleanPage, /"router":\{"pathname":"landing\/resume","depth":3,"base":"\.\.\/\.\.\/"\}/);
   assert.match(cleanPage, /https:\/\/trueruslan\.ru\/landing\/resume\//);
   assert.match(cleanPage, /landing\/projects\/#work/);
 
   const nestedCleanPage = fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet', 'index.html'), 'utf8');
   assert.match(nestedCleanPage, /<base href="\.\.\/\.\.\/\.\.\/">/);
-  assert.match(nestedCleanPage, /"base":"\.\.\/\.\.\/\.\.\/"/);
+  assert.match(nestedCleanPage, /"router":\{"pathname":"landing\/projects\/vlezet","depth":4,"base":"\.\.\/\.\.\/\.\.\/"\}/);
 
   const legacyPage = fs.readFileSync(pagePath, 'utf8');
   assert.match(legacyPage, /http-equiv="refresh"/i);
