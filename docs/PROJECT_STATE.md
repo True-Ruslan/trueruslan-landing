@@ -225,8 +225,8 @@ Latest observed Draft head: `c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a`.
 ```text
 canonical source head:        61b66e38e99c1dc9bdc26089bfb345a250a881e2
 published candidate:          0.1.23+1.21.1
-M11 Phase A PR:               #103 — 28 scenarios + 7 GameTests
-M11 Phase B PR:               #104 — production-JAR startup/restart
+M11 Phase A: PR #103 — 28 scenarios + 7 GameTests
+M11 Phase B: PR #104 — production-JAR startup/restart
 lifecycle:                    release-candidate
 public label:                 ACCEPTANCE IN PROGRESS
 ```
