@@ -6,7 +6,7 @@ Over time I became more interested not only in writing code, but in what happens
 
 ## Work
 
-My main stack is **Java, Spring Boot, PostgreSQL/Oracle, Redis, Kafka, Docker and OpenShift/Kubernetes**. I also use Kotlin, Python and JavaScript when a task calls for them.
+My current product stack is **Java 21–25, Spring Boot 3.5–4, PostgreSQL, ClickHouse, Kafka and MinIO**. Across earlier commercial systems I also worked with Oracle, Redis, Docker, OpenShift/Kubernetes, Jenkins and banking or external API integrations. I use Kotlin, Python and JavaScript when a task calls for them.
 
 I do not collect technologies for the sake of a longer list. A new tool is useful to me when it solves a concrete problem: messaging, analytics, deployment, observability or another explicit system need.
 
@@ -22,7 +22,7 @@ At the same time, I try not to introduce complexity before it is justified. Arch
 
 LLMs and agentic tools have become another major area of interest for me.
 
-I use them for code analysis, prototyping, working with large contexts and automating parts of engineering workflows. I also build systems where AI is part of the product itself, such as **VillAIgence**, an experiment in server-authoritative AI villagers, Memory 2.0 and persistent NPC society inside Minecraft.
+I use them for code analysis, prototyping, working with large contexts and automating parts of engineering workflows. In commercial work I contribute to AI-tool adoption and the development of a corporate MCP server. I also build systems where AI is part of the product itself, such as **VillAIgence**, an experiment in server-authoritative AI villagers, Memory 2.0 and persistent NPC society inside Minecraft.
 
 The more I work with these tools, the less I see AI as an autopilot. To me it is a powerful external capability that still needs contracts, validation, authority boundaries and deterministic behavior around it when something goes wrong.
 

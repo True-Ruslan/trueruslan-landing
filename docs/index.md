@@ -14,7 +14,7 @@ description: Персональный сайт Руслана Немыкина �
 <a href="https://github.com/True-Ruslan" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
 </div>
 <div class="tr-home-signal" aria-label="Основные направления">
-<span>JAVA 8–21</span>
+<span>JAVA 11–25</span>
 <span>SPRING BOOT</span>
 <span>DISTRIBUTED SYSTEMS</span>
 <span>DEVOPS</span>
