@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-04**, после P2.5b External Profile Reverification.
+> Обновлено: **2026-08-04**, после финальной проверки всех внешних профилей.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; distribution operator kit — `docs/DISTRIBUTION.md`.
 
@@ -61,6 +61,8 @@
 - Installed Acceptance Engineering Note — PR #85.
 - Deterministic Authority Engineering Note — PR #87.
 - Restart and Persistence Engineering Note — PR #89.
+- Distribution Contract & Profile Audit — PR #98.
+- External Profile Reverification — PRs #102/#104.
 
 ## Operational / security hardening
 
@@ -79,13 +81,13 @@ PR #98 delivered eight canonical share targets, deterministic validation/runbook
 
 ---
 
-# P2.5b — External Profile Reverification — CURRENTLY 3/4 VERIFIED
+# P2.5b/P2.5c — External Profile Reverification — DONE
 
-PR #102 reconciled fresh rendered public evidence:
+Final controlled snapshot:
 
 ```text
-verified:      3
-stale:         1
+verified:      4
+stale:         0
 unverified:    0
 ```
 
@@ -93,22 +95,21 @@ Verified:
 
 - GitHub profile;
 - Habr profile;
-- Telegram personal profile.
+- Telegram personal profile;
+- Telegram Blog.
 
-Still stale:
-
-- Telegram Blog — rendered public description still exposes the legacy GitHub Pages backlink and does not yet expose `https://trueruslan.ru/`.
+Telegram Blog verification is grounded in the public `/s/` channel representation and multiple fresh preview endpoints exposing `https://trueruslan.ru/`. One initial bare-card response was stale cache and is not treated as current public truth.
 
 Exact implementation evidence:
 
 ```text
-feature PR:                     #102 — MERGED
-exact head:                     ee6c9d5c08c5eee67c3ae7d7ff8fa3723af1458a
-squash:                         5cd846e4c618d1f6d10aab21c844a26e41fc0777
-Build:                          #728 / 30900062771 — SUCCESS
-CodeQL:                         #184 / 30900062963 — SUCCESS
-Dependency Review:              #156 / 30900062754 — SUCCESS
-Distribution Readiness:         #8 / 30900062778 — SUCCESS
+feature PR:                     #104 — MERGED
+exact head:                     5972236eac07325bf3bf1d8cf42ad24455c9a600
+squash:                         b5766cfa9cba20fb9588c05e6e6d891ded329357
+Build:                          #732 / 30904009048 — SUCCESS
+CodeQL:                         #190 / 30904008962 — SUCCESS
+Dependency Review:              #160 / 30904008979 — SUCCESS
+Distribution Readiness:         #11 / 30904008961 — SUCCESS
 unit tests:                     337 PASS / 0 FAIL
 Lighthouse:                     100 / 100 / 100 / 100
 ```
@@ -116,39 +117,35 @@ Lighthouse:                     100 / 100 / 100 / 100
 Exact production proof:
 
 ```text
-Pages workflow:                 #136 / 30900569283 — SUCCESS
-Production Live Smoke:          #21 / 30900609547 — SUCCESS
+Pages workflow:                 #135 / 30904603958 — SUCCESS
+Production Live Smoke:          #25 / 30904659212 — SUCCESS
 event:                          workflow_run
-deployed/caller SHA:            5cd846e4c618d1f6d10aab21c844a26e41fc0777
-deployment id:                  5742059989
-live artifact:                  8888917544
+deployed/caller SHA:            b5766cfa9cba20fb9588c05e6e6d891ded329357
+deployment id:                  5742823833
+live artifact:                  8890532780
 ```
+
+The external-profile canonicalization gate is closed. Any future state change requires fresh rendered evidence.
 
 ---
 
-# NOW — Telegram Blog final canonicalization gate
+# NOW — operational stability
 
-The rendered public Telegram Blog description must:
+There is no active repository or profile migration gate that justifies another automatic feature immediately.
 
-- expose `https://trueruslan.ru/`;
-- no longer expose `https://true-ruslan.github.io/trueruslan-landing/about.html`.
+Current operating priorities:
 
-After the public preview changes:
-
-1. re-fetch the rendered channel page;
-2. update `telegram-blog` to `verified` with a fresh date and positive verification scope;
-3. regenerate `docs/DISTRIBUTION.md`;
-4. require Distribution Readiness, Build, CodeQL and Dependency Review;
-5. require full browser/accessibility/search/metadata/visual/custom-domain matrix;
-6. require exact post-merge Production Live Smoke.
-
-No available repository tool may mutate the Telegram channel automatically.
+1. preserve exact production verification and all-verified profile snapshot;
+2. review dependency issue #82 on or after **2026-08-17**;
+3. wait for real evidence before changing Vlezet or VillAIgence public status;
+4. use aggregate Cloudflare data only after enough meaningful traffic exists;
+5. create a genuine Photo Story only after authentic material and chronology are available.
 
 ---
 
 # Conditional next product work
 
-## P2.5c public share UI
+## P2.5d public share UI
 
 Start only when a concrete user-facing sharing need exists. Do not add generic share buttons merely because a registry exists.
 
@@ -188,4 +185,4 @@ Without a new evidence-backed design decision, do not plan:
 
 ## New-session rule
 
-Open durable docs, check actual open PR/latest commits/exact-head CI, separately verify latest `github-pages` deployment and Production Live Smoke, confirm issue #78 is closed, issue #82 is the only open repository issue, the profile snapshot is `3 verified / 1 stale`, Vlezet M7.8C remains Draft until owner acceptance, and VillAIgence automation remains separate from manual cumulative acceptance.
+Open durable docs, check actual open PR/latest commits/exact-head CI, separately verify latest `github-pages` deployment and Production Live Smoke, confirm issue #78 is closed, issue #82 is the only open repository issue, the profile snapshot is `4 verified / 0 stale`, Vlezet M7.8C remains Draft until owner acceptance, and VillAIgence automation remains separate from manual cumulative acceptance.
