@@ -44,10 +44,10 @@
     "name": "Telegram",
     "category": "profile",
     "url": "https://t.me/TrueRuslan",
-    "distributionState": "stale",
+    "distributionState": "verified",
     "lastVerified": "2026-08-04",
-    "verificationScope": "Public profile is reachable and exposes a legacy GitHub Pages backlink.",
-    "requiredAction": "Target backlink: https://trueruslan.ru/; legacy backlink cleanup and rendered-profile verification remain pending."
+    "verificationScope": "Rendered public profile exposes the canonical https://trueruslan.ru backlink as the current public website.",
+    "requiredAction": "Current canonical backlink is valid; re-verification is required after public profile edits."
   },
   {
     "id": "telegram-blog",
@@ -56,17 +56,17 @@
     "url": "https://t.me/TrueRuslan_Blog",
     "distributionState": "stale",
     "lastVerified": "2026-08-04",
-    "verificationScope": "Public channel is reachable and exposes a legacy GitHub Pages backlink.",
-    "requiredAction": "Target backlink: https://trueruslan.ru/; legacy backlink cleanup and rendered-channel verification remain pending."
+    "verificationScope": "Rendered public channel description still exposes the legacy GitHub Pages backlink; the canonical site backlink is not yet observable.",
+    "requiredAction": "Target backlink: https://trueruslan.ru/; confirm the channel description update or public preview refresh, then re-verify that the legacy URL is absent."
   },
   {
     "id": "habr-profile",
     "name": "Habr",
     "category": "profile",
     "url": "https://habr.com/ru/users/TrueRuslan/",
-    "distributionState": "stale",
+    "distributionState": "verified",
     "lastVerified": "2026-08-04",
-    "verificationScope": "Public profile is reachable; the canonical site backlink was not observed in the measured profile content.",
-    "requiredAction": "Canonical backlink https://trueruslan.ru/ and rendered-link verification remain pending."
+    "verificationScope": "Rendered public profile exposes the canonical https://trueruslan.ru backlink.",
+    "requiredAction": "Current canonical backlink is valid; re-verification is required after public profile edits."
   }
 ]

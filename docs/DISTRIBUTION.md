@@ -95,22 +95,22 @@
 - Required action: Current canonical backlink is valid; re-verification is required after public profile edits.
 - [ ] Post-update verification
 
-### Habr — stale
+### Habr — verified
 
 - ID: `habr-profile`
 - URL: https://habr.com/ru/users/TrueRuslan/
 - Last verified: 2026-08-04
-- Verification scope: Public profile is reachable; the canonical site backlink was not observed in the measured profile content.
-- Required action: Canonical backlink https://trueruslan.ru/ and rendered-link verification remain pending.
+- Verification scope: Rendered public profile exposes the canonical https://trueruslan.ru backlink.
+- Required action: Current canonical backlink is valid; re-verification is required after public profile edits.
 - [ ] Post-update verification
 
-### Telegram — stale
+### Telegram — verified
 
 - ID: `telegram-personal`
 - URL: https://t.me/TrueRuslan
 - Last verified: 2026-08-04
-- Verification scope: Public profile is reachable and exposes a legacy GitHub Pages backlink.
-- Required action: Target backlink: https://trueruslan.ru/; legacy backlink cleanup and rendered-profile verification remain pending.
+- Verification scope: Rendered public profile exposes the canonical https://trueruslan.ru backlink as the current public website.
+- Required action: Current canonical backlink is valid; re-verification is required after public profile edits.
 - [ ] Post-update verification
 
 ### Telegram Blog — stale
@@ -118,8 +118,8 @@
 - ID: `telegram-blog`
 - URL: https://t.me/TrueRuslan_Blog
 - Last verified: 2026-08-04
-- Verification scope: Public channel is reachable and exposes a legacy GitHub Pages backlink.
-- Required action: Target backlink: https://trueruslan.ru/; legacy backlink cleanup and rendered-channel verification remain pending.
+- Verification scope: Rendered public channel description still exposes the legacy GitHub Pages backlink; the canonical site backlink is not yet observable.
+- Required action: Target backlink: https://trueruslan.ru/; confirm the channel description update or public preview refresh, then re-verify that the legacy URL is absent.
 - [ ] Post-update verification
 
 ## Operator boundary
