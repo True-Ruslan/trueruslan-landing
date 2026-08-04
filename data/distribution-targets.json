@@ -1,0 +1,74 @@
+[
+  {
+    "id": "home",
+    "pagePath": "index.html",
+    "priority": 1,
+    "audiences": ["recruiter", "engineer", "general"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Персональная инженерная платформа: проекты, технические заметки, публикации и web-CV.",
+    "evidenceBoundary": "Показывает текущую публичную платформу и её canonical разделы; не является заявлением о найме, охвате или завершённости всех проектов."
+  },
+  {
+    "id": "vlezet-case-study",
+    "pagePath": "landing/projects/vlezet.html",
+    "priority": 2,
+    "audiences": ["engineer", "recruiter"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Local-first geometry и recognition case study с deterministic validation и explicit Apply authority.",
+    "evidenceBoundary": "M7.8B принят; M7.8C остаётся Draft до повторного product-owner теста на том же реальном плане."
+  },
+  {
+    "id": "villaigence-case-study",
+    "pagePath": "landing/projects/livingworld.html",
+    "priority": 3,
+    "audiences": ["engineer", "recruiter"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Server-authoritative AI NPC system: voice/text ingress, Memory 2.0, security и exact-artifact gates.",
+    "evidenceBoundary": "Source, GameTest и production-JAR evidence подтверждены отдельно; cumulative provider/gameplay acceptance ещё не завершён."
+  },
+  {
+    "id": "engineering-notes",
+    "pagePath": "landing/notes.html",
+    "priority": 4,
+    "audiences": ["engineer", "researcher", "general"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Индекс практических разборов архитектуры, reliability, AI systems и release engineering.",
+    "evidenceBoundary": "Каждая заметка имеет собственную evidence boundary; индекс не расширяет отдельные выводы на все системы."
+  },
+  {
+    "id": "installed-acceptance-note",
+    "pagePath": "landing/notes/source-tests-to-installed-acceptance.html",
+    "priority": 5,
+    "audiences": ["engineer", "recruiter"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Практическая цепочка от source tests до installed exact-artifact acceptance.",
+    "evidenceBoundary": "Release gates доказывают разные свойства; green CI не заменяет cumulative product-owner acceptance."
+  },
+  {
+    "id": "deterministic-authority-note",
+    "pagePath": "landing/notes/probabilistic-proposals-deterministic-authority.html",
+    "priority": 6,
+    "audiences": ["engineer", "researcher"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Как отделить probabilistic proposal от deterministic validation и authoritative mutation.",
+    "evidenceBoundary": "Разбор основан на Vlezet и VillAIgence; паттерн требует адаптации к инвариантам конкретного продукта."
+  },
+  {
+    "id": "restart-persistence-note",
+    "pagePath": "landing/notes/restart-persistence-is-a-product-contract.html",
+    "priority": 7,
+    "audiences": ["engineer", "researcher"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Почему сохранённые bytes ещё нужно дополнить restart, read-back, identity и behavioral continuity.",
+    "evidenceBoundary": "Equal hashes подтверждают byte continuity только в no-mutation scenario и не доказывают semantic или behavioral continuity."
+  },
+  {
+    "id": "publications",
+    "pagePath": "landing/publications.html",
+    "priority": 8,
+    "audiences": ["recruiter", "engineer", "researcher", "general"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Каталог завершённых и внешне проверяемых статей, докладов и научных материалов.",
+    "evidenceBoundary": "Раздел включает только опубликованные материалы с внешней canonical ссылкой и не содержит Draft-записей."
+  }
+]
