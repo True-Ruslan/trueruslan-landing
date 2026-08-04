@@ -1,18 +1,151 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-04**, после публикации August 2026 resume refresh и exact-SHA production closure.
+> Обновлено: **2026-08-05**, после Yandex Webmaster favicon reconciliation и exact-SHA production closure.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; operator kit — `docs/DISTRIBUTION.md`.
 
 ---
 
+# 2026-08-05
+
+## Yandex Webmaster Favicon Reconciliation — DONE
+
+### PR #112 — publish a crawler-stable root favicon contract
+
+Yandex Webmaster reported two related recommendations:
+
+- favicon unavailable to the robot;
+- add SVG or 120×120 favicon.
+
+Generated-artifact inspection established the actual repository gap:
+
+- the canonical SVG existed at `docs/assets/images/favicon.svg`;
+- the generated Pages bundle had no root `/favicon.svg`;
+- page links depended on relative URL resolution and `<base>`;
+- production Sitemap and HTTPS were already separate valid contracts.
+
+Delivered:
+
+- added a deterministic Node-only favicon postprocessor;
+- copied the canonical SVG byte-for-byte to generated `/favicon.svg`;
+- normalized every generated icon link to `/favicon.svg` after all existing page generation and asset processing;
+- covered root, nested, search, self-closing and reordered link syntax;
+- changed Diplodoc configuration to the root-absolute favicon URL;
+- added deployment-only Playwright checks to the existing Production Live Smoke workflow;
+- created issue #111 to separate repository defects from authenticated Yandex Webmaster state;
+- preserved Cloudflare aggregate analytics, Sitemap, HTTPS, static-first architecture and non-regional portfolio positioning;
+- explicitly rejected Yandex Metrica, Yandex Business and artificial regional claims without a separate product/privacy requirement.
+
+TDD RED evidence:
+
+```text
+head:                       6c2a267d1c5f0f16c6d25747ebb78f2fcf00a2d1
+Build:                      #766 / 30952175051 — expected FAILURE
+failure scope:              missing scripts/favicon.js contract
+CodeQL:                     #231 — SUCCESS
+Dependency Review:          #194 — SUCCESS
+```
+
+Final exact-head evidence:
+
+```text
+head:                       00e7823d558c7a3473ee9fcf96692d583552f578
+squash:                     18358a4939dc4062669dbcb45850e9beb26e1cac
+Build:                      #778 / 30953202266 — SUCCESS
+CodeQL:                     #243 / 30953202233 — SUCCESS
+Dependency Review:          #206 / 30953202243 — SUCCESS
+Dependency Audit Evidence:  #17 / 30953202563 — SUCCESS
+unit tests:                 345 PASS / 0 FAIL
+site integrity:             36 HTML / 1115 references — PASS
+browser/accessibility:      PASS
+Firefox/WebKit:             PASS
+search/RU-EN/analytics:     PASS
+visual regression:          PASS
+custom-domain artifact:     PASS
+review threads:             0 open
+quality artifact:           8910068861
+quality digest:             sha256:d309cff946ce4473f8aec309531df7124787c864bd139693cf5ddc31ddac1f80
+```
+
+Exact post-merge production evidence:
+
+```text
+source Pages run:           #142 / 30953599246 — SUCCESS
+Production Live Smoke:      #45 / 30953667481 — SUCCESS
+event:                      workflow_run
+deployed/caller SHA:        18358a4939dc4062669dbcb45850e9beb26e1cac
+deployment id:              5752049616
+deployment state:           success
+live artifact:              8910151878
+live digest:                sha256:fe0ce39de71919915edc3760ac0768bf62e21b922312688a1d6cf8d7fd4c01e1
+```
+
+Deployed favicon assertions passed:
+
+```text
+https://trueruslan.ru/favicon.svg   HTTP 200
+Content-Type                       image/svg+xml
+response size                      591 bytes
+homepage href                      /favicon.svg
+resume href                        /favicon.svg
+resolved target                    https://trueruslan.ru/favicon.svg
+```
+
+Issue #111 remains open only for external actions that require the authenticated Yandex Webmaster UI: Sitemap property confirmation, HTTP→HTTPS/main mirror state, “No region”, homepage recrawl and a 10–14 day diagnostic recheck. A green deployed contract does not claim that Yandex has already refreshed its diagnosis.
+
+---
+
 # 2026-08-04
+
+## User-managed PDF and Resume Timeline Alignment — DONE
+
+### PR #110 — update CV and align timeline markers
+
+After the original August professional-profile baseline, the user supplied a new downloadable PDF and reported that the Resume timeline axis/markers were visually shifted relative to job headings.
+
+Root causes:
+
+- the new PDF used compressed streams, while previous tests searched generator-specific raw bytes;
+- Diplodoc anchor-compensation padding shifted direct `h3` job headings below item origins;
+- the line and markers did not share one explicit horizontal coordinate.
+
+Delivered:
+
+- replaced `docs/assets/documents/cv.pdf` with the current user-managed file;
+- introduced one shared timeline axis coordinate;
+- centered the line and markers on that coordinate;
+- aligned markers with the first line of each corresponding job heading;
+- removed margin/padding only from direct Resume job headings;
+- added permanent layout regression tests;
+- changed PDF checks to generator-independent passive structure validation.
+
+The current validation boundary is explicit:
+
+- RU/EN web-CV and metadata remain semantically validated;
+- PDF requires valid header/EOF, meaningful size and absence of JavaScript, Launch and EmbeddedFile payloads;
+- compressed PDF content/URLs are not guessed through raw-byte substring matching.
+
+Exact evidence:
+
+```text
+head:                       4f224975928a42bd8ea5f311e5e8e1598a87dc28
+squash:                     4b5bf97d749b9c9bc1d41167da5f860d9c87760e
+Build:                      #765 / 30942487224 — SUCCESS
+CodeQL:                     #229 / 30942487265 — SUCCESS
+Dependency Review:          #193 / 30942487179 — SUCCESS
+source Pages:               #141 / 30950087819 — SUCCESS
+Production Live Smoke:      #37 / 30950157904 — SUCCESS
+quality artifact:           8905808784
+quality digest:             sha256:ab8d4fbe545f00c93e00936ec62c94c0402d8414910cd21a97eabc6a43b6b313
+```
+
+---
 
 ## August 2026 Resume Refresh — DONE
 
 ### PR #108 — synchronize web-CV and downloadable PDF
 
-The supplied current resume established a new professional-profile baseline:
+Established the August professional-profile baseline:
 
 - more than 5 years of commercial development experience;
 - current QWEP role and key products;
@@ -22,26 +155,7 @@ The supplied current resume established a new professional-profile baseline:
 - updated education, teaching and research context;
 - canonical personal site `https://trueruslan.ru/`.
 
-Delivered:
-
-- replaced `docs/assets/documents/cv.pdf` with a current compact resume;
-- synchronized Russian and English Resume pages;
-- synchronized Russian and English About pages;
-- updated homepage Java range and RU/EN page metadata;
-- added a permanent regression contract covering both web surfaces and the binary PDF;
-- parsed PDF `/URI (...)` links structurally through `URL` and validated exact protocol/hostname/port/path;
-- rejected legacy `.com` and GitHub Pages origins;
-- reviewed and accepted only the intended desktop/mobile resume visual baselines;
-- preserved routes, runtime, search, analytics, dependencies and infrastructure unchanged.
-
-Review found and corrected two important gaps before merge:
-
-1. the initial PR updated web content but had not actually replaced the binary PDF;
-2. initial negative URL checks used unsafe regex/substring matching and generated five CodeQL threads.
-
-All five security threads were fixed, resolved and marked outdated before final acceptance.
-
-Final exact-head evidence:
+Delivered synchronized RU/EN Resume, About, homepage and metadata surfaces, a current compact PDF, permanent content regression coverage and reviewed desktop/mobile baselines.
 
 ```text
 head:                       3055c82dc7f6c58d723a5f5c60e0af9f344c240b
@@ -51,27 +165,11 @@ CodeQL:                     #218 / 30938008191 — SUCCESS
 Dependency Review:          #184 / 30937995608 — SUCCESS
 Distribution Readiness:     #24 / 30937995575 — SUCCESS
 unit tests:                 340 PASS / 0 FAIL
-Lighthouse:                 100 / 100 / 100 / 100
-visual regression:          PASS
-review threads:             5 resolved / 0 open
-quality artifact:           8904045978
-quality digest:             sha256:43b0e5fa5eaf56f1dc3604215c3ac1b0454fbd67d460f134a2d6342a489cc3c7
-```
-
-Exact post-merge production evidence:
-
-```text
-source Pages run:           #139 / 30938565671 — SUCCESS
+source Pages:               #139 / 30938565671 — SUCCESS
 Production Live Smoke:      #33 / 30938639622 — SUCCESS
-event:                      workflow_run
-deployed/caller SHA:        a85b24d220f9bbfd57176a081f7bce59e41782e8
-deployment id:              5749294655
-deployment state:           success
-live artifact:              8904183580
-live digest:                sha256:14d81aba0d281cf9a36e67a83b467871f7c2442c2e9937169d7fb22f1c26b93e
 ```
 
-Production Live Smoke checked out the exact squash SHA, resolved the identical successful Pages deployment and passed the deployed browser assertions before preserving evidence.
+PR #110 superseded only the binary-PDF and timeline-layout parts of this milestone; the supplied professional facts remain the accepted web-profile baseline.
 
 ---
 
@@ -79,70 +177,23 @@ Production Live Smoke checked out the exact squash SHA, resolved the identical s
 
 ### PR #106 — record Draft activity without public promotion
 
-Content Freshness issue #78 reopened because Vlezet repository activity was newer than the controlled evidence date. Inspection established:
+Content Freshness issue #78 reopened because Vlezet repository activity was newer than controlled evidence. Inspection established that M7.8B remained accepted while M7.8C PR #42 remained open Draft and required the same real-plan product-owner retest.
 
-- accepted recognition slice remains M7.8B;
-- M7.8C PR #42 remains open Draft;
-- observed current head: `c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a`;
-- the same real-plan product-owner retest remains mandatory;
-- no merge, acceptance or lifecycle promotion is justified.
-
-Delivered:
-
-- updated Vlezet `lastVerified` to `2026-08-04` after inspection;
-- added PR #42 as a bounded `pending` signal;
-- preserved M7.8B as the accepted slice and M7.8C as the next slice;
-- added a permanent regression contract preventing Draft evidence from becoming an acceptance claim.
-
-TDD RED:
+Delivered bounded pending evidence without merge, acceptance or lifecycle promotion claims.
 
 ```text
-head:                       a75014d3e779726a66dca06140381eaa1fc21a3b
-Build:                      #734 / 30906317477 — expected FAILURE
-unit tests:                 337 PASS / 1 expected FAIL
-failure scope:              stale evidence date and missing Draft signal
-artifact:                   8891173838
-```
-
-Final exact-head evidence:
-
-```text
-head:                       c749a2fe3e9fdae789e6902bab266bf324c69b2d
 squash:                     5742a25b16ec4c1128fc0bcf03227cf6e4666f60
 Build:                      #735 / 30906476472 — SUCCESS
-CodeQL:                     #195 / 30906476404 — SUCCESS
-Dependency Review:          #163 / 30906476638 — SUCCESS
 Content Freshness:          #15 / 30906476451 — SUCCESS
-unit tests:                 338 PASS / 0 FAIL
 freshness report:           0 findings / 0 warnings / 0 errors
-Lighthouse:                 100 / 100 / 100 / 100
-quality artifact:           8891350070
-quality digest:             sha256:22b58bcfe2654516404782f52761de8301e52723fcb176eab99fac7a6c0bffbe
-freshness artifact:         8891241809
-freshness digest:           sha256:4e2db8777b44a3678e8cc8a77153cfe00887b93c9d7b838a71a3b7c70182a5f1
+issue #78:                  CLOSED / COMPLETED
 ```
-
-Exact post-merge production evidence:
-
-```text
-source Pages run:           #137 / 30907086802 — SUCCESS
-Production Live Smoke:      #29 / 30907129018 — SUCCESS
-event:                      workflow_run
-deployed/caller SHA:        5742a25b16ec4c1128fc0bcf03227cf6e4666f60
-deployment id:              5743302605
-live artifact:              8891509306
-live digest:                sha256:b5d5531d942af9239fa8e4b1ce26feba15f70b1b4c0c197a15ec7417568a301b
-```
-
-Issue #78 was closed/completed from clean evidence. Public Vlezet status was not promoted.
 
 ---
 
-## P2.5c — Final External Profile Verification — DONE
+## Final External Profile Verification — DONE
 
-### PR #104 — close Telegram Blog canonicalization gate
-
-Fresh public verification established:
+PR #104 completed the controlled external-profile snapshot:
 
 ```text
 GitHub profile:             verified
@@ -152,126 +203,41 @@ Telegram Blog:              verified
 summary:                    4 verified / 0 stale / 0 unverified
 ```
 
-Telegram Blog evidence was observed in the public `/s/` channel representation and multiple cache-busted preview endpoints exposing `https://trueruslan.ru/`. An initial bare-card response was an older cached representation and was not used as current public truth.
-
-Delivered:
-
-- updated canonical `data/external-links.json`;
-- changed Telegram Blog from `stale` to `verified`;
-- regenerated byte-equal `docs/DISTRIBUTION.md`;
-- strengthened the measured-state contract to require all four profiles verified;
-- preserved manual external-profile mutation and no engagement claims.
-
-```text
-head:                       5972236eac07325bf3bf1d8cf42ad24455c9a600
-squash:                     b5766cfa9cba20fb9588c05e6e6d891ded329357
-Build:                      #732 / 30904009048 — SUCCESS
-CodeQL:                     #190 / 30904008962 — SUCCESS
-Dependency Review:          #160 / 30904008979 — SUCCESS
-Distribution Readiness:     #11 / 30904008961 — SUCCESS
-unit tests:                 337 PASS / 0 FAIL
-Lighthouse:                 100 / 100 / 100 / 100
-Production Live Smoke:      #25 / 30904659212 — SUCCESS
-```
+Any future profile-state change requires fresh rendered evidence.
 
 ---
 
-## P2.5b — External Profile Reverification — 3/4 VERIFIED
+## Distribution Contract & Production Live Smoke Trigger — DONE
 
-PR #102 recorded the intermediate `3 verified / 1 stale / 0 unverified` snapshot. It was superseded by P2.5c after fresh Telegram Blog preview evidence appeared.
-
-```text
-squash:                     5cd846e4c618d1f6d10aab21c844a26e41fc0777
-Build:                      #728 / 30900062771 — SUCCESS
-Production Live Smoke:      #21 / 30900609547 — SUCCESS
-```
-
----
-
-## P2.5a — Distribution Contract & Profile Audit — DONE
-
-PR #98 delivered eight canonical distribution targets, exact-host validation, profile audit states, deterministic evidence, byte-equal `docs/DISTRIBUTION.md` and a read-only workflow.
-
-```text
-exact head:                 87685e94f2f81f72510555bb4b613c77bce34d36
-squash:                     6973f09ff4613aaa809600f09711d274dbf44cec
-Build:                      #719 / 30885477166 — SUCCESS
-Distribution Readiness:     #3 / 30885477173 — SUCCESS
-initial snapshot:           1 verified / 3 stale / 0 unverified
-```
-
----
-
-## Production Live Smoke trigger repair — DONE
-
-PR #99 added completed Pages `workflow_run` as the primary exact-deployment trigger, with direct push retained as fallback. PR #100 provided activation-order proof.
-
-```text
-repair squash:              0ec1faef21cf528ecc54d5a16d99552ed3d4805e
-activation squash:          c2de903eabd34ed7d07ace5e3f1eabca48b720e5
-source Pages run:           #131 / 30887587364 — SUCCESS
-Production Live Smoke:      #16 / 30887639653 — SUCCESS
-```
+- PR #98 — deterministic distribution targets and profile audit.
+- PR #99 — completed Pages `workflow_run` became the primary exact-deployment trigger.
+- PR #100 — activation-order proof.
+- direct push remains a fallback; generated artifact, deployment and browser proof remain separate.
 
 ---
 
 ## Operational Maintenance Closure — DONE
 
 - PR #91 — original clean Content Freshness evidence.
-- PR #106 — later Vlezet Draft drift inspection and clean closure of reopened #78.
 - PR #93 — exact dependency audit evidence.
-- PR #94 — high-severity remediation; final audit `0 high / 6 moderate / 0 critical`.
-- Issue #82 remains open only for the build-time markdown-it/Diplodoc blocker.
-
----
-
-## P2.4k — Restart and Persistence as Product Contract — DONE
-
-```text
-feature PR:                 #89 — MERGED
-squash:                     40af9e52237f03da58355caa065a40b64ad597d8
-Build:                      #680 / 30856377655 — SUCCESS
-unit tests:                 327 PASS / 0 FAIL
-```
+- PR #94 — high-severity remediation.
+- Final known audit: `0 critical / 0 high / 6 moderate`.
+- Issue #82 remains open only for the build-time markdown-it/Diplodoc blocker; next planned review is 2026-08-17.
 
 ---
 
 # 2026-08-03
 
-## P2.4j — Deterministic Authority — DONE
+## Evidence and engineering-note milestones — DONE
 
-```text
-feature PR:                 #87 — MERGED
-squash:                     2fba404bbca9680d934f11f30c8a76347a5ab7b1
-Build:                      #668 / 30853751417 — SUCCESS
-unit tests:                 324 PASS / 0 FAIL
-```
+- PR #83 — Product Evidence Reconciliation.
+- VillAIgence M11 Phase A — PR #103: 28 risk scenarios and 7 GameTests.
+- VillAIgence M11 Phase B — PR #104: exact production-JAR startup, clean shutdown and restart evidence.
+- PR #85 — Installed Acceptance Engineering Note.
+- PR #87 — Deterministic Authority Engineering Note.
+- PR #89 — Restart and Persistence Engineering Note.
 
-## P2.4i — Installed Acceptance — DONE
-
-```text
-feature PR:                 #85 — MERGED
-squash:                     c03f8403b77df5a91238d62bd8a143c046511a92
-Build:                      #655 / 30833707629 — SUCCESS
-unit tests:                 321 PASS / 0 FAIL
-```
-
-## P2.4h — Product Evidence Reconciliation — DONE
-
-Recorded Vlezet M7.8B accepted evidence and separated VillAIgence automated layers:
-
-- VillAIgence PR #103 — 28-scenario risk catalogue and seven development GameTests;
-- VillAIgence PR #104 — exact production-JAR startup, clean shutdown and restart proof;
-- exact artifact and installed acceptance remain separate;
-- cumulative real-provider/gameplay acceptance remains pending;
-- M7.8C remains a separate owner-acceptance boundary.
-
-```text
-feature PR:                 #83 — MERGED
-squash:                     5978f727206fa386e9cce18c26c9ba7b7eade2eb
-Build:                      #641 / 30829739512 — SUCCESS
-unit tests:                 318 PASS / 0 FAIL
-```
+These milestones preserve the separation between source/package tests, exact artifact, installed acceptance, provider/gameplay/manual evidence and public lifecycle claims.
 
 ---
 
@@ -287,4 +253,4 @@ unit tests:                 318 PASS / 0 FAIL
 
 ## Durable continuity principle
 
-After every major milestone synchronize `PROJECT_STATE`, `ROADMAP` and `CHANGELOG`. These snapshots never substitute for actual repository state, exact-head CI, `github-pages` deployment, Production Live Smoke, external profile observation, source-project acceptance or provider telemetry.
+After every major milestone synchronize `PROJECT_STATE`, `ROADMAP` and `CHANGELOG`. These snapshots never substitute for actual repository state, exact-head CI, `github-pages` deployment, Production Live Smoke, Yandex Webmaster observation, external-profile observation, source-project acceptance or provider telemetry.
