@@ -231,6 +231,8 @@ Any future profile-state change requires fresh rendered evidence.
 ## Evidence and engineering-note milestones — DONE
 
 - PR #83 — Product Evidence Reconciliation.
+- VillAIgence M11 Phase A — PR #103: 28 risk scenarios and 7 GameTests.
+- VillAIgence M11 Phase B — PR #104: exact production-JAR startup, clean shutdown and restart evidence.
 - PR #85 — Installed Acceptance Engineering Note.
 - PR #87 — Deterministic Authority Engineering Note.
 - PR #89 — Restart and Persistence Engineering Note.
