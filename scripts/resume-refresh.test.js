@@ -14,6 +14,10 @@ function readJson(relativePath) {
   return JSON.parse(readText(relativePath));
 }
 
+function readPdfLinks(pdfText) {
+  return [...pdfText.matchAll(/\/URI \(([^)]+)\)/g)].map((match) => new URL(match[1]));
+}
+
 test('resume surfaces reflect the August 2026 professional profile', () => {
   const ru = readText('docs/landing/resume.md');
   const en = readText('docs/en/resume.md');
@@ -57,6 +61,8 @@ test('downloadable CV is current, canonical and content-complete', () => {
   const pdfPath = path.join(ROOT, 'docs/assets/documents/cv.pdf');
   const pdf = fs.readFileSync(pdfPath);
   const latin1 = pdf.toString('latin1');
+  const links = readPdfLinks(latin1);
+  const canonical = new URL('https://trueruslan.ru/');
 
   assert.ok(pdf.length > 3_500, `expected a complete resume PDF, got ${pdf.length} bytes`);
   assert.match(latin1, /RUSLAN NEMYKIN/);
@@ -64,7 +70,13 @@ test('downloadable CV is current, canonical and content-complete', () => {
   assert.match(latin1, /QWEP/);
   assert.match(latin1, /Java 21-25/);
   assert.match(latin1, /corporate MCP server/);
-  assert.equal(latin1.includes('https://trueruslan.ru/'), true);
-  assert.equal(latin1.includes('https://trueruslan.com'), false);
-  assert.equal(latin1.includes('https://true-ruslan.github.io/trueruslan-landing/'), false);
+  assert.ok(
+    links.some((link) => link.protocol === canonical.protocol
+      && link.hostname === canonical.hostname
+      && link.port === canonical.port
+      && link.pathname === canonical.pathname),
+    'expected an exact canonical site link in the PDF',
+  );
+  assert.equal(links.some((link) => link.hostname === 'trueruslan.com'), false);
+  assert.equal(links.some((link) => link.hostname === 'true-ruslan.github.io'), false);
 });
