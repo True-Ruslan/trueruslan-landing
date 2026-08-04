@@ -14,13 +14,13 @@ export function deriveProductionEndpoints(baseUrl) {
   const base = new URL(baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
   const entries = [
     ['Homepage', ''],
-    ['Projects', 'landing/projects.html'],
-    ['Now', 'landing/now.html'],
-    ['Engineering Map', 'landing/engineering-map.html'],
-    ['Engineering Notes', 'landing/notes.html'],
+    ['Projects', 'landing/projects/'],
+    ['Now', 'landing/now/'],
+    ['Engineering Map', 'landing/engineering-map/'],
+    ['Engineering Notes', 'landing/notes/'],
     ['Photo Stories', 'photos/'],
     ['Atom feed', 'feed.xml'],
-    ['Resume', 'landing/resume.html'],
+    ['Resume', 'landing/resume/'],
     ['Resume PDF', 'assets/documents/cv.pdf', 'application/pdf'],
     ['Homepage OpenGraph card', 'assets/og/home.png', 'image/png'],
     ['Engineering Map OpenGraph card', 'assets/og/engineering-map.png', 'image/png'],
@@ -30,7 +30,7 @@ export function deriveProductionEndpoints(baseUrl) {
     ['Core script', '_assets/script/custom.js'],
     ['Command palette script', '_assets/script/command-palette.js'],
     ['Photo Stories script', '_assets/script/photo-stories.js'],
-    ['Favicon', 'assets/images/favicon.svg'],
+    ['Favicon', 'favicon.svg'],
   ];
 
   return entries.map(([name, relative, expectedContentType]) => ({
@@ -111,10 +111,10 @@ async function verifyProductionSiteIdentity(baseUrl, {
 
   const base = new URL(baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
   const routeDefinitions = [
-    {route: 'index.html', url: base.href, expectedCanonical: expectedHomepage},
+    {route: '/', url: base.href, expectedCanonical: expectedHomepage},
     {
-      route: 'en/index.html',
-      url: new URL('en/index.html', base).href,
+      route: 'en/',
+      url: new URL('en/', base).href,
       expectedCanonical: `${normalizedExpectedOrigin}/en/`,
     },
   ];
@@ -161,8 +161,8 @@ async function verifyProductionAnalytics(baseUrl, {
 }) {
   const base = new URL(baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
   const routes = [
-    {route: 'index.html', url: base.href},
-    {route: 'en/index.html', url: new URL('en/index.html', base).href},
+    {route: '/', url: base.href},
+    {route: 'en/', url: new URL('en/', base).href},
   ];
 
   const results = [];
