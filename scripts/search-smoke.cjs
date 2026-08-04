@@ -7,6 +7,7 @@ const {captureScreenshot, writeJsonArtifact, writeTextArtifact} = require('./qua
 const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 
 const PORT = Number(process.env.SEARCH_SMOKE_PORT || 4174);
+const SEARCH_PATH = '/_search/ru/';
 const {chromium} = requireQualityTool('playwright');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright');
 
@@ -170,11 +171,11 @@ async function assertPublicationSearchCoverage(page) {
       const body = document.body.innerText.toLocaleLowerCase('ru');
       const hasPhrase = body.includes(phrase.toLocaleLowerCase('ru'));
       const hasPublicationsRoute = [...document.querySelectorAll('a')]
-        .some((link) => (link.getAttribute('href') || '').includes('landing/publications'));
+        .some((link) => (link.getAttribute('href') || '').includes('landing/publications/'));
       return hasPhrase && hasPublicationsRoute;
     }, item, {timeout: 7000});
 
-    const matchingRoutes = page.locator('a[href*="landing/publications"]');
+    const matchingRoutes = page.locator('a[href*="landing/publications/"]');
     if (await matchingRoutes.count() < 1) {
       throw new Error(`publication search query did not route to Publications: ${item.query}`);
     }
@@ -182,9 +183,9 @@ async function assertPublicationSearchCoverage(page) {
 }
 
 async function assertSameOriginBackNavigation(page, baseUrl) {
-  const sourcePath = '/landing/projects.html';
+  const sourcePath = '/landing/projects/';
   const sourceUrl = `${baseUrl}${sourcePath}`;
-  const searchUrl = `${baseUrl}/_search/ru/index.html`;
+  const searchUrl = `${baseUrl}${SEARCH_PATH}`;
 
   const sourceResponse = await page.goto(sourceUrl, {waitUntil: 'networkidle'});
   if (!sourceResponse?.ok()) throw new Error('search back: source page unavailable');
@@ -204,7 +205,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
   });
 
   try {
-    const response = await page.goto(`${baseUrl}/_search/ru/index.html`, {waitUntil: 'networkidle'});
+    const response = await page.goto(`${baseUrl}${SEARCH_PATH}`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`${name}: search navigation HTTP ${response?.status() ?? 'none'}`);
 
     await page.waitForTimeout(700);
