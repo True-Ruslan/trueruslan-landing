@@ -43,7 +43,7 @@ function createFetch({ruHtml = homepageHtml(), enHtml = englishHtml()} = {}) {
     if (pathname.endsWith('.png')) {
       return new Response('png', {status: 200, headers: {'content-type': 'image/png'}});
     }
-    if (pathname.endsWith('/en/index.html')) {
+    if (pathname.endsWith('/en/')) {
       return new Response(enHtml, {status: 200, headers: {'content-type': 'text/html'}});
     }
     if (pathname.endsWith('/site/') || pathname.endsWith('/site/index.html')) {
@@ -59,13 +59,13 @@ function createFetch({ruHtml = homepageHtml(), enHtml = englishHtml()} = {}) {
 test('deriveProductionEndpoints supports Pages subpath with or without trailing slash', () => {
   const expected = [
     'https://true-ruslan.github.io/trueruslan-landing/',
-    'https://true-ruslan.github.io/trueruslan-landing/landing/projects.html',
-    'https://true-ruslan.github.io/trueruslan-landing/landing/now.html',
-    'https://true-ruslan.github.io/trueruslan-landing/landing/engineering-map.html',
-    'https://true-ruslan.github.io/trueruslan-landing/landing/notes.html',
+    'https://true-ruslan.github.io/trueruslan-landing/landing/projects/',
+    'https://true-ruslan.github.io/trueruslan-landing/landing/now/',
+    'https://true-ruslan.github.io/trueruslan-landing/landing/engineering-map/',
+    'https://true-ruslan.github.io/trueruslan-landing/landing/notes/',
     'https://true-ruslan.github.io/trueruslan-landing/photos/',
     'https://true-ruslan.github.io/trueruslan-landing/feed.xml',
-    'https://true-ruslan.github.io/trueruslan-landing/landing/resume.html',
+    'https://true-ruslan.github.io/trueruslan-landing/landing/resume/',
     'https://true-ruslan.github.io/trueruslan-landing/assets/documents/cv.pdf',
     'https://true-ruslan.github.io/trueruslan-landing/assets/og/home.png',
     'https://true-ruslan.github.io/trueruslan-landing/assets/og/engineering-map.png',
@@ -75,7 +75,7 @@ test('deriveProductionEndpoints supports Pages subpath with or without trailing 
     'https://true-ruslan.github.io/trueruslan-landing/_assets/script/custom.js',
     'https://true-ruslan.github.io/trueruslan-landing/_assets/script/command-palette.js',
     'https://true-ruslan.github.io/trueruslan-landing/_assets/script/photo-stories.js',
-    'https://true-ruslan.github.io/trueruslan-landing/assets/images/favicon.svg',
+    'https://true-ruslan.github.io/trueruslan-landing/favicon.svg',
   ];
 
   assert.deepEqual(
@@ -131,7 +131,7 @@ test('production smoke verifies enabled analytics on RU and EN without reporting
 
   assert.equal(report.ok, true);
   assert.equal(report.analytics.expectation, 'enabled');
-  assert.deepEqual(report.analytics.routes.map((entry) => entry.route), ['index.html', 'en/index.html']);
+  assert.deepEqual(report.analytics.routes.map((entry) => entry.route), ['/', 'en/']);
   assert.ok(report.analytics.routes.every((entry) => entry.ok && entry.beaconCount === 1));
   assert.doesNotMatch(JSON.stringify(report), new RegExp(fakeToken));
 });
@@ -168,7 +168,7 @@ test('production smoke fails when enabled analytics is missing or duplicated', a
     analyticsToken: fakeToken,
   });
   assert.equal(duplicated.ok, false);
-  assert.equal(duplicated.analytics.routes.find((entry) => entry.route === 'index.html').beaconCount, 2);
+  assert.equal(duplicated.analytics.routes.find((entry) => entry.route === '/').beaconCount, 2);
 });
 
 test('production smoke fails exact-token verification without exposing either token', async () => {
