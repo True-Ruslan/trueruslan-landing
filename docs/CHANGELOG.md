@@ -131,7 +131,7 @@ event:                      workflow_run
 deployed/caller SHA:        5742a25b16ec4c1128fc0bcf03227cf6e4666f60
 deployment id:              5743302605
 live artifact:              8891509306
-live digest:                sha256:b5d5531d942af9239fae4b1ce26feba15f70b1b4c0c197a15ec7417568a301b
+live digest:                sha256:b5d5531d942af9239fa8e4b1ce26feba15f70b1b4c0c197a15ec7417568a301b
 ```
 
 Issue #78 was closed/completed from clean evidence. Public Vlezet status was not promoted.
