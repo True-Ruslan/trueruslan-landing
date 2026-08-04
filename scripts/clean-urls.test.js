@@ -34,22 +34,41 @@ test('legacy redirect targets preserve the configured Pages deployment base', as
   assert.match(redirect, /rel="canonical" href="https:\/\/true-ruslan\.github\.io\/trueruslan-landing\/landing\/resume\/"/);
 });
 
+test('patchSearchWorker converts public result links without mutating search identities', async () => {
+  const {patchSearchWorker} = await loadCleanUrlsModule();
+  const source = 'const item = {link: `${base.replace(/\\/?$/, "")}/${entry.ref.replace(/&\\/?/, "")}`, title: doc.title};';
+  const patched = patchSearchWorker(source);
+
+  assert.match(patched, /entry\.ref\.replace\(\/&\\\/\?\//);
+  assert.match(patched, /replace\(\/index\\\.html\$\/, ""\)/);
+  assert.match(patched, /replace\(\/\\\.html\$\/, "\/"\)/);
+  assert.throws(
+    () => patchSearchWorker('const item = {link: entry.ref};'),
+    /search worker link formatter no longer matches/i,
+  );
+});
+
 test('publishDirectoryRoutes creates directory indexes, rewrites references and preserves legacy entrypoints', async () => {
   const {publishDirectoryRoutes} = await loadCleanUrlsModule();
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'clean-urls-'));
   const pagePath = path.join(outputDir, 'landing', 'resume.html');
   const nestedPath = path.join(outputDir, 'landing', 'projects', 'vlezet.html');
-  const searchRegistry = path.join(outputDir, '_search', 'ru', 'registry.js');
+  const searchDir = path.join(outputDir, '_search', 'ru');
+  const searchRegistry = path.join(searchDir, '123-registry.js');
+  const searchIndex = path.join(searchDir, '123-index.js');
+  const searchApi = path.join(outputDir, '_search', 'api.js');
 
   fs.mkdirSync(path.dirname(pagePath), {recursive: true});
   fs.mkdirSync(path.dirname(nestedPath), {recursive: true});
-  fs.mkdirSync(path.dirname(searchRegistry), {recursive: true});
+  fs.mkdirSync(searchDir, {recursive: true});
 
   fs.writeFileSync(pagePath, '<html><head><base href="../"><link rel="canonical" href="https://trueruslan.ru/landing/resume.html"></head><body><script id="diplodoc-state" type="application/json">{"router":{"pathname":"landing/resume","depth":2,"base":"../"},"search":{"api":"_search/api.js","link":"_search/ru/"}}</script><a href="landing/projects.html#work">Projects</a></body></html>');
   fs.writeFileSync(nestedPath, '<html><head><base href="../../"></head><body><script id="diplodoc-state" type="application/json">{"router":{"pathname":"landing/projects/vlezet","depth":3,"base":"../../"},"search":{"api":"_search/api.js"}}</script><a href="landing/resume.html">Resume</a></body></html>');
   fs.writeFileSync(path.join(outputDir, 'index.html'), '<a href="landing/resume.html">Resume</a>');
   fs.writeFileSync(path.join(outputDir, 'sitemap.xml'), '<loc>https://trueruslan.ru/landing/resume.html</loc>');
-  fs.writeFileSync(searchRegistry, 'self.registry={"landing/resume.html":{"href":"landing/resume.html#profile"}};');
+  fs.writeFileSync(searchRegistry, 'self.registry={"landing/resume.html":{"title":"Resume"}};');
+  fs.writeFileSync(searchIndex, 'self.index={"fieldVectors":[["title/landing/resume.html",[]]]};');
+  fs.writeFileSync(searchApi, 'const item = {link: `${base.replace(/\\/?$/, "")}/${entry.ref.replace(/&\\/?/, "")}`, title: doc.title};');
 
   const result = publishDirectoryRoutes({outputDir, siteUrl: 'https://trueruslan.ru'});
 
@@ -73,6 +92,8 @@ test('publishDirectoryRoutes creates directory indexes, rewrites references and 
   assert.match(legacyPage, /rel="canonical" href="https:\/\/trueruslan\.ru\/landing\/resume\/"/);
 
   assert.equal(fs.readFileSync(path.join(outputDir, 'sitemap.xml'), 'utf8'), '<loc>https://trueruslan.ru/landing/resume/</loc>');
-  assert.equal(fs.readFileSync(searchRegistry, 'utf8'), 'self.registry={"landing/resume/":{"href":"landing/resume/#profile"}};');
+  assert.equal(fs.readFileSync(searchRegistry, 'utf8'), 'self.registry={"landing/resume.html":{"title":"Resume"}};');
+  assert.equal(fs.readFileSync(searchIndex, 'utf8'), 'self.index={"fieldVectors":[["title/landing/resume.html",[]]]};');
+  assert.match(fs.readFileSync(searchApi, 'utf8'), /replace\(\/\\\.html\$\/, "\/"\)/);
   assert.match(fs.readFileSync(path.join(outputDir, 'index.html'), 'utf8'), /href="landing\/resume\/"/);
 });
