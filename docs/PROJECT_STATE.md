@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-04**, после P2.5a Distribution Readiness и deployment-trigger acceptance.
+> Последнее смысловое обновление: **2026-08-04**, после P2.5b External Profile Reverification.
 >
 > Durable snapshot: что представляет собой проект, что доказано, какие границы остаются и что делать дальше.
 
@@ -37,44 +37,31 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 ## 2. Current repository and production truth
 
 ```text
-master:                          c2de903eabd34ed7d07ace5e3f1eabca48b720e5
-P2.5a PR:                        #98 — MERGED
-P2.5a exact head:                87685e94f2f81f72510555bb4b613c77bce34d36
-P2.5a squash:                    6973f09ff4613aaa809600f09711d274dbf44cec
-trigger repair PR:               #99 — MERGED
-trigger repair squash:           0ec1faef21cf528ecc54d5a16d99552ed3d4805e
-design activation PR:            #100 — MERGED
-current design squash:           c2de903eabd34ed7d07ace5e3f1eabca48b720e5
-unit tests:                       337 PASS / 0 FAIL
-Lighthouse:                       100 / 100 / 100 / 100
+master:                          5cd846e4c618d1f6d10aab21c844a26e41fc0777
+profile reverification PR:       #102 — MERGED
+exact PR head:                   ee6c9d5c08c5eee67c3ae7d7ff8fa3723af1458a
+Build:                           #728 / 30900062771 — SUCCESS
+CodeQL:                          #184 / 30900062963 — SUCCESS
+Dependency Review:               #156 / 30900062754 — SUCCESS
+Distribution Readiness:          #8 / 30900062778 — SUCCESS
+unit tests:                      337 PASS / 0 FAIL
+Lighthouse:                      100 / 100 / 100 / 100
+quality artifact:                8888803364
+distribution artifact:           8888677537
 ```
 
-P2.5a exact-head evidence:
+Exact post-merge production proof:
 
 ```text
-Build:                            #719 / 30885477166 — SUCCESS
-CodeQL:                           #171 / 30885477170 — SUCCESS
-Dependency Review:                #147 / 30885477189 — SUCCESS
-Distribution Readiness:           #3 / 30885477173 — SUCCESS
-quality artifact:                 8882993166
-quality digest:                   sha256:3888468f04c68c0fa77de8e90d4622cb106d095e60976b962fa4d85b1870cea6
-distribution artifact:            8882890037
-distribution digest:              sha256:a5be6111f1e3504f4544ef6660a37ec34c8c4b629b289ff48c8537fd84ac4d91
-```
-
-Current exact deployment-trigger proof:
-
-```text
-source Pages workflow:            #131 / 30887587364 — SUCCESS
-Production Live Smoke:             #16 / 30887639653 — SUCCESS
+source Pages workflow:            #136 / 30900569283 — SUCCESS
+Production Live Smoke:             #21 / 30900609547 — SUCCESS
 event:                             workflow_run
-deployed/caller SHA:               c2de903eabd34ed7d07ace5e3f1eabca48b720e5
-github-pages deployment id:        5739649211
+deployed/caller SHA:               5cd846e4c618d1f6d10aab21c844a26e41fc0777
+github-pages deployment id:        5742059989
 deployment state:                  success
-live artifact:                     8883727019
-live digest:                       sha256:083a787be0b8fee001fd78c1ae25657c70408d42db3eafc740d7667775c03984
-retention:                         through 2026-09-03
-checked at:                        2026-08-04T07:24:28Z
+live artifact:                     8888917544
+live digest:                       sha256:b9864ed34717b446ab3faccecf5386b53722bf16acd6f4c23d9c266b0b23d2f4
+checked at:                        2026-08-04T10:26:41Z
 ```
 
 Live assertions independently passed:
@@ -82,11 +69,13 @@ Live assertions independently passed:
 - apex homepage HTTP 200 and expected title;
 - exactly one Cloudflare Web Analytics beacon;
 - `www` Note URL resolves to apex with path preserved;
-- persistence Note HTTP 200 with exact title/H1/canonical/`og:url`;
-- legacy Pages origin absent;
+- persistence Note HTTP 200 with exact H1/title/canonical/`og:url`;
+- legacy Pages origin absent from the tested site surfaces;
 - Atom feed HTTP 200 and contains the Note title/canonical URL;
 - real browser query `persistence contract` returns the exact Note route;
 - page errors, console errors and request failures — none.
+
+Generated artifact CI and deployed production proof remain separate evidence layers.
 
 ---
 
@@ -96,104 +85,59 @@ PR #98 delivered a deterministic distribution operator kit without automatic pos
 
 Canonical data model:
 
-- `data/page-meta.json` remains owner of title, description, path and OpenGraph identity;
-- `data/distribution-targets.json` stores only distribution-specific references and boundaries;
-- `data/external-links.json` remains owner of configured external identities and controlled profile snapshots;
-- `docs/DISTRIBUTION.md` is byte-equal deterministic output from the registries.
+- `data/page-meta.json` owns title, description, path and OpenGraph identity;
+- `data/distribution-targets.json` stores distribution-specific references and boundaries;
+- `data/external-links.json` owns configured external identities and controlled profile snapshots;
+- `docs/DISTRIBUTION.md` is byte-equal deterministic output from canonical registries.
 
-Controlled target set: **8**.
+Controlled target set: **8** — homepage, Vlezet, VillAIgence, Notes index, three grounded Notes and Publications.
 
-- homepage;
-- Vlezet flagship;
-- VillAIgence flagship;
-- Engineering Notes index;
-- installed-acceptance Note;
-- deterministic-authority Note;
-- restart/persistence Note;
-- Publications index.
-
-Profile snapshot:
-
-```text
-profiles:                          4
-verified:                          1
-stale:                             3
-unverified:                        0
-```
-
-Measured states:
-
-- GitHub profile — `verified`: canonical `https://trueruslan.ru/` backlink observed;
-- Habr — `stale`: public profile reachable, canonical backlink not observed;
-- Telegram personal — `stale`: legacy GitHub Pages backlink observed;
-- Telegram Blog — `stale`: legacy GitHub Pages backlink observed.
-
-Security review corrected incomplete substring URL checks. Canonical distribution URLs now require parsed exact `https://trueruslan.ru` origin/hostname with empty search/hash. Both CodeQL review threads were resolved.
-
-P2.5a production proof:
-
-```text
-Production Live Smoke:             #12 / 30886377666 — SUCCESS
-deployed SHA:                      6973f09ff4613aaa809600f09711d274dbf44cec
-deployment id:                     5739340422
-live artifact:                     8883255231
-live digest:                       sha256:f0cc62934b1c1754eba546dea3ce3dfe5af3535a4db5a466407a6f36b67a3f42
-```
+Security review corrected incomplete URL substring checks. Canonical targets require the parsed exact `https://trueruslan.ru` origin/hostname with empty search/hash.
 
 P2.5a improves readiness; it does not claim audience growth or engagement.
 
 ---
 
-## 4. Production Live Smoke trigger repair — DONE
+## 4. P2.5b — External Profile Reverification — PARTIAL EXTERNAL COMPLETION
 
-After P2.5a merge, successful Pages deployment existed but the direct-push Production Live Smoke run did not appear within the expected trigger window. Workflow server-side state remained `active`.
-
-PR #99 changed the primary exact-deployment orchestration boundary to completed `Deploy static content to Pages` via `workflow_run`.
-
-Current trigger model:
-
-- `workflow_run` after successful Pages workflow — primary;
-- direct push — fallback;
-- daily schedule;
-- manual dispatch;
-- path-scoped pull requests.
-
-Exact event propagation:
-
-- expected SHA: `github.event.workflow_run.head_sha`;
-- source conclusion must be `success`;
-- source workflow run ID/conclusion are stored in the artifact;
-- exact deployment must resolve to the expected SHA through GitHub Deployments API.
-
-Repair exact-head evidence:
+Fresh rendered public evidence after owner edits produced:
 
 ```text
-RED head:                         dfe81988e66fdf9883359183b050aca92b07f62f
-RED:                              336 PASS / 1 expected FAIL
-GREEN head:                       4fbe518787421038361246784729ece0a7da9779
-Build:                            #721 / 30886377658 — SUCCESS
-CodeQL:                           #174 / 30886377653 — SUCCESS
-Dependency Review:                #149 / 30886377654 — SUCCESS
-PR live smoke:                    #12 / 30886377666 — SUCCESS
-quality artifact:                 8883344281
-quality digest:                   sha256:57b794be4c4ca6c456e9b895db1367347a82827cac301be31a137e0043743740
+profiles:                          4
+verified:                          3
+stale:                             1
+unverified:                        0
 ```
 
-Repair squash fallback production proof:
+Measured states:
+
+- GitHub profile — `verified`: canonical `https://trueruslan.ru/` backlink visible;
+- Habr — `verified`: rendered public profile exposes `https://trueruslan.ru`;
+- Telegram personal — `verified`: rendered public profile exposes `https://trueruslan.ru` as the public website;
+- Telegram Blog — `stale`: rendered public channel description still exposes the legacy GitHub Pages backlink and does not yet expose the canonical site backlink.
+
+TDD evidence:
 
 ```text
-Production Live Smoke:             #13 / 30886807440 — SUCCESS
-deployed SHA:                      0ec1faef21cf528ecc54d5a16d99552ed3d4805e
-deployment id:                     5739513348
-artifact:                          8883438510
-digest:                            sha256:f2afbc1bb7335fb7eb20e83fa8df3109c2a8fa5d64948e427479542b0d04a313
+RED head:                          f281c4fd91c0ef171f13ab092c484eb4c828585c
+RED result:                        335 PASS / 2 expected FAIL
+GREEN head:                        ee6c9d5c08c5eee67c3ae7d7ff8fa3723af1458a
+Build:                             #728 / 30900062771 — SUCCESS
+Distribution Readiness:            #8 / 30900062778 — SUCCESS
+profile counts:                    3 verified / 1 stale / 0 unverified
 ```
 
-Activation-order proof was completed by PR #100's subsequent deployment: event `workflow_run` #16 verified exact squash `c2de903e...` from source Pages run #131.
+Owner-reported edits do not become `verified` until rendered public output exposes the canonical backlink. Telegram Blog therefore remains the only external-profile gate.
 
 ---
 
-## 5. Operational and security state
+## 5. Production Live Smoke trigger — DONE
+
+PR #99 changed the primary exact-deployment orchestration boundary to completed `Deploy static content to Pages` via `workflow_run`; direct push remains a fallback. PR #100 proved activation order. The current profile reconciliation was independently verified by Production Live Smoke #21 for exact SHA `5cd846e4...`.
+
+---
+
+## 6. Operational and security state
 
 ### Content Freshness
 
@@ -213,30 +157,26 @@ All six moderate records reduce to build-time `markdown-it@13.0.2` / Diplodoc co
 
 ---
 
-## 6. External project boundaries
+## 7. External project boundaries
 
 ### Vlezet
 
 - public lifecycle: `pre-production`;
-- M7.8B remains accepted as the latest public recognition slice;
+- M7.8B accepted / принят as the latest public recognition slice;
 - M7.8C PR #42 remains open Draft;
 - automated gates are green, but the same real-plan product-owner retest remains mandatory;
 - do not merge or update public completion state before explicit owner acceptance.
 
-Latest observed Draft head: `c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a`.
-
 ### VillAIgence
 
 ```text
-canonical source head:             61b66e38e99c1dc9bdc26089bfb345a250a881e2
-published candidate:               0.1.23+1.21.1
 M11 Phase A: PR #103 — 28 scenarios + 7 GameTests
-M11 Phase B: PR #104 — production-JAR startup/restart
-lifecycle:                         release-candidate
-public label:                      ACCEPTANCE IN PROGRESS
+M11 Phase B: PR #104 — exact production-JAR startup/restart
+lifecycle:                    release-candidate
+public label:                 ACCEPTANCE IN PROGRESS
 ```
 
-Source/package/GameTest/production-JAR/persistence/server-authority evidence remain separate from real-provider/gameplay/manual cumulative acceptance.
+Source/package/GameTest/production-JAR/persistence/server-authority evidence remain separate from real-provider/gameplay/manual cumulative acceptance. The exact artifact and installed acceptance remain separate release gates.
 
 ### Publications and Photo Stories
 
@@ -246,40 +186,31 @@ Source/package/GameTest/production-JAR/persistence/server-authority evidence rem
 
 ---
 
-## 7. Current gate — external profile canonicalization
+## 8. Current gate and next decisions
 
-The next useful step is not another repository feature. Three stale public profiles require deliberate owner edits:
+Only one profile remains stale:
 
-1. Habr — add canonical `https://trueruslan.ru/` backlink;
-2. Telegram personal — replace legacy GitHub Pages backlink with `https://trueruslan.ru/`;
-3. Telegram Blog — replace legacy GitHub Pages backlink with `https://trueruslan.ru/`.
+1. Telegram Blog — ensure the rendered public channel description exposes `https://trueruslan.ru/` and no longer exposes the legacy Pages URL.
 
-After those edits:
+After the rendered public preview changes:
 
-- re-fetch rendered public profiles;
-- verify exact canonical backlink;
-- update `lastVerified`, `verificationScope` and state from `stale` to `verified`;
+- re-fetch it;
+- update `telegram-blog` from `stale` to `verified`;
 - regenerate `docs/DISTRIBUTION.md`;
-- run Distribution Readiness, full CI and exact Production Live Smoke.
+- require Distribution Readiness, full CI and exact Production Live Smoke.
 
-No available repository tool can safely mutate Habr or Telegram profile descriptions. Automatic profile mutation remains prohibited.
+Next autonomous product work should not fabricate urgency. Candidate milestones:
 
----
-
-## 8. Next autonomous decisions after the gate
-
-- P2.5b public share UI: only if an explicit product need appears after profile cleanup; not automatic priority.
-- genuine Photo Story: only after authentic material arrives.
-- Vlezet reconciliation: only after M7.8C owner acceptance.
-- VillAIgence promotion: only after cumulative manual/provider/gameplay acceptance.
-- dependency blocker: review on/after 2026-08-17.
-- analytics conclusions: only after 3–4 weeks of meaningful aggregate Cloudflare traffic.
+- P2.5c public share UI only after a concrete product need;
+- genuine Photo Story only after authentic material arrives;
+- Vlezet reconciliation only after M7.8C owner acceptance;
+- VillAIgence promotion only after cumulative manual/provider/gameplay acceptance;
+- dependency blocker review on/after 2026-08-17;
+- analytics conclusions only after 3–4 weeks of meaningful aggregate Cloudflare traffic.
 
 ---
 
 ## 9. Invariants
-
-Do not break without a new evidence-backed design decision:
 
 - static-first;
 - build-time intelligence;
@@ -304,4 +235,4 @@ Do not break without a new evidence-backed design decision:
 
 ## 10. New-session handoff
 
-> Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md`, `docs/CUSTOM_DOMAIN.md` and `docs/DISTRIBUTION.md`. Check actual open PRs, latest commits and exact-head CI. Confirm Production Live Smoke event `workflow_run` verifies current `master`, issue #78 remains closed, issue #82 remains the moderate markdown-it/Diplodoc blocker, external profile states are still accurate, Vlezet M7.8C remains Draft until owner acceptance, and VillAIgence automated evidence remains separate from cumulative acceptance.
+> Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md`, `docs/CUSTOM_DOMAIN.md` and `docs/DISTRIBUTION.md`. Check actual open PRs, latest commits and exact-head CI. Confirm Production Live Smoke event `workflow_run` verifies current `master`, issue #78 remains closed, issue #82 remains the moderate markdown-it/Diplodoc blocker, the profile snapshot is `3 verified / 1 stale`, Vlezet M7.8C remains Draft until owner acceptance, and VillAIgence automated evidence remains separate from cumulative acceptance.
