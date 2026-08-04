@@ -47,26 +47,22 @@ test('canonical distribution targets resolve only through page metadata', async 
   }));
 });
 
-test('external profile audit exposes the fresh three-verified one-stale snapshot', async () => {
+test('external profile audit exposes the fresh all-verified snapshot', async () => {
   const api = await loadModule();
   const entries = readJson(EXTERNAL_PATH);
   const profiles = api.validateExternalProfileAudit(entries);
   const byId = new Map(profiles.map((profile) => [profile.id, profile]));
 
-  for (const id of ['github-profile', 'habr-profile', 'telegram-personal']) {
+  for (const id of ['github-profile', 'habr-profile', 'telegram-personal', 'telegram-blog']) {
     assert.equal(byId.get(id)?.distributionState, 'verified');
     assert.match(byId.get(id)?.verificationScope ?? '', /canonical.*trueruslan\.ru|trueruslan\.ru.*canonical/i);
     assert.doesNotMatch(byId.get(id)?.verificationScope ?? '', /legacy|github pages/i);
   }
 
-  assert.equal(byId.get('telegram-blog')?.distributionState, 'stale');
-  assert.match(byId.get('telegram-blog')?.verificationScope ?? '', /legacy|github pages/i);
-  assert.match(byId.get('telegram-blog')?.requiredAction ?? '', /https:\/\/trueruslan\.ru\//i);
-
   const summary = api.buildDistributionSummary({targets: [], profiles});
   assert.deepEqual(summary.profileStateCounts, {
-    verified: 3,
-    stale: 1,
+    verified: 4,
+    stale: 0,
     unverified: 0,
   });
 });
@@ -86,7 +82,7 @@ test('tracked distribution runbook is deterministic and registry-backed', async 
   assert.match(expected, /GitHub.*verified/is);
   assert.match(expected, /Habr.*verified/is);
   assert.match(expected, /### Telegram — verified/is);
-  assert.match(expected, /Telegram Blog.*stale/is);
+  assert.match(expected, /### Telegram Blog — verified/is);
   assert.match(expected, /post-update verification/i);
   assert.doesNotMatch(expected, /utm_|session replay|automatic posting/i);
 });
