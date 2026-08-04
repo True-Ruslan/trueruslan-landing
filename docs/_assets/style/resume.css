@@ -139,6 +139,7 @@ html[data-tr-page='resume'] .tr-resume-hero {
 }
 
 .tr-resume-timeline {
+  --tr-resume-axis-x: 7.5px;
   position: relative;
   margin: 1rem 0 2.2rem;
   padding-left: 1.55rem;
@@ -147,11 +148,12 @@ html[data-tr-page='resume'] .tr-resume-hero {
 .tr-resume-timeline::before {
   content: '';
   position: absolute;
-  left: 5px;
+  left: var(--tr-resume-axis-x);
   top: .45rem;
   bottom: .45rem;
   width: 1px;
   background: linear-gradient(var(--tr-cyan), rgba(139, 92, 246, .3));
+  transform: translateX(-50%);
 }
 
 .tr-resume-item {
@@ -166,7 +168,7 @@ html[data-tr-page='resume'] .tr-resume-hero {
 .tr-resume-item::before {
   content: '';
   position: absolute;
-  left: -1.55rem;
+  left: calc(-1.55rem + var(--tr-resume-axis-x));
   top: .45rem;
   width: 11px;
   height: 11px;
@@ -174,10 +176,12 @@ html[data-tr-page='resume'] .tr-resume-hero {
   border-radius: 50%;
   background: var(--tr-cyan);
   box-shadow: 0 0 0 2px rgba(76, 201, 240, .24);
+  transform: translateX(-50%);
 }
 
-.tr-resume-item h3 {
-  margin: 0;
+.tr-resume-item > h3 {
+  margin: 0 !important;
+  padding-top: 0 !important;
   font-size: 1.06rem;
 }
 

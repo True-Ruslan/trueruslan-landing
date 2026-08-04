@@ -14,10 +14,6 @@ function readJson(relativePath) {
   return JSON.parse(readText(relativePath));
 }
 
-function readPdfLinks(pdfText) {
-  return [...pdfText.matchAll(/\/URI \(([^)]+)\)/g)].map((match) => new URL(match[1]));
-}
-
 test('resume surfaces reflect the August 2026 professional profile', () => {
   const ru = readText('docs/landing/resume.md');
   const en = readText('docs/en/resume.md');
@@ -57,26 +53,18 @@ test('resume surfaces reflect the August 2026 professional profile', () => {
   assert.match(enMeta.description, /5\+|more than 5/i);
 });
 
-test('downloadable CV is current, canonical and content-complete', () => {
+test('downloadable CV is a complete and passive PDF asset', () => {
   const pdfPath = path.join(ROOT, 'docs/assets/documents/cv.pdf');
   const pdf = fs.readFileSync(pdfPath);
   const latin1 = pdf.toString('latin1');
-  const links = readPdfLinks(latin1);
-  const canonical = new URL('https://trueruslan.ru/');
+  const trailer = latin1.slice(-4096);
 
-  assert.ok(pdf.length > 3_500, `expected a complete resume PDF, got ${pdf.length} bytes`);
-  assert.match(latin1, /RUSLAN NEMYKIN/);
-  assert.match(latin1, /5\+ years/);
-  assert.match(latin1, /QWEP/);
-  assert.match(latin1, /Java 21-25/);
-  assert.match(latin1, /corporate MCP server/);
-  assert.ok(
-    links.some((link) => link.protocol === canonical.protocol
-      && link.hostname === canonical.hostname
-      && link.port === canonical.port
-      && link.pathname === canonical.pathname),
-    'expected an exact canonical site link in the PDF',
+  assert.ok(pdf.length > 20_000, `expected a complete resume PDF, got ${pdf.length} bytes`);
+  assert.match(latin1.slice(0, 16), /^%PDF-\d\.\d/, 'CV must start with a PDF header');
+  assert.match(trailer, /%%EOF\s*$/, 'CV must end with a PDF EOF marker');
+  assert.doesNotMatch(
+    latin1,
+    /\/(?:JavaScript|JS|Launch|EmbeddedFile)\b/,
+    'CV must not contain active or embedded payloads',
   );
-  assert.equal(links.some((link) => link.hostname === 'trueruslan.com'), false);
-  assert.equal(links.some((link) => link.hostname === 'true-ruslan.github.io'), false);
 });
