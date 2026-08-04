@@ -53,12 +53,17 @@ test('resume surfaces reflect the August 2026 professional profile', () => {
   assert.match(enMeta.description, /5\+|more than 5/i);
 });
 
-test('downloadable CV is current, canonical and non-trivial', () => {
+test('downloadable CV is current, canonical and content-complete', () => {
   const pdfPath = path.join(ROOT, 'docs/assets/documents/cv.pdf');
   const pdf = fs.readFileSync(pdfPath);
   const latin1 = pdf.toString('latin1');
 
-  assert.ok(pdf.length > 250_000, `expected a full resume PDF, got ${pdf.length} bytes`);
+  assert.ok(pdf.length > 3_500, `expected a complete resume PDF, got ${pdf.length} bytes`);
+  assert.match(latin1, /RUSLAN NEMYKIN/);
+  assert.match(latin1, /5\+ years/);
+  assert.match(latin1, /QWEP/);
+  assert.match(latin1, /Java 21-25/);
+  assert.match(latin1, /corporate MCP server/);
   assert.match(latin1, /https:\/\/trueruslan\.ru\//);
   assert.doesNotMatch(latin1, /https:\/\/trueruslan\.com/);
   assert.doesNotMatch(latin1, /https:\/\/true-ruslan\.github\.io\/trueruslan-landing\//);
