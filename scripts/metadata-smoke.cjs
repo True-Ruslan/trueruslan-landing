@@ -8,13 +8,13 @@ const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 const {chromium} = requireQualityTool('playwright');
 
 const pages = [
-  {path: '/index.html', title: 'Руслан Немыкин — Backend Engineer', card: 'home'},
-  {path: '/landing/projects.html', title: 'Проекты — Руслан Немыкин', card: 'projects'},
-  {path: '/landing/engineering-map.html', title: 'Engineering Map — Руслан Немыкин', card: 'engineering-map'},
-  {path: '/landing/resume.html', title: 'Резюме — Руслан Немыкин', card: 'resume'},
-  {path: '/landing/projects/livingworld.html', title: 'VillAIgence — Server-Authoritative AI Society', card: 'livingworld'},
-  {path: '/landing/projects/node-zero.html', title: 'NODE ZERO — Narrative Systems Case Study', card: 'node-zero'},
-  {path: '/landing/notes.html', title: 'Engineering Notes — Руслан Немыкин', card: 'notes'},
+  {path: '/', title: 'Руслан Немыкин — Backend Engineer', card: 'home'},
+  {path: '/landing/projects/', title: 'Проекты — Руслан Немыкин', card: 'projects'},
+  {path: '/landing/engineering-map/', title: 'Engineering Map — Руслан Немыкин', card: 'engineering-map'},
+  {path: '/landing/resume/', title: 'Резюме — Руслан Немыкин', card: 'resume'},
+  {path: '/landing/projects/livingworld/', title: 'VillAIgence — Server-Authoritative AI Society', card: 'livingworld'},
+  {path: '/landing/projects/node-zero/', title: 'NODE ZERO — Narrative Systems Case Study', card: 'node-zero'},
+  {path: '/landing/notes/', title: 'Engineering Notes — Руслан Немыкин', card: 'notes'},
 ];
 
 async function assertMetadata(page, context, baseUrl, expected) {
@@ -43,6 +43,9 @@ async function assertMetadata(page, context, baseUrl, expected) {
   if (ogWidth !== '1200' || ogHeight !== '630') throw new Error(`${expected.path}: wrong OG dimensions metadata`);
   if (twitterCard !== 'summary_large_image') throw new Error(`${expected.path}: wrong twitter:card`);
   if (!canonical?.startsWith('http')) throw new Error(`${expected.path}: canonical must be absolute`);
+  if (new URL(canonical).pathname !== expected.path) {
+    throw new Error(`${expected.path}: canonical path mismatch ${canonical}`);
+  }
 
   const imageResponse = await context.request.get(`${baseUrl}${ogLocalPath}`);
   if (!imageResponse.ok()) throw new Error(`${expected.path}: OG image HTTP ${imageResponse.status()}`);
