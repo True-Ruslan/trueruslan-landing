@@ -25,10 +25,10 @@ test('resume timeline keeps the axis and markers on one horizontal coordinate', 
   );
 });
 
-test('resume job headings do not inherit Diplodoc section spacing', () => {
+test('resume job headings do not inherit Diplodoc anchor spacing', () => {
   assert.match(
     CSS,
-    /\.tr-resume-item\s*>\s*h3\s*\{[^}]*margin:\s*0\s*!important;/s,
-    'job headings must start at the item marker instead of inheriting a large top margin',
+    /\.tr-resume-item\s*>\s*h3\s*\{[^}]*margin:\s*0\s*!important;[^}]*padding-top:\s*0\s*!important;/s,
+    'job headings must start at the item marker without section margin or anchor padding',
   );
 });
