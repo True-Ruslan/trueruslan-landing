@@ -54,10 +54,10 @@
     "name": "Telegram Blog",
     "category": "profile",
     "url": "https://t.me/TrueRuslan_Blog",
-    "distributionState": "stale",
+    "distributionState": "verified",
     "lastVerified": "2026-08-04",
-    "verificationScope": "Rendered public channel description still exposes the legacy GitHub Pages backlink; the canonical site backlink is not yet observable.",
-    "requiredAction": "Target backlink: https://trueruslan.ru/; confirm the channel description update or public preview refresh, then re-verify that the legacy URL is absent."
+    "verificationScope": "Rendered public channel feed and fresh preview representations expose the canonical https://trueruslan.ru backlink.",
+    "requiredAction": "Current canonical backlink is valid; re-verification is required after public channel edits."
   },
   {
     "id": "habr-profile",
