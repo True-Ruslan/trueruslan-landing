@@ -57,12 +57,18 @@ test('static server serves extensionless HTML and exposes stoppable lifecycle', 
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'quality-harness-'));
   fs.writeFileSync(path.join(outputDir, 'index.html'), '<h1>home</h1>');
   fs.writeFileSync(path.join(outputDir, 'page.html'), '<h1>page</h1>');
+  fs.mkdirSync(path.join(outputDir, 'directory'), {recursive: true});
+  fs.writeFileSync(path.join(outputDir, 'directory', 'index.html'), '<h1>directory</h1>');
 
   const runtime = await startStaticServer({port: 0, outputDir});
   try {
-    const response = await fetch(`${runtime.baseUrl}/page`);
-    assert.equal(response.status, 200);
-    assert.match(await response.text(), /<h1>page<\/h1>/);
+    const extensionlessResponse = await fetch(`${runtime.baseUrl}/page`);
+    assert.equal(extensionlessResponse.status, 200);
+    assert.match(await extensionlessResponse.text(), /<h1>page<\/h1>/);
+
+    const directoryResponse = await fetch(`${runtime.baseUrl}/directory/`);
+    assert.equal(directoryResponse.status, 200);
+    assert.match(await directoryResponse.text(), /<h1>directory<\/h1>/);
   } finally {
     await runtime.stop();
     fs.rmSync(outputDir, {recursive: true, force: true});
@@ -160,17 +166,18 @@ test('evidence helpers preserve stable screenshot defaults and artifact location
   assert.equal(artifactPath('x.png'), path.join(ARTIFACTS_DIR, 'x.png'));
 });
 
-test('common scenario declarations preserve current core routes and viewports', () => {
+test('common scenario declarations preserve canonical clean routes and viewports', () => {
   assert.deepEqual(VIEWPORTS.mobile, {width: 390, height: 844});
   assert.deepEqual(VIEWPORTS.desktop, {width: 1440, height: 1000});
-  assert.equal(CORE_SCENARIOS.home.path, '/index.html');
+  assert.equal(CORE_SCENARIOS.home.path, '/');
   assert.equal(CORE_SCENARIOS.home.heading, 'Руслан Немыкин');
-  assert.equal(CORE_SCENARIOS.projects.path, '/landing/projects.html');
-  assert.equal(CORE_SCENARIOS.vlezet.path, '/landing/projects/vlezet.html');
+  assert.equal(CORE_SCENARIOS.projects.path, '/landing/projects/');
+  assert.equal(CORE_SCENARIOS.vlezet.path, '/landing/projects/vlezet/');
   assert.equal(CORE_SCENARIOS.vlezet.heading, 'Vlezet');
-  assert.equal(CORE_SCENARIOS.publications.path, '/landing/publications.html');
+  assert.equal(CORE_SCENARIOS.villaigence.path, '/landing/projects/livingworld/');
+  assert.equal(CORE_SCENARIOS.publications.path, '/landing/publications/');
   assert.equal(CORE_SCENARIOS.publications.heading, 'Публикации и выступления');
-  assert.equal(CORE_SCENARIOS.resume.path, '/landing/resume.html');
+  assert.equal(CORE_SCENARIOS.resume.path, '/landing/resume/');
   assert.equal(Object.isFrozen(VIEWPORTS), true);
   assert.equal(Object.isFrozen(CORE_SCENARIOS), true);
 });
