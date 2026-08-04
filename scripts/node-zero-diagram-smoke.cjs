@@ -154,7 +154,7 @@ async function main() {
     browser = await launchChromium(chromium);
     const page = await browser.newPage({viewport: {width: 1280, height: 900}, colorScheme: 'dark'});
 
-    const pageResponse = await page.goto(`${server.baseUrl}/landing/projects/node-zero.html`, {waitUntil: 'networkidle'});
+    const pageResponse = await page.goto(`${server.baseUrl}/landing/projects/node-zero/`, {waitUntil: 'networkidle'});
     if (!pageResponse?.ok()) throw new Error(`NODE ZERO page returned HTTP ${pageResponse?.status() ?? 'none'}`);
 
     const results = [];
