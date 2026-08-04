@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - master
+  workflow_run:
+    workflows:
+      - 'Deploy static content to Pages'
+    types:
+      - completed
+    branches:
+      - master
   schedule:
     - cron: '53 7 * * *'
   workflow_dispatch:
@@ -19,7 +26,7 @@ permissions:
   deployments: read
 
 concurrency:
-  group: production-live-${{ github.event_name }}
+  group: production-live-${{ github.event_name }}-${{ github.event.workflow_run.head_sha || github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -31,6 +38,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -41,16 +49,23 @@ jobs:
         id: pages
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
-          GITHUB_SHA: ${{ github.sha }}
-          PUSH_EVENT: ${{ github.event_name == 'push' }}
+          EXPECTED_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+          EXACT_DEPLOYMENT: ${{ github.event_name == 'push' || github.event_name == 'workflow_run' }}
+          WORKFLOW_RUN_CONCLUSION: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion || '' }}
         with:
           script: |
             const {owner, repo} = context.repo;
-            const isPush = process.env.PUSH_EVENT === 'true';
-            const expected = process.env.GITHUB_SHA;
-            const attempts = isPush ? 80 : 40;
+            const exactDeployment = process.env.EXACT_DEPLOYMENT === 'true';
+            const expected = process.env.EXPECTED_SHA;
+            const workflowRunConclusion = process.env.WORKFLOW_RUN_CONCLUSION;
+            const attempts = exactDeployment ? 80 : 40;
             let deployed = null;
             let deployedStatus = null;
+
+            if (context.eventName === 'workflow_run' && workflowRunConclusion !== 'success') {
+              core.setFailed(`Source Pages workflow concluded ${workflowRunConclusion || 'unknown'} for ${expected}.`);
+              return;
+            }
 
             async function latestStatus(deployment) {
               const response = await github.request('GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
@@ -70,7 +85,7 @@ jobs:
                 per_page: 100,
               });
               const deployments = response.data;
-              const candidates = isPush
+              const candidates = exactDeployment
                 ? deployments.filter((deployment) => deployment.sha === expected)
                 : deployments;
 
@@ -83,7 +98,7 @@ jobs:
                   deployedStatus = status;
                   break;
                 }
-                if (isPush && ['error', 'failure'].includes(status?.state)) {
+                if (exactDeployment && ['error', 'failure'].includes(status?.state)) {
                   core.setFailed(`github-pages deployment ${deployment.id} for ${deployment.sha} concluded ${status.state}.`);
                   return;
                 }
@@ -91,11 +106,13 @@ jobs:
 
               const newest = deployments[0];
               const newestStatus = newest ? await latestStatus(newest) : null;
-              core.info(`Deployment attempt ${attempt}/${attempts}: newest=${newest?.sha || 'none'} state=${newestStatus?.state || 'unknown'}`);
+              core.info(`Deployment attempt ${attempt}/${attempts}: expected=${expected}, newest=${newest?.sha || 'none'}, state=${newestStatus?.state || 'unknown'}`);
 
               if (deployed && deployedStatus) break;
               if (attempt === attempts) {
-                const target = isPush ? `exact pushed SHA ${expected}` : 'latest successful github-pages deployment';
+                const target = exactDeployment
+                  ? `exact deployed SHA ${expected}`
+                  : 'latest successful github-pages deployment';
                 core.setFailed(`Timed out waiting for ${target}.`);
                 return;
               }
@@ -139,7 +156,9 @@ jobs:
             "createdAt": "${{ steps.pages.outputs.pages_created_at }}",
             "updatedAt": "${{ steps.pages.outputs.pages_updated_at }}",
             "trigger": "${{ github.event_name }}",
-            "callerSha": "${{ github.sha }}"
+            "callerSha": "${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}",
+            "sourceWorkflowRunId": "${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || '' }}",
+            "sourceWorkflowConclusion": "${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion || '' }}"
           }
           JSON
 
