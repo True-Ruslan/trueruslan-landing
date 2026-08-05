@@ -1,6 +1,6 @@
 # VillAIgence — server-authoritative AI society for Minecraft
 
-**VillAIgence** is an MCA-derived Minecraft 1.21.1 mod that has grown from AI-assisted villager dialogue into an experiment in persistent NPC society: text and voice interaction, Memory 2.0, relationships, operator-authored context and bounded server-owned actions.
+**VillAIgence** is an MCA-derived Minecraft 1.21.1 mod that grew from AI-assisted villager dialogue into an experiment in persistent NPC society: text and voice interaction, Memory 2.0, relationships, operator-authored context and bounded server-owned actions.
 
 <span data-tr-project-status="livingworld"></span>
 
@@ -17,7 +17,7 @@ The provider call is not the hardest part. The system must decide who owns a con
 
 > The server owns identity, context, memory, relationships, actions and persistent evidence. The model may propose; it never becomes the authority.
 
-Release evidence has the same boundary problem. A green source pipeline does not automatically prove that the exact remapped JAR starts, saves, restarts and survives the real provider or multiplayer scenarios expected from the product.
+Release evidence has the same boundary problem. A green source pipeline does not automatically prove that the exact remapped JAR starts, saves, restarts and survives the provider, voice, multiplayer and gameplay scenarios expected from the product.
 
 <!-- case-study:constraints -->
 ## Constraints and risks
@@ -42,26 +42,25 @@ VillAIgence separates bounded legacy dialogue history, episodic Memory 2.0 event
 
 ### Provider and release proof are layered boundaries
 
-Authenticated redirects, unsafe endpoints, malformed JSON, oversized bodies and unbounded waits must fail closed. Source tests, GameTests, package inspection, production-JAR startup, restart and cumulative acceptance remain distinct proof layers.
+Authenticated redirects, unsafe endpoints, malformed JSON, oversized bodies and unbounded waits must fail closed. Source tests, GameTests, package inspection, exact release identity, production-JAR startup/restart, deterministic provider clients and cumulative acceptance remain distinct proof layers.
 
 <!-- case-study:current-state -->
 ## Current lifecycle and accepted boundary
 
-The accepted automated boundary belongs to the published candidate `0.1.23+1.21.1`.
+The current published candidate is **`0.1.25+1.21.1`**. Its evidence is intentionally split into independent layers:
 
-It currently proves:
+- PR #103: a validated 28-scenario risk catalogue and seven real-server Fabric GameTests;
+- PR #104: exact remapped production-JAR installation outside Loom/dev classpaths, two JVM runs, controlled shutdown, restart and stable hashes for six canonical stores;
+- PR #105: inventory is captured before tombstone ownership takes over, while a focused installed resurrection canary remains a separate manual gate;
+- PR #107: exact production-gated release `0.1.25+1.21.1`, published only after identity, package, startup, shutdown, restart and byte-identical JAR verification;
+- PR #108: production Chat, STT and TTS HTTP clients exercised against deterministic literal-loopback servers without public network access or external providers;
+- PR #109: configuration-cache and release-request gate hardening with no runtime behaviour change.
 
-- a validated 28-scenario risk catalogue;
-- seven real-server Fabric GameTests;
-- exact remapped production-JAR installation outside Loom/dev classpaths;
-- two JVM runs reaching the Minecraft ready marker;
-- controlled shutdown, complete world save and exit code 0;
-- stable relative paths and SHA-256 values for all six canonical stores across restart;
-- fail-closed exclusion of test fixtures from the distributable JAR.
+This proves exact release publication, production-JAR startup/restart and a bounded deterministic provider-client contract. It does **not** prove cumulative real-provider, physical Voice Chat, multiplayer, focused gameplay or product-owner acceptance.
 
-This is production-JAR startup and restart evidence. It does not prove cumulative real-provider, multiplayer and gameplay acceptance. The public lifecycle remains **release candidate — ACCEPTANCE IN PROGRESS**.
+The public lifecycle therefore remains **release candidate — ACCEPTANCE IN PROGRESS**.
 
-Active development is separate. Draft PR #110 at observed head `e0b763aa4a5caea8897aadc6ee2cab6c1b407c89` defines a RED contract for one shared STT → Chat retries → TTS deadline and exactly-once dialogue and relationship commits. Security and Java PR checks pass, while the main CI intentionally fails because the production APIs do not exist yet. PR #110 is not an implementation or acceptance claim.
+Active development is separate. Draft PR #110 at observed head `b3172080d89052a5b361d203dbdac152752d7d0d` defines a RED contract for one shared STT → Chat retries → TTS deadline, exactly-once dialogue and relationship commits, and preservation of a successful Chat commit when TTS reaches the deadline. It is not an accepted capability and proves no production implementation or installed acceptance; cumulative acceptance remains pending.
 
 <!-- case-study:decisions -->
 ## Architecture and key decisions
@@ -82,17 +81,29 @@ The client editor never owns files or arbitrary identities. Permission checks, t
 
 STT, Chat and TTS have separate failure boundaries. A successful Chat result can remain useful when TTS fails, while retries must never duplicate dialogue, actions or relationship changes.
 
-### Risk-based and exact-artifact gates answer different questions
+PR #108 verified the actual production HTTP clients at a deterministic boundary: Chat retries share one monotonic request budget, STT sends the expected WAV multipart request and TTS returns sample-for-sample PCM. That is protocol/client evidence, not a complete live voice turn.
 
-PR #103 introduced the risk catalogue and GameTests. PR #104 installed the exact remapped candidate into an isolated production server and verified startup, controlled shutdown, restart and persistent-store hashes. Neither gate is represented as cumulative product-owner acceptance.
+### Small owned-source fixes are safer than broad upstream synchronization
+
+Water navigation, tombstone integrity, inventory capture, identity, beds, pathfinding and other MCA changes are carried as bounded packages. The installed startup failure proved that source-compatible injection is not enough production evidence.
+
+### Release identity is product state
+
+A filename version is insufficient. Fabric metadata, manifest identity, remapped package structure and checksum must agree. PR #107 additionally binds the immutable release to the exact accepted production JAR rather than publishing from a merely green source build.
+
+### Each acceptance gate answers one question
+
+GameTests are development integration proof. The production-JAR gate is installed automated proof. Literal-loopback provider checks are production-client protocol proof. None of them is represented as cumulative operator acceptance.
 
 ## Real failures that changed the system
 
-The installed `0.1.20+1.21.1` candidate passed the main dialogue, voice, lore, persistence, restart and most gameplay scenarios, but still ended as a partial PASS: an NPC drowned after becoming trapped in water, a filled grave disappeared under Silk Touch, runtime identity reported a snapshot and one Chat request took about 272 seconds.
+The installed `0.1.20+1.21.1` candidate passed the main dialogue, voice, lore, persistence, restart and most gameplay scenarios, but ended as a **partial PASS**: an NPC drowned after becoming trapped in water, a filled grave disappeared under Silk Touch, runtime identity reported a snapshot and one Chat request took about 272 seconds.
 
 The following `0.1.21+1.21.1` candidate failed during startup because a tombstone Mixin could not resolve its production target. Safe rollback restored `0.1.20`, preserved six persistent hashes and recovered the server, voice and monitoring surfaces.
 
-These failures narrowed water navigation, moved grave preservation into owned source, made embedded release identity fail closed and established startup/restart as automatic gates. They also exposed why one user turn needs a shared monotonic deadline rather than independent stage budgets.
+PR #105 addressed a later inventory-ownership defect by capturing the NPC before the destructive death-drop path. The automated correction still does not replace a focused installed grave resurrection canary with known inventory stacks.
+
+These failures narrowed water navigation, moved grave preservation into owned source, made release identity fail closed and established startup/restart as automatic gates. They also exposed why one user turn needs a shared monotonic deadline rather than independent stage budgets.
 
 <!-- case-study:alternatives -->
 ## Alternatives considered and rejected
@@ -115,7 +126,11 @@ Rejected in favour of small owned-source packages. Installed startup failure sho
 
 ### Source CI as release acceptance
 
-Rejected. Package identity, real-server startup, save, restart and persistent read-back require separate gates.
+Rejected. Package identity, exact release publication, real-server startup, save, restart and persistent read-back require separate gates.
+
+### Literal-loopback acceptance as real-provider acceptance
+
+Rejected. Loopback proves production client protocol and bounded failure semantics, not external-provider quality, physical microphone capture, Voice Chat playback or end-to-end user experience.
 
 ### Fresh timeout budgets for every provider stage
 
@@ -126,16 +141,16 @@ Rejected. Sequential STT, Chat retries and TTS must share one user-visible budge
 
 The complete Project Evidence snapshot and timeline remain on the [Russian canonical VillAIgence page](../../landing/projects/livingworld.md). They are generated from shared registries rather than copied into a second English evidence model.
 
-That snapshot separates historical partial acceptance, startup failure and rollback, corrective work, GameTests, production-JAR startup/restart and Draft PR #110. Automated evidence is never widened into cumulative acceptance.
+That snapshot separates historical partial acceptance, startup failure and rollback, corrective work, GameTests, production-JAR startup/restart, the published `0.1.25+1.21.1` release, deterministic Chat/STT/TTS client evidence and Draft PR #110. Automated evidence is never widened into cumulative acceptance.
 
 <!-- case-study:limitations -->
 ## Known limitations
 
-- cumulative real-provider Text/STT/Chat/TTS and Voice Chat acceptance is pending;
+- cumulative real-provider Text/STT/Chat/TTS and physical Voice Chat acceptance is pending;
+- literal-loopback acceptance does not verify an external provider, microphone capture or real playback;
 - the shared orchestration deadline currently exists only as the RED contract in Draft PR #110;
 - a logical two-client Operator Lore conflict test is still required;
-- focused live water-navigation and filled-grave canaries remain mandatory;
-- user-visible Chat latency needs a global deadline contract;
+- focused live water-navigation, filled-grave and inventory resurrection canaries remain mandatory;
 - final product-owner acceptance and promotion are not complete;
 - Fabric remains the primary package while NeoForge is a compatibility build with separate boundaries.
 
@@ -144,7 +159,7 @@ That snapshot separates historical partial acceptance, startup failure and rollb
 
 First, implement M11 Phase C and make the shared STT → Chat retries → TTS deadline contract green without duplicating dialogue or relationship commits.
 
-Then run one exact published candidate through cumulative real-provider, multiplayer, focused gameplay, restart and product-owner acceptance. Until that sequence passes, the lifecycle remains `release-candidate` / `ACCEPTANCE IN PROGRESS`.
+Then run one exact published candidate through cumulative real-provider, physical Voice Chat, multiplayer, focused gameplay, restart and product-owner acceptance. Until that sequence passes, the lifecycle remains `release-candidate` / `ACCEPTANCE IN PROGRESS`.
 
 <!-- case-study:related -->
 ## Related material
@@ -169,4 +184,4 @@ mutable server state
 
 I would separate episodic and semantic memory from the first version and define Operator Lore as background context immediately.
 
-I would also establish the full release gate before the first public candidate. Source tests, integration tests, package inspection, startup, restart, live canaries and manual acceptance answer different questions. Keeping those questions separate makes a failed gate useful evidence instead of something hidden behind an overall green badge.
+I would also establish the full release gate before the first public candidate. Source tests, integration tests, package inspection, exact release publication, startup, restart, deterministic provider clients, live canaries and manual acceptance answer different questions. Keeping those questions separate makes a failed gate useful evidence instead of something hidden behind an overall green badge.
