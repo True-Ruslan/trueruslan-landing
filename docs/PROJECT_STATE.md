@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4C Hybrid CV + AI Recognition Note.
+> Последнее смысловое обновление: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4D GameTests Acceptance Note.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -33,58 +33,59 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 
 Последний принятый user-facing milestone:
 
-**P3.4C — Hybrid CV + AI recognition boundaries**.
+**P3.4D — GameTests versus installed gameplay acceptance**.
 
 Production route:
 
 ```text
-/landing/notes/hybrid-cv-ai-recognition-boundaries/
+/landing/notes/gametests-vs-installed-gameplay-acceptance/
 ```
 
-Note фиксирует Vlezet authority model:
+Note фиксирует VillAIgence release-evidence model:
 
-- `VlezetDocument` — единственный persistent geometry authority;
-- local CV создаёт reviewable Draft;
-- raw AI proposal остаётся недоверенным evidence;
-- `requestId`, `referenceRevision` и `localDraftFingerprint` связывают batch с точным snapshot;
-- deterministic validation и current-state revalidation выполняются до mutation;
-- только explicit Apply создаёт одну atomic operation с Undo/Redo;
-- malformed, stale, overload и provider failure fail closed и оставляют local state без mutation;
-- benchmark, browser, CI и product acceptance не смешиваются.
+- source/unit contracts проверяют policy и deterministic wiring;
+- remapped package, embedded `fabric.mod.json`, manifest и SHA-256 проверяют distributable identity;
+- GameTests проверяют mechanics внутри controlled server runtime;
+- exact production-JAR проверяется отдельным two-JVM startup/restart harness;
+- literal-loopback provider-client proof не равен real-provider acceptance;
+- `VAI-CONCUR-003` — logical-client automation, `VAI-CONCUR-004` — real installed two-client canary;
+- physical microphone, Simple Voice Chat и UDP/Opus остаются installed-client evidence;
+- inventory/grave/resurrection canary и cumulative product-owner acceptance остаются отдельными gates;
+- rollback и recovery являются частью acceptance.
 
-### Feature PR #130
+### Feature PR #132
 
 ```text
-feature PR:                     #130 — MERGED
-TDD RED head:                   842959fb765702a634ec0592f218f1275d3ca93e
-RED Build:                      #952 / 31028991923 — expected FAILURE
-RED existing/new contracts:     389 PASS / 4 expected FAIL
-exact accepted head:            731dbf0a6d217a40c17a8c8f1494f342fcb35e7e
-accepted squash:                8bc5b2134cd10cd8cf27f46ec0bc2fb4ee6c67d7
-final Build:                    #961 / 31029662846 — SUCCESS
-unit tests:                     393 PASS / 0 FAIL
-quality artifact:               8940244292
-quality digest:                 sha256:1f3a013c543171230e0a69975e69beaf18b252ca2337a63938f692f6a7c162d9
+feature PR:                     #132 — MERGED
+TDD RED head:                   237a3225954e1b4b633422b690b1e3fb02983f89
+RED Build:                      #969 / 31042289632 — expected FAILURE
+RED existing/new contracts:     394 PASS / 4 expected FAIL
+exact accepted head:            b4f49b29dc9c16ff4d3c2412d5b4d2ea18282239
+accepted squash:                02894431e042b89943e4bdb3cb43f336fa9ad75d
+final Build:                    #978 / 31042919449 — SUCCESS
+unit tests:                     398 PASS / 0 FAIL
+quality artifact:               8945409733
+quality digest:                 sha256:cbf160fc9877e31acc89729ae077ee3f2cad815425be4200253a06659f9339c2
 review threads:                 0 open
 ```
 
 ### Exact production acceptance
 
 ```text
-Pages workflow:                 #160 / 31030249235 — SUCCESS
-accepted deployed SHA:          8bc5b2134cd10cd8cf27f46ec0bc2fb4ee6c67d7
-Pages deployment ID:            5766332284
-Pages created:                  2026-08-05T17:29:25Z
-Pages updated:                  2026-08-05T17:30:11Z
-Production Live Smoke:          #132 / 31030324160 — SUCCESS
+Pages workflow:                 #162 / 31043536231 — SUCCESS
+accepted deployed SHA:          02894431e042b89943e4bdb3cb43f336fa9ad75d
+Pages deployment ID:            5768748824
+Pages created:                  2026-08-05T20:19:37Z
+Pages updated:                  2026-08-05T20:20:15Z
+Production Live Smoke:          #139 / 31043534975 — SUCCESS
 baseline/platform/flagship:     PASS
-P3.4A/P3.4B/P3.4C Note smokes:  PASS
+P3.4A/P3.4B/P3.4C/P3.4D smokes: PASS
 favicon smoke:                  PASS
-production artifact:            8940409941
-production digest:              sha256:9cb66c8e3b2b432c9bbdd160542f3b5566e1e3e21f3be07711f16d5f95fae700
+production artifact:            8945575207
+production digest:              sha256:0f1d56a3735f366512e627f7669ae017ed932bf7a2a4ee19ad0fc4ed0c5b347f
 ```
 
-P3.4C accepted только на этом exact deployed SHA.
+P3.4D accepted только на этом exact deployed SHA.
 
 ---
 
@@ -96,40 +97,41 @@ Accepted baseline:
 
 - M7.8B;
 - PR #41 merge `08800dd66fa298ff31d1a7e6b33e91964cdb8d16`;
-- 27 local wall candidates, 19 AI confirmations, 8 review candidates;
-- openings deferred;
-- source geometry/topology F1 `0.837989`;
+- local CV Draft и AI proposal не получают geometry authority;
 - no mutation before explicit Apply.
 
-Current pending evidence:
+Still pending:
 
-- M7.8C PR #42 — Draft, требует representative product-owner retest;
-- PR #44 — Draft real-fixture benchmark foundation; wall F1 `0.827338`, opening F1 `0.627451`, ниже merge threshold `0.85`;
-- PR #45 — Draft hybrid proposal recovery; architecture and partial implementation не равны product acceptance.
+- M7.8C PR #42 — Draft, нужен representative product-owner retest;
+- PR #44 — Draft real-fixture benchmark foundation;
+- PR #45 — Draft hybrid proposal recovery.
 
-Новая Note не утверждает, что recognition завершён, и не повышает статус PR #42, PR #44 или PR #45.
+P3.4C — Hybrid CV + AI recognition boundaries сохраняет `VlezetDocument`, `localDraftFingerprint`, current-state revalidation и explicit Apply. M7.8B accepted остаётся отдельным от PR #42, PR #44 и PR #45.
 
 ### VillAIgence
 
 ```text
-current published candidate:   0.1.25+1.21.1
-M11 Phase A:                   PR #103 — 28 scenarios + 7 GameTests
-M11 Phase B:                   PR #104 — exact production-JAR startup/restart
-provider boundary:             PR #108 — deterministic provider-client proof
-M11 Phase C:                   PR #110 — Draft
-lifecycle:                     release-candidate
-public label:                  ACCEPTANCE IN PROGRESS
+current published candidate:    0.1.25+1.21.1
+release commit:                 588cc676d356271c4cf74eb21131f6d071476e48
+current accepted branch head:   67e0644b355708c06747e3ec4659a337bc4189b3
+M11 Phase A:                    PR #103 — GameTests and package gates
+M11 Phase B:                    PR #104 — exact production-JAR startup/restart
+inventory ownership:            PR #105 — focused GameTests
+provider boundary:              PR #108 — deterministic provider-client proof
+voice deadline/exactly-once:    PR #110 — bounded automation
+logical-client concurrency:     PR #112 — VAI-CONCUR-003
+M11 Phase E automation:         PR #114 — Draft
+lifecycle:                      release-candidate
+public label:                   ACCEPTANCE IN PROGRESS
 ```
 
-GameTests, package identity, exact-JAR startup/restart, real-provider checks и installed gameplay acceptance остаются разными evidence layers.
+PR #114 remains Draft. Physical Voice Chat, real-provider checks, `VAI-CONCUR-004`, inventory/grave/resurrection canary и cumulative installed product-owner acceptance не выводятся из зелёных GameTests.
 
 ---
 
 ## 4. Historical acceptance ledger
 
 ### Repository-native clean URLs — DONE
-
-PR #114 и PR #115 перевели public identity на repository-native directory URLs.
 
 ```text
 PR #114 squash:                cf07c39378e7c531583e80eaef5edc7e7d1f2bad
@@ -138,7 +140,7 @@ Production Live Smoke #52:      SUCCESS
 representative route:           /landing/resume/
 ```
 
-Canonical, Sitemap, feed и search используют clean routes. legacy `.html` остаётся compatibility entrypoint.
+Repository-native directory URLs authoritative; legacy `.html` остаётся compatibility entrypoint и сохраняет query and fragment.
 
 ### P3.1 — Homepage evidence paths — DONE
 
@@ -182,7 +184,7 @@ production artifact:            8930571510
 production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13
 ```
 
-Routes: `/landing/projects/livingworld/`, `/landing/projects/vlezet/`, `/en/projects/livingworld/`.
+Routes: `/landing/projects/livingworld/`, `/landing/projects/vlezet/`, `/en/projects/livingworld/`. PR #110 remains part of the VillAIgence evidence ledger; M7.8B and M7.8C remain distinct.
 
 ### P3.4 — Grounded Engineering Notes — IN PROGRESS
 
@@ -228,27 +230,38 @@ production artifact:            8936914548
 production digest:              sha256:cc250f9ea49d4214c5b815ebb9ee067f540e54124e0edbbef46391ccc2b4fa51
 ```
 
-Repository-native directory URLs are authoritative. Legacy compatibility preserves query and fragment while search-engine replacement remains external observation.
-
 ### P3.4C — Hybrid CV + AI recognition boundaries — DONE
 
-Feature and exact production evidence are recorded in section 2. Accepted M7.8B remains separate from Draft M7.8C and PR #42/#44/#45.
+Route: `/landing/notes/hybrid-cv-ai-recognition-boundaries/`.
+
+```text
+PR #130 RED head:              842959fb765702a634ec0592f218f1275d3ca93e
+PR #130 exact head:            731dbf0a6d217a40c17a8c8f1494f342fcb35e7e
+PR #130 squash:                8bc5b2134cd10cd8cf27f46ec0bc2fb4ee6c67d7
+Build:                          #961 / 31029662846 — SUCCESS
+quality artifact:               8940244292
+quality digest:                 sha256:1f3a013c543171230e0a69975e69beaf18b252ca2337a63938f692f6a7c162d9
+Pages deployment ID:            5766332284
+Production Live Smoke:          #132 / 31030324160 — SUCCESS
+production artifact:            8940409941
+production digest:              sha256:9cb66c8e3b2b432c9bbdd160542f3b5566e1e3e21f3be07711f16d5f95fae700
+```
+
+Accepted M7.8B remains separate from Draft M7.8C and PR #42/#44/#45; product-owner retest remains required.
+
+### P3.4D — GameTests versus installed gameplay acceptance — DONE
+
+Feature and exact production evidence are recorded in section 2. Green GameTests are not installed gameplay acceptance.
 
 ---
 
 ## 5. Operational boundaries
 
-### Search engines
-
-`issue #111` remains open for authenticated Yandex Webmaster actions and delayed crawler observation. Repository readiness and successful deployment do not prove Google/Yandex replacement.
-
-### Content Freshness
-
-`issue #78` remains open with an older generated report until a default-branch owner run refreshes it. Do not reinterpret stale issue text as canonical product truth.
-
-### Dependencies
-
-`issue #82` remains the Diplodoc/markdown-it blocker. Review on or after **2026-08-17**. Do not use `npm audit fix --force`, local shims or an unreviewed fork.
+- `issue #111` — authenticated Yandex/search-engine observation;
+- `issue #78` — default-branch Content Freshness owner refresh;
+- `issue #82` — Diplodoc/markdown-it blocker; review on or after **2026-08-17**;
+- no `npm audit fix --force`, local shim or unreviewed fork;
+- no legacy cleanup before observed crawler replacement.
 
 ---
 
@@ -258,6 +271,6 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**P3.4D — GameTests versus installed gameplay acceptance**.
+**P3.4E — Passive PDF validation versus semantic completeness**.
 
-The next bounded Engineering Note should explain what source tests, package identity, GameTests, exact production-JAR startup/restart, physical Voice Chat, real-provider checks, multiplayer and cumulative installed gameplay acceptance each prove — and what they do not prove.
+Следующая bounded Engineering Note должна объяснить, что file existence, MIME, PDF header, page count, passive/no-JavaScript embedding и downloadable bytes доказывают доставку документа, но не доказывают полноту текста, актуальность профессионального профиля, корректную структуру, доступность чтения и semantic equivalence web-CV ↔ PDF.

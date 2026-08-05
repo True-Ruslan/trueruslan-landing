@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4C Hybrid CV + AI Recognition Note.
+> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4D GameTests Acceptance Note.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -50,7 +50,8 @@
 - Current external-project evidence reconciliation — PR #124.
 - P3.4A Deployment Verification Note — PR #125/#126.
 - P3.4B Clean URLs Note — PR #128/#129.
-- P3.4C Hybrid CV + AI Recognition Note — PR #130.
+- P3.4C Hybrid CV + AI Recognition Note — PR #130/#131.
+- P3.4D GameTests Acceptance Note — PR #132.
 
 ---
 
@@ -81,9 +82,9 @@ Accepted routes:
 /en/projects/livingworld/
 ```
 
-Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`; M7.8B accepted. M7.8C PR #42 and stacked PR #44/#45 remain Draft/pending product-owner gates.
+Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`; M7.8B accepted, while M7.8C PR #42 and stacked PR #44/#45 remain Draft/pending product-owner gates.
 
-VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`; PR #103/#104/#108 provide bounded automation, PR #110 remains Draft, cumulative installed acceptance remains separate.
+VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`. PR #103/#104/#105/#108/#110/#112 provide bounded automation. PR #114 remains Draft and cumulative installed acceptance remains separate.
 
 ## P3.4 — Grounded Engineering Notes — IN PROGRESS
 
@@ -115,17 +116,7 @@ Canonical route:
 /landing/notes/hybrid-cv-ai-recognition-boundaries/
 ```
 
-Accepted outcome:
-
-- `VlezetDocument` remains authoritative;
-- local CV and raw provider output remain proposals;
-- `requestId`, `referenceRevision` and `localDraftFingerprint` bind batch identity;
-- deterministic validation and current-state revalidation precede explicit Apply;
-- Apply is atomic and compatible with Undo/Redo;
-- malformed, stale, overload and provider failure fail closed;
-- M7.8B is accepted evidence;
-- M7.8C PR #42, PR #44 and PR #45 remain Draft pending product-owner retest;
-- benchmark, browser, CI and product acceptance remain distinct.
+Accepted outcome: `VlezetDocument` remains authoritative; local CV and provider output remain proposals; `localDraftFingerprint`, current-state revalidation and explicit Apply preserve deterministic authority. M7.8B remains separate from Draft M7.8C PR #42 and PR #44/#45.
 
 Exact production evidence:
 
@@ -135,33 +126,69 @@ Pages deployment ID:            5766332284
 Production Live Smoke:          #132 / 31030324160 — SUCCESS
 ```
 
-### P3.4D — GameTests versus installed gameplay acceptance — NEXT
+### P3.4D — GameTests versus installed gameplay acceptance — DONE
 
-Publish a grounded VillAIgence Note explaining the proof boundaries between:
+Canonical route:
 
-1. source/unit contracts;
-2. remapped package and embedded identity;
-3. GameTests in controlled server runtime;
-4. exact production-JAR startup/restart;
-5. provider-client protocol evidence;
-6. physical Voice Chat and real-provider checks;
-7. multiplayer and focused gameplay verification;
-8. cumulative installed product-owner acceptance;
-9. rollback and recovery evidence.
+```text
+/landing/notes/gametests-vs-installed-gameplay-acceptance/
+```
+
+Accepted outcome:
+
+- source/unit contracts, remapped package, GameTests and exact production-JAR are separate evidence layers;
+- literal-loopback provider-client proof does not imply real-provider acceptance;
+- `VAI-CONCUR-003` logical-client automation remains separate from `VAI-CONCUR-004` real installed two-client canary;
+- PR #110 and PR #112 are bounded automation evidence;
+- PR #114 remains Draft;
+- physical microphone, Simple Voice Chat UDP/Opus, inventory/grave/resurrection canary and cumulative product-owner acceptance remain installed gates;
+- rollback and recovery remain part of acceptance;
+- green GameTests do not prove installed gameplay correctness.
+
+Exact production evidence:
+
+```text
+PR #132 RED head:              237a3225954e1b4b633422b690b1e3fb02983f89
+PR #132 exact head:            b4f49b29dc9c16ff4d3c2412d5b4d2ea18282239
+PR #132 squash:                02894431e042b89943e4bdb3cb43f336fa9ad75d
+Build:                          #978 / 31042919449 — SUCCESS
+unit tests:                     398 PASS / 0 FAIL
+quality artifact:               8945409733
+quality digest:                 sha256:cbf160fc9877e31acc89729ae077ee3f2cad815425be4200253a06659f9339c2
+Pages:                          #162 / 31043536231 — SUCCESS
+Pages deployment ID:            5768748824
+Production Live Smoke:          #139 / 31043534975 — SUCCESS
+production artifact:            8945575207
+production digest:              sha256:0f1d56a3735f366512e627f7669ae017ed932bf7a2a4ee19ad0fc4ed0c5b347f
+```
+
+### P3.4E — Passive PDF validation versus semantic completeness — NEXT
+
+Publish a grounded Note explaining the difference between:
+
+1. file existence and stable route;
+2. PDF signature/header and parseability;
+3. MIME/content disposition and downloadable bytes;
+4. passive/no-JavaScript embedding;
+5. page count and structural checks;
+6. text extraction and required-section coverage;
+7. web-CV ↔ PDF semantic equivalence;
+8. current professional-profile truth;
+9. accessibility and human-readable layout;
+10. exact deployed-document verification.
 
 Acceptance criteria:
 
-- facts derived from accepted VillAIgence release/automation evidence;
-- PR #103/#104/#108 accepted scopes separated from PR #110 Draft and manual acceptance;
+- facts derived from the existing resume/PDF build, integrity, browser and content contracts;
+- explicit distinction between artifact validity and semantic completeness;
+- no claim that a parseable PDF is current, complete or accessible;
 - verified fact, engineering inference and limitation explicit;
 - deterministic Notes Registry, clean route, Atom feed and generated search participation;
 - semantic/no-JS content;
-- exact-head and deployment-only production verification;
-- no claim that a green GameTest suite proves installed gameplay correctness.
+- exact-head and deployment-only production verification.
 
-### Later P3.4 candidates
+### Later P3.4 candidate
 
-- Passive PDF validation versus semantics.
 - Evidence-driven project state.
 
 ## P3.5 — Selective English expansion
@@ -170,36 +197,16 @@ Translate only high-value surfaces: homepage, Resume, three flagships, `/now`, s
 
 ## P3.6 — Measurement checkpoint
 
-After sufficient aggregate traffic:
-
-- compare Cloudflare aggregate traffic;
-- inspect Google/Yandex indexing of clean routes;
-- verify old `.html` identities are declining;
-- identify high-value entry pages and search themes;
-- make no engagement claim without sufficient data.
+After sufficient aggregate traffic, compare aggregate traffic and clean-route indexing without making engagement claims from insufficient data.
 
 ---
 
 # Operational checkpoints
 
-## Search-engine operations
-
-Issue #111 remains only for authenticated Yandex Webmaster actions and crawler observation. Do not add repository code solely to clear stale cached diagnostics.
-
-## Content Freshness owner state
-
-Issue #78 requires a default-branch owner refresh. The older generated issue body is not current canonical truth.
-
-## Dependency blocker
-
-Review issue #82 on or after **2026-08-17**. Do not use `npm audit fix --force`, local shims or an unreviewed fork.
-
----
-
-# Not priority
-
-Without a reproduced product need, do not plan backend/database for static content, a second full-text search, behavioural analytics, automatic public/profile/search-engine mutation, migration from GitHub Pages, or removal of legacy `.html` compatibility before crawler replacement is observed.
+- issue #111 — authenticated Yandex Webmaster actions and crawler observation;
+- issue #78 — default-branch Content Freshness owner refresh;
+- issue #82 — review on or after **2026-08-17**; no `npm audit fix --force`, local shim or unreviewed fork.
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4C feature PR #130 and exact production acceptance for SHA `8bc5b2134cd10cd8cf27f46ec0bc2fb4ee6c67d7`. Preserve issue #111, issue #82 and issue #78 boundaries. Continue with **P3.4D — GameTests versus installed gameplay acceptance**.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4D feature PR #132 and exact production acceptance for SHA `02894431e042b89943e4bdb3cb43f336fa9ad75d`. Preserve issue #111, issue #82 and issue #78 boundaries. Continue with **P3.4E — Passive PDF validation versus semantic completeness**.
