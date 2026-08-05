@@ -29,8 +29,16 @@
   },
   {
     "date": "2026-08",
+    "title": "0.1.25 exact release and deterministic provider acceptance",
+    "description": "PR #105 corrected tombstone inventory ownership, PR #107 published the exact production-gated 0.1.25 candidate, PR #108 exercised production Chat, STT and TTS clients against deterministic literal-loopback servers, and PR #109 hardened configuration-cache and release-request gates. These automated scopes do not replace physical Voice Chat, real-provider, focused gameplay or cumulative product-owner acceptance.",
+    "state": "past",
+    "version": "0.1.25+1.21.1",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/108"
+  },
+  {
+    "date": "2026-08",
     "title": "M11 Phase C shared orchestration deadline — Draft/RED",
-    "description": "PR #110 defines the failing contract for one monotonic STT → Chat retries → TTS deadline and exactly-once dialogue and relationship commits. The production APIs are intentionally not implemented yet, so this is active Draft evidence rather than an accepted capability.",
+    "description": "PR #110 at observed head b3172080d89052a5b361d203dbdac152752d7d0d defines the failing contract for one monotonic STT → Chat retries → TTS deadline and exactly-once dialogue and relationship commits. The production orchestration contract is not accepted yet, so this remains active Draft evidence rather than a released capability.",
     "state": "current",
     "evidence": "https://github.com/True-Ruslan/villAIgence/pull/110"
   },
