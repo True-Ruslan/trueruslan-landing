@@ -13,7 +13,7 @@ test('deployment flagship smoke derives current release evidence from the canoni
   assert.match(source, /Current published candidate/);
   assert.match(
     source,
-    /evidenceVersion\(\s*['"]livingworld['"]\s*,\s*['"]Current published candidate['"]\s*\)/,
+    /evidenceVersion\(\s*['"]livingworld['"]\s*,\s*['"]Current published candidate['"]\s*,?\s*\)/,
   );
   assert.doesNotMatch(source, /0\.1\.23\+1\.21\.1/);
 });
