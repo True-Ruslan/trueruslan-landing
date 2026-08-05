@@ -7,6 +7,8 @@ const {
   WWW_NOTE_URL,
   LEGACY_NOTE_URL,
   SEARCH_URL,
+  PORTFOLIO_PLATFORM_URL,
+  PORTFOLIO_PLATFORM_EN_URL,
 } = require('./production-live-routes.cjs');
 
 const {chromium} = requireQualityTool('playwright', 'Production live smoke');
@@ -38,6 +40,45 @@ function normalizeUrl(value) {
   return url.href;
 }
 
+async function verifyPortfolioPlatform(page, url, {locale, expectedAlternate}) {
+  const response = await page.goto(url, {waitUntil: 'networkidle', timeout: 45000});
+  assert(response?.ok(), `${locale} portfolio platform returned HTTP ${response?.status() ?? 'none'}`);
+  const heading = (await page.locator('h1').first().innerText()).trim();
+  assert(heading.includes('TrueRuslan Landing'), `unexpected ${locale} portfolio heading: ${heading}`);
+  const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+  assert(normalizeUrl(canonical) === normalizeUrl(url), `wrong ${locale} portfolio canonical: ${canonical}`);
+  const alternate = await page.locator(`link[rel="alternate"][hreflang="${locale === 'ru' ? 'en' : 'ru'}"]`).getAttribute('href');
+  assert(normalizeUrl(alternate) === normalizeUrl(expectedAlternate), `wrong ${locale} portfolio alternate: ${alternate}`);
+  const bodyText = await page.locator('main').innerText();
+  for (const marker of ['GitHub Pages', 'Production Live Smoke', 'Cloudflare', 'legacy .html']) {
+    assert(bodyText.includes(marker), `${locale} portfolio case study misses ${marker}`);
+  }
+  if (locale === 'ru') {
+    const evidence = page.locator('[data-project-evidence="portfolio-platform"]');
+    await evidence.waitFor({state: 'visible', timeout: 10000});
+    const evidenceText = await evidence.innerText();
+    for (const marker of ['Build #836', 'Pages deployment #147', 'Production Live Smoke #58']) {
+      assert(evidenceText.includes(marker), `deployed portfolio evidence misses ${marker}`);
+    }
+    const timeline = page.locator('.tr-project-timeline');
+    await timeline.waitFor({state: 'visible', timeout: 10000});
+    assert(await timeline.locator('.tr-project-timeline__item--current').count() === 1, 'portfolio timeline must have exactly one current milestone');
+  }
+  const html = await page.content();
+  assert(!html.includes(LEGACY_ORIGIN), `${locale} portfolio page leaks legacy Pages origin`);
+  await page.screenshot({path: path.join(ARTIFACTS_DIR, `portfolio-platform-${locale}.png`), fullPage: true});
+  writeText(`portfolio-platform-${locale}.html`, html);
+  return {
+    url: page.url(),
+    status: response.status(),
+    title: await page.title(),
+    heading,
+    canonical,
+    alternate,
+    legacyOriginAbsent: true,
+  };
+}
+
 async function main() {
   fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
   let browser;
@@ -48,6 +89,7 @@ async function main() {
     www: {},
     legacy: {},
     note: {},
+    portfolioPlatform: {ru: {}, en: {}},
     feed: {},
     search: {},
     diagnostics: {
@@ -93,12 +135,15 @@ async function main() {
     assert(!homeHtml.includes(LEGACY_ORIGIN), 'homepage leaks the legacy Pages origin');
     const beaconCount = await page.locator(`script[src*="${CLOUDFLARE_BEACON}"]`).count();
     assert(beaconCount === 1, `expected exactly one Cloudflare beacon, got ${beaconCount}`);
+    const platformHref = await page.locator('[data-home-flagship="portfolio-platform"]').getAttribute('href');
+    assert(platformHref && new URL(platformHref, page.url()).pathname === new URL(PORTFOLIO_PLATFORM_URL).pathname, `homepage platform flagship points to the wrong route: ${platformHref || 'missing'}`);
     summary.apex = {
       requested: APEX,
       finalUrl: page.url(),
       status: homeResponse.status(),
       title: homeTitle,
       cloudflareBeaconCount: beaconCount,
+      platformFlagshipHref: new URL(platformHref, page.url()).href,
       legacyOriginAbsent: true,
     };
 
@@ -161,6 +206,15 @@ async function main() {
       legacyOriginAbsent: true,
     };
 
+    summary.portfolioPlatform.ru = await verifyPortfolioPlatform(page, PORTFOLIO_PLATFORM_URL, {
+      locale: 'ru',
+      expectedAlternate: PORTFOLIO_PLATFORM_EN_URL,
+    });
+    summary.portfolioPlatform.en = await verifyPortfolioPlatform(page, PORTFOLIO_PLATFORM_EN_URL, {
+      locale: 'en',
+      expectedAlternate: PORTFOLIO_PLATFORM_URL,
+    });
+
     const feedResponse = await context.request.get(FEED_URL, {timeout: 30000});
     assert(feedResponse.ok(), `Atom feed returned HTTP ${feedResponse.status()}`);
     const feedText = await feedResponse.text();
@@ -191,6 +245,12 @@ async function main() {
     const resultHref = await result.getAttribute('href');
     assert(resultText.includes('Restart'), `unexpected search result text: ${resultText}`);
     assert(new URL(resultHref, page.url()).pathname === new URL(NOTE_URL).pathname, `search returned wrong route: ${resultHref}`);
+    await searchInput.fill('TrueRuslan Landing static-first');
+    await searchButton.click();
+    const platformResult = page.locator('a[href*="landing/projects/portfolio-platform"]').first();
+    await platformResult.waitFor({state: 'visible', timeout: 15000});
+    const platformResultHref = await platformResult.getAttribute('href');
+    assert(new URL(platformResultHref, page.url()).pathname === new URL(PORTFOLIO_PLATFORM_URL).pathname, `search returned wrong portfolio platform route: ${platformResultHref}`);
     await page.screenshot({path: path.join(ARTIFACTS_DIR, 'persistence-search.png'), fullPage: true});
     summary.search = {
       url: page.url(),
@@ -198,6 +258,7 @@ async function main() {
       query: SEARCH_QUERY,
       resultText,
       resultHref: new URL(resultHref, page.url()).href,
+      platformResultHref: new URL(platformResultHref, page.url()).href,
     };
 
     assert(summary.diagnostics.pageErrors.length === 0, `page errors: ${summary.diagnostics.pageErrors.join(' | ')}`);
