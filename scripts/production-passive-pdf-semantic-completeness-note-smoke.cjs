@@ -116,7 +116,7 @@ async function main() {
     await documentContent.waitFor({state: 'visible', timeout: 10000});
     const noteText = await documentContent.innerText();
     for (const marker of [
-      'file existence',
+      'File existence',
       'stable route',
       '%PDF-',
       'parseability',
