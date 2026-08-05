@@ -134,5 +134,19 @@
       "static-site-quality-gates",
       "source-tests-to-installed-acceptance"
     ]
+  },
+  {
+    "slug": "clean-urls-without-cloudflare-routing",
+    "title": "Как clean URLs заработали на GitHub Pages без Cloudflare routing",
+    "description": "Практическая ретроспектива TrueRuslan Landing: repository-native directory URLs, Diplodoc base/depth migration, единый public identity contract и bounded legacy compatibility.",
+    "published": "2026-08-05",
+    "updated": "2026-08-05",
+    "readingMinutes": 12,
+    "tags": ["Clean URLs", "GitHub Pages", "Static-first", "SEO"],
+    "related": [
+      "deployment-success-is-not-production-verification",
+      "static-site-quality-gates",
+      "static-first-sources-no-js"
+    ]
   }
 ]
