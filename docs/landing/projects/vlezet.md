@@ -15,13 +15,9 @@
 
 Первый прототип планировщика сделать сравнительно легко: дать пользователю нарисовать прямоугольник, поставить диван и показать примерную площадь.
 
-Реальная квартира разрушает такую упрощённую модель. У стены есть ось и толщина. У проёма — ширина, положение на конкретной стене и направление открывания. Комната появляется не потому, что пользователь нарисовал цветной полигон, а потому, что стены действительно образовали замкнутую топологию. Мебель может визуально помещаться и одновременно перекрывать дверь или оставлять непроходимый зазор.
+Реальная квартира разрушает такую модель. У стены есть ось и толщина. У проёма — ширина, положение на конкретной стене и направление открывания. Комната появляется не потому, что пользователь нарисовал цветной полигон, а потому, что стены действительно образовали замкнутую топологию. Мебель может визуально помещаться и одновременно перекрывать дверь или оставлять непроходимый зазор.
 
 Импорт фотографии или PDF добавляет неопределённость: поворот, поля, перспектива, подписи, размерные линии, сантехника, мебель и дверные дуги. Даже корректный JSON от LLM не означает, что восстановленные стены совпадают с реальным планом.
-
-Поэтому Vlezet — задача не про «красиво нарисовать квартиру», а про сохранение геометрической истины на всём пути: от исходного изображения до площади комнаты, расстановки мебели и 3D-проекции.
-
-Главный принцип:
 
 > Распознавание может предложить геометрию. Авторитетной она становится только после проверки, детерминированной валидации и явного Apply в общий документ.
 
@@ -42,9 +38,9 @@ Recognition Draft, planning Preview, UI-фильтры, подсветка и ev
 
 Локальный CV и cloud review не получают права очистить уже нарисованную квартиру. Кандидаты можно принять, отклонить или исправить, а изменение документа происходит только через явную операцию Apply.
 
-### AI не создаёт недостающую геометрию
+### AI proposal не равен authoritative geometry
 
-Cloud review получает exact local IDs и координаты. Он может подтвердить или отклонить существующего кандидата и скорректировать confidence evidence, но не имеет права добавить новую стену, переместить линию, изменить толщину или назначить другого host wall.
+Принятый M7.8B ограничивал cloud review точными local IDs. Более поздний Draft PR #45 исследует missing-opening recovery, но только как отдельные proposals. Каждый proposal обязан пройти deterministic host, raster, topology и overlap validation, остаться reviewable и попасть в документ только через explicit Apply.
 
 ### 3D остаётся проекцией
 
@@ -71,7 +67,14 @@ Three.js-визуализация read-only. У неё нет собственн
 
 M7.8B принят с известными ограничениями. На representative source система вернула 27 local wall candidates, 19 AI-confirmed и 8 pending review. Принятые Source geometry F1 и Source topology F1 составили `0.837989`. Openings были намеренно отложены.
 
-Текущий development slice — **M7.8C Opening Classification and Host-Wall Validation**, но он остаётся Draft. PR #42 открыт на observed head `c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a`. CI #3138, Recognition Benchmark #316 и M7 Browser Audit #769 проходят для этого exact head. Эти automated gates не заменяют тот же real-plan product-owner retest, поэтому M7.8C не считается принятым или смерженным.
+Текущая acceptance boundary — **M7.8C Opening Classification and Host-Wall Validation**. PR #42 открыт как Draft на observed head `c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a`. CI #3138, Recognition Benchmark #316 и M7 Browser Audit #769 проходят, но тот же representative real-plan product-owner retest остаётся обязательным.
+
+Параллельная разработка ведётся только как stacked Draft evidence:
+
+- PR #44 на observed head `cd29740cf240d591785fc6607147d2bf07ece0b6` создаёт M7.9 real-fixture benchmark. Standard CI проходит, но real wall geometry F1 `0.827338` и real opening F1 `0.627451` остаются ниже immutable merge threshold `0.85`;
+- PR #45 на observed head `2c4d0f44e56753b9c44dd6c30a720d1a97f50c2e` исследует M7.8C.1 hybrid AI proposal recovery поверх PR #44. AI может вернуть отдельное предложение, но не получает права создавать authoritative geometry без deterministic validation, review и Apply.
+
+PR #42, PR #44 и PR #45 не считаются принятыми или смерженными. Они не повышают lifecycle и не заменяют acceptance M7.8B.
 
 Публичный lifecycle остаётся **pre-production — ACTIVE DEVELOPMENT**.
 
@@ -97,22 +100,26 @@ Fit определяют containment, collision, door zones и реальные 
 1. пользователь загружает JPG, PNG или PDF;
 2. изображение калибруется по реальному размеру;
 3. local CV создаёт bounded candidates;
-4. при необходимости cloud review проверяет только существующие IDs;
-5. пользователь сравнивает Draft с источником;
-6. deterministic validation отбрасывает недопустимые связи;
+4. optional AI возвращает verification или отдельные proposals в пределах разрешённого Draft-контракта;
+5. каждый proposal повторно проверяется deterministic domain rules;
+6. пользователь сравнивает Draft с источником;
 7. только Apply переводит принятые candidates в ordinary document entities.
 
 ### Сначала benchmark, потом tuning
 
 M7.8A добавил versioned public-safe corpus, Core и Source execution, TP/FP/FN overlays и метрики для геометрии стен, топологии, проёмов, комнат, площадей, confidence и reconciliation.
 
-Benchmark не заменяет product-owner source. Он делает изменение воспроизводимым, но отдельный реальный план проверяет, не научилась ли система проходить fixtures, сохранив неправильное поведение на настоящем документе.
+PR #44 расширяет эту идею до repository-owned analogues реальных планов, но не меняет threshold ради зелёного CI. Wall и opening F1 ниже `0.85` остаются явным merge blocker, а incorrect-high-confidence, unknown-host и stale-decision counters должны оставаться нулевыми.
 
 ### Region-first extraction вместо line-first шума
 
 M7.8B перевёл локальное распознавание к region-first обработке толстых архитектурных областей. Canny/Hough остался bounded fallback, а не главным владельцем результата.
 
 Candidate overload завершается fail-closed: перегруженный Draft не сохраняется, не отправляется в AI и не получает право на Apply.
+
+### Hybrid AI восстанавливает только ограниченные proposals
+
+PR #45 разделяет local geometry и AI recovery. Missing doors/windows могут появиться только как proposal records с host evidence. Local walls остаются immutable, AI не перемещает и не удаляет их, а thin-wall recovery вынесен в отдельный будущий stage.
 
 ## Реальные ошибки, которые изменили архитектуру
 
@@ -126,13 +133,11 @@ Candidate overload завершается fail-closed: перегруженны�
 
 ### OpenCV возвращал больше линий, чем читала программа
 
-`HoughLinesP` в OpenCV.js отдаёт координаты плоскими группами `x1, y1, x2, y2` в `data32S`. Предыдущая итерация по `lines.rows` забирала лишь часть результата. Исправление показало следующую проблему: полный raster содержит не только стены.
+`HoughLinesP` в OpenCV.js отдаёт координаты плоскими группами `x1, y1, x2, y2` в `data32S`. Предыдущая итерация по `lines.rows` забирала лишь часть результата. После исправления стало видно, что полный raster содержит не только стены.
 
 ### Первый real-plan review выявил symbol network вместо shell
 
-Ранняя M7.8B-реализация сформировала 417 local wall candidates, ноль проёмов и связанную сеть символов, мебели и подписей. AI review сохранил загрязнённую сеть и добавил неподтверждённые длинные линии.
-
-Corrective iteration добавил region-first structural mask, bounded fallback, candidate budget, sanitization Draft и запрет cloud-only geometry.
+Ранняя M7.8B-реализация сформировала 417 local wall candidates, ноль проёмов и связанную сеть символов, мебели и подписей. Corrective iteration добавил region-first structural mask, bounded fallback, candidate budget, sanitization Draft и запрет cloud-only geometry.
 
 ### Валидный AI-ответ может быть пространственно неправильным
 
@@ -140,7 +145,7 @@ Response healing и JSON Schema исправляют protocol defects. Они н
 
 ### Проём нельзя принимать без стены-хозяина
 
-Gap в линии может быть дверью, окном, текстом или артефактом edge detection. M7.8B намеренно оставил openings равными нулю вместо уверенного проёма без verified host wall. M7.8C строится вокруг mandatory host-wall validation.
+Gap в линии может быть дверью, окном, текстом или артефактом edge detection. M7.8B намеренно оставил openings равными нулю вместо уверенного проёма без verified host wall. M7.8C и hybrid proposals строятся вокруг mandatory host-wall validation.
 
 <!-- case-study:alternatives -->
 ## Рассмотренные и отвергнутые альтернативы
@@ -153,21 +158,21 @@ Gap в линии может быть дверью, окном, текстом �
 
 Отвергнут. Recognition Draft не может очищать или заменять существующий `VlezetDocument`; только явный Apply создаёт semantic command.
 
-### Cloud-модель, создающая или перемещающая геометрию
+### Cloud-модель как второй владелец геометрии
 
-Отвергнута. AI проверяет immutable local candidates и не получает права создавать missing walls, менять coordinates, thickness или host relations.
+Отвергнута. Даже когда AI разрешено предложить missing opening, proposal остаётся отдельным evidence object и проходит ту же deterministic validation. Модель не получает права молча двигать стены, менять thickness, re-host openings или применять результат.
 
 ### Line-first Hough как основной владелец результата
 
 Отвергнут. Такой подход смешивает стены, мебель, сантехнику, подписи и размерные линии. Region-first structural extraction лучше соответствует архитектурной геометрии, а Hough остаётся bounded supplemental evidence.
 
+### Снижение benchmark threshold ради merge
+
+Отвергнуто. PR #44 сохраняет immutable `0.85` real wall/opening gates и нулевые safety counters. Красный measured result полезнее зелёного пайплайна, который перестал защищать продукт.
+
 ### Отдельная authoritative 3D-модель
 
 Отвергнута. Второй geometry store создавал бы drift. 3D остаётся read-only projection общего документа.
-
-### Snapshot-only Undo/Redo
-
-Отвергнуто. Snapshot history скрывает смысл Apply и усложняет повторное принятие candidates. Semantic commands сохраняют atomic boundaries и объяснимость.
 
 <!-- case-study:evidence -->
 ## Что подтверждено
@@ -179,9 +184,11 @@ Evidence разделяет:
 - accepted product workflow и deterministic geometry contracts;
 - M7.8A reproducible benchmark authority;
 - M7.8B product-owner acceptance с точными метриками и ограничениями;
-- M7.8C PR #42 как pending Draft с зелёными automated gates и обязательным owner retest.
+- M7.8C PR #42 как pending Draft с зелёными automated gates и обязательным owner retest;
+- PR #44 как stacked Draft с измеримыми real-fixture blockers;
+- PR #45 как stacked Draft hybrid proposal architecture без AI geometry authority.
 
-Статус `verified` относится только к перечисленным scopes. Он не означает, что Vlezet распознаёт произвольный архитектурный план без ручной проверки или что M7.8C принят.
+Статус `verified` относится только к перечисленным scopes. Он не означает, что Vlezet распознаёт произвольный архитектурный план без ручной проверки или что любой Draft slice принят.
 
 <!-- case-study:limitations -->
 ## Известные ограничения
@@ -190,11 +197,11 @@ Evidence разделяет:
 - на текущем real-plan retest одна толстая несущая стена представлялась двумя параллельными axes;
 - видимые окна могли отсутствовать в Draft;
 - короткие линии сантехники или service block могли попадать в structural candidates;
-- confidence classification не идеальна;
 - accepted M7.8B Source topology F1 `0.837989` ниже финальной цели M7.8 `0.90`;
-- M7.8C automated Source wall topology F1 выше `0.90`, но это не заменяет owner acceptance на том же реальном плане;
+- PR #42 automated metrics не заменяют owner acceptance на том же реальном плане;
+- PR #44 real wall/opening F1 остаются ниже immutable `0.85` merge threshold;
+- PR #45 Stage 1 proposal recovery ещё не имеет самостоятельной product acceptance;
 - perspective-photo recognition не решён;
-- stronger providers могут подтвердить больше существующих candidates, но не создают missing geometry;
 - room-face derivation, OCR labels, area constraints и confidence calibration остаются дальнейшими slices.
 
 <!-- case-study:next -->
@@ -211,7 +218,7 @@ Evidence разделяет:
 5. incremental Apply без duplicates;
 6. независимый Undo/Redo для нескольких Apply batches.
 
-Только после явной acceptance либо конкретного defect report можно исправить ограниченный scope, повторить exact-head automation и рассматривать squash merge M7.8C. Затем допустим следующий этап: room faces, labels, areas и bounded semantic reconciliation.
+Только после явной acceptance либо конкретного defect report можно исправить ограниченный scope, повторить exact-head automation и рассматривать squash merge M7.8C. Stacked PR #44 и PR #45 должны затем пройти собственные immutable metrics, safety counters и product-owner gates; их наличие не позволяет обойти acceptance PR #42.
 
 <!-- case-study:related -->
 ## Связанные материалы
@@ -226,13 +233,14 @@ Evidence разделяет:
 
 Я бы раньше записал `VlezetDocument` и миллиметры как формальный authority contract. После этого многие решения становятся проще: Canvas — проекция, комнаты — derivation, 3D — read-only, Preview — ephemeral, Apply — semantic command.
 
-Recognition benchmark стоило построить до первого quality tuning. Но M7.8B добавил ещё одно правило: public benchmark и representative product-owner source должны оставаться разными обязательными gates.
+Recognition benchmark стоило построить до первого quality tuning. Но M7.8B и последующие Draft-эксперименты добавили ещё одно правило: public benchmark, representative product-owner source и immutable safety gates должны оставаться разными обязательными доказательствами.
 
-Также следовало сразу разделить четыре проверки:
+Также следовало сразу разделить пять проверок:
 
 1. provider вернул ответ;
 2. ответ прошёл protocol validation;
-3. candidates прошли deterministic domain validation;
-4. геометрия похожа на источник и принята человеком.
+3. proposal ссылается на допустимую local evidence;
+4. candidate прошёл deterministic domain validation;
+5. геометрия похожа на источник и принята человеком.
 
 Uncertainty нужно проектировать как часть продукта. Пользователю полезнее увидеть среднюю уверенность, неизвестную стену-хозяина и возможность исправить Draft, чем получить чистую картинку, которая молча врёт о квартире.
