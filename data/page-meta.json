@@ -230,6 +230,16 @@
     "accent": "green"
   },
   {
+    "path": "landing/notes/deployment-success-is-not-production-verification.html",
+    "card": "note-deployment-verification",
+    "title": "Почему успешный deployment ещё не означает production verification",
+    "description": "TrueRuslan Landing delivery case study: repository readiness, generated artifact, exact GitHub Pages deployment, Production Live Smoke and bounded external observation.",
+    "displayTitle": "DEPLOYMENT VERIFICATION",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["DEPLOYMENT", "VERIFICATION", "GITHUB PAGES"],
+    "accent": "cyan"
+  },
+  {
     "path": "en/index.html",
     "card": "home-en",
     "title": "Ruslan Nemykin — Backend Engineer",
