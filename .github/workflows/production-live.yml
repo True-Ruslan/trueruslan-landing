@@ -18,6 +18,8 @@ on:
     paths:
       - '.github/workflows/production-live.yml'
       - 'scripts/production-live-smoke.cjs'
+      - 'scripts/production-live-routes.cjs'
+      - 'scripts/production-live-routes.test.js'
       - 'scripts/production-live-workflow.test.js'
       - 'scripts/production-favicon-smoke.cjs'
       - 'scripts/production-favicon-workflow.test.js'
