@@ -7,12 +7,24 @@ const VIEWPORTS = Object.freeze({
 const CORE_SCENARIOS = Object.freeze({
   home: Object.freeze({slug: 'home', path: '/', heading: 'Руслан Немыкин'}),
   projects: Object.freeze({slug: 'projects', path: '/landing/projects/', heading: 'Проекты'}),
-  vlezet: Object.freeze({slug: 'vlezet', path: '/landing/projects/vlezet/', heading: 'Vlezet'}),
+  vlezet: Object.freeze({
+    slug: 'vlezet',
+    path: '/landing/projects/vlezet/',
+    heading: 'Vlezet',
+    requiredText: ['M7.8B', 'M7.8C', 'product-owner retest', 'ACTIVE DEVELOPMENT'],
+  }),
   villaigence: Object.freeze({
     slug: 'villaigence',
     path: '/landing/projects/livingworld/',
     heading: 'VillAIgence',
-    requiredText: ['Memory 2.0', 'PARTIAL PASS', '0.1.23+1.21.1', 'production-JAR', 'Cumulative acceptance'],
+    requiredText: [
+      'Memory 2.0',
+      'partial PASS',
+      '0.1.23+1.21.1',
+      'production-JAR',
+      'cumulative acceptance',
+      'PR #110',
+    ],
   }),
   publications: Object.freeze({slug: 'publications', path: '/landing/publications/', heading: 'Публикации и выступления'}),
   resume: Object.freeze({slug: 'resume', path: '/landing/resume/', heading: 'Резюме'}),
