@@ -5,6 +5,7 @@ import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const REPOSITORY_URL = 'https://github.com/True-Ruslan/trueruslan-landing';
 
 const files = Object.freeze({
   projects: path.join(ROOT, 'data', 'projects.json'),
@@ -96,7 +97,7 @@ test('RU and EN case studies follow the evidence-first flagship contract', () =>
     assert.match(page, /Cloudflare/i);
     assert.match(page, /second search|втор.*поиск/i);
     assert.match(page, /backend|runtime API/i);
-    assert.match(page, /https:\/\/github\.com\/True-Ruslan\/trueruslan-landing/);
+    assert.ok(page.includes(REPOSITORY_URL), `missing exact repository URL: ${REPOSITORY_URL}`);
   }
 
   assert.match(ru, /data-tr-project-status="portfolio-platform"/);
