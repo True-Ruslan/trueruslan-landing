@@ -32,7 +32,7 @@ function currentTimelineEntry(entries, slug) {
   return current[0];
 }
 
-test('repository public truth reflects the 2026-08-03 product evidence reconciliation', () => {
+test('repository public truth preserves accepted boundaries through the 2026-08-05 P3.3 refresh', () => {
   const projects = readJson('data/projects.json');
   const evidence = readJson('data/project-evidence.json');
   const vlezetHistory = readJson('data/project-history/vlezet.json');
@@ -52,6 +52,13 @@ test('repository public truth reflects the 2026-08-03 product evidence reconcili
   assert.equal(vlezetProject.status, 'pre-production');
   assert.match(currentTimelineEntry(vlezetHistory, 'vlezet').title, /M7\.8C|Opening Classification/i);
 
+  const vlezetM78c = vlezetEvidence.signals.find((signal) => signal.label.includes('M7.8C'));
+  assert.ok(vlezetM78c, 'Vlezet M7.8C pending evidence must exist');
+  assert.equal(vlezetM78c.state, 'pending');
+  assert.match(vlezetM78c.scope, /c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a/);
+  assert.match(vlezetM78c.scope, /product-owner retest/i);
+  assert.match(vlezetM78c.scope, /not an acceptance/i);
+
   assert.equal(livingworldProject.status, 'release-candidate');
   assert.equal(livingworldProject.statusLabel, 'ACCEPTANCE IN PROGRESS');
   assert.ok(
@@ -66,17 +73,23 @@ test('repository public truth reflects the 2026-08-03 product evidence reconcili
     livingworldEvidence.versions.some((version) => version.value.includes('0.1.23+1.21.1')),
     'VillAIgence current candidate version must be recorded',
   );
-  assert.match(currentTimelineEntry(livingworldHistory, 'livingworld').title, /production-JAR|risk-based|M11/i);
+  const phaseC = livingworldEvidence.signals.find((signal) => signal.label.includes('PR #110'));
+  assert.ok(phaseC, 'VillAIgence PR #110 pending evidence must exist');
+  assert.equal(phaseC.state, 'pending');
+  assert.match(phaseC.scope, /no production implementation/i);
+  assert.match(currentTimelineEntry(livingworldHistory, 'livingworld').title, /M11 Phase C/i);
 
   const vlezetPage = readText('docs/landing/projects/vlezet.md');
   assert.match(vlezetPage, /M0–M7\.8B/);
-  assert.doesNotMatch(vlezetPage, /остаётся Draft PR|PR remains Draft|FAIL — DO NOT MERGE/);
   assert.match(vlezetPage, /M7\.8C/);
+  assert.match(vlezetPage, /product-owner retest/i);
+  assert.match(vlezetPage, /M7\.8C не считается принятым или смерженным/i);
 
   const livingworldPage = readText('docs/landing/projects/livingworld.md');
-  assert.match(livingworldPage, /61b66e38e99c1dc9bdc26089bfb345a250a881e2/);
+  assert.match(livingworldPage, /e0b763aa4a5caea8897aadc6ee2cab6c1b407c89/);
   assert.match(livingworldPage, /production-JAR.*startup.*restart/is);
   assert.match(livingworldPage, /cumulative.*(pending|не заверш)/is);
+  assert.match(livingworldPage, /PR #110[\s\S]{0,500}(Draft|RED)/i);
 
   assert.equal(now.updated, '2026-08-03');
   assert.match(now.focus, /M7\.8B|production-JAR/);

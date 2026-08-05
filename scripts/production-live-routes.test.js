@@ -23,6 +23,18 @@ test('production live smoke uses repository-native clean canonical routes', () =
     routes.PORTFOLIO_PLATFORM_EN_URL,
     'https://trueruslan.ru/en/projects/portfolio-platform/',
   );
+  assert.equal(
+    routes.VILLAIGENCE_URL,
+    'https://trueruslan.ru/landing/projects/livingworld/',
+  );
+  assert.equal(
+    routes.VLEZET_URL,
+    'https://trueruslan.ru/landing/projects/vlezet/',
+  );
+  assert.equal(
+    routes.VILLAIGENCE_EN_URL,
+    'https://trueruslan.ru/en/projects/livingworld/',
+  );
 });
 
 test('production live smoke preserves explicit legacy route coverage', () => {

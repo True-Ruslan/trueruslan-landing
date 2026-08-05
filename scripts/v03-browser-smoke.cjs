@@ -97,6 +97,55 @@ async function assertProjectTimeline(page, slug) {
   }
 }
 
+async function assertOrderedHeadings(page, slug, orderedHeadings) {
+  const headings = (await page.locator('main.dc-doc-page__content h2').allInnerTexts()).map((value) => value.trim());
+  let previous = -1;
+  for (const expected of orderedHeadings) {
+    const index = headings.findIndex((heading, candidate) => candidate > previous && heading.includes(expected));
+    if (index === -1) {
+      throw new Error(`${slug} is missing ordered section ${expected}; found ${headings.join(' | ')}`);
+    }
+    previous = index;
+  }
+}
+
+async function assertNormalizedCaseStudy(page, {
+  slug,
+  orderedHeadings,
+  requiredText,
+  relatedHrefFragments,
+  requireTimeline = true,
+  requireEvidence = true,
+}) {
+  const document = page.locator('main.dc-doc-page__content');
+  await document.waitFor({state: 'visible'});
+
+  const status = page.locator(`[data-project-status="${slug}"]`).first();
+  await status.waitFor({state: 'visible'});
+  const actualStatus = (await status.innerText()).trim();
+  const expectedStatus = expectedProjectStatus(slug);
+  if (actualStatus !== expectedStatus) {
+    throw new Error(`${slug} case-study status drifted from Project Registry: ${actualStatus} != ${expectedStatus}`);
+  }
+
+  await assertOrderedHeadings(page, slug, orderedHeadings);
+
+  const text = await document.innerText();
+  for (const marker of requiredText) {
+    if (!text.includes(marker)) throw new Error(`${slug} is missing boundary marker ${marker}.`);
+  }
+
+  for (const fragment of relatedHrefFragments) {
+    const link = document.locator(`a[href*="${fragment}"]`).first();
+    await link.waitFor({state: 'visible'});
+  }
+
+  if (requireTimeline) await assertProjectTimeline(page, slug);
+  if (requireEvidence) {
+    await page.locator(`[data-project-evidence="${slug}"]`).waitFor({state: 'visible'});
+  }
+}
+
 async function main() {
   const serverRuntime = await startStaticServer({port: PORT});
   let browser;
@@ -182,8 +231,89 @@ async function main() {
       },
     });
 
+    await checkPage(browser, serverRuntime.baseUrl, {
+      slug: 'normalized-livingworld',
+      pathname: '/landing/projects/livingworld/',
+      heading: 'VillAIgence',
+      verify: async (page) => assertNormalizedCaseStudy(page, {
+        slug: 'livingworld',
+        orderedHeadings: [
+          'Проблема',
+          'Ограничения',
+          'Текущая lifecycle',
+          'Архитектура',
+          'альтернативы',
+          'Что подтверждено',
+          'Известные ограничения',
+          'Следующий принятый шаг',
+          'Связанные материалы',
+          'Что бы я сделал иначе',
+        ],
+        requiredText: ['0.1.23+1.21.1', 'PR #110', 'Draft', 'cumulative acceptance'],
+        relatedHrefFragments: [
+          'server-authoritative-ai-npcs',
+          'source-tests-to-installed-acceptance',
+          'restart-persistence-is-a-product-contract',
+        ],
+      }),
+    });
+
+    await checkPage(browser, serverRuntime.baseUrl, {
+      slug: 'normalized-vlezet',
+      pathname: '/landing/projects/vlezet/',
+      heading: 'Vlezet',
+      verify: async (page) => assertNormalizedCaseStudy(page, {
+        slug: 'vlezet',
+        orderedHeadings: [
+          'Проблема',
+          'Ограничения',
+          'Текущая lifecycle',
+          'Архитектура',
+          'альтернативы',
+          'Что подтверждено',
+          'Известные ограничения',
+          'Следующий принятый шаг',
+          'Связанные материалы',
+          'Что бы я сделал иначе',
+        ],
+        requiredText: ['M7.8B', 'M7.8C', 'product-owner retest', 'ACTIVE DEVELOPMENT'],
+        relatedHrefFragments: [
+          'probabilistic-proposals-deterministic-authority',
+          'green-ci-is-not-product-verification',
+        ],
+      }),
+    });
+
+    await checkPage(browser, serverRuntime.baseUrl, {
+      slug: 'normalized-livingworld-en',
+      pathname: '/en/projects/livingworld/',
+      heading: 'VillAIgence',
+      verify: async (page) => assertNormalizedCaseStudy(page, {
+        slug: 'livingworld',
+        orderedHeadings: [
+          'Problem',
+          'Constraints',
+          'Current lifecycle',
+          'Architecture',
+          'Alternatives',
+          'Evidence boundary',
+          'Known limitations',
+          'Next accepted milestone',
+          'Related material',
+          'What I would change',
+        ],
+        requiredText: ['0.1.23+1.21.1', 'PR #110', 'Draft', 'cumulative acceptance'],
+        relatedHrefFragments: [
+          'server-authoritative-ai-npcs',
+          'llm-output-is-a-protocol-boundary',
+          'landing/projects/livingworld',
+        ],
+        requireTimeline: false,
+        requireEvidence: false,
+      }),
+    });
+
     for (const project of [
-      {slug: 'livingworld', heading: 'VillAIgence'},
       {slug: 'node-zero', heading: 'NODE ZERO'},
       {slug: 'portfolio-platform', heading: 'TrueRuslan Landing'},
     ]) {
@@ -226,7 +356,7 @@ async function main() {
       },
     });
 
-    console.log('Portfolio browser, accessibility, registry, navigation, Notes, timeline and platform case-study smoke passed.');
+    console.log('Portfolio browser, accessibility, registry, navigation, Notes, normalized flagships, timeline and platform case-study smoke passed.');
   } finally {
     if (browser) await browser.close();
     await serverRuntime.stop();

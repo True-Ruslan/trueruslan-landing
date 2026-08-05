@@ -135,14 +135,24 @@ export function renderProjectStatus(project) {
   return `<span class="tr-project-status tr-project-status--${escapeHtml(project.status)}" data-project-status="${escapeHtml(project.slug)}">${escapeHtml(project.statusLabel)}</span>`;
 }
 
+function existingCanonicalProjectTargets(outputDir, projects) {
+  return projects
+    .map(({href}) => href)
+    .filter((target) => fs.existsSync(path.join(outputDir, ...target.split('/'))));
+}
+
 export function applyProjectRegistryContent(outputDir, projects, {targets = ['landing/projects.html']} = {}) {
   if (!Array.isArray(targets) || targets.length === 0) throw new Error('project registry targets must be a non-empty array');
+  const effectiveTargets = [...new Set([
+    ...targets,
+    ...existingCanonicalProjectTargets(outputDir, projects),
+  ])];
   let replacements = 0;
 
-  for (const target of targets) {
+  for (const target of effectiveTargets) {
     if (!isSafeLocalHtmlHref(target)) throw new Error(`unsafe project registry target: ${target}`);
     const htmlPath = path.join(outputDir, ...target.split('/'));
-    if (!fs.existsSync(htmlPath)) throw new Error(`generated projects hub not found: ${target}`);
+    if (!fs.existsSync(htmlPath)) throw new Error(`generated project status target not found: ${target}`);
     const html = fs.readFileSync(htmlPath, 'utf8');
 
     const transformed = transformGeneratedContent(

@@ -142,3 +142,19 @@ test('applyProjectRegistryContent supports bounded RU and EN hub targets from on
     assert.match(html, /RELEASE CANDIDATE/);
   }
 });
+
+test('applyProjectRegistryContent automatically renders existing canonical project pages', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-project-canonical-'));
+  const hubPath = path.join(outputDir, 'landing', 'projects.html');
+  const projectPath = path.join(outputDir, ...validProject.href.split('/'));
+  fs.mkdirSync(path.dirname(hubPath), {recursive: true});
+  fs.mkdirSync(path.dirname(projectPath), {recursive: true});
+  fs.writeFileSync(hubPath, '<main><p>Projects hub</p></main>');
+  fs.writeFileSync(projectPath, '<main><span data-tr-project-status="livingworld"></span></main>');
+
+  assert.equal(applyProjectRegistryContent(outputDir, [validProject]), 1);
+  const projectHtml = fs.readFileSync(projectPath, 'utf8');
+  assert.match(projectHtml, /data-project-status="livingworld"/);
+  assert.match(projectHtml, /RELEASE CANDIDATE/);
+  assert.doesNotMatch(projectHtml, /data-tr-project-status/);
+});

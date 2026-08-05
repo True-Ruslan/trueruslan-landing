@@ -12,7 +12,7 @@ test('Vlezet repository drift is recorded without promoting M7.8C', () => {
 
   assert.ok(vlezet, 'missing Vlezet evidence snapshot');
   assert.equal(vlezet.status, 'verified');
-  assert.equal(vlezet.lastVerified, '2026-08-04');
+  assert.equal(vlezet.lastVerified, '2026-08-05');
 
   const versions = new Map(vlezet.versions.map(({label, value}) => [label, value]));
   assert.equal(versions.get('Accepted recognition slice'), 'M7.8B');
@@ -23,9 +23,13 @@ test('Vlezet repository drift is recorded without promoting M7.8C', () => {
   assert.equal(draft.kind, 'pr');
   assert.equal(draft.mode, 'automated');
   assert.equal(draft.state, 'pending');
-  assert.equal(draft.observedAt, '2026-08-04');
+  assert.equal(draft.observedAt, '2026-08-05');
   assert.match(draft.label, /M7\.8C.*Draft.*#42/i);
+  assert.match(draft.scope, /c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a/);
+  assert.match(draft.scope, /CI #3138/);
+  assert.match(draft.scope, /Recognition Benchmark #316/);
+  assert.match(draft.scope, /M7 Browser Audit #769/);
   assert.match(draft.scope, /product-owner retest/i);
-  assert.match(draft.scope, /not accepted|does not promote|remains Draft/i);
+  assert.match(draft.scope, /not an acceptance|does not promote|remains Draft/i);
   assert.doesNotMatch(draft.scope, /product-owner accepted|squash-merged/i);
 });
