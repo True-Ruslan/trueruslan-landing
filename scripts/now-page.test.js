@@ -38,16 +38,20 @@ test('renderNowContent preserves the stable route under the public VillAIgence i
   assert.match(html, /datetime="2026-07-22"/);
 });
 
-test('repository now snapshot reflects the reconciled product-evidence phase', () => {
+test('repository now snapshot reflects current bounded external-project evidence', () => {
   const current = loadNowData();
   const editorialText = [current.focus, ...current.learning, ...current.writing].join('\n');
 
-  assert.equal(current.updated, '2026-08-03');
+  assert.equal(current.updated, '2026-08-05');
   assert.match(editorialText, /Vlezet/);
   assert.match(editorialText, /M7\.8B/);
+  assert.match(editorialText, /M7\.9/);
+  assert.match(editorialText, /M7\.8C\.1/);
   assert.match(editorialText, /VillAIgence/);
+  assert.match(editorialText, /0\.1\.25\+1\.21\.1/);
   assert.match(editorialText, /production-JAR/);
   assert.match(editorialText, /cumulative|совокупн/i);
+  assert.match(editorialText, /pending|Draft/i);
   assert.match(editorialText, /Engineering Note/);
   assert.doesNotMatch(editorialText, /LivingWorld/);
 });

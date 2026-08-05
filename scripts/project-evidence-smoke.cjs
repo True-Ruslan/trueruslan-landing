@@ -16,9 +16,24 @@ const PROJECTS = [
     status: 'verified',
     label: 'ПРОВЕРЕНО',
     borderStyle: 'solid',
-    signals: 4,
-    stateCounts: {merged: 3, pending: 1},
-    requiredText: ['M7.8B', 'M7.8C', 'CI #3138', 'product-owner retest'],
+    signals: 6,
+    stateCounts: {merged: 3, pending: 3},
+    requiredText: [
+      'M7.8B',
+      'M7.8C',
+      'M7.9',
+      'M7.8C.1',
+      'CI #3138',
+      '0.827338',
+      '0.627451',
+      'product-owner retest',
+      'not an acceptance',
+    ],
+    requiredHrefs: [
+      'https://github.com/True-Ruslan/vlezet/pull/42',
+      'https://github.com/True-Ruslan/vlezet/pull/44',
+      'https://github.com/True-Ruslan/vlezet/pull/45',
+    ],
   },
   {
     project: 'livingworld',
@@ -26,9 +41,29 @@ const PROJECTS = [
     status: 'verified',
     label: 'ПРОВЕРЕНО',
     borderStyle: 'solid',
-    signals: 6,
-    stateCounts: {accepted: 1, failed: 1, merged: 3, pending: 1},
-    requiredText: ['PR #103', 'PR #104', 'PR #110', 'Draft', '0.1.23+1.21.1', 'production-JAR'],
+    signals: 10,
+    stateCounts: {accepted: 1, failed: 1, merged: 6, published: 1, pending: 1},
+    requiredText: [
+      'PR #103',
+      'PR #104',
+      'PR #105',
+      'PR #107',
+      'PR #108',
+      'PR #109',
+      'PR #110',
+      'Draft',
+      '0.1.25+1.21.1',
+      'literal-loopback',
+      'production-JAR',
+      'cumulative acceptance remains pending',
+    ],
+    requiredHrefs: [
+      'https://github.com/True-Ruslan/villAIgence/pull/105',
+      'https://github.com/True-Ruslan/villAIgence/pull/107',
+      'https://github.com/True-Ruslan/villAIgence/pull/108',
+      'https://github.com/True-Ruslan/villAIgence/pull/109',
+      'https://github.com/True-Ruslan/villAIgence/pull/110',
+    ],
   },
   {project: 'node-zero', route: '/landing/projects/node-zero/', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
 ];
@@ -63,9 +98,16 @@ async function assertEvidence(page, expected, prefix) {
   }
 
   const links = root.locator('a[href]');
+  const renderedHrefs = [];
   for (let index = 0; index < await links.count(); index += 1) {
     const href = await links.nth(index).getAttribute('href');
     if (!href?.startsWith('https://')) throw new Error(`${prefix}: unsafe evidence link ${href}`);
+    renderedHrefs.push(href);
+  }
+  for (const requiredHref of expected.requiredHrefs || []) {
+    if (!renderedHrefs.includes(requiredHref)) {
+      throw new Error(`${prefix}: ${expected.project} evidence link is missing ${requiredHref}`);
+    }
   }
 
   const signalCount = await root.locator('[data-evidence-kind]').count();

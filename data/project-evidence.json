@@ -10,7 +10,8 @@
       {"label": "Persistence", "value": "IndexedDB"},
       {"label": "Canonical geometry", "value": "millimetres"},
       {"label": "Accepted recognition slice", "value": "M7.8B"},
-      {"label": "Next recognition slice", "value": "M7.8C"}
+      {"label": "Next acceptance boundary", "value": "M7.8C product-owner retest"},
+      {"label": "Stacked Draft exploration", "value": "M7.9 + M7.8C.1"}
     ],
     "signals": [
       {
@@ -48,6 +49,24 @@
         "url": "https://github.com/True-Ruslan/vlezet/pull/42",
         "observedAt": "2026-08-05",
         "scope": "PR #42 remains an open Draft at observed head c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a. CI #3138, Recognition Benchmark #316 and M7 Browser Audit #769 pass for that exact head, covering opening classification, host-wall validation and deterministic stabilization. The same real-plan product-owner retest remains mandatory. This pending signal is not an acceptance, does not promote M7.8C, does not replace accepted M7.8B and is not a merge claim."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M7.9 real-fixture benchmark Draft PR #44",
+        "state": "pending",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/44",
+        "observedAt": "2026-08-05",
+        "scope": "PR #44 is an open stacked Draft at observed head cd29740cf240d591785fc6607147d2bf07ece0b6 and is based on PR #42. Standard CI passes, while the real-fixture recognition gate remains merge-blocking: real wall geometry F1 0.827338 and real opening F1 0.627451 are below the immutable 0.85 thresholds. Incorrect-high-confidence, unknown-host and stale-decision counters remain zero. This is measured development evidence, not an accepted milestone, merge authorization or lifecycle promotion."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M7.8C.1 hybrid proposal recovery Draft PR #45",
+        "state": "pending",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/45",
+        "observedAt": "2026-08-05",
+        "scope": "PR #45 is an open Draft at observed head 2c4d0f44e56753b9c44dd6c30a720d1a97f50c2e, stacked on PR #44. It explores AI recovery only as separate proposals that must pass deterministic host, raster, topology and overlap validation before explicit review and Apply. AI has no authoritative geometry authority and cannot silently mutate local walls or openings. The slice remains Draft and is not an acceptance, merge claim or promotion beyond accepted M7.8B."
       }
     ]
   },
@@ -63,8 +82,9 @@
       {"label": "Compatibility build", "value": "NeoForge"},
       {"label": "Persistent context", "value": "Memory 2.0 + Operator Lore"},
       {"label": "Historical installed checkpoint", "value": "0.1.20 partial PASS"},
-      {"label": "Current published candidate", "value": "0.1.23+1.21.1"},
+      {"label": "Current published candidate", "value": "0.1.25+1.21.1"},
       {"label": "Automated installed boundary", "value": "production-JAR startup + restart PASS"},
+      {"label": "Deterministic provider boundary", "value": "literal-loopback Chat + STT + TTS PASS"},
       {"label": "Cumulative manual acceptance", "value": "pending"},
       {"label": "Active development slice", "value": "M11 Phase C shared orchestration deadline — Draft/RED"}
     ],
@@ -117,11 +137,47 @@
       {
         "kind": "pr",
         "mode": "automated",
+        "label": "Tombstone inventory ownership fix PR #105",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/105",
+        "observedAt": "2026-08-05",
+        "scope": "PR #105 corrected the installed inventory-loss defect by serializing a captured NPC while its inventory is intact and preserving the existing drop fallback when no valid tombstone owns the body. Exact-head CI, production startup/restart, GameTests and package gates passed. A focused installed grave resurrection canary with known stacks remains a separate manual acceptance boundary."
+      },
+      {
+        "kind": "release",
+        "mode": "automated",
+        "label": "Exact 0.1.25 release gate PR #107",
+        "state": "published",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/107",
+        "observedAt": "2026-08-05",
+        "scope": "PR #107 requested and published immutable release 0.1.25+1.21.1 only after the exact post-merge production gate passed. The gate validates embedded identity, production-JAR startup/shutdown/restart, persistent stores, GameTests, Fabric/NeoForge builds, package smoke and byte-identical accepted/package JARs. Publication does not complete focused installed gameplay, real-provider, multiplayer or cumulative product-owner acceptance."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Deterministic provider acceptance PR #108",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/108",
+        "observedAt": "2026-08-05",
+        "scope": "PR #108 exercised production Chat, STT and TTS HTTP clients against deterministic literal-loopback servers without external providers or public network calls. It proved bounded Chat retries sharing one monotonic request budget, exact authorization/model bodies, WAV multipart STT and sample-for-sample TTS PCM. This boundary does not claim physical microphone capture, Voice Chat playback, the complete STT → Chat → TTS orchestration deadline, real-provider quality or cumulative acceptance."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Release and configuration-cache gate hardening PR #109",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/109",
+        "observedAt": "2026-08-05",
+        "scope": "PR #109 repaired configuration-cache-safe refmap verification and scoped release requests to actual NEXT_RELEASE.txt changes. Exact-head CI, supply-chain and release dry-run gates passed. It changes build and release process correctness only; it does not change production Java, persistence, provider, packet or gameplay runtime behavior."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
         "label": "M11 Phase C shared orchestration deadline PR #110",
         "state": "pending",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/110",
         "observedAt": "2026-08-05",
-        "scope": "PR #110 is an open Draft at observed head e0b763aa4a5caea8897aadc6ee2cab6c1b407c89. It currently defines the RED contract for one shared STT → Chat retries → TTS deadline and exactly-once dialogue/relationship commits. Repository security and Java PR checks pass, while the main VillAIgence CI fails at the intentionally missing production APIs. This is pending development evidence: it proves no production implementation, no installed acceptance and no lifecycle promotion; cumulative acceptance remains pending."
+        "scope": "PR #110 remains an open Draft at observed head b3172080d89052a5b361d203dbdac152752d7d0d. It defines the RED contract for one shared STT → Chat retries → TTS deadline, exactly-once dialogue and relationship commits, and preservation of successful Chat commits when TTS reaches the deadline. This is pending development evidence: it is not an accepted capability and proves no production implementation, installed acceptance or lifecycle promotion; cumulative acceptance remains pending."
       }
     ]
   },

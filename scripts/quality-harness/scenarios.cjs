@@ -11,7 +11,14 @@ const CORE_SCENARIOS = Object.freeze({
     slug: 'vlezet',
     path: '/landing/projects/vlezet/',
     heading: 'Vlezet',
-    requiredText: ['M7.8B', 'M7.8C', 'product-owner retest', 'ACTIVE DEVELOPMENT'],
+    requiredText: [
+      'M7.8B',
+      'M7.8C',
+      'PR #44',
+      'PR #45',
+      'product-owner retest',
+      'ACTIVE DEVELOPMENT',
+    ],
   }),
   villaigence: Object.freeze({
     slug: 'villaigence',
@@ -20,7 +27,8 @@ const CORE_SCENARIOS = Object.freeze({
     requiredText: [
       'Memory 2.0',
       'partial PASS',
-      '0.1.23+1.21.1',
+      '0.1.25+1.21.1',
+      'PR #108',
       'production-JAR',
       'cumulative acceptance',
       'PR #110',
