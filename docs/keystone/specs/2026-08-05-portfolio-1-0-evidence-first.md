@@ -1,6 +1,6 @@
 # Portfolio 1.0 — Evidence-first flagship content
 
-> Status: **APPROVED**
+> Status: **IN PROGRESS — P3.1 ACCEPTED IN PRODUCTION**
 >
 > Date: **2026-08-05**
 >
@@ -8,7 +8,7 @@
 
 ## Goal
 
-Turn the existing production-stable portfolio and knowledge platform into a clear professional entry point where a reader can quickly understand:
+Turn the production-stable portfolio and knowledge platform into a clear professional entry point where a reader can quickly understand:
 
 1. what Ruslan builds;
 2. what engineering problems he solves;
@@ -32,31 +32,63 @@ Secondary:
 - readers of Engineering Notes and external publications;
 - users following Vlezet and VillAIgence progress.
 
-## Success criteria
+## Accepted production slice
 
-- the homepage exposes Resume, flagship projects and Engineering Notes as three explicit one-action paths;
-- the professional specialization is understandable within the first screen and supporting evidence is visible without searching the sidebar;
-- VillAIgence, Vlezet and TrueRuslan Landing use one evidence-first case-study contract;
-- every public claim is either a bounded current-state statement or points to evidence;
-- related projects, notes and publications form a navigable content graph;
-- core content remains useful without JavaScript;
-- canonical clean URLs, RU/EN architecture, search, accessibility, visual and production gates remain green.
+### P3.1 — Homepage evidence paths — DONE
 
-## Product experience
+Delivered by PR #117:
 
-### Homepage hierarchy
+- three explicit one-action paths for Resume, Projects and Materials;
+- bounded evidence cards sourced from canonical Project Registry and Project Evidence;
+- a stable public flagship set: VillAIgence, Vlezet and Engineering Portfolio Platform;
+- fail-closed exclusion of private NODE ZERO;
+- preserved VillAIgence automated/manual and Vlezet accepted/Draft boundaries;
+- current `/now` context;
+- reduced secondary homepage duplication;
+- equivalent bounded RU/EN information architecture;
+- static semantic HTML with progressive enhancement;
+- new reviewed desktop/mobile visual baselines only for the changed homepage.
 
-1. **Identity and specialization** — concise current role and engineering focus.
+Exact evidence:
+
+```text
+feature PR:                     #117 — MERGED
+exact head:                     67d3f6593c45d1239630f71be6a3cb15a33f4519
+accepted squash:                fe1a796df37313401c07e25c0672dc32db30a1c4
+RED Build:                      #827 / 30987736270 — expected FAILURE
+final Build:                    #836 / 30989449993 — SUCCESS
+CodeQL:                         #306 / 30989449931 — SUCCESS
+Dependency Review:              #264 / 30989449930 — SUCCESS
+unit tests:                     360 PASS / 0 FAIL
+site integrity:                 PASS
+mobile overflow:                PASS
+browser/accessibility:          PASS
+Lighthouse:                     PASS
+Firefox/WebKit:                 PASS
+search/RU-EN/analytics:         PASS
+visual regression:              PASS
+custom-domain artifact:         PASS
+quality artifact:               8923559602
+quality digest:                 sha256:429dadb1b84c59e73e9a977e296422084e754f235eaeb538b866d749ea43c64e
+Pages:                          #147 / 30989921979 — SUCCESS
+Production Live Smoke:          #58 / 30989981685 — SUCCESS
+```
+
+## Product experience contract
+
+### Homepage hierarchy — ACCEPTED
+
+1. **Identity and specialization** — current role and engineering focus.
 2. **Primary paths**:
    - `Опыт` → Resume;
    - `Проекты` → flagship case studies;
    - `Материалы` → Engineering Notes and Publications.
-3. **Evidence strip** — three strongest current, verifiable signals rather than generic skill badges.
-4. **Active work** — bounded `/now` snapshot.
-5. **Featured flagship projects** — VillAIgence, Vlezet and TrueRuslan Landing.
-6. **Featured Engineering Notes / Publications**.
+3. **Evidence strip** — three bounded current signals instead of generic skill badges.
+4. **Flagship projects** — VillAIgence, Vlezet and TrueRuslan Landing platform identity.
+5. **Active work** — bounded `/now` snapshot.
+6. **Featured publications and secondary platform sections**.
 
-### Flagship case-study contract
+### Flagship case-study contract — NEXT WORK
 
 Each flagship page must answer, in this order:
 
@@ -75,7 +107,7 @@ Each flagship page must answer, in this order:
 
 - **Happy:** semantic page content, evidence blocks and related links are present.
 - **Empty:** optional evidence groups are omitted; no fake placeholders or demo claims are rendered.
-- **Loading/pending:** only progressive enhancements may load; core content remains server-generated static HTML.
+- **Loading/pending:** only progressive enhancements may load; core content remains generated static HTML.
 - **Error/failure:** missing required canonical data fails the build; optional enhancement failures do not hide content.
 - **Edge/constraint:** Draft evidence, external acceptance and production deployment remain visibly distinct from accepted product truth.
 
@@ -86,32 +118,30 @@ Each flagship page must answer, in this order:
 - Keep Diplodoc as the only site-wide full-text search owner.
 - Use canonical directory routes (`/page/`) and keep legacy `.html` only as compatibility entrypoints.
 - Keep Sitemap, Atom feed, canonical, hreflang and OpenGraph identities free of public `.html` routes.
-- Reuse existing Project Registry, Project Evidence, Notes Registry, Publications Registry and `/now` data.
+- Reuse Project Registry, Project Evidence, Notes Registry, Publications Registry and `/now` data.
 - Add no runtime API, database, account system or duplicate content index.
 
-## Scope
+## Remaining scope
 
-### P3.1 — Homepage evidence paths
+### P3.2 — TrueRuslan Landing flagship — NEXT
 
-- clarify the first-screen message hierarchy;
-- expose Resume, Projects and Materials as explicit primary routes;
-- replace generic proof with bounded evidence-backed signals;
-- preserve existing standalone-home performance and accessibility budgets.
-
-### P3.2 — TrueRuslan Landing flagship
-
-- add the site itself as an evidence-first engineering case study;
-- document static-first architecture, build-time intelligence, clean URL migration, production gates and tradeoffs;
-- connect relevant Engineering Notes.
+- add the site itself as a dedicated evidence-first engineering case study;
+- document product purpose and audience;
+- document static-first architecture, registries and build-time intelligence;
+- explain repository-native clean URL migration and GitHub Pages constraints;
+- distinguish exact-head CI, generated artifact, Pages deployment and Production Live Smoke;
+- record rejected alternatives and known limitations;
+- connect relevant Engineering Notes and repository evidence.
 
 ### P3.3 — Flagship normalization
 
-- align VillAIgence and Vlezet to the common contract without changing their accepted lifecycle states;
-- preserve Vlezet Draft/accepted separation and VillAIgence automated/manual acceptance separation.
+- align VillAIgence and Vlezet to the common case-study contract;
+- preserve Vlezet Draft/accepted separation;
+- preserve VillAIgence automated/manual acceptance separation.
 
 ### P3.4 — Grounded content series
 
-Publish 4–6 Notes based on completed work, starting with:
+Publish 4–6 Notes based on completed work:
 
 - repository-native clean URLs without Cloudflare routing;
 - deployment success versus production smoke;
@@ -137,17 +167,18 @@ Translate only the highest-value surfaces first: homepage, Resume, three flagshi
 
 ## Acceptance criteria
 
-- [ ] all three primary homepage paths are visible and keyboard accessible;
-- [ ] homepage claims are backed by canonical project/evidence data;
-- [ ] three flagship pages follow the same content contract;
-- [ ] TrueRuslan Landing has its own case study and evidence boundary;
-- [ ] Draft, repository, generated artifact, deployment and external acceptance states remain distinct;
-- [ ] related-content links are deterministic and validated at build time;
-- [ ] no public canonical/Sitemap/feed URL contains `.html`;
-- [ ] unit, build, site-integrity, browser, accessibility, Lighthouse, Firefox/WebKit, search, RU/EN, analytics, metadata, visual and custom-domain checks pass;
-- [ ] CodeQL and Dependency Review pass;
-- [ ] post-merge Pages deployment and deployment-driven Production Live Smoke pass.
+- [x] all three primary homepage paths are visible and keyboard accessible;
+- [x] homepage claims are backed by canonical project/evidence data;
+- [x] private NODE ZERO is absent from homepage flagships;
+- [x] core homepage content remains useful without JavaScript;
+- [x] no public canonical/Sitemap/feed URL contains `.html`;
+- [x] unit, build, site-integrity, browser, accessibility, Lighthouse, Firefox/WebKit, search, RU/EN, analytics, metadata, visual and custom-domain checks pass for P3.1;
+- [x] CodeQL and Dependency Review pass for P3.1;
+- [x] post-merge Pages deployment and deployment-driven Production Live Smoke pass for P3.1;
+- [ ] three flagship pages follow the complete common case-study contract;
+- [ ] TrueRuslan Landing has its own dedicated case study and evidence boundary;
+- [ ] related-content links are deterministic and validated at build time.
 
-## Recommended implementation slice
+## Recommended next implementation slice
 
-Start with **P3.1 — Homepage evidence paths**. It provides the highest user-facing value with the smallest architectural surface and establishes the navigation hierarchy that all subsequent case-study and content work will use.
+Start with **P3.2 — TrueRuslan Landing flagship**. P3.1 established the homepage hierarchy and public platform identity; P3.2 must now give that platform identity a dedicated evidence-first destination rather than linking only to the projects hub.

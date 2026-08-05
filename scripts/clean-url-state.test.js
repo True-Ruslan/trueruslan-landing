@@ -44,22 +44,31 @@ test('durable state records repository-native clean URL acceptance', () => {
   assert.ok(state.includes('PR #103') && state.includes('PR #104'), 'state must preserve VillAIgence acceptance evidence');
 });
 
-test('roadmap promotes the approved Portfolio 1.0 evidence-first milestone', () => {
+test('durable state records P3.1 production acceptance and promotes P3.2', () => {
+  const state = read(PROJECT_STATE);
   const roadmap = read(ROADMAP);
+  const changelog = read(CHANGELOG);
   const spec = read(PORTFOLIO_SPEC);
+  const combined = `${state}\n${roadmap}\n${changelog}\n${spec}`;
 
   for (const marker of [
     'Portfolio 1.0',
     'P3.1 — Homepage evidence paths',
+    'PR #117',
+    'fe1a796df37313401c07e25c0672dc32db30a1c4',
+    'Build:                          #836',
+    'Pages:                          #147',
+    'Production Live Smoke:          #58',
     'VillAIgence',
     'Vlezet',
     'TrueRuslan Landing',
     'static-first',
-    'APPROVED',
+    'P3.2 — TrueRuslan Landing flagship',
   ]) {
-    assert.ok(`${roadmap}\n${spec}`.includes(marker), `missing Portfolio 1.0 marker: ${marker}`);
+    assert.ok(combined.includes(marker), `missing P3.1/P3.2 durable marker: ${marker}`);
   }
 
+  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.1 ACCEPTED IN PRODUCTION\*\*/);
   assert.ok(spec.includes('no public canonical/Sitemap/feed URL contains `.html`'));
-  assert.ok(spec.includes('Start with **P3.1 — Homepage evidence paths**'));
+  assert.ok(spec.includes('Start with **P3.2 — TrueRuslan Landing flagship**'));
 });
