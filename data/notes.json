@@ -162,5 +162,19 @@
       "green-ci-is-not-product-verification",
       "llm-output-is-a-protocol-boundary"
     ]
+  },
+  {
+    "slug": "gametests-vs-installed-gameplay-acceptance",
+    "title": "Почему зелёные GameTests ещё не доказывают installed gameplay acceptance",
+    "description": "VillAIgence release-engineering case study: source/unit contracts, remapped package, GameTests, exact production-JAR, provider-client proof и installed canaries как разные evidence layers.",
+    "published": "2026-08-05",
+    "updated": "2026-08-05",
+    "readingMinutes": 15,
+    "tags": ["GameTests", "Release Engineering", "Acceptance", "Reliability"],
+    "related": [
+      "source-tests-to-installed-acceptance",
+      "restart-persistence-is-a-product-contract",
+      "green-ci-is-not-product-verification"
+    ]
   }
 ]
