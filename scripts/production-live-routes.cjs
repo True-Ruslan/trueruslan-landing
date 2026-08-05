@@ -5,6 +5,7 @@ const LEGACY_NOTE_PATH = 'landing/notes/restart-persistence-is-a-product-contrac
 const DEPLOYMENT_VERIFICATION_NOTE_PATH = 'landing/notes/deployment-success-is-not-production-verification/';
 const CLEAN_URLS_NOTE_PATH = 'landing/notes/clean-urls-without-cloudflare-routing/';
 const HYBRID_RECOGNITION_NOTE_PATH = 'landing/notes/hybrid-cv-ai-recognition-boundaries/';
+const GAMETESTS_ACCEPTANCE_NOTE_PATH = 'landing/notes/gametests-vs-installed-gameplay-acceptance/';
 const SEARCH_PATH = '_search/ru/';
 const PORTFOLIO_PLATFORM_PATH = 'landing/projects/portfolio-platform/';
 const PORTFOLIO_PLATFORM_EN_PATH = 'en/projects/portfolio-platform/';
@@ -18,6 +19,7 @@ const LEGACY_NOTE_URL = new URL(LEGACY_NOTE_PATH, APEX).href;
 const DEPLOYMENT_VERIFICATION_NOTE_URL = new URL(DEPLOYMENT_VERIFICATION_NOTE_PATH, APEX).href;
 const CLEAN_URLS_NOTE_URL = new URL(CLEAN_URLS_NOTE_PATH, APEX).href;
 const HYBRID_RECOGNITION_NOTE_URL = new URL(HYBRID_RECOGNITION_NOTE_PATH, APEX).href;
+const GAMETESTS_ACCEPTANCE_NOTE_URL = new URL(GAMETESTS_ACCEPTANCE_NOTE_PATH, APEX).href;
 const SEARCH_URL = new URL(SEARCH_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_URL = new URL(PORTFOLIO_PLATFORM_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_EN_URL = new URL(PORTFOLIO_PLATFORM_EN_PATH, APEX).href;
@@ -33,6 +35,7 @@ module.exports = {
   DEPLOYMENT_VERIFICATION_NOTE_PATH,
   CLEAN_URLS_NOTE_PATH,
   HYBRID_RECOGNITION_NOTE_PATH,
+  GAMETESTS_ACCEPTANCE_NOTE_PATH,
   SEARCH_PATH,
   PORTFOLIO_PLATFORM_PATH,
   PORTFOLIO_PLATFORM_EN_PATH,
@@ -45,6 +48,7 @@ module.exports = {
   DEPLOYMENT_VERIFICATION_NOTE_URL,
   CLEAN_URLS_NOTE_URL,
   HYBRID_RECOGNITION_NOTE_URL,
+  GAMETESTS_ACCEPTANCE_NOTE_URL,
   SEARCH_URL,
   PORTFOLIO_PLATFORM_URL,
   PORTFOLIO_PLATFORM_EN_URL,
