@@ -3,6 +3,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 import {renderFeaturedPublications} from './publication-renderer.js';
+import {loadProjectEvidence} from './project-evidence.js';
 import {
   DEFAULT_PROJECTS_PATH,
   escapeHtml,
@@ -16,6 +17,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DEFAULT_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 const DEFAULT_OUTPUT = path.join(ROOT, 'docs-html', 'index.html');
+const DEFAULT_PROJECT_EVIDENCE_PATH = path.join(ROOT, 'data', 'project-evidence.json');
 
 const HOMEPAGE_FLAGSHIP_SLUGS = Object.freeze([
   'livingworld',
@@ -254,7 +256,7 @@ export function writeStandaloneHome({
   templatePath = DEFAULT_TEMPLATE,
   outputPath = DEFAULT_OUTPUT,
   projectRegistryPath = DEFAULT_PROJECTS_PATH,
-  evidence = [],
+  evidence = null,
   publications = [],
   siteUrl,
   locale = 'ru',
@@ -267,9 +269,14 @@ export function writeStandaloneHome({
 
   const template = fs.readFileSync(templatePath, 'utf8');
   const projects = loadProjectRegistry(projectRegistryPath);
+  const resolvedEvidence = evidence ?? (
+    path.resolve(projectRegistryPath) === path.resolve(DEFAULT_PROJECTS_PATH)
+      ? loadProjectEvidence(DEFAULT_PROJECT_EVIDENCE_PATH, {projects})
+      : []
+  );
   const html = renderStandaloneHome(template, siteUrl, projects, {
     locale,
-    evidence,
+    evidence: resolvedEvidence,
     publications,
     hrefTransform,
     ctaTransform,
