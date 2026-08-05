@@ -21,7 +21,7 @@ function read(file) {
   return fs.readFileSync(file, 'utf8');
 }
 
-test('durable state closes P3.4C after exact deployment and promotes P3.4D', () => {
+test('durable state preserves P3.4C production acceptance after later slices', () => {
   const state = read(PROJECT_STATE);
   const roadmap = read(ROADMAP);
   const changelog = read(CHANGELOG);
@@ -51,14 +51,11 @@ test('durable state closes P3.4C after exact deployment and promotes P3.4D', () 
     'PR #44',
     'PR #45',
     'product-owner retest',
-    'P3.4D — GameTests versus installed gameplay acceptance',
   ]) {
-    assert.ok(combined.includes(marker), `missing P3.4C closure marker: ${marker}`);
+    assert.ok(combined.includes(marker), `missing historical P3.4C marker: ${marker}`);
   }
 
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.4C ACCEPTED IN PRODUCTION\*\*/);
-  assert.ok(spec.includes('Continue with **P3.4D — GameTests versus installed gameplay acceptance**'));
-  assert.ok(state.includes('issue #111'), 'P3.4C closure must preserve search-engine observation');
-  assert.ok(state.includes('issue #82'), 'P3.4C closure must preserve dependency blocker');
-  assert.ok(state.includes('issue #78'), 'P3.4C closure must preserve Content Freshness owner state');
+  assert.ok(state.includes('issue #111'), 'P3.4C ledger must preserve search-engine observation');
+  assert.ok(state.includes('issue #82'), 'P3.4C ledger must preserve dependency blocker');
+  assert.ok(state.includes('issue #78'), 'P3.4C ledger must preserve Content Freshness owner state');
 });
