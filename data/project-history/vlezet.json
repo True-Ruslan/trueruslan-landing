@@ -15,15 +15,15 @@
   },
   {
     "date": "2026-08",
-    "title": "M7.8C Opening Classification and Host-Wall Validation",
-    "description": "Classify door, window and unknown hypotheses, bind every accepted opening to a known host wall, reject ambiguous placement fail-closed and preserve Draft plus explicit Apply authority.",
+    "title": "M7.8C acceptance boundary and stacked recognition Drafts",
+    "description": "PR #42 keeps opening classification and host-wall validation pending the same representative real-plan product-owner retest. PR #44 adds a stacked real-fixture benchmark whose wall and opening F1 remain below immutable 0.85 gates, while PR #45 explores hybrid AI recovery only as deterministically validated proposals. All three remain Draft development evidence and do not promote accepted M7.8B.",
     "state": "current",
-    "evidence": "https://github.com/True-Ruslan/vlezet/blob/main/docs/PROJECT_STATE.md"
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/42"
   },
   {
     "date": "NEXT",
-    "title": "Room faces and semantic reconciliation",
-    "description": "After host-wall correctness, derive room faces and then add labels, areas, confidence calibration and bounded hybrid reconciliation without letting AI create authoritative coordinates.",
+    "title": "Accept or correct M7.8C before later recognition slices",
+    "description": "Complete the exact PR #42 product-owner retest first. Only after explicit acceptance or a bounded defect correction may stacked real-fixture and hybrid-proposal work proceed toward its own immutable gates; room faces and semantic reconciliation remain later milestones.",
     "state": "next"
   }
 ]
