@@ -2,7 +2,7 @@
 
 Я держу здесь проекты, по которым самому проще всего объяснить, чем мне интересно заниматься в разработке.
 
-Часть из них начиналась как обычный PET-проект, часть выросла из желания проверить конкретную архитектурную идею, а часть просто дала повод разобраться с областью, в которую раньше почти не заходил. Поэтому рядом здесь оказываются backend, AI, Minecraft и разработка игр.
+Часть из них начиналась как обычный PET-проект, часть выросла из желания проверить конкретную архитектурную идею, а часть просто дала повод разобраться с областью, в которую раньше почти не заходил. Поэтому рядом здесь оказываются backend, AI, Minecraft, разработка игр и сама платформа этого портфолио.
 
 ## Над чем я сейчас работаю серьёзнее всего
 
@@ -31,6 +31,20 @@ VillAIgence начался с идеи разговаривать с MCA-жит�
 **Текущий статус:** <span data-tr-project-status="livingworld"></span>
 
 [Подробнее о проекте →](projects/livingworld.md) · [GitHub ↗](https://github.com/True-Ruslan/villAIgence)
+
+---
+
+### TrueRuslan Landing
+
+Это production-платформа самого портфолио и knowledge layer, который вы сейчас читаете.
+
+Здесь мне интересна не только публикация Markdown. Проект соединяет standalone homepage, Diplodoc, canonical registries, RU/EN, generated search, Project Evidence, Notes, Publications, Sources, repository-native clean URLs и несколько независимых release gates — от unit contracts и generated artifact до GitHub Pages deployment и Production Live Smoke.
+
+Отдельная инженерная задача — не смешивать уровни доказательств. Зелёный pull request не означает, что тот же SHA уже опубликован; успешный deployment не доказывает browser behavior; live smoke не подтверждает рост аудитории или мгновенную переиндексацию.
+
+**Текущий статус:** <span data-tr-project-status="portfolio-platform"></span>
+
+[Подробнее о платформе →](projects/portfolio-platform.md) · [GitHub ↗](https://github.com/True-Ruslan/trueruslan-landing)
 
 ---
 
