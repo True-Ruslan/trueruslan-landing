@@ -8,6 +8,7 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WORKFLOW = path.join(ROOT, '.github', 'workflows', 'production-live.yml');
 const SMOKE = path.join(ROOT, 'scripts', 'production-live-smoke.cjs');
 const PLATFORM_SMOKE = path.join(ROOT, 'scripts', 'production-portfolio-platform-smoke.cjs');
+const FLAGSHIP_SMOKE = path.join(ROOT, 'scripts', 'production-flagship-normalization-smoke.cjs');
 const ROUTES = path.join(ROOT, 'scripts', 'production-live-routes.cjs');
 
 test('live production workflow is read-only, deployment-aware and artifact-producing', () => {
@@ -30,6 +31,7 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
     'scripts/production-live-routes.test.js',
     'scripts/production-live-workflow.test.js',
     'scripts/production-portfolio-platform-smoke.cjs',
+    'scripts/production-flagship-normalization-smoke.cjs',
   ]) {
     assert.ok(workflow.includes(controlledPath), `missing live-production PR path: ${controlledPath}`);
   }
@@ -52,6 +54,8 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
   assert.match(workflow, /node scripts\/production-live-smoke\.cjs/);
   assert.match(workflow, /name: Run deployed portfolio platform smoke\s*\n\s*if: github\.event_name != 'pull_request'/);
   assert.match(workflow, /node scripts\/production-portfolio-platform-smoke\.cjs/);
+  assert.match(workflow, /name: Run deployed flagship normalization smoke\s*\n\s*if: github\.event_name != 'pull_request'/);
+  assert.match(workflow, /node scripts\/production-flagship-normalization-smoke\.cjs/);
   assert.match(workflow, /actions\/upload-artifact@[0-9a-f]{40}/i);
   assert.match(workflow, /name:\s*production-live-evidence/);
   assert.match(workflow, /retention-days:\s*30/);
@@ -62,7 +66,10 @@ test('baseline live smoke remains safe for PR execution against current producti
   assert.ok(fs.existsSync(SMOKE), 'missing baseline live production smoke script');
   const source = fs.readFileSync(SMOKE, 'utf8');
 
-  assert.doesNotMatch(source, /PORTFOLIO_PLATFORM_URL|portfolio-platform-production-summary/);
+  assert.doesNotMatch(
+    source,
+    /PORTFOLIO_PLATFORM_URL|VILLAIGENCE_URL|VLEZET_URL|flagship-normalization-production-summary/,
+  );
   assert.match(source, /Production live smoke passed/);
 });
 
@@ -79,13 +86,46 @@ test('deployment-only platform smoke covers new RU EN clean routes, homepage and
     'TrueRuslan Landing static-first',
     'Production Live Smoke #58',
     'portfolio-platform-production-summary.json',
-    "main.dc-doc-page__content",
+    'main.dc-doc-page__content',
   ]) {
     assert.ok(source.includes(marker), `missing deployed platform smoke marker: ${marker}`);
   }
 
   assert.doesNotMatch(platformSource, /page\.locator\(['"]main['"]\)\.innerText/);
   assert.match(platformSource, /documentContent\.waitFor\(\{state: 'visible', timeout: 10000\}\)/);
+  assert.match(source, /EXPECTED_DEPLOYED_SHA/);
+  assert.match(source, /link\[rel="canonical"\]/);
+  assert.match(source, /link\[rel="alternate"\]/);
+  assert.match(source, /page\.screenshot/);
+});
+
+test('deployment-only flagship smoke covers RU VillAIgence, RU Vlezet and EN VillAIgence boundaries', () => {
+  assert.ok(fs.existsSync(FLAGSHIP_SMOKE), 'missing deployment-only flagship normalization smoke script');
+  assert.ok(fs.existsSync(ROUTES), 'missing live production route contract');
+  const flagshipSource = fs.readFileSync(FLAGSHIP_SMOKE, 'utf8');
+  const source = `${fs.readFileSync(ROUTES, 'utf8')}\n${flagshipSource}`;
+
+  for (const marker of [
+    'landing/projects/livingworld/',
+    'landing/projects/vlezet/',
+    'en/projects/livingworld/',
+    'main.dc-doc-page__content',
+    '0.1.23+1.21.1',
+    'PR #110',
+    'M7.8B',
+    'M7.8C',
+    'product-owner retest',
+    'flagship-normalization-production-summary.json',
+    'flagship-normalization-${slug}-${locale}.png',
+  ]) {
+    assert.ok(source.includes(marker), `missing deployed flagship smoke marker: ${marker}`);
+  }
+
+  assert.doesNotMatch(flagshipSource, /page\.locator\(['"]main['"]\)\.innerText/);
+  assert.match(flagshipSource, /documentContent\.waitFor\(\{state: 'visible', timeout: 10000\}\)/);
+  assert.match(flagshipSource, /data-project-status/);
+  assert.match(flagshipSource, /data-project-evidence/);
+  assert.match(flagshipSource, /tr-project-timeline__item--current/);
   assert.match(source, /EXPECTED_DEPLOYED_SHA/);
   assert.match(source, /link\[rel="canonical"\]/);
   assert.match(source, /link\[rel="alternate"\]/);
