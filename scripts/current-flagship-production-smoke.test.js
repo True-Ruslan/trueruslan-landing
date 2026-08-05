@@ -11,7 +11,10 @@ const source = fs.readFileSync(SMOKE, 'utf8');
 test('deployment flagship smoke derives current release evidence from the canonical registry', () => {
   assert.match(source, /data\/project-evidence\.json/);
   assert.match(source, /Current published candidate/);
-  assert.match(source, /evidenceVersion\(['"]livingworld['"], ['"]Current published candidate['"]\)/);
+  assert.match(
+    source,
+    /evidenceVersion\(\s*['"]livingworld['"]\s*,\s*['"]Current published candidate['"]\s*\)/,
+  );
   assert.doesNotMatch(source, /0\.1\.23\+1\.21\.1/);
 });
 
