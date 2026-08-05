@@ -240,6 +240,16 @@
     "accent": "cyan"
   },
   {
+    "path": "landing/notes/clean-urls-without-cloudflare-routing.html",
+    "card": "note-clean-urls",
+    "title": "Как clean URLs заработали на GitHub Pages без Cloudflare routing",
+    "description": "TrueRuslan Landing routing case study: repository-native directory URLs, Diplodoc base/depth migration, static legacy compatibility and bounded search-engine observation.",
+    "displayTitle": "CLEAN URL CONTRACT",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["CLEAN URLS", "GITHUB PAGES", "STATIC-FIRST"],
+    "accent": "green"
+  },
+  {
     "path": "en/index.html",
     "card": "home-en",
     "title": "Ruslan Nemykin — Backend Engineer",
