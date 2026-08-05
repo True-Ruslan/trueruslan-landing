@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.2 TrueRuslan Landing flagship и PR #120 verifier closure.
+> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.3 Flagship normalization.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; product specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -38,7 +38,7 @@
 - Photo Stories — PRs #15/#17.
 - Sources Registry / KB — PR #20.
 - Project Evidence — PR #22.
-- Grounded Notes — PR #25.
+- Grounded Notes foundation — PR #25.
 - Content Freshness Guard — PR #27.
 - Browser Quality Harness — PR #29.
 - Flagship Case-Study Format — PR #34.
@@ -67,6 +67,8 @@
 - P3.1 durable closure — PR #118.
 - P3.2 TrueRuslan Landing flagship — PR #119.
 - P3.2 production-selector hotfix — PR #120.
+- P3.2 durable closure — PR #121.
+- P3.3 VillAIgence/Vlezet flagship normalization — PR #122.
 
 ---
 
@@ -81,106 +83,100 @@ Pages:                          #147 / 30989921979 — SUCCESS
 Production Live Smoke:          #58 / 30989981685 — SUCCESS
 ```
 
-Accepted outcome:
-
-- Resume, Projects and Materials are explicit primary paths;
-- bounded evidence comes from canonical registries;
-- VillAIgence, Vlezet and Engineering Portfolio Platform are public homepage flagships;
-- private NODE ZERO is fail-closed excluded;
-- RU/EN and no-JS boundaries remain intact.
+Accepted outcome: explicit Resume/Projects/Materials paths, bounded registry evidence, public-only flagship set, `/now` context and bounded RU/EN hierarchy.
 
 ## P3.2 — TrueRuslan Landing flagship — DONE
-
-Dedicated clean routes:
-
-```text
-/landing/projects/portfolio-platform/
-/en/projects/portfolio-platform/
-```
-
-Feature evidence:
 
 ```text
 PR #119 head:                  6736c9fd917f213621e5e88273304dda8ddda760
 PR #119 squash:                d11aeddeed492dce512e123d216e0191a5906ca9
 Build:                          #868 / 30998184982 — SUCCESS
-CodeQL:                         #340 — SUCCESS
-Dependency Review:              #296 — SUCCESS
-unit tests:                     368 PASS / 0 FAIL
-quality artifact:               8927189167
-quality digest:                 sha256:9bd264d534ba31f51669d6701319cb2b4671574e329d7e36f9047bb48affc997
-```
-
-Verifier closure:
-
-```text
 PR #120 head:                  c2fa3327061148b5e4adf703bd707d6925639df3
 PR #120 squash:                dcb278cb4f52d5e8afc314a9f30689edb5153af0
 Build:                          #869 / 30998966087 — SUCCESS
-CodeQL:                         #342 — SUCCESS
-Dependency Review:              #297 — SUCCESS
-PR-safe Production Live Smoke:  #79 — SUCCESS
 Pages deployment ID:            5760275658 — SUCCESS
 Production Live Smoke:          #80 / 30999331791 — SUCCESS
-platform RU/EN smoke:           PASS
-favicon smoke:                  PASS
 production artifact:            8927580319
 production digest:              sha256:71198afc2ae475a9322ee74f5ea54a5b2190baa884cc8f54da01de7efdf21e08
 ```
 
+Accepted outcome: dedicated RU/EN platform case study, canonical Project History/Evidence, search/Sitemap/metadata integration and scoped deployment verification through `main.dc-doc-page__content`.
+
+## P3.3 — Flagship normalization — DONE
+
+Normalized production routes:
+
+```text
+/landing/projects/livingworld/
+/landing/projects/vlezet/
+/en/projects/livingworld/
+```
+
+Feature and production evidence:
+
+```text
+PR #122 RED head:              f2c5b065a8f1a1cd8adbad6ebb4ed7743cb33ad7
+RED Build:                      #871 — expected FAILURE
+PR #122 exact head:            ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46
+PR #122 squash:                c90a221a21f51e897661667f981483bad922ad0d
+Build:                          #893 / 31005675334 — SUCCESS
+CodeQL:                         #368 — SUCCESS
+Dependency Review:              #321 — SUCCESS
+Content Freshness:              #67 — SUCCESS
+unit tests:                     376 PASS / 0 FAIL
+quality artifact:               8930321636
+quality digest:                 sha256:97880f197f9484b41eb38ee606c291a754d889a55160719d948c13b0fc9a4e8a
+Pages:                          #152 / 31006504250 — SUCCESS
+Pages deployment ID:            5761717586
+Production Live Smoke:          #95 / 31006557622 — SUCCESS
+baseline/platform/flagship/favicon smokes: PASS
+production artifact:            8930571510
+production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13
+```
+
 Accepted outcome:
 
-- dedicated RU/EN evidence-first case study;
-- homepage, Projects hubs, toc, search, Sitemap, metadata, OpenGraph and hreflang integration;
-- canonical Project History and Project Evidence;
-- four controlled flagship/evidence projects;
-- CI, artifact, Pages deployment and live browser proof remain distinct;
-- Cloudflare is not required as application routing runtime;
-- deployment-only smoke verifies both routes, homepage link, search and favicon;
-- `main.dc-doc-page__content` is the required Diplodoc document selector.
+- RU VillAIgence, RU Vlezet and controlled EN VillAIgence use one evidence-first order;
+- Project Registry status automatically renders on existing canonical project pages;
+- Project Evidence pending states work in JS and no-JS modes;
+- ordered sections, related links, timelines and evidence are checked in Chromium, Firefox and WebKit;
+- exact deployed pages are checked only after the matching Pages deployment;
+- no route, slug, lifecycle or accepted external-project state was broadened.
 
-## P3.3 — Flagship normalization — NEXT
+Preserved external boundaries:
 
-Normalize **VillAIgence** and **Vlezet** to the complete evidence-first order already accepted for TrueRuslan Landing.
+- Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`; M7.8B accepted; M7.8C Draft pending representative real-plan owner retest.
+- VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`; PR #103/#104 automation accepted within scope; PR #110 remains Draft/RED; cumulative real-provider/gameplay/manual acceptance pending.
 
-Required sequence:
+## P3.4 — Grounded Engineering Notes — NEXT
 
-1. problem and user;
-2. constraints and risks;
-3. current lifecycle and accepted boundary;
-4. architecture and canonical source of truth;
-5. alternatives considered and rejected;
-6. implemented capabilities;
-7. verification and evidence;
-8. known limitations;
-9. next accepted milestone;
-10. related Notes, Publications and repository links.
+Publish a bounded 4–6 Note series from completed, evidenced work.
 
-Acceptance criteria:
+Candidate order:
 
-- VillAIgence and Vlezet follow the same structural marker order;
-- existing canonical route identities remain unchanged;
-- timeline and Project Evidence placeholders remain unique;
-- related Notes are deterministic and validated;
-- current lifecycle labels remain registry-owned;
-- full exact-head, visual and production matrices pass;
-- no acceptance claim is broadened.
+1. **Clean URLs without Cloudflare routing** — directory output, canonical/feed/search migration and GitHub Pages redirect limitation.
+2. **Deployment success is not production verification** — exact artifact, Pages deployment and browser smoke as separate evidence layers.
+3. **Hybrid CV + AI recognition boundaries** — local candidates, verification-only AI, deterministic Apply and owner retest.
+4. **GameTests versus installed gameplay acceptance** — development integration, exact production JAR, focused live canaries and cumulative acceptance.
+5. **Passive PDF validation versus semantics** — structural validity, browser delivery and limits of raw-byte inspection.
+6. **Evidence-driven project state** — accepted, failed, pending and Draft signals without automatic promotion.
 
-Do not promote:
+Acceptance criteria for each Note:
 
-- VillAIgence beyond `ACCEPTANCE IN PROGRESS` before cumulative real-provider/gameplay/manual acceptance;
-- Vlezet M7.8C before exact-head automation plus the same representative real-plan owner retest.
+- derived from accepted evidence and existing case studies;
+- clearly separates verified facts, inference and limitation;
+- links to the relevant case study, repository evidence and related Notes;
+- no invented metrics or broadened acceptance claims;
+- deterministic Notes Registry metadata;
+- clean route, Sitemap/search/Atom integration;
+- useful without JavaScript;
+- full exact-head and production matrices pass.
 
-## P3.4 — Grounded Engineering Notes
+Recommended first implementation slice:
 
-Publish 4–6 Notes from completed work:
+**P3.4A — Deployment success is not production verification**.
 
-- clean URLs without Cloudflare routing;
-- deployment success versus production smoke;
-- hybrid CV + AI recognition boundaries;
-- GameTests versus installed gameplay acceptance;
-- passive PDF validation versus semantics;
-- evidence-driven project state.
+Reason: the platform already has complete repository, generated-artifact, Pages and Production Live Smoke evidence from P3.1–P3.3, so the Note can be fully grounded without waiting for external project acceptance.
 
 ## P3.5 — Selective English expansion
 
@@ -205,7 +201,7 @@ Repository work is complete. Issue #111 remains only for authenticated Yandex We
 1. confirm/resubmit Sitemap;
 2. verify HTTP→HTTPS/main mirror;
 3. select “No region”;
-4. request recrawl for representative clean routes, including the new platform case study;
+4. request recrawl for representative clean routes;
 5. recheck diagnostics and indexed URLs after 10–14 days.
 
 Do not add repository code solely to clear a stale cached diagnostic.
@@ -219,12 +215,6 @@ Do not add repository code solely to clear a stale cached diagnostic.
 Review issue #82 on or after **2026-08-17**. Accept an update only when upstream Diplodoc supports a secure markdown-it line and the complete exact-head matrix passes.
 
 Do not use `npm audit fix --force`, local shims or an unreviewed fork.
-
-## External projects
-
-- Vlezet M7.8B remains accepted; M7.8C remains pending.
-- VillAIgence PR #103/#104 automated evidence remains separate from cumulative acceptance.
-- update public project state only from accepted bounded evidence.
 
 ## Conditional work
 
@@ -254,4 +244,4 @@ Without a reproduced product need, do not plan:
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, commits, exact-head CI, Pages and Production Live Smoke. Confirm PR #119 squash `d11aeddeed492dce512e123d216e0191a5906ca9` delivered P3.2, PR #120 squash `dcb278cb4f52d5e8afc314a9f30689edb5153af0` closed production verification, Pages deployment ID `5760275658` and Production Live Smoke #80 passed; PR #114/#115 remain the clean URL baseline; issue #111 is external observation only; issue #82 remains the dependency blocker; Vlezet and VillAIgence acceptance boundaries are unchanged; continue with **P3.3 — Flagship normalization**.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, commits, exact-head CI, Pages and Production Live Smoke. Confirm PR #122 head `ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46` and squash `c90a221a21f51e897661667f981483bad922ad0d` delivered P3.3; Build #893, Pages #152 and Production Live Smoke #95 passed; Pages deployment ID `5761717586` published the exact accepted SHA; issue #111 remains external observation only; issue #82 remains the dependency blocker; Vlezet and VillAIgence acceptance boundaries are unchanged; continue with **P3.4A — Deployment success is not production verification**.
