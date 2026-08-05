@@ -6,7 +6,7 @@ const {captureScreenshot, writeJsonArtifact} = require('./quality-harness/eviden
 const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 
 const PORT = Number(process.env.SOURCES_KB_SMOKE_PORT || 4182);
-const ROUTE = '/landing/bibliography.html';
+const ROUTE = '/landing/bibliography/';
 const EXPECTED_SOURCE_COUNT = 31;
 const FIRST_SOURCE_ID = 'source-kak-my-sokratili-obem-dannyh-v-10-raz-ne-povrediv-polzovatelskom-988510';
 

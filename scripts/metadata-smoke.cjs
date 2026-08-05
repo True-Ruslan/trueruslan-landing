@@ -8,14 +8,27 @@ const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 const {chromium} = requireQualityTool('playwright');
 
 const pages = [
-  {path: '/index.html', title: 'Руслан Немыкин — Backend Engineer', card: 'home'},
-  {path: '/landing/projects.html', title: 'Проекты — Руслан Немыкин', card: 'projects'},
-  {path: '/landing/engineering-map.html', title: 'Engineering Map — Руслан Немыкин', card: 'engineering-map'},
-  {path: '/landing/resume.html', title: 'Резюме — Руслан Немыкин', card: 'resume'},
-  {path: '/landing/projects/livingworld.html', title: 'VillAIgence — Server-Authoritative AI Society', card: 'livingworld'},
-  {path: '/landing/projects/node-zero.html', title: 'NODE ZERO — Narrative Systems Case Study', card: 'node-zero'},
-  {path: '/landing/notes.html', title: 'Engineering Notes — Руслан Немыкин', card: 'notes'},
+  {path: '/', title: 'Руслан Немыкин — Backend Engineer', card: 'home'},
+  {path: '/landing/projects/', title: 'Проекты — Руслан Немыкин', card: 'projects'},
+  {path: '/landing/engineering-map/', title: 'Engineering Map — Руслан Немыкин', card: 'engineering-map'},
+  {path: '/landing/resume/', title: 'Резюме — Руслан Немыкин', card: 'resume'},
+  {path: '/landing/projects/livingworld/', title: 'VillAIgence — Server-Authoritative AI Society', card: 'livingworld'},
+  {path: '/landing/projects/node-zero/', title: 'NODE ZERO — Narrative Systems Case Study', card: 'node-zero'},
+  {path: '/landing/notes/', title: 'Engineering Notes — Руслан Немыкин', card: 'notes'},
 ];
+
+function assertCleanCanonicalPath(canonical, expectedPath) {
+  const pathname = new URL(canonical).pathname;
+  if (pathname.includes('.html')) {
+    throw new Error(`${expectedPath}: canonical still contains .html: ${canonical}`);
+  }
+  if (!pathname.endsWith('/')) {
+    throw new Error(`${expectedPath}: canonical must end with a directory slash: ${canonical}`);
+  }
+  if (expectedPath !== '/' && !pathname.endsWith(expectedPath)) {
+    throw new Error(`${expectedPath}: canonical path mismatch ${canonical}`);
+  }
+}
 
 async function assertMetadata(page, context, baseUrl, expected) {
   const response = await page.goto(`${baseUrl}${expected.path}`, {waitUntil: 'networkidle'});
@@ -43,6 +56,7 @@ async function assertMetadata(page, context, baseUrl, expected) {
   if (ogWidth !== '1200' || ogHeight !== '630') throw new Error(`${expected.path}: wrong OG dimensions metadata`);
   if (twitterCard !== 'summary_large_image') throw new Error(`${expected.path}: wrong twitter:card`);
   if (!canonical?.startsWith('http')) throw new Error(`${expected.path}: canonical must be absolute`);
+  assertCleanCanonicalPath(canonical, expected.path);
 
   const imageResponse = await context.request.get(`${baseUrl}${ogLocalPath}`);
   if (!imageResponse.ok()) throw new Error(`${expected.path}: OG image HTTP ${imageResponse.status()}`);

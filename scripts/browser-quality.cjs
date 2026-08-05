@@ -132,7 +132,7 @@ async function runLighthouse(chromePath, baseUrl) {
   }
 
   await runCommand(lighthouseBin, [
-    `${baseUrl}/index.html`,
+    `${baseUrl}/`,
     '--quiet',
     '--output=json',
     `--output-path=${reportPath}`,

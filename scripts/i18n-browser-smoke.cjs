@@ -12,13 +12,13 @@ const {chromium} = requireQualityTool('playwright', 'Minimal RU EN smoke tool');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Minimal RU EN smoke tool');
 
 const PAIRS = [
-  {id: 'home', ru: '/index.html', en: '/en/index.html'},
-  {id: 'about', ru: '/landing/about.html', en: '/en/about.html'},
-  {id: 'resume', ru: '/landing/resume.html', en: '/en/resume.html'},
-  {id: 'projects', ru: '/landing/projects.html', en: '/en/projects.html'},
-  {id: 'livingworld', ru: '/landing/projects/livingworld.html', en: '/en/projects/livingworld.html'},
-  {id: 'note-ai-npcs', ru: '/landing/notes/server-authoritative-ai-npcs.html', en: '/en/notes/server-authoritative-ai-npcs.html'},
-  {id: 'note-llm-protocol-boundary', ru: '/landing/notes/llm-output-is-a-protocol-boundary.html', en: '/en/notes/llm-output-is-a-protocol-boundary.html'},
+  {id: 'home', ru: '/', en: '/en/'},
+  {id: 'about', ru: '/landing/about/', en: '/en/about/'},
+  {id: 'resume', ru: '/landing/resume/', en: '/en/resume/'},
+  {id: 'projects', ru: '/landing/projects/', en: '/en/projects/'},
+  {id: 'livingworld', ru: '/landing/projects/livingworld/', en: '/en/projects/livingworld/'},
+  {id: 'note-ai-npcs', ru: '/landing/notes/server-authoritative-ai-npcs/', en: '/en/notes/server-authoritative-ai-npcs/'},
+  {id: 'note-llm-protocol-boundary', ru: '/landing/notes/llm-output-is-a-protocol-boundary/', en: '/en/notes/llm-output-is-a-protocol-boundary/'},
 ];
 
 const EXTERNALS = Object.freeze({
@@ -28,8 +28,7 @@ const EXTERNALS = Object.freeze({
 });
 
 function publicPath(pathname) {
-  if (pathname === '/index.html') return `${SITE_PATH}/`;
-  if (pathname === '/en/index.html') return `${SITE_PATH}/en/`;
+  if (pathname === '/') return `${SITE_PATH}/`;
   return `${SITE_PATH}${pathname}`;
 }
 
@@ -101,7 +100,7 @@ async function assertHeaderUtilities(page, pair, locale, label) {
 
   const search = group.locator('[data-tr-utility="search"]');
   if (await search.count() !== 1) throw new Error(`${label}: expected one search utility`);
-  if (!(await search.getAttribute('href'))?.includes('_search/ru/index.html')) throw new Error(`${label}: search route mismatch`);
+  if (!(await search.getAttribute('href'))?.includes('_search/ru/')) throw new Error(`${label}: search route mismatch`);
   const expectedSearchLabel = locale === 'en' ? 'Search the site' : 'Поиск по сайту';
   if (await search.getAttribute('aria-label') !== expectedSearchLabel) throw new Error(`${label}: search label mismatch`);
 
@@ -194,8 +193,8 @@ async function assertLanguageKeyboard(page) {
 
 async function assertQuality(browser, baseUrl) {
   const scenarios = [
-    {name: 'home-desktop', route: '/en/index.html', viewport: VIEWPORTS.desktop},
-    {name: 'livingworld-mobile', route: '/en/projects/livingworld.html', viewport: VIEWPORTS.mobile},
+    {name: 'home-desktop', route: '/en/', viewport: VIEWPORTS.desktop},
+    {name: 'livingworld-mobile', route: '/en/projects/livingworld/', viewport: VIEWPORTS.mobile},
   ];
   const results = {};
 
@@ -224,17 +223,17 @@ async function assertQuality(browser, baseUrl) {
 }
 
 async function assertSingleSearch(page, baseUrl) {
-  let response = await page.goto(`${baseUrl}/_search/ru/index.html`, {waitUntil: 'networkidle'});
+  let response = await page.goto(`${baseUrl}/_search/ru/`, {waitUntil: 'networkidle'});
   if (!response?.ok()) throw new Error(`single search route HTTP ${response?.status() ?? 'none'}`);
 
-  response = await page.goto(`${baseUrl}/_search/en/index.html`, {waitUntil: 'load'});
-  if (response?.ok()) throw new Error('unexpected second site-wide search index exists at _search/en/index.html');
+  response = await page.goto(`${baseUrl}/_search/en/`, {waitUntil: 'load'});
+  if (response?.ok()) throw new Error('unexpected second site-wide search index exists at _search/en/');
 
-  const homeResponse = await page.goto(`${baseUrl}/en/index.html`, {waitUntil: 'networkidle'});
+  const homeResponse = await page.goto(`${baseUrl}/en/`, {waitUntil: 'networkidle'});
   if (!homeResponse?.ok()) throw new Error('English home unavailable for search-link assertion');
   const searchHref = await page.locator('[data-tr-utility="search"]').getAttribute('href');
-  if (!searchHref?.includes('_search/ru/index.html')) throw new Error(`English UI does not point to the single RU search index: ${searchHref}`);
-  return {route: '/_search/ru/index.html', englishSearchAbsent: true, englishUiHref: searchHref};
+  if (!searchHref?.includes('_search/ru/')) throw new Error(`English UI does not point to the single RU search index: ${searchHref}`);
+  return {route: '/_search/ru/', englishSearchAbsent: true, englishUiHref: searchHref};
 }
 
 async function main() {

@@ -36,7 +36,7 @@ async function assertCommandPalette(page) {
   const searchLink = palette.locator('a', {hasText: 'Поиск по сайту'});
   await searchLink.waitFor({state: 'visible'});
   const href = await searchLink.getAttribute('href');
-  if (!href || !new URL(href, page.url()).pathname.endsWith('/_search/ru/index.html')) {
+  if (!href || !new URL(href, page.url()).pathname.endsWith('/_search/ru/')) {
     throw new Error(`Command palette search does not hand off to Diplodoc local search: ${href || 'missing href'}`);
   }
 
@@ -92,14 +92,14 @@ async function main() {
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'home-command-palette',
-      pathname: '/index.html',
+      pathname: '/',
       heading: 'Руслан Немыкин',
       verify: assertCommandPalette,
     });
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'projects-registry-status',
-      pathname: '/landing/projects.html',
+      pathname: '/landing/projects/',
       heading: 'Проекты',
       verify: async (page) => {
         const villaigenceStatus = page.locator('[data-project-status="livingworld"]');
@@ -117,7 +117,7 @@ async function main() {
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'now',
-      pathname: '/landing/now.html',
+      pathname: '/landing/now/',
       heading: 'Сейчас',
       verify: async (page) => {
         await page.locator('[data-tr-now]').waitFor({state: 'visible'});
@@ -135,7 +135,7 @@ async function main() {
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'notes',
-      pathname: '/landing/notes.html',
+      pathname: '/landing/notes/',
       heading: 'Engineering Notes',
       verify: async (page, baseUrl) => {
         const feedLink = page.locator('a', {hasText: 'Подписаться на Atom feed'}).first();
@@ -155,7 +155,7 @@ async function main() {
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'note-metadata',
-      pathname: '/landing/notes/server-authoritative-ai-npcs.html',
+      pathname: '/landing/notes/server-authoritative-ai-npcs/',
       heading: 'Проектирование server-authoritative AI NPC pipeline',
       verify: async (page) => {
         await page.locator('.tr-note-meta').waitFor({state: 'visible'});
@@ -174,7 +174,7 @@ async function main() {
     ]) {
       await checkPage(browser, serverRuntime.baseUrl, {
         slug: `timeline-${project.slug}`,
-        pathname: `/landing/projects/${project.slug}.html`,
+        pathname: `/landing/projects/${project.slug}/`,
         heading: project.heading,
         verify: async (page) => {
           const timeline = page.locator('.tr-project-timeline');

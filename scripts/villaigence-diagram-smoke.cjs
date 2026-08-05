@@ -19,7 +19,7 @@ async function main() {
   try {
     browser = await launchChromium(chromium);
     const page = await browser.newPage({viewport: {width: 1280, height: 840}, colorScheme: 'dark'});
-    const projectResponse = await page.goto(`${server.baseUrl}/landing/projects/livingworld.html`, {waitUntil: 'networkidle'});
+    const projectResponse = await page.goto(`${server.baseUrl}/landing/projects/livingworld/`, {waitUntil: 'networkidle'});
     if (!projectResponse?.ok()) throw new Error(`VillAIgence page returned HTTP ${projectResponse?.status() ?? 'none'}`);
 
     const sourceUrl = `${server.baseUrl}${SOURCE_PATH}`;

@@ -10,10 +10,10 @@ const {chromium} = requireQualityTool('playwright', 'Project Evidence smoke tool
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Project Evidence smoke tool');
 
 const PROJECTS = [
-  {project: 'vlezet', route: '/landing/projects/vlezet.html', status: 'verified', label: 'ПРОВЕРЕНО', borderStyle: 'solid'},
+  {project: 'vlezet', route: '/landing/projects/vlezet/', status: 'verified', label: 'ПРОВЕРЕНО', borderStyle: 'solid'},
   {
     project: 'livingworld',
-    route: '/landing/projects/livingworld.html',
+    route: '/landing/projects/livingworld/',
     status: 'verified',
     label: 'ПРОВЕРЕНО',
     borderStyle: 'solid',
@@ -21,7 +21,7 @@ const PROJECTS = [
     stateCounts: {accepted: 1, failed: 1, merged: 3},
     requiredText: ['PR #103', 'PR #104', '0.1.23+1.21.1', 'production-JAR'],
   },
-  {project: 'node-zero', route: '/landing/projects/node-zero.html', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
+  {project: 'node-zero', route: '/landing/projects/node-zero/', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
 ];
 
 async function assertEvidence(page, expected, prefix) {

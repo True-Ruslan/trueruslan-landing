@@ -12,7 +12,6 @@ import {globSync} from 'glob';
 import open from 'open';
 
 import {debounce} from './debounce.js';
-import {postprocessOutput} from './copy-assets.js';
 
 const SCRIPTS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.join(SCRIPTS_DIR, '..');
@@ -88,14 +87,8 @@ events.addEventListener("${sseEventName}", () => window.location.reload());
   }
 
   rebuild() {
-    console.info('building documentation and refreshing post-processing');
-
-    execSync('npm run build:docs:fast', {cwd: PROJECT_ROOT, stdio: 'inherit'});
-
-    const result = postprocessOutput();
-    console.info(
-      `post-processed output, normalized ${result.normalizedSearchPages} search page(s), copied ${result.copied.length} asset(s)`,
-    );
+    console.info('building documentation and refreshing all post-processing');
+    execSync('npm run build:docs', {cwd: PROJECT_ROOT, stdio: 'inherit'});
   }
 
   injectSse() {

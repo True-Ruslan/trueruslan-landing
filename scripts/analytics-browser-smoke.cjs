@@ -17,11 +17,11 @@ const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Privac
 const FAKE_TOKEN = 'testAnalyticsToken0123456789ABCDEF';
 const BEACON_SRC = 'https://static.cloudflareinsights.com/beacon.min.js';
 const ROUTES = Object.freeze([
-  '/index.html',
-  '/en/index.html',
-  '/landing/projects/livingworld.html',
-  '/en/projects/livingworld.html',
-  '/_search/ru/index.html',
+  '/',
+  '/en/',
+  '/landing/projects/livingworld/',
+  '/en/projects/livingworld/',
+  '/_search/ru/',
 ]);
 
 function listHtmlFiles(root) {
@@ -142,7 +142,7 @@ async function assertRepresentativeA11y(browser, baseUrl) {
 
   try {
     await installAnalyticsBlock(context, intercepted);
-    const response = await page.goto(`${baseUrl}/en/projects/livingworld.html`, {waitUntil: 'networkidle'});
+    const response = await page.goto(`${baseUrl}/en/projects/livingworld/`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`analytics a11y route HTTP ${response?.status() ?? 'none'}`);
     const result = await assertNoBlockingAxe({
       page,
