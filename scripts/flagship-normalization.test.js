@@ -48,13 +48,14 @@ test('P3.3 preserves canonical lifecycle labels and routes', () => {
   assert.equal(livingworld.href, 'landing/projects/livingworld.html');
 });
 
-test('Vlezet keeps M7.8B accepted while M7.8C remains Draft pending owner retest', () => {
+test('Vlezet keeps M7.8B accepted while M7.8C and stacked work remain Draft pending owner gates', () => {
   const evidence = evidenceMap().get('vlezet');
   assert.equal(evidence.lastVerified, '2026-08-05');
   assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted recognition slice' && value === 'M7.8B'));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Next recognition slice' && value === 'M7.8C'));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Next acceptance boundary' && value === 'M7.8C product-owner retest'));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Stacked Draft exploration' && value === 'M7.9 + M7.8C.1'));
 
-  const pending = findSignal(evidence, 'M7.8C');
+  const pending = findSignal(evidence, 'M7.8C Draft');
   assert.equal(pending.state, 'pending');
   assertIncludesAll(pending.scope, [
     'c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a',
@@ -65,24 +66,64 @@ test('Vlezet keeps M7.8B accepted while M7.8C remains Draft pending owner retest
     'not an acceptance',
   ], 'Vlezet M7.8C pending scope');
 
+  const benchmark = findSignal(evidence, 'M7.9');
+  assert.equal(benchmark.state, 'pending');
+  assertIncludesAll(benchmark.scope, [
+    'cd29740cf240d591785fc6607147d2bf07ece0b6',
+    'PR #42',
+    '0.85',
+    'merge-blocking',
+    'not an accepted milestone',
+  ], 'Vlezet M7.9 pending scope');
+
+  const hybrid = findSignal(evidence, 'M7.8C.1');
+  assert.equal(hybrid.state, 'pending');
+  assertIncludesAll(hybrid.scope, [
+    '2c4d0f44e56753b9c44dd6c30a720d1a97f50c2e',
+    'PR #44',
+    'proposals',
+    'no authoritative geometry authority',
+    'not an acceptance',
+  ], 'Vlezet hybrid pending scope');
+
   const history = readJson('data/project-history/vlezet.json');
   assert.equal(history.filter(({state}) => state === 'current').length, 1);
   assert.equal(history.filter(({state}) => state === 'next').length, 1);
   assert.ok(history.find(({state}) => state === 'current').title.includes('M7.8C'));
 });
 
-test('VillAIgence keeps automated startup restart proof separate from Draft Phase C and cumulative acceptance', () => {
+test('VillAIgence keeps exact release and provider-client proof separate from Draft Phase C and cumulative acceptance', () => {
   const evidence = evidenceMap().get('livingworld');
   assert.equal(evidence.lastVerified, '2026-08-05');
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Current published candidate' && value === '0.1.23+1.21.1'));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Current published candidate' && value === '0.1.25+1.21.1'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Automated installed boundary' && value.includes('startup + restart PASS')));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Deterministic provider boundary' && value.includes('Chat + STT + TTS PASS')));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Cumulative manual acceptance' && value === 'pending'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Active development slice' && value.includes('Draft/RED')));
+
+  const release = findSignal(evidence, 'PR #107');
+  assert.equal(release.state, 'published');
+  assertIncludesAll(release.scope, [
+    '0.1.25+1.21.1',
+    'exact',
+    'does not complete',
+    'cumulative',
+  ], 'VillAIgence PR #107 release scope');
+
+  const provider = findSignal(evidence, 'PR #108');
+  assert.equal(provider.state, 'merged');
+  assertIncludesAll(provider.scope, [
+    'literal-loopback',
+    'Chat',
+    'STT',
+    'TTS',
+    'does not claim',
+  ], 'VillAIgence PR #108 provider scope');
 
   const pending = findSignal(evidence, 'PR #110');
   assert.equal(pending.state, 'pending');
   assertIncludesAll(pending.scope, [
-    'e0b763aa4a5caea8897aadc6ee2cab6c1b407c89',
+    'b3172080d89052a5b361d203dbdac152752d7d0d',
     'Draft',
     'RED',
     'no production implementation',
