@@ -107,7 +107,7 @@ test('deployment-only platform smoke covers new RU EN clean routes, homepage and
   assert.match(source, /page\.screenshot/);
 });
 
-test('deployment-only flagship smoke covers RU VillAIgence, RU Vlezet and EN VillAIgence boundaries', () => {
+test('deployment-only flagship smoke covers current RU VillAIgence, RU Vlezet and EN VillAIgence boundaries', () => {
   assert.ok(fs.existsSync(FLAGSHIP_SMOKE), 'missing deployment-only flagship normalization smoke script');
   assert.ok(fs.existsSync(ROUTES), 'missing live production route contract');
   const flagshipSource = fs.readFileSync(FLAGSHIP_SMOKE, 'utf8');
@@ -118,10 +118,14 @@ test('deployment-only flagship smoke covers RU VillAIgence, RU Vlezet and EN Vil
     'landing/projects/vlezet/',
     'en/projects/livingworld/',
     'main.dc-doc-page__content',
-    '0.1.23+1.21.1',
+    'data/project-evidence.json',
+    'Current published candidate',
+    'PR #108',
     'PR #110',
     'M7.8B',
     'M7.8C',
+    'PR #44',
+    'PR #45',
     'product-owner retest',
     'flagship-normalization-production-summary.json',
     'flagship-normalization-${slug}-${locale}.png',
@@ -129,6 +133,7 @@ test('deployment-only flagship smoke covers RU VillAIgence, RU Vlezet and EN Vil
     assert.ok(source.includes(marker), `missing deployed flagship smoke marker: ${marker}`);
   }
 
+  assert.doesNotMatch(flagshipSource, /0\.1\.23\+1\.21\.1/);
   assert.doesNotMatch(flagshipSource, /page\.locator\(['"]main['"]\)\.innerText/);
   assert.match(flagshipSource, /documentContent\.waitFor\(\{state: 'visible', timeout: 10000\}\)/);
   assert.match(flagshipSource, /data-project-status/);
