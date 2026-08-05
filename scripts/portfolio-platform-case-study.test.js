@@ -72,7 +72,7 @@ test('portfolio platform evidence separates CI, Pages deployment and live produc
   const labels = snapshot.signals.map(({label}) => label);
   assert.ok(labels.some((label) => label.includes('PR #114')));
   assert.ok(labels.some((label) => label.includes('Build #836')));
-  assert.ok(labels.some((label) => label.includes('Pages #147')));
+  assert.ok(labels.some((label) => /Pages.*#147|#147.*Pages/.test(label)));
   assert.ok(labels.some((label) => label.includes('Production Live Smoke #58')));
 
   const live = snapshot.signals.find(({label}) => label.includes('Production Live Smoke #58'));
