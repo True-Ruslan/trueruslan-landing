@@ -14,6 +14,7 @@ const {chromium} = requireQualityTool('playwright', 'Portfolio platform producti
 const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
 const LEGACY_ORIGIN = 'true-ruslan.github.io/trueruslan-landing';
 const ARTIFACTS_DIR = path.resolve('production-artifacts');
+const DOCUMENT_CONTENT_SELECTOR = 'main.dc-doc-page__content';
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -44,7 +45,9 @@ async function verifyCaseStudy(page, url, {locale, alternateUrl}) {
   const alternate = await page.locator(`link[rel="alternate"][hreflang="${alternateLocale}"]`).getAttribute('href');
   assert(alternate && normalizeUrl(alternate) === normalizeUrl(alternateUrl), `wrong ${locale} portfolio alternate: ${alternate || 'missing'}`);
 
-  const mainText = await page.locator('main').innerText();
+  const documentContent = page.locator(DOCUMENT_CONTENT_SELECTOR).first();
+  await documentContent.waitFor({state: 'visible', timeout: 10000});
+  const mainText = await documentContent.innerText();
   for (const marker of ['GitHub Pages', 'Production Live Smoke', 'Cloudflare', 'legacy .html']) {
     assert(mainText.includes(marker), `${locale} portfolio case study misses ${marker}`);
   }
