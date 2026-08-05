@@ -74,6 +74,8 @@ items:
         href: ./landing/projects/vlezet.md
       - name: VillAIgence — AI Society
         href: ./landing/projects/livingworld.md
+      - name: TrueRuslan Landing — Platform
+        href: ./landing/projects/portfolio-platform.md
       - name: NODE ZERO — Techno-horror
         href: ./landing/projects/node-zero.md
       - name: TaskHub — Backend + AI
@@ -130,6 +132,8 @@ items:
         href: ./en/resume.md
       - name: VillAIgence
         href: ./en/projects/livingworld.md
+      - name: TrueRuslan Landing
+        href: ./en/projects/portfolio-platform.md
       - name: Server-authoritative AI NPCs
         href: ./en/notes/server-authoritative-ai-npcs.md
       - name: LLM protocol boundary

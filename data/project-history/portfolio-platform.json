@@ -1,0 +1,29 @@
+[
+  {
+    "date": "2026-07 — 2026-08",
+    "title": "Static-first portfolio and knowledge platform accepted",
+    "description": "Standalone homepage, Diplodoc knowledge pages, Project Evidence, Engineering Notes, Publications, Sources, RU/EN, privacy-friendly analytics and production-oriented quality gates were integrated into one deterministic static build.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/116"
+  },
+  {
+    "date": "2026-08",
+    "title": "Repository-native clean URL migration accepted",
+    "description": "PR #114 moved public identities to directory routes, retained legacy .html compatibility pages and removed Cloudflare routing from the required delivery contract. PR #115 aligned deployed production verification with the clean route model.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/114"
+  },
+  {
+    "date": "2026-08",
+    "title": "P3.2 TrueRuslan Landing evidence-first case study",
+    "description": "Create a dedicated RU/EN flagship destination that explains the platform architecture, rejected alternatives, clean URL boundary and the distinction between exact-head CI, generated artifact, Pages deployment and live production proof.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/119"
+  },
+  {
+    "date": "NEXT",
+    "title": "P3.3 flagship normalization",
+    "description": "Align VillAIgence and Vlezet to the expanded evidence-first case-study contract without promoting pending product acceptance or duplicating canonical project state.",
+    "state": "next"
+  }
+]

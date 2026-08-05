@@ -47,6 +47,11 @@ test('postprocessOutput loads and injects canonical project evidence when explic
       summary: 'Test NODE ZERO.', featured: true, active: true, visibility: 'private',
       href: 'landing/projects/node-zero.html', tags: ['Unity', 'C#'],
     },
+    {
+      slug: 'portfolio-platform', name: 'Portfolio Platform', status: 'production', statusLabel: 'PRODUCTION',
+      summary: 'Test platform.', featured: true, active: true, visibility: 'public',
+      href: 'landing/projects/portfolio-platform.html', tags: ['Diplodoc', 'CI'],
+    },
   ];
   writeJson(path.join(dataDir, 'projects.json'), projects);
   writeJson(path.join(dataDir, 'now.json'), {
@@ -82,16 +87,23 @@ test('postprocessOutput loads and injects canonical project evidence when explic
       project: 'node-zero', status: 'stale', lastVerified: '2026-07-14', versions: [],
       signals: [{kind: 'manual', mode: 'manual', label: 'Foundation', state: 'accepted', observedAt: '2026-07-14', scope: 'Foundation scope.'}],
     },
+    {
+      project: 'portfolio-platform', status: 'verified', lastVerified: '2026-08-05', versions: [],
+      signals: [{kind: 'ci', mode: 'automated', label: 'Production live', state: 'passed', observedAt: '2026-08-05', scope: 'Deployed platform route scope.'}],
+    },
   ]);
 
   fs.writeFileSync(path.join(outputDir, 'index.html'), '<!doctype html><html><head><title>Generated</title></head><body class="g-root"></body></html>');
-  fs.writeFileSync(path.join(outputDir, 'landing', 'projects.html'), '<!doctype html><html><body><main><span data-tr-project-status="vlezet"></span><span data-tr-project-status="livingworld"></span><span data-tr-project-status="node-zero"></span></main></body></html>');
+  fs.writeFileSync(path.join(outputDir, 'landing', 'projects.html'), '<!doctype html><html><body><main><span data-tr-project-status="vlezet"></span><span data-tr-project-status="livingworld"></span><span data-tr-project-status="node-zero"></span><span data-tr-project-status="portfolio-platform"></span></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'now.html'), '<!doctype html><html><body><main><div data-tr-now-placeholder></div></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'engineering-map.html'), '<!doctype html><html><body><main><div data-tr-engineering-graph-root></div></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'notes', 'test-note.html'), '<!doctype html><html><body><main><h1>Test note</h1><p>Body</p></main></body></html>');
-  fs.writeFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet.html'), '<!doctype html><html><body><main><div data-tr-project-evidence="vlezet"></div></main></body></html>');
-  fs.writeFileSync(path.join(outputDir, 'landing', 'projects', 'livingworld.html'), '<!doctype html><html><body><main><div data-tr-project-evidence="livingworld"></div></main></body></html>');
-  fs.writeFileSync(path.join(outputDir, 'landing', 'projects', 'node-zero.html'), '<!doctype html><html><body><main><div data-tr-project-evidence="node-zero"></div></main></body></html>');
+  for (const slug of ['vlezet', 'livingworld', 'node-zero', 'portfolio-platform']) {
+    fs.writeFileSync(
+      path.join(outputDir, 'landing', 'projects', `${slug}.html`),
+      `<!doctype html><html><head><title>${slug}</title></head><body><main><div data-tr-project-evidence="${slug}"></div></main></body></html>`,
+    );
+  }
 
   const result = postprocessOutput({
     outputDir,
@@ -112,9 +124,11 @@ test('postprocessOutput loads and injects canonical project evidence when explic
     'landing/projects/livingworld.html',
     'landing/projects/node-zero.html',
     'landing/projects/vlezet.html',
+    'landing/projects/portfolio-platform.html',
   ]);
   assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet.html'), 'utf8'), /data-evidence-status="verified"/);
   assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet.html'), 'utf8'), /Состояние:<\/strong> failed/);
   assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'livingworld.html'), 'utf8'), /data-evidence-status="verified"/);
   assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'node-zero.html'), 'utf8'), /data-evidence-status="stale"/);
+  assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'portfolio-platform.html'), 'utf8'), /Production live/);
 });

@@ -15,6 +15,14 @@ test('production live smoke uses repository-native clean canonical routes', () =
     'https://www.trueruslan.ru/landing/notes/restart-persistence-is-a-product-contract/',
   );
   assert.equal(routes.SEARCH_URL, 'https://trueruslan.ru/_search/ru/');
+  assert.equal(
+    routes.PORTFOLIO_PLATFORM_URL,
+    'https://trueruslan.ru/landing/projects/portfolio-platform/',
+  );
+  assert.equal(
+    routes.PORTFOLIO_PLATFORM_EN_URL,
+    'https://trueruslan.ru/en/projects/portfolio-platform/',
+  );
 });
 
 test('production live smoke preserves explicit legacy route coverage', () => {
