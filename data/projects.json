@@ -50,15 +50,21 @@
     "name": "Engineering Portfolio Platform",
     "status": "production",
     "statusLabel": "PRODUCTION",
-    "summary": "Standalone landing plus Diplodoc knowledge pages protected by integrity, browser, accessibility, performance and visual-regression gates.",
+    "summary": "Static-first engineering portfolio and knowledge platform with canonical registries, repository-native clean URLs and deployment-driven production verification.",
     "featured": true,
     "active": true,
     "visibility": "public",
-    "href": "landing/projects.html",
+    "href": "landing/projects/portfolio-platform.html",
     "tags": ["Static HTML", "Diplodoc", "Playwright", "Lighthouse", "CI"],
     "links": {
       "github": "https://github.com/True-Ruslan/trueruslan-landing"
-    }
+    },
+    "timeline": "portfolio-platform",
+    "noteSlugs": [
+      "portfolio-runtime-boundary",
+      "static-site-quality-gates",
+      "green-ci-is-not-product-verification"
+    ]
   },
   {
     "slug": "taskhub",
