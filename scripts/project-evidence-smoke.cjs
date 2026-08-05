@@ -10,16 +10,25 @@ const {chromium} = requireQualityTool('playwright', 'Project Evidence smoke tool
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Project Evidence smoke tool');
 
 const PROJECTS = [
-  {project: 'vlezet', route: '/landing/projects/vlezet/', status: 'verified', label: 'ПРОВЕРЕНО', borderStyle: 'solid'},
+  {
+    project: 'vlezet',
+    route: '/landing/projects/vlezet/',
+    status: 'verified',
+    label: 'ПРОВЕРЕНО',
+    borderStyle: 'solid',
+    signals: 4,
+    stateCounts: {merged: 3, pending: 1},
+    requiredText: ['M7.8B', 'M7.8C', 'CI #3138', 'product-owner retest'],
+  },
   {
     project: 'livingworld',
     route: '/landing/projects/livingworld/',
     status: 'verified',
     label: 'ПРОВЕРЕНО',
     borderStyle: 'solid',
-    signals: 5,
-    stateCounts: {accepted: 1, failed: 1, merged: 3},
-    requiredText: ['PR #103', 'PR #104', '0.1.23+1.21.1', 'production-JAR'],
+    signals: 6,
+    stateCounts: {accepted: 1, failed: 1, merged: 3, pending: 1},
+    requiredText: ['PR #103', 'PR #104', 'PR #110', 'Draft', '0.1.23+1.21.1', 'production-JAR'],
   },
   {project: 'node-zero', route: '/landing/projects/node-zero/', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
 ];
