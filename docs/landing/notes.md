@@ -54,6 +54,12 @@ GameTests проверяют настоящие Minecraft mechanics в controlle
 
 [Читать заметку →](notes/gametests-vs-installed-gameplay-acceptance.md)
 
+### Почему валидный PDF ещё не доказывает полноту и актуальность резюме
+
+Существующий и parseable PDF подтверждает только часть release contract. На примере web-CV и `cv.pdf` разбираю file identity, MIME и downloadable bytes, passive/no-JavaScript fallback, text extraction, semantic equivalence, current profile truth, accessibility и exact deployed document verification.
+
+[Читать заметку →](notes/passive-pdf-validation-vs-semantic-completeness.md)
+
 ### Restart — это часть продукта: почему сохранённый JSON ещё не доказывает persistence
 
 Совпадающий SHA-256 подтверждает byte continuity, но ещё не доказывает, что приложение прочитало правильный store, сохранило identity, не смешало состояние разных NPC и восстановило ожидаемое поведение. На evidence VillAIgence разбираю controlled shutdown, exact-artifact restart, schema/read-back, semantic continuity, behavioral continuity и safe rollback.
