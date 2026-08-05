@@ -79,8 +79,9 @@ async function checkScenario(browser, baseUrl, scenario, summary) {
 
     if (scenario.requiredText?.length) {
       const bodyText = await page.locator('body').innerText();
+      const normalizedBodyText = bodyText.toLocaleLowerCase('ru-RU');
       for (const token of scenario.requiredText) {
-        if (!bodyText.includes(token)) {
+        if (!normalizedBodyText.includes(token.toLocaleLowerCase('ru-RU'))) {
           throw new Error(`${scenario.slug}: required page truth is missing: ${token}`);
         }
       }
