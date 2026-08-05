@@ -1,6 +1,6 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.3 Flagship normalization.
+> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4A Deployment Verification Note и verifier closure PR #126.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; product specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -8,99 +8,197 @@
 
 # 2026-08-05
 
-## Portfolio 1.0 P3.3 — Flagship Normalization — DONE
+## Portfolio 1.0 P3.4A — Deployment Verification Note — DONE
 
-### PR #122 — normalize VillAIgence and Vlezet flagships
+### PR #125 — publish grounded Engineering Note
 
 Goal:
 
-Bring RU VillAIgence, RU Vlezet and the controlled EN VillAIgence layer to the evidence-first flagship order established by TrueRuslan Landing, without changing routes, lifecycle states or accepted external-project boundaries.
+Publish a bounded Note explaining why successful deployment does not by itself prove production verification, using accepted TrueRuslan Landing evidence rather than abstract claims.
+
+Canonical route:
+
+```text
+/landing/notes/deployment-success-is-not-production-verification/
+```
 
 Delivered:
 
-- normalized all three pages to:
-  - problem and user;
-  - constraints and risks;
-  - current lifecycle and accepted boundary;
-  - architecture and source of truth;
-  - alternatives considered and rejected;
-  - implemented capabilities and failure lessons;
-  - evidence;
-  - limitations;
-  - next accepted milestone;
-  - related material and retrospective;
-- preserved canonical routes, slugs, diagrams and repository identities;
-- kept the EN VillAIgence layer on shared RU canonical evidence rather than creating a second registry;
-- refreshed Vlezet PR #42 as bounded green Draft automation plus mandatory real-plan owner retest;
-- recorded VillAIgence PR #110 only as Draft/RED development evidence;
-- made existing canonical project pages automatic Project Registry status targets;
-- strengthened Project Evidence rendering for pending states in JavaScript and no-JavaScript modes;
-- added dedicated browser checks for ordered headings, status, evidence, timeline and related links;
-- added a deployment-only production smoke for RU VillAIgence, RU Vlezet and EN VillAIgence;
-- preserved PR-safe baseline production verification;
-- manually reviewed generated desktop pages;
-- changed no visual baseline and no test tolerance.
+- separated repository readiness, generated artifact, exact GitHub Pages deployment, Production Live Smoke, bounded product acceptance and search-engine observation;
+- grounded the narrative in the accepted P3.2 PR #119/#120 verifier incident and P3.3 exact evidence;
+- explicitly separated **Проверенный факт**, **Инженерный вывод** and **Ограничение**;
+- linked the platform case study and related Notes;
+- added deterministic Notes Registry metadata;
+- integrated Notes index, toc, page metadata, clean route, Atom feed and generated search;
+- preserved semantic/no-JavaScript content;
+- added fail-closed unit contracts;
+- added deployment-only P3.4A route/content/feed/search verification.
 
 TDD RED:
 
 ```text
-head:                           f2c5b065a8f1a1cd8adbad6ebb4ed7743cb33ad7
-Build:                          #871 — expected FAILURE
-existing contracts:             368 PASS
-new failing contracts:          6
-failure scope:                  marker order, canonical statuses and bounded Draft evidence
+head:                           688b98a58937dbf9b5c9f45667d4cfdef1327294
+Build:                          #909 / 31013712895 — expected FAILURE
+existing/new contracts:         377 PASS / 3 expected FAIL
+failure scope:                  registry, Markdown and index/toc/page-meta integration
 ```
 
 Exact-head feature evidence:
 
 ```text
-head:                           ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46
-squash:                         c90a221a21f51e897661667f981483bad922ad0d
-Build:                          #893 / 31005675334 — SUCCESS
-CodeQL:                         #368 — SUCCESS
-Dependency Review:              #321 — SUCCESS
-Content Freshness:              #67 — SUCCESS
-PR-safe Production Live Smoke:  #93 — SUCCESS
-unit tests:                     376 PASS / 0 FAIL
-site integrity:                 PASS
+head:                           9c0a24c6adfd1794adc70facdc1ace4dc01a3d86
+squash:                         c4f3cb5a3aa71b958d906d15eb975833b46d3571
+Build:                          #922 / 31014792446 — SUCCESS
+CodeQL:                         #400 / 31014793568 — SUCCESS
+Dependency Review:              #350 — SUCCESS
+PR-safe Production Live Smoke:  #106 — SUCCESS
+unit tests:                     381 PASS / 0 FAIL
+build/site integrity:           PASS
 mobile overflow:                PASS
-browser/accessibility:          PASS
-Lighthouse:                     PASS
-Project Evidence JS/no-JS:      PASS
-P3.3 normalized page smoke:     PASS
+browser/Axe/Lighthouse:         PASS
 Firefox/WebKit:                 PASS
-search/RU-EN/analytics:         PASS
-metadata/Engineering Map:       PASS
+generated search/Atom:          PASS
+RU/EN/analytics/metadata:       PASS
 visual regression:              PASS with unchanged baselines
 custom-domain artifact:         PASS
+quality artifact:               8934487200
+quality digest:                 sha256:61fde2c53551057d5d01b9f409d86c0aa50be6b20f8de3a4e9ae0b66988126ad
 review threads:                 0 open
-quality artifact:               8930321636
-quality digest:                 sha256:97880f197f9484b41eb38ee606c291a754d889a55160719d948c13b0fc9a4e8a
 ```
 
-Exact production evidence:
+### First exact deployment — NOT ACCEPTED
+
+GitHub Pages published the exact feature SHA and baseline/platform smokes passed. The workflow then failed before the new Note smoke because the existing flagship verifier still copied historical VillAIgence candidate `0.1.23+1.21.1`.
 
 ```text
-Pages workflow:                 #152 / 31006504250 — SUCCESS
-accepted deployed SHA:          c90a221a21f51e897661667f981483bad922ad0d
-Pages deployment ID:            5761717586
-Production Live Smoke:          #95 / 31006557622 — SUCCESS
-baseline smoke:                 PASS
-portfolio platform smoke:       PASS
-flagship normalization smoke:   PASS
-favicon smoke:                  PASS
-production artifact:            8930571510
-production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13
+accepted deployed SHA:          c4f3cb5a3aa71b958d906d15eb975833b46d3571
+Pages deployment ID:            5763499690
+Production Live Smoke:          #108 / 31015504931 — FAILURE
+classification:                 verifier defect
+production artifact:            8934310334
+production digest:              sha256:42d038cd35f0281d9c69c472b6111aab06a62bc98c88b7876fafcf7601979d13
 ```
 
-Acceptance boundaries remained unchanged:
+The failure was not rerun away. Production acceptance remained open.
 
-- Vlezet — `pre-production` / `ACTIVE DEVELOPMENT`; M7.8B accepted; M7.8C Draft pending representative real-plan owner retest.
-- VillAIgence — `release-candidate` / `ACCEPTANCE IN PROGRESS`; PR #103 and PR #104 automated evidence remains bounded; PR #110 remains Draft/RED; cumulative manual acceptance pending.
+### PR #126 — align flagship production smoke with current evidence
+
+Root cause:
+
+`production-flagship-normalization-smoke.cjs` duplicated volatile external-project evidence as hard-coded strings rather than reading the canonical Project Evidence registry.
+
+Delivered:
+
+- loads `data/project-evidence.json`;
+- derives VillAIgence `Current published candidate` through a fail-closed lookup;
+- removes the stale hard-coded `0.1.23+1.21.1` expectation;
+- requires current VillAIgence PR #108 and pending PR #110 evidence;
+- requires Vlezet M7.8B/M7.8C, PR #44, PR #45 and product-owner retest boundaries;
+- records the resolved candidate in production evidence;
+- adds regression contracts preventing copied release drift.
+
+TDD RED:
+
+```text
+head:                           43ccee7b09220000660e425ea32cc87938a7b653
+Build:                          #924 / 31015797096 — expected FAILURE
+existing/new contracts:         381 PASS / 2 expected FAIL
+failure scope:                  stale candidate and missing current markers
+```
+
+Exact-head hotfix evidence:
+
+```text
+head:                           50a7185d799eea96adb7dcea8cd20e9e9a400784
+squash:                         0a1cd6ad40870366fecfdce3bbdae7e8722b2119
+Build:                          #927 / 31016127657 — SUCCESS
+CodeQL:                         #406 / 31016129663 — SUCCESS
+Dependency Review:              #355 — SUCCESS
+PR-safe Production Live Smoke:  #112 — SUCCESS
+visual regression:              PASS with unchanged baselines
+custom-domain artifact:         PASS
+quality artifact:               8934699715
+quality digest:                 sha256:607a2d901e77ebe5862fd760393f6a4435699dd69d1dc8abb910007fc0611b52
+review threads:                 0 open
+```
+
+Final exact production evidence:
+
+```text
+Pages workflow:                 #156 / 31016942589 — SUCCESS
+accepted deployed SHA:          0a1cd6ad40870366fecfdce3bbdae7e8722b2119
+Pages deployment ID:            5763802525
+Pages created:                  2026-08-05T14:46:57Z
+Pages updated:                  2026-08-05T14:47:51Z
+Production Live Smoke:          #114 / 31017023851 — SUCCESS
+baseline smoke:                 PASS
+portfolio platform smoke:       PASS
+current flagship smoke:         PASS
+P3.4A Note smoke:               PASS
+favicon smoke:                  PASS
+production artifact:            8935003712
+production digest:              sha256:23f344e3562d6b61106c8dc59a4b3e9ce2293192555c9f31ac09e7eb9916d480
+```
+
+P3.4A is accepted in production only at this final exact SHA.
 
 Next slice:
 
-**P3.4A — Deployment success is not production verification**.
+**P3.4B — Clean URLs without Cloudflare routing**.
+
+---
+
+## Current External Project Evidence Reconciliation — DONE
+
+### PR #124
+
+Reconciled current VillAIgence and Vlezet repository activity without promoting Draft work or changing lifecycle states.
+
+Delivered:
+
+- VillAIgence candidate `0.1.25+1.21.1` as published exact release evidence;
+- bounded PR #105/#107/#108/#109 evidence;
+- PR #110 only as pending Draft/RED;
+- Vlezet M7.8B preserved as accepted;
+- PR #42, PR #44 and PR #45 as pending Draft evidence;
+- `/now`, Project Evidence, histories, RU/EN flagships and browser contracts synchronized.
+
+```text
+head:                           fe82754eb6f181e9c81840e7710553bf8341a3d9
+squash:                         adad07f39130c724541163022be0b085323ce1b3
+Build:                          #908 / 31011725079 — SUCCESS
+Content Freshness PR evidence:  0 findings
+```
+
+Issue #78 still requires a default-branch owner refresh; its older generated body is not canonical project truth.
+
+---
+
+## Portfolio 1.0 P3.3 — Flagship Normalization — DONE
+
+### PR #122
+
+Delivered:
+
+- normalized RU VillAIgence, RU Vlezet and controlled EN VillAIgence;
+- canonical status rendering;
+- bounded pending evidence in JS/no-JS modes;
+- browser, cross-browser and deployment-only production checks;
+- unchanged lifecycle and external acceptance boundaries.
+
+```text
+TDD RED head:                  f2c5b065a8f1a1cd8adbad6ebb4ed7743cb33ad7
+exact head:                     ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46
+squash:                         c90a221a21f51e897661667f981483bad922ad0d
+Build:                          #893 / 31005675334 — SUCCESS
+quality artifact:               8930321636
+quality digest:                 sha256:97880f197f9484b41eb38ee606c291a754d889a55160719d948c13b0fc9a4e8a
+Pages:                          #152 / 31006504250 — SUCCESS
+Pages deployment ID:            5761717586
+Production Live Smoke:          #95 / 31006557622 — SUCCESS
+production artifact:            8930571510
+production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13
+```
 
 ---
 
@@ -196,6 +294,10 @@ Legacy `.html` remains only as `noindex,follow` compatibility preserving query a
 ---
 
 # Open operational boundaries
+
+## Issue #78 — Content Freshness owner refresh
+
+PR #124 exact-head evidence reported 0 findings. The issue still contains an older generated report until a default-branch owner run refreshes and closes it.
 
 ## Issue #111 — Yandex Webmaster observation
 
