@@ -6,6 +6,9 @@ const DEPLOYMENT_VERIFICATION_NOTE_PATH = 'landing/notes/deployment-success-is-n
 const CLEAN_URLS_NOTE_PATH = 'landing/notes/clean-urls-without-cloudflare-routing/';
 const HYBRID_RECOGNITION_NOTE_PATH = 'landing/notes/hybrid-cv-ai-recognition-boundaries/';
 const GAMETESTS_ACCEPTANCE_NOTE_PATH = 'landing/notes/gametests-vs-installed-gameplay-acceptance/';
+const PASSIVE_PDF_COMPLETENESS_NOTE_PATH = 'landing/notes/passive-pdf-validation-vs-semantic-completeness/';
+const RESUME_PATH = 'landing/resume/';
+const RESUME_PDF_PATH = 'assets/documents/cv.pdf';
 const SEARCH_PATH = '_search/ru/';
 const PORTFOLIO_PLATFORM_PATH = 'landing/projects/portfolio-platform/';
 const PORTFOLIO_PLATFORM_EN_PATH = 'en/projects/portfolio-platform/';
@@ -20,6 +23,9 @@ const DEPLOYMENT_VERIFICATION_NOTE_URL = new URL(DEPLOYMENT_VERIFICATION_NOTE_PA
 const CLEAN_URLS_NOTE_URL = new URL(CLEAN_URLS_NOTE_PATH, APEX).href;
 const HYBRID_RECOGNITION_NOTE_URL = new URL(HYBRID_RECOGNITION_NOTE_PATH, APEX).href;
 const GAMETESTS_ACCEPTANCE_NOTE_URL = new URL(GAMETESTS_ACCEPTANCE_NOTE_PATH, APEX).href;
+const PASSIVE_PDF_COMPLETENESS_NOTE_URL = new URL(PASSIVE_PDF_COMPLETENESS_NOTE_PATH, APEX).href;
+const RESUME_URL = new URL(RESUME_PATH, APEX).href;
+const RESUME_PDF_URL = new URL(RESUME_PDF_PATH, APEX).href;
 const SEARCH_URL = new URL(SEARCH_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_URL = new URL(PORTFOLIO_PLATFORM_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_EN_URL = new URL(PORTFOLIO_PLATFORM_EN_PATH, APEX).href;
@@ -36,6 +42,9 @@ module.exports = {
   CLEAN_URLS_NOTE_PATH,
   HYBRID_RECOGNITION_NOTE_PATH,
   GAMETESTS_ACCEPTANCE_NOTE_PATH,
+  PASSIVE_PDF_COMPLETENESS_NOTE_PATH,
+  RESUME_PATH,
+  RESUME_PDF_PATH,
   SEARCH_PATH,
   PORTFOLIO_PLATFORM_PATH,
   PORTFOLIO_PLATFORM_EN_PATH,
@@ -49,6 +58,9 @@ module.exports = {
   CLEAN_URLS_NOTE_URL,
   HYBRID_RECOGNITION_NOTE_URL,
   GAMETESTS_ACCEPTANCE_NOTE_URL,
+  PASSIVE_PDF_COMPLETENESS_NOTE_URL,
+  RESUME_URL,
+  RESUME_PDF_URL,
   SEARCH_URL,
   PORTFOLIO_PLATFORM_URL,
   PORTFOLIO_PLATFORM_EN_URL,
