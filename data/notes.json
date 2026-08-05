@@ -120,5 +120,19 @@
       "green-ci-is-not-product-verification",
       "probabilistic-proposals-deterministic-authority"
     ]
+  },
+  {
+    "slug": "deployment-success-is-not-production-verification",
+    "title": "Почему успешный deployment ещё не означает production verification",
+    "description": "Практическая ретроспектива TrueRuslan Landing: почему repository readiness, generated artifact, GitHub Pages deployment и production browser verification должны оставаться отдельными evidence layers.",
+    "published": "2026-08-05",
+    "updated": "2026-08-05",
+    "readingMinutes": 10,
+    "tags": ["Deployment", "Verification", "GitHub Pages", "Reliability"],
+    "related": [
+      "green-ci-is-not-product-verification",
+      "static-site-quality-gates",
+      "source-tests-to-installed-acceptance"
+    ]
   }
 ]
