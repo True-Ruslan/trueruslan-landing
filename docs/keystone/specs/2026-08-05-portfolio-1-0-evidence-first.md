@@ -1,6 +1,6 @@
 # Portfolio 1.0 — Evidence-first flagship content
 
-> Status: **IN PROGRESS — P3.3 ACCEPTED IN PRODUCTION**
+> Status: **IN PROGRESS — P3.4A ACCEPTED IN PRODUCTION**
 >
 > Date: **2026-08-05**
 >
@@ -104,35 +104,82 @@ Delivered by PR #122:
 - canonical routes, slugs, diagrams and repository identities are unchanged;
 - Project Registry statuses automatically render on existing canonical project pages;
 - Project Evidence pending states render in JavaScript and no-JavaScript modes;
-- Vlezet PR #42 is green Draft automation plus mandatory real-plan owner retest;
-- VillAIgence PR #110 is Draft/RED development evidence only;
 - dedicated browser and deployment-only production smoke verify all normalized routes;
 - no visual baseline or tolerance change was required.
 
 ```text
 TDD RED head:                  f2c5b065a8f1a1cd8adbad6ebb4ed7743cb33ad7
-RED Build:                      #871 — expected FAILURE
 exact accepted head:            ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46
 accepted squash:                c90a221a21f51e897661667f981483bad922ad0d
 Build:                          #893 / 31005675334 — SUCCESS
-CodeQL:                         #368 — SUCCESS
-Dependency Review:              #321 — SUCCESS
-Content Freshness:              #67 — SUCCESS
-unit tests:                     376 PASS / 0 FAIL
 quality artifact:               8930321636
 quality digest:                 sha256:97880f197f9484b41eb38ee606c291a754d889a55160719d948c13b0fc9a4e8a
 Pages:                          #152 / 31006504250 — SUCCESS
 Pages deployment ID:            5761717586
 Production Live Smoke:          #95 / 31006557622 — SUCCESS
-baseline/platform/flagship/favicon smokes: PASS
 production artifact:            8930571510
 production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13
 ```
 
-Preserved external acceptance:
+Preserved current external acceptance after PR #124:
 
-- Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`; M7.8B accepted; M7.8C Draft pending representative real-plan owner retest.
-- VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`; PR #103/#104 automated evidence remains bounded; PR #110 remains Draft/RED; cumulative real-provider/gameplay/manual acceptance is pending.
+- Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`; M7.8B accepted; M7.8C PR #42 and stacked PR #44/#45 remain Draft/pending representative real-plan owner gates.
+- VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`; candidate `0.1.25+1.21.1`, PR #103/#104/#108 automation and PR #110 Draft remain separate from cumulative real-provider/gameplay/manual acceptance.
+
+### P3.4A — Deployment success is not production verification — DONE
+
+Production route:
+
+```text
+/landing/notes/deployment-success-is-not-production-verification/
+```
+
+Delivered by PR #125:
+
+- a grounded RU Engineering Note from accepted platform evidence;
+- repository readiness, generated artifact, exact GitHub Pages deployment, Production Live Smoke, bounded product acceptance and search-engine observation remain distinct;
+- verified fact, engineering inference and limitation are explicitly separated;
+- P3.2 PR #119/#120 verifier incident and P3.3 evidence are linked rather than paraphrased into unsupported claims;
+- Notes Registry, Notes index, toc, metadata, clean URL, Atom feed and generated search are deterministic;
+- semantic content remains useful without JavaScript;
+- a deployment-only smoke verifies route, canonical/OpenGraph, required evidence markers, Atom feed and generated search against the exact deployed SHA.
+
+```text
+TDD RED head:                  688b98a58937dbf9b5c9f45667d4cfdef1327294
+RED Build:                      #909 / 31013712895 — expected FAILURE
+exact accepted head:            9c0a24c6adfd1794adc70facdc1ace4dc01a3d86
+accepted squash:                c4f3cb5a3aa71b958d906d15eb975833b46d3571
+Build:                          #922 / 31014792446 — SUCCESS
+quality artifact:               8934487200
+quality digest:                 sha256:61fde2c53551057d5d01b9f409d86c0aa50be6b20f8de3a4e9ae0b66988126ad
+```
+
+The first deployment was intentionally not accepted:
+
+```text
+Production Live Smoke #108:    FAILURE
+classification:                 verifier defect
+cause:                          stale hard-coded VillAIgence release expectation
+```
+
+PR #126 corrected the deployment verifier by deriving current release evidence from canonical `data/project-evidence.json` rather than copying a volatile literal.
+
+```text
+TDD RED head:                  43ccee7b09220000660e425ea32cc87938a7b653
+exact accepted head:            50a7185d799eea96adb7dcea8cd20e9e9a400784
+accepted squash:                0a1cd6ad40870366fecfdce3bbdae7e8722b2119
+Build:                          #927 / 31016127657 — SUCCESS
+quality artifact:               8934699715
+quality digest:                 sha256:607a2d901e77ebe5862fd760393f6a4435699dd69d1dc8abb910007fc0611b52
+Pages:                          #156 / 31016942589 — SUCCESS
+Pages deployment ID:            5763802525
+Production Live Smoke:          #114 / 31017023851 — SUCCESS
+baseline/platform/current-flagship/P3.4A/favicon smokes: PASS
+production artifact:            8935003712
+production digest:              sha256:23f344e3562d6b61106c8dc59a4b3e9ce2293192555c9f31ac09e7eb9916d480
+```
+
+The accepted outcome demonstrates the Note's own claim: a successful Pages deployment was not sufficient until the browser verifier itself was corrected and the complete exact-production chain passed.
 
 ---
 
@@ -162,7 +209,18 @@ Each normalized flagship page answers, in order:
 9. next accepted milestone;
 10. related Notes, Publications, repository links and retrospective.
 
-TrueRuslan Landing, VillAIgence and Vlezet now follow this common contract. The controlled English layer remains bounded and does not create duplicate evidence registries.
+### Grounded Engineering Note contract — ACCEPTED FOR P3.4A
+
+Each P3.4 Note must:
+
+1. begin from accepted project evidence;
+2. distinguish verified fact, inference and limitation;
+3. link to the relevant case study and repository evidence;
+4. avoid invented metrics or broadened acceptance claims;
+5. register deterministic metadata and relationships;
+6. participate in clean routes, generated search and Atom feed;
+7. remain useful without JavaScript;
+8. pass exact-head, exact-deployment and feature-specific production verification.
 
 ### UX states
 
@@ -170,7 +228,7 @@ TrueRuslan Landing, VillAIgence and Vlezet now follow this common contract. The 
 - **Empty:** optional groups are omitted; fake placeholders are prohibited.
 - **Loading/pending:** only progressive enhancements load; core content remains generated HTML.
 - **Error/failure:** missing canonical data or ordered markers fail the build.
-- **Edge/constraint:** Draft evidence, repository readiness, deployment and external acceptance remain visibly distinct.
+- **Edge/constraint:** Draft evidence, repository readiness, deployment, external acceptance and search-engine observation remain visibly distinct.
 
 ## Technical direction
 
@@ -182,37 +240,44 @@ TrueRuslan Landing, VillAIgence and Vlezet now follow this common contract. The 
 - one RU/EN build and search architecture;
 - Project Registry status applies to existing canonical project pages automatically;
 - deployment-only feature smoke uses `main.dc-doc-page__content`, not broad `locator('main')`;
+- volatile external evidence is read from canonical registries, not duplicated in production verifiers;
 - no runtime API, database, account system or duplicate index.
 
 ---
 
 ## Remaining scope
 
-### P3.4 — Grounded Engineering Notes — NEXT
+### P3.4B — Clean URLs without Cloudflare routing — NEXT
 
-Publish a bounded series from completed work:
+Publish a grounded Note from accepted PR #114/#115 evidence.
 
-- repository-native clean URLs without Cloudflare routing;
-- deployment success versus production smoke;
-- hybrid CV + AI recognition boundaries;
-- GameTests versus installed gameplay acceptance;
-- passive PDF validation and semantic boundaries;
-- evidence-driven project state.
+The Note must explain:
 
-Recommended first Note:
+- why repository-native directory routes became the public identity;
+- how generated HTML, Diplodoc router depth and base paths were normalized;
+- why canonical, hreflang, OpenGraph, Sitemap, Atom feed and generated search moved together;
+- why Cloudflare remains DNS/CDN/aggregate-analytics infrastructure rather than an application router;
+- why GitHub Pages cannot emit repository-configured HTTP 301 redirects;
+- why legacy `.html` entrypoints remain static `noindex,follow` compatibility preserving query and fragment;
+- why exact production verification and delayed Google/Yandex observation are separate layers;
+- what evidence would authorize eventual removal of legacy compatibility.
 
-**P3.4A — Deployment success is not production verification**.
+Acceptance requirements:
 
-It can be grounded entirely in accepted P3.1–P3.3 repository, artifact, Pages and Production Live Smoke evidence.
+- facts grounded in PR #114/#115 and exact production evidence;
+- verified fact, inference and limitation separated;
+- relevant platform case study and Notes linked;
+- deterministic Notes Registry, clean route, Sitemap/search/Atom integration;
+- semantic/no-JS content;
+- exact-head and deployment-only production verification;
+- no unsupported claim that crawler replacement is complete.
 
-Each Note must:
+### Later P3.4 Notes
 
-- distinguish verified fact, inference and limitation;
-- use existing Notes Registry, clean routes, generated search and Atom feed;
-- link to relevant case studies and evidence;
-- avoid invented metrics or broadened acceptance claims;
-- remain useful without JavaScript;
-- pass exact-head and production acceptance.
+- Hybrid CV + AI recognition boundaries.
+- GameTests versus installed gameplay acceptance.
+- Passive PDF validation and semantic boundaries.
+- Evidence-driven project state.
 
 ### P3.5 — Selective English expansion
 
@@ -246,9 +311,10 @@ After 3–4 weeks of meaningful aggregate traffic, inspect aggregate traffic and
 - [x] related Notes and repository links are deterministic and validated;
 - [x] canonical, Sitemap, feed and search identities use clean routes;
 - [x] exact-head, browser, accessibility, cross-browser, RU/EN, metadata, visual and custom-domain gates pass;
-- [x] exact Pages deployment and baseline/platform/flagship/favicon production smokes pass;
-- [ ] grounded P3.4 Note series is published from accepted evidence.
+- [x] exact Pages deployment and baseline/platform/current-flagship/P3.4A/favicon production smokes pass;
+- [x] P3.4A is published from accepted evidence with explicit fact/inference/limitation boundaries;
+- [ ] remaining grounded P3.4 Note series is published from accepted evidence.
 
 ## Recommended next implementation slice
 
-Start with **P3.4A — Deployment success is not production verification**. It has the strongest accepted platform evidence and requires no unverified external-project promotion.
+Continue with **P3.4B — Clean URLs without Cloudflare routing**. The clean URL migration has complete repository, artifact, deployment and production evidence, while search-engine replacement can remain explicitly bounded as delayed external observation.
