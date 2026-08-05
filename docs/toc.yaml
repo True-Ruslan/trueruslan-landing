@@ -111,6 +111,8 @@ items:
         href: ./landing/notes/clean-urls-without-cloudflare-routing.md
       - name: Source tests → installed acceptance
         href: ./landing/notes/source-tests-to-installed-acceptance.md
+      - name: GameTests vs installed gameplay
+        href: ./landing/notes/gametests-vs-installed-gameplay-acceptance.md
       - name: Probabilistic proposals → deterministic authority
         href: ./landing/notes/probabilistic-proposals-deterministic-authority.md
       - name: Hybrid CV + AI recognition boundaries
