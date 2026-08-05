@@ -250,6 +250,16 @@
     "accent": "green"
   },
   {
+    "path": "landing/notes/hybrid-cv-ai-recognition-boundaries.html",
+    "card": "note-hybrid-recognition",
+    "title": "Как соединить local CV и AI, не отдавая модели authority над геометрией",
+    "description": "Vlezet hybrid recognition case study: deterministic local Draft, immutable proposal identity, fail-closed sanitation, current-state revalidation and explicit atomic Apply.",
+    "displayTitle": "HYBRID RECOGNITION",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["COMPUTER VISION", "AI", "AUTHORITY"],
+    "accent": "cyan"
+  },
+  {
     "path": "en/index.html",
     "card": "home-en",
     "title": "Ruslan Nemykin — Backend Engineer",
