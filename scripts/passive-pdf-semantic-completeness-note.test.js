@@ -37,7 +37,7 @@ test('passive PDF completeness Note separates artifact validity from semantic tr
   const source = fs.readFileSync(NOTE, 'utf8');
 
   for (const marker of [
-    'file existence',
+    'File existence',
     'stable route',
     '%PDF-',
     'parseability',
