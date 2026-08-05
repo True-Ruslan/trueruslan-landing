@@ -2,7 +2,7 @@
 
 This is a curated English overview of my public engineering work. Project status is derived from the same canonical registry as the Russian site; I do not maintain a separate English status model.
 
-Only **VillAIgence** has a full English case study in this milestone. Other detail pages remain in Russian and are marked explicitly.
+**VillAIgence** and **TrueRuslan Landing** currently have full English case studies. Other detail pages remain in Russian and are marked explicitly.
 
 ## VillAIgence — server-authoritative AI society
 
@@ -15,6 +15,28 @@ The public name is VillAIgence, while the existing `livingworld` route and compa
 [Open English case study →](projects/livingworld.md)
 
 Repository: [True-Ruslan/villAIgence ↗](https://github.com/True-Ruslan/villAIgence)
+
+## TrueRuslan Landing — static-first portfolio platform
+
+<span data-tr-project-status="portfolio-platform"></span>
+
+The production platform behind this portfolio: a standalone homepage plus Diplodoc knowledge pages, canonical registries, RU/EN pairing, generated search, repository-native clean URLs and separate evidence layers for exact-head CI, generated artifacts, GitHub Pages deployment and live browser verification.
+
+The case study explains why the platform does not require a backend, runtime CMS, second search engine or Cloudflare routing Worker, and why deployment evidence is not treated as an audience-growth or search-indexing claim.
+
+[Open English case study →](projects/portfolio-platform.md)
+
+Repository: [True-Ruslan/trueruslan-landing ↗](https://github.com/True-Ruslan/trueruslan-landing)
+
+## Vlezet — precise apartment geometry and recognition
+
+<span data-tr-project-status="vlezet"></span>
+
+A local-first apartment planner with millimetre geometry, derived rooms and areas, explainable furniture fit, read-only 3D and reviewable CV/LLM recognition Drafts that require explicit Apply.
+
+[Open case study — Russian (RU) →](../landing/projects/vlezet.md)
+
+Repository: [True-Ruslan/vlezet ↗](https://github.com/True-Ruslan/vlezet)
 
 ## NODE ZERO — narrative systems and techno-horror
 
