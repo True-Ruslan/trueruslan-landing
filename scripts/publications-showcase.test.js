@@ -53,17 +53,21 @@ test('Diplodoc builds generate publication content before indexing', () => {
   assert.match(packageJson.scripts['build:docs:fast'], /^npm run generate:publications && yfm /);
 });
 
-test('standalone homepage reserves one featured-publications surface below active projects', () => {
+test('standalone homepage reserves one featured-publications surface after flagship and current-focus context', () => {
   const home = read(HOME_TEMPLATE_PATH);
-  const activeIndex = home.indexOf('{{CURRENTLY_BUILDING}}');
+  const flagshipsIndex = home.indexOf('{{HOME_FLAGSHIPS}}');
+  const currentFocusIndex = home.indexOf('id="now-title"');
   const publicationsIndex = home.indexOf('{{FEATURED_PUBLICATIONS}}');
-  const focusIndex = home.indexOf('id="focus-title"');
+  const remainingPlatformIndex = home.indexOf('id="explore-title"');
 
-  assert.notEqual(activeIndex, -1);
+  assert.notEqual(flagshipsIndex, -1, 'homepage must contain {{HOME_FLAGSHIPS}}');
+  assert.notEqual(currentFocusIndex, -1, 'homepage must contain current-focus context');
   assert.notEqual(publicationsIndex, -1, 'homepage must contain {{FEATURED_PUBLICATIONS}}');
+  assert.notEqual(remainingPlatformIndex, -1, 'homepage must contain the remaining platform section');
   assert.equal(home.indexOf('{{FEATURED_PUBLICATIONS}}', publicationsIndex + 1), -1);
-  assert.ok(publicationsIndex > activeIndex, 'featured publications must follow active projects');
-  assert.ok(publicationsIndex < focusIndex, 'featured publications must precede broad focus cards');
+  assert.ok(publicationsIndex > flagshipsIndex, 'featured publications must follow flagship projects');
+  assert.ok(publicationsIndex > currentFocusIndex, 'featured publications must follow current focus');
+  assert.ok(publicationsIndex < remainingPlatformIndex, 'featured publications must precede secondary platform links');
   assert.match(home, /landing\/publications\.html/);
 });
 

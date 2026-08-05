@@ -1,20 +1,61 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import {renderStandaloneHome} from './standalone-home.js';
+import {
+  renderHomepageEvidenceSignals,
+  renderHomepagePrimaryPaths,
+  renderStandaloneHome,
+  selectHomepageFlagships,
+} from './standalone-home.js';
 
 const validProjects = [
   {
     slug: 'livingworld',
-    name: 'LivingWorld',
+    name: 'VillAIgence',
     status: 'release-candidate',
-    statusLabel: 'RELEASE CANDIDATE',
+    statusLabel: 'ACCEPTANCE IN PROGRESS',
     summary: 'Server-authoritative AI NPC conversations.',
     featured: true,
     active: true,
     visibility: 'public',
     href: 'landing/projects/livingworld.html',
     tags: ['Java 21', 'Fabric'],
+  },
+  {
+    slug: 'vlezet',
+    name: 'Vlezet',
+    status: 'pre-production',
+    statusLabel: 'ACTIVE DEVELOPMENT',
+    summary: 'Local-first apartment planning.',
+    featured: true,
+    active: true,
+    visibility: 'public',
+    href: 'landing/projects/vlezet.html',
+    tags: ['TypeScript', 'Geometry'],
+  },
+  {
+    slug: 'portfolio-platform',
+    name: 'Engineering Portfolio Platform',
+    status: 'production',
+    statusLabel: 'PRODUCTION',
+    summary: 'Static-first engineering portfolio and knowledge platform.',
+    featured: true,
+    active: true,
+    visibility: 'public',
+    href: 'landing/projects.html',
+    tags: ['Diplodoc', 'Playwright'],
+  },
+  {
+    slug: 'node-zero',
+    name: 'NODE ZERO',
+    status: 'pre-production',
+    statusLabel: 'PRE-PRODUCTION',
+    summary: 'Private game project.',
+    featured: true,
+    active: true,
+    visibility: 'private',
+    href: 'landing/projects/node-zero.html',
+    tags: ['Unity', 'C#'],
   },
   {
     slug: 'old-project',
@@ -27,6 +68,29 @@ const validProjects = [
     visibility: 'public',
     href: 'landing/projects/old-project.html',
     tags: ['Java', 'Testing'],
+  },
+];
+
+const validEvidence = [
+  {
+    project: 'livingworld',
+    status: 'verified',
+    lastVerified: '2026-08-03',
+    versions: [
+      {label: 'Automated installed boundary', value: 'production-JAR startup + restart PASS'},
+      {label: 'Cumulative manual acceptance', value: 'pending'},
+    ],
+    signals: [],
+  },
+  {
+    project: 'vlezet',
+    status: 'verified',
+    lastVerified: '2026-08-04',
+    versions: [
+      {label: 'Accepted recognition slice', value: 'M7.8B'},
+      {label: 'Next recognition slice', value: 'M7.8C'},
+    ],
+    signals: [],
   },
 ];
 
@@ -51,54 +115,94 @@ const validPublications = [
   },
 ];
 
-test('renderStandaloneHome injects site URL, active projects and featured publications without Diplodoc runtime bundles', () => {
+test('homepage primary paths expose experience, projects and engineering materials', () => {
+  const ru = renderHomepagePrimaryPaths('ru');
+  assert.match(ru, /data-home-path="resume"/);
+  assert.match(ru, /href="landing\/resume\.html"/);
+  assert.match(ru, /data-home-path="projects"/);
+  assert.match(ru, /href="landing\/projects\.html"/);
+  assert.match(ru, /data-home-path="materials"/);
+  assert.match(ru, /href="landing\/notes\.html"/);
+  assert.match(ru, /Публикации/);
+
+  const en = renderHomepagePrimaryPaths('en');
+  assert.match(en, /href="en\/resume\.html"/);
+  assert.match(en, /href="en\/projects\.html"/);
+  assert.match(en, /href="en\/notes\/server-authoritative-ai-npcs\.html"/);
+});
+
+test('homepage flagship selection is explicit, public and stable', () => {
+  const flagships = selectHomepageFlagships(validProjects);
+  assert.deepEqual(flagships.map(({slug}) => slug), [
+    'livingworld',
+    'vlezet',
+    'portfolio-platform',
+  ]);
+  assert.ok(flagships.every(({visibility, active}) => visibility === 'public' && active));
+  assert.ok(flagships.every(({slug}) => slug !== 'node-zero'));
+});
+
+test('homepage evidence signals stay bounded to canonical project and evidence state', () => {
+  const html = renderHomepageEvidenceSignals(validProjects, validEvidence, {locale: 'ru'});
+
+  assert.match(html, /data-home-evidence="livingworld"/);
+  assert.match(html, /production-JAR startup \+ restart PASS/);
+  assert.match(html, /ACCEPTANCE IN PROGRESS/);
+  assert.match(html, /data-home-evidence="vlezet"/);
+  assert.match(html, /M7\.8B/);
+  assert.match(html, /ACTIVE DEVELOPMENT/);
+  assert.match(html, /data-home-evidence="portfolio-platform"/);
+  assert.match(html, /PRODUCTION/);
+  assert.doesNotMatch(html, /NODE ZERO|M7\.8C accepted|full acceptance/i);
+});
+
+test('renderStandaloneHome injects evidence-first paths and public flagships without Diplodoc runtime bundles', () => {
   const template = `<!doctype html><html><head>
     <link rel="canonical" href="{{SITE_URL}}/">
     <meta property="og:image" content="{{SITE_URL}}/assets/images/avatar.png">
     <link rel="stylesheet" href="_assets/style/home.css">
-  </head><body><h1>Руслан Немыкин</h1><section>{{CURRENTLY_BUILDING}}</section>{{FEATURED_PUBLICATIONS}}</body></html>`;
+  </head><body><h1>Руслан Немыкин</h1>{{HOME_PRIMARY_PATHS}}{{HOME_EVIDENCE_SIGNALS}}<section>{{HOME_FLAGSHIPS}}</section>{{FEATURED_PUBLICATIONS}}</body></html>`;
 
   const html = renderStandaloneHome(template, 'https://example.test/', validProjects, {
+    evidence: validEvidence,
     publications: validPublications,
   });
 
   assert.match(html, /https:\/\/example\.test\//);
   assert.match(html, /https:\/\/example\.test\/assets\/images\/avatar\.png/);
-  assert.match(html, /LivingWorld/);
-  assert.match(html, /RELEASE CANDIDATE/);
-  assert.doesNotMatch(html, /Old project/);
-  assert.match(html, /landing\/projects\/livingworld\.html/);
+  assert.match(html, /data-home-path="resume"/);
+  assert.match(html, /data-home-evidence="livingworld"/);
+  assert.match(html, /data-home-flagship="livingworld"/);
+  assert.match(html, /data-home-flagship="vlezet"/);
+  assert.match(html, /data-home-flagship="portfolio-platform"/);
+  assert.doesNotMatch(html, /NODE ZERO|Old project/);
   assert.match(html, /Избранные публикации/);
   assert.match(html, /Diplodoc и GitHub Pages/);
   assert.match(html, /data-tr-publication-id="diplodoc-github-pages"/);
   assert.match(html, /href="landing\/publications\.html"/);
-  assert.doesNotMatch(html, /\{\{SITE_URL\}\}|\{\{CURRENTLY_BUILDING\}\}|\{\{FEATURED_PUBLICATIONS\}\}/);
+  assert.doesNotMatch(html, /\{\{SITE_URL\}\}|\{\{HOME_PRIMARY_PATHS\}\}|\{\{HOME_EVIDENCE_SIGNALS\}\}|\{\{HOME_FLAGSHIPS\}\}|\{\{FEATURED_PUBLICATIONS\}\}/);
   assert.doesNotMatch(html, /_bundle\//);
 });
 
-test('renderStandaloneHome supports English UI copy and removes the untranslated publication placeholder', () => {
+test('renderStandaloneHome supports English evidence paths and bounded Russian fallbacks', () => {
   const template = `<!doctype html><html lang="en"><head>
     <link rel="canonical" href="{{SITE_URL}}/en/">
-  </head><body><h1>Ruslan Nemykin</h1><section>{{CURRENTLY_BUILDING}}</section>{{FEATURED_PUBLICATIONS}}</body></html>`;
+  </head><body><h1>Ruslan Nemykin</h1>{{HOME_PRIMARY_PATHS}}{{HOME_EVIDENCE_SIGNALS}}<section>{{HOME_FLAGSHIPS}}</section>{{FEATURED_PUBLICATIONS}}</body></html>`;
 
-  const projects = [
-    validProjects[0],
-    {...validProjects[1], active: true, slug: 'node-zero', name: 'NODE ZERO', href: 'landing/projects/node-zero.html'},
-  ];
-  const html = renderStandaloneHome(template, 'https://example.test/', projects, {
+  const html = renderStandaloneHome(template, 'https://example.test/', validProjects, {
     locale: 'en',
+    evidence: validEvidence,
     publications: validPublications,
     hrefTransform: (href, project) => project.slug === 'livingworld' ? 'en/projects/livingworld.html' : href,
     ctaTransform: (project, defaultCta) => project.slug === 'livingworld' ? defaultCta : 'Open case study (RU) →',
   });
 
-  assert.match(html, /LivingWorld/);
-  assert.match(html, /Technologies and areas/);
+  assert.match(html, /data-home-path="resume"/);
+  assert.match(html, /href="en\/resume\.html"/);
+  assert.match(html, /data-home-flagship="livingworld"/);
   assert.match(html, /href="en\/projects\/livingworld\.html"/);
-  assert.match(html, /Open case study →/);
-  assert.match(html, /NODE ZERO/);
-  assert.match(html, /href="landing\/projects\/node-zero\.html"/);
+  assert.match(html, /data-home-flagship="vlezet"/);
   assert.match(html, /Open case study \(RU\) →/);
-  assert.doesNotMatch(html, /Открыть case study/);
+  assert.doesNotMatch(html, /NODE ZERO/);
   assert.doesNotMatch(html, /Избранные публикации|Diplodoc и GitHub Pages|\{\{FEATURED_PUBLICATIONS\}\}/);
 });

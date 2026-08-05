@@ -69,50 +69,38 @@
       <section class="tr-home-hero">
         <p class="tr-home-eyebrow">Backend Engineer · Java · Distributed Systems · AI</p>
         <h1>Ruslan Nemykin</h1>
-        <p class="tr-home-lead">I am a backend engineer. Most of my work revolves around Java and Spring, distributed systems, data and integrations. I also experiment extensively with AI engineering and build my own projects. I use this site as one place to keep the systems I am building, the topics I am studying and the engineering conclusions I want to preserve.</p>
-        <div class="tr-home-actions">
-          <a href="en/projects.html"><span>Explore projects</span></a>
-          <a href="https://github.com/True-Ruslan" target="_blank" rel="noopener noreferrer"><span>GitHub</span></a>
-          <a href="https://habr.com/ru/users/TrueRuslan/" target="_blank" rel="noopener noreferrer"><span>Habr</span></a>
-          <a href="https://t.me/TrueRuslan_Blog" target="_blank" rel="noopener noreferrer"><span>Telegram</span></a>
-        </div>
-        <div class="tr-home-signal" aria-label="Core areas">
-          <span>JAVA 8–21</span><span>SPRING BOOT</span><span>DISTRIBUTED SYSTEMS</span><span>DEVOPS</span><span>AI / LLM / AGENTS</span>
-        </div>
+        <p class="tr-home-lead">I design and evolve Java backend systems, integrations and data-intensive services. My independent projects explore server-authoritative AI, computer vision, precise geometry and reliable delivery. This site keeps experience, projects and engineering conclusions connected to reviewable current boundaries instead of presenting unfinished work as complete.</p>
+{{HOME_PRIMARY_PATHS}}
+{{HOME_EVIDENCE_SIGNALS}}
       </section>
-      <section class="tr-home-section" aria-labelledby="active-title">
+      <section class="tr-home-section" aria-labelledby="flagships-title">
         <div class="tr-home-section-head">
-          <h2 id="active-title">Currently building</h2>
-          <p>These are the projects receiving most of my attention right now. Their status comes from the same canonical project registry as the Russian site; unfinished work stays visibly unfinished.</p>
+          <h2 id="flagships-title">Flagship projects</h2>
+          <p>Three systems show different parts of the work: server-authoritative AI, precise apartment geometry and recognition, and the production platform publishing this portfolio.</p>
         </div>
-        <div class="tr-active-grid">
-{{CURRENTLY_BUILDING}}
+        <div class="tr-home-flagships">
+{{HOME_FLAGSHIPS}}
         </div>
       </section>
-      <section class="tr-home-section" aria-labelledby="focus-title">
+      <section class="tr-home-section" aria-labelledby="now-title">
         <div class="tr-home-section-head">
-          <h2 id="focus-title">What I work on</h2>
-          <p>I care less about collecting technologies than about understanding how a system behaves after the first implementation: boundaries, failures, state, delivery and the ability to change it safely later.</p>
+          <h2 id="now-title">Current focus</h2>
+          <p>The live `/now` snapshot currently remains in Russian and records active product, learning and writing priorities without promoting pending work.</p>
         </div>
-        <div class="tr-home-grid">
-          <a class="tr-home-card" href="en/projects.html"><span class="tr-home-card-index">01 / BACKEND</span><div><h3>Backend systems</h3><p>Java, Spring Boot, APIs, business logic, databases, messaging and integrations between systems.</p><span class="tr-home-card-cta">Projects →</span></div></a>
-          <a class="tr-home-card" href="en/about.html"><span class="tr-home-card-index">02 / PLATFORM</span><div><h3>Distributed &amp; DevOps</h3><p>I care about how services communicate, deploy, recover from failures and remain understandable after many iterations.</p><span class="tr-home-card-cta">About →</span></div></a>
-          <a class="tr-home-card" href="en/projects.html"><span class="tr-home-card-index">03 / AI</span><div><h3>AI engineering</h3><p>I use LLMs and agents where they create useful capabilities, while keeping explicit contracts, validation and authority boundaries around them.</p><span class="tr-home-card-cta">Experiments →</span></div></a>
-        </div>
+        <a class="tr-home-now tr-home-now--link" href="landing/now.html">
+          <span class="tr-home-now-dot" aria-hidden="true"></span>
+          <div><strong>Open the current `/now` snapshot</strong><p>VillAIgence · Vlezet · Portfolio 1.0 · Engineering Notes and current research topics.</p></div>
+          <span class="tr-home-now__cta">Open Russian page →</span>
+        </a>
       </section>
-      <section class="tr-home-section" aria-labelledby="explore-title">
-        <div class="tr-home-section-head"><h2 id="explore-title">A small English layer</h2><p>This is intentionally not a full duplicate of the Russian site. I translated the highest-value portfolio surfaces first; untranslated sections remain available in Russian and are marked accordingly.</p></div>
+      <section class="tr-home-section" aria-labelledby="english-layer-title">
+        <div class="tr-home-section-head"><h2 id="english-layer-title">Selected English layer</h2><p>The English site remains intentionally bounded. The highest-value portfolio surfaces are translated first; the broader knowledge platform stays available in Russian with explicit labels.</p></div>
         <div class="tr-home-grid tr-home-grid--explore">
-          <a class="tr-home-card" href="en/projects.html"><span class="tr-home-card-index">PROJECTS</span><div><h3>Projects</h3><p>Engineering case studies ranging from backend systems to AI NPCs and game-development experiments.</p><span class="tr-home-card-cta">Open →</span></div></a>
-          <a class="tr-home-card" href="en/resume.html"><span class="tr-home-card-index">RESUME</span><div><h3>Resume</h3><p>A concise view of my commercial experience, stack, teaching, research and public project work.</p><span class="tr-home-card-cta">Open →</span></div></a>
-          <a class="tr-home-card" href="en/about.html"><span class="tr-home-card-index">ABOUT</span><div><h3>About</h3><p>How I think about engineering, system boundaries, reliability, AI tools and long-running personal projects.</p><span class="tr-home-card-cta">Read →</span></div></a>
+          <a class="tr-home-card" href="en/about.html"><span class="tr-home-card-index">ABOUT</span><div><h3>About</h3><p>Engineering priorities, reliability boundaries, AI tools and the way I approach long-running systems.</p><span class="tr-home-card-cta">Read →</span></div></a>
           <a class="tr-home-card" href="en/notes/server-authoritative-ai-npcs.html"><span class="tr-home-card-index">NOTE</span><div><h3>Server-authoritative AI NPCs</h3><p>Session ownership, voice/text convergence, memory boundaries, provider degradation and action authorization.</p><span class="tr-home-card-cta">Read →</span></div></a>
-          <a class="tr-home-card" href="en/notes/llm-output-is-a-protocol-boundary.html"><span class="tr-home-card-index">NOTE</span><div><h3>LLM output as a protocol boundary</h3><p>Why provider success is not contract success and why structured model output still needs strict validation.</p><span class="tr-home-card-cta">Read →</span></div></a>
-          <a class="tr-home-card" href="landing/now.html"><span class="tr-home-card-index">NOW / RU</span><div><h3>Current focus</h3><p>The live project and learning snapshot currently remains in Russian.</p><span class="tr-home-card-cta">Open Russian page →</span></div></a>
+          <a class="tr-home-card" href="en/notes/llm-output-is-a-protocol-boundary.html"><span class="tr-home-card-index">NOTE</span><div><h3>LLM output as a protocol boundary</h3><p>Why provider success is not contract success and structured output still requires strict validation.</p><span class="tr-home-card-cta">Read →</span></div></a>
+          <a class="tr-home-card" href="landing/publications.html"><span class="tr-home-card-index">PUBLICATIONS / RU</span><div><h3>Publications</h3><p>Externally published and presented work remains available in the complete Russian catalogue.</p><span class="tr-home-card-cta">Open Russian page →</span></div></a>
         </div>
-      </section>
-      <section class="tr-home-section" aria-label="Current engineering focus">
-        <div class="tr-home-now"><span class="tr-home-now-dot" aria-hidden="true"></span><div><strong>What interests me most right now</strong><p>Distributed systems · AI-assisted engineering · agentic workflows · reliable paths from an idea to a working release.</p></div></div>
       </section>
     </div>
   </main>
