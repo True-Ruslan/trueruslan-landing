@@ -92,6 +92,12 @@ HTTP 200 или успешный вызов provider ещё не означае�
 
 [Читать заметку →](notes/probabilistic-proposals-deterministic-authority.md)
 
+### Как соединить local CV и AI, не отдавая модели authority над геометрией
+
+На evidence Vlezet разбираю hybrid recognition pipeline: local CV создаёт reviewable Draft, raw provider output остаётся отдельным proposal, immutable fingerprint связывает его с точным snapshot, deterministic sanitizer ограничивает geometry, а current-state revalidation и explicit Apply сохраняют `VlezetDocument` authoritative.
+
+[Читать заметку →](notes/hybrid-cv-ai-recognition-boundaries.md)
+
 ---
 
 {% note info %}
