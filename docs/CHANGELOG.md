@@ -1,170 +1,79 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4B Clean URLs Note.
+> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4C Hybrid CV + AI Recognition Note.
 >
-> Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; product specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+> Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
-## 2026-08-05 — P3.4B Clean URLs without Cloudflare routing
+## 2026-08-05 — P3.4C Hybrid CV + AI recognition boundaries
 
-PR #128 опубликовал grounded Engineering Note:
+PR #130 опубликовал grounded Engineering Note:
 
 ```text
-/landing/notes/clean-urls-without-cloudflare-routing/
+/landing/notes/hybrid-cv-ai-recognition-boundaries/
 ```
 
 Добавлено:
 
-- объяснение repository-native directory URLs;
-- Diplodoc `<base href>`, `router.pathname` и `router.depth` migration;
-- canonical/hreflang/OpenGraph/Sitemap/Atom/generated-search identity contract;
-- Cloudflare как DNS/CDN/analytics, но не application router;
-- явная граница GitHub Pages HTTP 301;
-- legacy `.html` `noindex,follow` compatibility preserving query and fragment;
-- verified fact / engineering inference / limitation;
-- Notes Registry, index, toc, metadata, clean route, Atom feed и search integration;
-- deployment-only P3.4B route/canonical/legacy/feed/search smoke.
+- `VlezetDocument` как единственный persistent geometry authority;
+- local CV Draft и raw AI proposal как отдельные reviewable/untrusted layers;
+- immutable batch identity через `requestId`, `referenceRevision`, `localDraftFingerprint`;
+- deterministic validation и current-state revalidation;
+- explicit Apply как единственная atomic mutation boundary с Undo/Redo;
+- fail-closed malformed, stale, overload и provider-failure paths;
+- accepted M7.8B evidence отдельно от Draft M7.8C PR #42 и stacked PR #44/#45;
+- различие benchmark, browser, CI и product acceptance;
+- Notes Registry, index, toc, metadata, Atom feed и generated search integration;
+- отдельный exact-deployment P3.4C production smoke.
 
 ```text
-PR #128 RED head:              4d14dd6842423a17f12d8cb2734df36cdb162b41
-RED Build:                      #934 / 31020006933 — expected FAILURE
-RED result:                     384 PASS / 3 expected FAIL
-PR #128 exact head:            dd1911ebbc5faf66a56144c75dd45215b4042293
-PR #128 squash:                4ebaaa0b4ea2b3ceb602a70c100a6ec58bf738cb
-Build:                          #945 / 31021101326 — SUCCESS
-CodeQL:                         #426 / 31021101539 — SUCCESS
-Dependency Review:              #373 — SUCCESS
-Distribution Readiness:         #60 — SUCCESS
-PR-safe Production Smoke:       #122 — SUCCESS
-unit tests:                     388 PASS / 0 FAIL
-quality artifact:               8936766318
-quality digest:                 sha256:38d1a612b9e684a2faccf71f889217933b115434391a5e60a5baff49b746178d
-Pages deployment ID:            5764711503
-Production Live Smoke:          #123 / 31021657939 — SUCCESS
-baseline/platform/flagship/P3.4A/P3.4B/favicon smokes: PASS
-production artifact:            8936914548
-production digest:              sha256:cc250f9ea49d4214c5b815ebb9ee067f540e54124e0edbbef46391ccc2b4fa51
+PR #130 RED head:              842959fb765702a634ec0592f218f1275d3ca93e
+RED Build:                      #952 / 31028991923 — expected FAILURE
+RED result:                     389 PASS / 4 expected FAIL
+PR #130 exact head:            731dbf0a6d217a40c17a8c8f1494f342fcb35e7e
+PR #130 squash:                8bc5b2134cd10cd8cf27f46ec0bc2fb4ee6c67d7
+Build:                          #961 / 31029662846 — SUCCESS
+unit tests:                     393 PASS / 0 FAIL
+quality artifact:               8940244292
+quality digest:                 sha256:1f3a013c543171230e0a69975e69beaf18b252ca2337a63938f692f6a7c162d9
+Pages:                          #160 / 31030249235 — SUCCESS
+Pages deployment ID:            5766332284
+Production Live Smoke:          #132 / 31030324160 — SUCCESS
+baseline/platform/flagship/P3.4A/P3.4B/P3.4C/favicon smokes: PASS
+production artifact:            8940409941
+production digest:              sha256:9cb66c8e3b2b432c9bbdd160542f3b5566e1e3e21f3be07711f16d5f95fae700
 ```
 
-Production verified the exact squash SHA. Search-engine observation remains delayed external state; no Google/Yandex completion claim was introduced.
+No claim was introduced that M7.8C, PR #42, PR #44 or PR #45 are accepted. Representative product-owner retest remains required.
+
+Next bounded Note:
+
+**P3.4D — GameTests versus installed gameplay acceptance**.
+
+## 2026-08-05 — P3.4B Clean URLs without Cloudflare routing
+
+PR #128 опубликовал `/landing/notes/clean-urls-without-cloudflare-routing/`; PR #129 закрыл durable state.
+
+Repository-native directory URLs, canonical/hreflang/OpenGraph/Sitemap/Atom/search migration, legacy `.html` query and fragment compatibility and delayed search-engine observation were recorded as one bounded contract.
 
 ## 2026-08-05 — P3.4A Deployment success is not production verification
 
-PR #125 опубликовал Note:
-
-```text
-/landing/notes/deployment-success-is-not-production-verification/
-```
-
-```text
-PR #125 RED head:              688b98a58937dbf9b5c9f45667d4cfdef1327294
-PR #125 exact head:            9c0a24c6adfd1794adc70facdc1ace4dc01a3d86
-PR #125 squash:                c4f3cb5a3aa71b958d906d15eb975833b46d3571
-Build:                          #922 / 31014792446 — SUCCESS
-quality artifact:               8934487200
-quality digest:                 sha256:61fde2c53551057d5d01b9f409d86c0aa50be6b20f8de3a4e9ae0b66988126ad
-Production Live Smoke #108:    FAILURE — verifier defect
-```
-
-PR #126 удалил stale hard-coded flagship evidence и перевёл verifier на canonical registry.
-
-```text
-PR #126 RED head:              43ccee7b09220000660e425ea32cc87938a7b653
-PR #126 exact head:            50a7185d799eea96adb7dcea8cd20e9e9a400784
-PR #126 squash:                0a1cd6ad40870366fecfdce3bbdae7e8722b2119
-Build:                          #927 / 31016127657 — SUCCESS
-quality artifact:               8934699715
-quality digest:                 sha256:607a2d901e77ebe5862fd760393f6a4435699dd69d1dc8abb910007fc0611b52
-Pages:                          #156 / 31016942589 — SUCCESS
-Pages deployment ID:            5763802525
-Production Live Smoke:          #114 / 31017023851 — SUCCESS
-production artifact:            8935003712
-production digest:              sha256:23f344e3562d6b61106c8dc59a4b3e9ce2293192555c9f31ac09e7eb9916d480
-```
-
-## 2026-08-05 — External project evidence reconciliation
-
-PR #124 обновил bounded VillAIgence/Vlezet evidence без promotion Draft work.
-
-- Vlezet M7.8B accepted; M7.8C PR #42 и PR #44/#45 remain Draft/pending owner gates.
-- VillAIgence candidate `0.1.25+1.21.1`; PR #103/#104/#108 bounded automated evidence; PR #110 Draft.
+PR #125 опубликовал `/landing/notes/deployment-success-is-not-production-verification/`. Production Live Smoke #108 обнаружил verifier defect; PR #126 устранил stale hard-coded evidence, после чего exact deployment прошёл Production Live Smoke #114.
 
 ## 2026-08-05 — P3.3 Flagship normalization
 
-```text
-PR #122 RED head:              f2c5b065a8f1a1cd8adbad6ebb4ed7743cb33ad7
-PR #122 exact head:            ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46
-PR #122 squash:                c90a221a21f51e897661667f981483bad922ad0d
-Build:                          #893 / 31005675334 — SUCCESS
-quality artifact:               8930321636
-quality digest:                 sha256:97880f197f9484b41eb38ee606c291a754d889a55160719d948c13b0fc9a4e8a
-Pages:                          #152 / 31006504250 — SUCCESS
-Pages deployment ID:            5761717586
-Production Live Smoke:          #95 / 31006557622 — SUCCESS
-production artifact:            8930571510
-production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13
-```
-
-Normalized `/landing/projects/livingworld/`, `/landing/projects/vlezet/` и `/en/projects/livingworld/` to one evidence-first contract.
+PR #122 нормализовал RU VillAIgence, RU Vlezet и controlled EN VillAIgence. Lifecycle и external acceptance boundaries не расширялись.
 
 ## 2026-08-05 — P3.2 TrueRuslan Landing flagship
 
-```text
-PR #119 head:                  6736c9fd917f213621e5e88273304dda8ddda760
-PR #119 squash:                d11aeddeed492dce512e123d216e0191a5906ca9
-Build:                          #868 / 30998184982 — SUCCESS
-PR #120 head:                  c2fa3327061148b5e4adf703bd707d6925639df3
-PR #120 squash:                dcb278cb4f52d5e8afc314a9f30689edb5153af0
-Build:                          #869 / 30998966087 — SUCCESS
-Pages deployment ID:            5760275658
-Production Live Smoke:          #80 / 30999331791 — SUCCESS
-production artifact:            8927580319
-production digest:              sha256:71198afc2ae475a9322ee74f5ea54a5b2190baa884cc8f54da01de7efdf21e08
-```
-
-Added `/landing/projects/portfolio-platform/`, `/en/projects/portfolio-platform/` and scoped `main.dc-doc-page__content` verification.
+PR #119 создал RU/EN platform case study; PR #120 закрепил production selector `main.dc-doc-page__content`.
 
 ## 2026-08-05 — P3.1 Homepage evidence paths
 
-```text
-PR #117 squash:                fe1a796df37313401c07e25c0672dc32db30a1c4
-Build:                          #836 / 30989449993 — SUCCESS
-Pages:                          #147 / 30989921979 — SUCCESS
-Production Live Smoke:          #58 / 30989981685 — SUCCESS
-```
+PR #117 сделал homepage evidence-first entry point; PR #118 синхронизировал durable state.
 
-## 2026-08-05 — Repository-native clean URLs
+## Operational boundaries
 
-PR #114 created directory artifacts and PR #115 aligned production verification.
-
-```text
-PR #114 squash:                cf07c39378e7c531583e80eaef5edc7e7d1f2bad
-Build:                          #822 / 30962673977 — SUCCESS
-PR #115 squash:                4260d30cff4ebdbf3f666f4763aa667c8dc7ee6c
-Production Live Smoke #52:      SUCCESS
-```
-
-Canonical routes include `/landing/resume/`; legacy `.html` remains static compatibility.
-
-## Earlier platform foundation
-
-Completed before Portfolio 1.0:
-
-- Photo Stories;
-- Sources Registry / Knowledge Base;
-- Project Evidence and Content Freshness;
-- browser/accessibility/cross-browser/visual quality harness;
-- RU/EN layer;
-- privacy-friendly analytics;
-- custom domain and HTTPS;
-- Publications, `/now`, Engineering Map and generated search;
-- dependency audit and Production Live Smoke;
-- distribution/external profile controls;
-- resume/PDF and favicon contracts.
-
-## Current operational boundaries
-
-- issue #111 — Yandex Webmaster operator actions and delayed indexing observation;
-- issue #78 — older generated report until default-branch Content Freshness owner run;
-- issue #82 — Diplodoc/markdown-it dependency review on or after 2026-08-17;
-- no legacy cleanup before observed index migration;
-- Draft external-project evidence is not accepted product evidence.
+- issue #111 — authenticated Yandex/search-engine observation;
+- issue #78 — default-branch Content Freshness owner refresh;
+- issue #82 — Diplodoc/markdown-it dependency blocker, review on or after 2026-08-17;
+- no `npm audit fix --force` or unreviewed compatibility bypass.
