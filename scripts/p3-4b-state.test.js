@@ -21,7 +21,7 @@ function read(file) {
   return fs.readFileSync(file, 'utf8');
 }
 
-test('durable state closes P3.4B after exact deployment and promotes P3.4C', () => {
+test('durable state preserves P3.4B production acceptance after later slices', () => {
   const state = read(PROJECT_STATE);
   const roadmap = read(ROADMAP);
   const changelog = read(CHANGELOG);
@@ -50,8 +50,8 @@ test('durable state closes P3.4B after exact deployment and promotes P3.4C', () 
     assert.ok(combined.includes(marker), `missing P3.4B closure marker: ${marker}`);
   }
 
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.4B ACCEPTED IN PRODUCTION\*\*/);
-  assert.ok(spec.includes('Continue with **P3.4C — Hybrid CV + AI recognition boundaries**'));
+  assert.ok(spec.includes('### P3.4B — Clean URLs without Cloudflare routing — DONE'));
+  assert.ok(spec.includes('### P3.4C — Hybrid CV + AI recognition boundaries — DONE'));
   assert.ok(state.includes('issue #111'), 'P3.4B closure must preserve search-engine observation');
   assert.ok(state.includes('issue #82'), 'P3.4B closure must preserve dependency blocker');
   assert.ok(state.includes('issue #78'), 'P3.4B closure must preserve Content Freshness owner state');
