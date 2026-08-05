@@ -249,7 +249,7 @@ async function main() {
           'Связанные материалы',
           'Что бы я сделал иначе',
         ],
-        requiredText: ['0.1.23+1.21.1', 'PR #110', 'Draft', 'cumulative acceptance'],
+        requiredText: ['0.1.25+1.21.1', 'PR #108', 'PR #110', 'Draft', 'cumulative acceptance'],
         relatedHrefFragments: [
           'server-authoritative-ai-npcs',
           'source-tests-to-installed-acceptance',
@@ -276,7 +276,7 @@ async function main() {
           'Связанные материалы',
           'Что бы я сделал иначе',
         ],
-        requiredText: ['M7.8B', 'M7.8C', 'product-owner retest', 'ACTIVE DEVELOPMENT'],
+        requiredText: ['M7.8B', 'M7.8C', 'PR #44', 'PR #45', 'product-owner retest', 'ACTIVE DEVELOPMENT'],
         relatedHrefFragments: [
           'probabilistic-proposals-deterministic-authority',
           'green-ci-is-not-product-verification',
@@ -302,7 +302,7 @@ async function main() {
           'Related material',
           'What I would change',
         ],
-        requiredText: ['0.1.23+1.21.1', 'PR #110', 'Draft', 'cumulative acceptance'],
+        requiredText: ['0.1.25+1.21.1', 'PR #108', 'PR #110', 'Draft', 'cumulative acceptance'],
         relatedHrefFragments: [
           'server-authoritative-ai-npcs',
           'llm-output-is-a-protocol-boundary',
