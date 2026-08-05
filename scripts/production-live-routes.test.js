@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import test from 'node:test';
+
+const require = createRequire(import.meta.url);
+const routes = require('./production-live-routes.cjs');
+
+test('production live smoke uses repository-native clean canonical routes', () => {
+  assert.equal(
+    routes.NOTE_URL,
+    'https://trueruslan.ru/landing/notes/restart-persistence-is-a-product-contract/',
+  );
+  assert.equal(
+    routes.WWW_NOTE_URL,
+    'https://www.trueruslan.ru/landing/notes/restart-persistence-is-a-product-contract/',
+  );
+  assert.equal(routes.SEARCH_URL, 'https://trueruslan.ru/_search/ru/');
+});
+
+test('production live smoke preserves explicit legacy route coverage', () => {
+  assert.equal(
+    routes.LEGACY_NOTE_URL,
+    'https://trueruslan.ru/landing/notes/restart-persistence-is-a-product-contract.html',
+  );
+  assert.notEqual(routes.LEGACY_NOTE_URL, routes.NOTE_URL);
+});
