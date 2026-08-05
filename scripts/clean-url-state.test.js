@@ -44,7 +44,24 @@ test('durable state records repository-native clean URL acceptance', () => {
   assert.ok(state.includes('PR #103') && state.includes('PR #104'), 'state must preserve VillAIgence acceptance evidence');
 });
 
-test('durable state records P3.1 production acceptance and promotes P3.2', () => {
+test('durable state preserves P3.1 production acceptance', () => {
+  const combined = [PROJECT_STATE, ROADMAP, CHANGELOG, PORTFOLIO_SPEC]
+    .map(read)
+    .join('\n');
+
+  for (const marker of [
+    'P3.1 — Homepage evidence paths',
+    'PR #117',
+    'fe1a796df37313401c07e25c0672dc32db30a1c4',
+    '#836 / 30989449993',
+    '#147 / 30989921979',
+    '#58 / 30989981685',
+  ]) {
+    assert.ok(combined.includes(marker), `missing P3.1 durable marker: ${marker}`);
+  }
+});
+
+test('durable state records P3.2 production acceptance and promotes P3.3', () => {
   const state = read(PROJECT_STATE);
   const roadmap = read(ROADMAP);
   const changelog = read(CHANGELOG);
@@ -53,22 +70,29 @@ test('durable state records P3.1 production acceptance and promotes P3.2', () =>
 
   for (const marker of [
     'Portfolio 1.0',
-    'P3.1 — Homepage evidence paths',
-    'PR #117',
-    'fe1a796df37313401c07e25c0672dc32db30a1c4',
-    'Build:                          #836',
-    'Pages:                          #147',
-    'Production Live Smoke:          #58',
-    'VillAIgence',
-    'Vlezet',
-    'TrueRuslan Landing',
-    'static-first',
     'P3.2 — TrueRuslan Landing flagship',
+    'PR #119',
+    '6736c9fd917f213621e5e88273304dda8ddda760',
+    'd11aeddeed492dce512e123d216e0191a5906ca9',
+    'PR #120',
+    'c2fa3327061148b5e4adf703bd707d6925639df3',
+    'dcb278cb4f52d5e8afc314a9f30689edb5153af0',
+    '#868 / 30998184982',
+    '#869 / 30998966087',
+    'Pages deployment ID:            5760275658',
+    '#80 / 30999331791',
+    '8927580319',
+    'sha256:71198afc2ae475a9322ee74f5ea54a5b2190baa884cc8f54da01de7efdf21e08',
+    '/landing/projects/portfolio-platform/',
+    '/en/projects/portfolio-platform/',
+    'main.dc-doc-page__content',
+    'P3.3 — Flagship normalization',
   ]) {
-    assert.ok(combined.includes(marker), `missing P3.1/P3.2 durable marker: ${marker}`);
+    assert.ok(combined.includes(marker), `missing P3.2/P3.3 durable marker: ${marker}`);
   }
 
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.1 ACCEPTED IN PRODUCTION\*\*/);
+  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.2 ACCEPTED IN PRODUCTION\*\*/);
   assert.ok(spec.includes('no public canonical/Sitemap/feed URL contains `.html`'));
-  assert.ok(spec.includes('Start with **P3.2 — TrueRuslan Landing flagship**'));
+  assert.ok(spec.includes('Start with **P3.3 — Flagship normalization**'));
+  assert.ok(roadmap.includes('exact artifact и installed acceptance остаются отдельными release gates'));
 });

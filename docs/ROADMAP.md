@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.1 Homepage evidence paths.
+> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.2 TrueRuslan Landing flagship и PR #120 verifier closure.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; product specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -23,7 +23,7 @@
 - one RU/EN site/build/search architecture;
 - optional aggregate analytics;
 - no behavioural tracking without explicit privacy review;
-- generated artifact, deployed production, search-engine observation и external-product acceptance как разные факты;
+- repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance как разные факты;
 - exact artifact и installed acceptance остаются отдельными release gates;
 - no quality-gate weakening.
 
@@ -34,8 +34,6 @@
 ---
 
 # Completed milestones
-
-## Foundation and evidence platform
 
 - Photo Stories — PRs #15/#17.
 - Sources Registry / KB — PR #20.
@@ -54,26 +52,21 @@
 - `/now` — PR #65.
 - Product Evidence Reconciliation — PR #83.
 - Engineering Notes milestones — PRs #85/#87/#89.
+- Content Freshness closure — PR #91.
+- Dependency audit/remediation — PRs #93/#94.
+- Production Live Smoke — PR #96.
+- Deployment-driven live trigger — PRs #99/#100.
 - Distribution and external profiles — PRs #98/#102/#104.
+- Vlezet Draft reconciliation — PR #106.
 - Resume/PDF baseline — PRs #108/#110.
 - Yandex favicon contract — PR #112.
 - Repository-native clean URLs — PR #114.
-- Clean-route production verification — PR #115.
+- Canonical/legacy production verification — PR #115.
 - Durable Portfolio 1.0 specification — PR #116.
-- Portfolio 1.0 P3.1 Homepage evidence paths — PR #117.
-
-## Operational and security hardening
-
-- issue #78 freshness closure — PR #91.
-- dependency audit evidence — PR #93.
-- high-severity dependency remediation — PR #94.
-- Production Live Smoke — PR #96.
-- deployment-driven trigger — PRs #99/#100.
-- Vlezet Draft reconciliation — PR #106.
-- root favicon live contract — PR #112.
-- clean URL build/search/SEO/browser contract — PR #114.
-- canonical versus legacy live verification — PR #115.
-- remaining markdown-it/Diplodoc blocker — issue #82.
+- P3.1 Homepage evidence paths — PR #117.
+- P3.1 durable closure — PR #118.
+- P3.2 TrueRuslan Landing flagship — PR #119.
+- P3.2 production-selector hotfix — PR #120.
 
 ---
 
@@ -81,69 +74,102 @@
 
 ## P3.1 — Homepage evidence paths — DONE
 
-PR #117 made the homepage an evidence-first professional entry point.
-
-Delivered:
-
-- three explicit one-action paths: Resume, Projects and Materials;
-- three bounded evidence signals from canonical project/evidence registries;
-- public-only flagship set: VillAIgence, Vlezet and Engineering Portfolio Platform;
-- fail-closed exclusion of private NODE ZERO;
-- preserved VillAIgence automated/manual and Vlezet accepted/Draft boundaries;
-- current `/now` context;
-- reduced secondary duplication;
-- bounded RU/EN hierarchy;
-- reviewed desktop/mobile homepage baselines.
-
 ```text
-exact head:                     67d3f6593c45d1239630f71be6a3cb15a33f4519
-squash:                         fe1a796df37313401c07e25c0672dc32db30a1c4
-RED Build:                      #827 / 30987736270 — expected FAILURE
-final Build:                    #836 / 30989449993 — SUCCESS
-CodeQL:                         #306 / 30989449931 — SUCCESS
-Dependency Review:              #264 / 30989449930 — SUCCESS
-unit tests:                     360 PASS / 0 FAIL
-visual regression:              PASS
-custom-domain artifact:         PASS
+PR #117 squash:                fe1a796df37313401c07e25c0672dc32db30a1c4
+Build:                          #836 / 30989449993 — SUCCESS
 Pages:                          #147 / 30989921979 — SUCCESS
 Production Live Smoke:          #58 / 30989981685 — SUCCESS
 ```
 
-## P3.2 — TrueRuslan Landing flagship — NEXT
+Accepted outcome:
 
-Create a dedicated clean route for the portfolio platform instead of linking its homepage flagship only to the Projects hub.
+- Resume, Projects and Materials are explicit primary paths;
+- bounded evidence comes from canonical registries;
+- VillAIgence, Vlezet and Engineering Portfolio Platform are public homepage flagships;
+- private NODE ZERO is fail-closed excluded;
+- RU/EN and no-JS boundaries remain intact.
 
-Required case-study contract:
+## P3.2 — TrueRuslan Landing flagship — DONE
 
-1. product purpose and audience;
+Dedicated clean routes:
+
+```text
+/landing/projects/portfolio-platform/
+/en/projects/portfolio-platform/
+```
+
+Feature evidence:
+
+```text
+PR #119 head:                  6736c9fd917f213621e5e88273304dda8ddda760
+PR #119 squash:                d11aeddeed492dce512e123d216e0191a5906ca9
+Build:                          #868 / 30998184982 — SUCCESS
+CodeQL:                         #340 — SUCCESS
+Dependency Review:              #296 — SUCCESS
+unit tests:                     368 PASS / 0 FAIL
+quality artifact:               8927189167
+quality digest:                 sha256:9bd264d534ba31f51669d6701319cb2b4671574e329d7e36f9047bb48affc997
+```
+
+Verifier closure:
+
+```text
+PR #120 head:                  c2fa3327061148b5e4adf703bd707d6925639df3
+PR #120 squash:                dcb278cb4f52d5e8afc314a9f30689edb5153af0
+Build:                          #869 / 30998966087 — SUCCESS
+CodeQL:                         #342 — SUCCESS
+Dependency Review:              #297 — SUCCESS
+PR-safe Production Live Smoke:  #79 — SUCCESS
+Pages deployment ID:            5760275658 — SUCCESS
+Production Live Smoke:          #80 / 30999331791 — SUCCESS
+platform RU/EN smoke:           PASS
+favicon smoke:                  PASS
+production artifact:            8927580319
+production digest:              sha256:71198afc2ae475a9322ee74f5ea54a5b2190baa884cc8f54da01de7efdf21e08
+```
+
+Accepted outcome:
+
+- dedicated RU/EN evidence-first case study;
+- homepage, Projects hubs, toc, search, Sitemap, metadata, OpenGraph and hreflang integration;
+- canonical Project History and Project Evidence;
+- four controlled flagship/evidence projects;
+- CI, artifact, Pages deployment and live browser proof remain distinct;
+- Cloudflare is not required as application routing runtime;
+- deployment-only smoke verifies both routes, homepage link, search and favicon;
+- `main.dc-doc-page__content` is the required Diplodoc document selector.
+
+## P3.3 — Flagship normalization — NEXT
+
+Normalize **VillAIgence** and **Vlezet** to the complete evidence-first order already accepted for TrueRuslan Landing.
+
+Required sequence:
+
+1. problem and user;
 2. constraints and risks;
-3. accepted production boundary;
-4. static-first architecture and source of truth;
-5. build-time registries, generators and post-processing;
-6. alternatives considered and rejected;
-7. clean URL migration and GitHub Pages redirect limitations;
-8. exact-head CI, generated artifact, Pages deployment and Production Live Smoke as separate evidence layers;
-9. known limitations and next milestone;
-10. related Engineering Notes, Publications, repository and evidence links.
+3. current lifecycle and accepted boundary;
+4. architecture and canonical source of truth;
+5. alternatives considered and rejected;
+6. implemented capabilities;
+7. verification and evidence;
+8. known limitations;
+9. next accepted milestone;
+10. related Notes, Publications and repository links.
 
 Acceptance criteria:
 
-- dedicated canonical route exists in RU and the controlled EN layer;
-- Projects hub and homepage flagship link to it;
-- content derives current state from canonical project/evidence data where applicable;
-- no invented metrics or claims;
-- related-content links are deterministic and validated;
-- search, Sitemap, metadata, clean URLs and RU/EN pairing include the page;
-- full exact-head and production acceptance matrix passes.
-
-## P3.3 — Flagship normalization
-
-Align VillAIgence and Vlezet to the same case-study order without changing their accepted lifecycle states.
+- VillAIgence and Vlezet follow the same structural marker order;
+- existing canonical route identities remain unchanged;
+- timeline and Project Evidence placeholders remain unique;
+- related Notes are deterministic and validated;
+- current lifecycle labels remain registry-owned;
+- full exact-head, visual and production matrices pass;
+- no acceptance claim is broadened.
 
 Do not promote:
 
-- Vlezet M7.8C before exact-head automation plus real-plan owner acceptance;
-- VillAIgence beyond `ACCEPTANCE IN PROGRESS` before cumulative real-provider/gameplay/manual evidence.
+- VillAIgence beyond `ACCEPTANCE IN PROGRESS` before cumulative real-provider/gameplay/manual acceptance;
+- Vlezet M7.8C before exact-head automation plus the same representative real-plan owner retest.
 
 ## P3.4 — Grounded Engineering Notes
 
@@ -172,22 +198,14 @@ After 3–4 weeks of meaningful aggregate traffic:
 
 ---
 
-# Clean URL and search-engine operations
+# Search-engine operations
 
-Repository work is complete:
-
-- clean public directory routes;
-- canonical/hreflang/OpenGraph/Sitemap/feed without public `.html` identities;
-- legacy `.html` only as `noindex,follow` compatibility;
-- root favicon and HTTPS contracts;
-- deployed production verification.
-
-Issue #111 remains only for authenticated Yandex Webmaster actions and crawler observation:
+Repository work is complete. Issue #111 remains only for authenticated Yandex Webmaster actions and crawler observation:
 
 1. confirm/resubmit Sitemap;
 2. verify HTTP→HTTPS/main mirror;
 3. select “No region”;
-4. request recrawl for representative clean routes;
+4. request recrawl for representative clean routes, including the new platform case study;
 5. recheck diagnostics and indexed URLs after 10–14 days.
 
 Do not add repository code solely to clear a stale cached diagnostic.
@@ -210,8 +228,8 @@ Do not use `npm audit fix --force`, local shims or an unreviewed fork.
 
 ## Conditional work
 
-- Photo Stories: only authentic material and chronology; no demo album.
-- Share UI: only a concrete user-facing sharing need.
+- Photo Stories: authentic material and chronology only.
+- Share UI: only for a concrete user-facing sharing need.
 - Analytics decisions: only after enough aggregate traffic exists.
 
 ---
@@ -236,4 +254,4 @@ Without a reproduced product need, do not plan:
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, commits, exact-head CI, Pages and Production Live Smoke. Confirm PR #117 squash `fe1a796df37313401c07e25c0672dc32db30a1c4` is the accepted P3.1 baseline; Pages #147 and Production Live Smoke #58 passed; PR #114/#115 remain the clean URL baseline; issue #111 is external observation only; issue #82 remains the dependency blocker; Vlezet and VillAIgence acceptance boundaries are unchanged; continue with **P3.2 — TrueRuslan Landing flagship**.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, commits, exact-head CI, Pages and Production Live Smoke. Confirm PR #119 squash `d11aeddeed492dce512e123d216e0191a5906ca9` delivered P3.2, PR #120 squash `dcb278cb4f52d5e8afc314a9f30689edb5153af0` closed production verification, Pages deployment ID `5760275658` and Production Live Smoke #80 passed; PR #114/#115 remain the clean URL baseline; issue #111 is external observation only; issue #82 remains the dependency blocker; Vlezet and VillAIgence acceptance boundaries are unchanged; continue with **P3.3 — Flagship normalization**.
