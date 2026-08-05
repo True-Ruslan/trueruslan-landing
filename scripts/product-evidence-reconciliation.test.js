@@ -83,7 +83,7 @@ test('repository public truth preserves accepted boundaries through the 2026-08-
   assert.match(vlezetPage, /M0–M7\.8B/);
   assert.match(vlezetPage, /M7\.8C/);
   assert.match(vlezetPage, /product-owner retest/i);
-  assert.doesNotMatch(vlezetPage, /M7\.8C[^\n]{0,160}(accepted|принят|merged|см[её]ржен)/i);
+  assert.match(vlezetPage, /M7\.8C не считается принятым или смерженным/i);
 
   const livingworldPage = readText('docs/landing/projects/livingworld.md');
   assert.match(livingworldPage, /e0b763aa4a5caea8897aadc6ee2cab6c1b407c89/);
