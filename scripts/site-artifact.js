@@ -55,6 +55,10 @@ function readRequiredFiles(outputDir, errors) {
   return contents;
 }
 
+function containsPublicHtmlRoute(content) {
+  return /https?:\/\/[^\s"'<>]+\.html(?:[?#\s"'<>]|$)/i.test(content);
+}
+
 export function verifySiteArtifact(outputDir, {
   expectedOrigin,
   forbiddenOrigin = '',
@@ -84,7 +88,7 @@ export function verifySiteArtifact(outputDir, {
     ['en/index.html', [`${expected}/`, `${expected}/en/`]],
     ['robots.txt', [`Sitemap: ${expected}/sitemap.xml`]],
     ['sitemap.xml', [`<loc>${expected}/</loc>`, `${expected}/en/`]],
-    ['feed.xml', [`${expected}/feed.xml`, `${expected}/landing/notes.html`]],
+    ['feed.xml', [`${expected}/feed.xml`, `${expected}/landing/notes/`]],
   ]);
   for (const [relativePath, fragments] of expectedFragments) {
     const content = contents.get(relativePath);
@@ -93,6 +97,13 @@ export function verifySiteArtifact(outputDir, {
       if (!content.includes(fragment)) {
         errors.push(`${relativePath} does not contain expected public identity: ${fragment}`);
       }
+    }
+  }
+
+  for (const relativePath of ['sitemap.xml', 'feed.xml']) {
+    const content = contents.get(relativePath);
+    if (content && containsPublicHtmlRoute(content)) {
+      errors.push(`${relativePath} contains a public .html route.`);
     }
   }
 
