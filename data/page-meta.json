@@ -30,6 +30,16 @@
     "accent": "cyan"
   },
   {
+    "path": "landing/projects/portfolio-platform.html",
+    "card": "portfolio-platform",
+    "title": "TrueRuslan Landing — Static-First Portfolio Platform",
+    "description": "Evidence-first case study static engineering portfolio platform: Diplodoc, canonical registries, clean URLs, GitHub Pages and deployment-driven production verification.",
+    "displayTitle": "TRUERUSLAN PLATFORM",
+    "kicker": "STATIC-FIRST PLATFORM",
+    "tags": ["DIPLODOC", "GITHUB PAGES", "QUALITY GATES"],
+    "accent": "green"
+  },
+  {
     "path": "landing/now.html",
     "card": "now",
     "title": "Сейчас — Руслан Немыкин",
@@ -267,6 +277,16 @@
     "displayTitle": "VILLAIGENCE",
     "kicker": "SERVER-AUTHORITATIVE AI",
     "tags": ["MINECRAFT", "MEMORY 2.0", "AI SECURITY"],
+    "accent": "green"
+  },
+  {
+    "path": "en/projects/portfolio-platform.html",
+    "card": "portfolio-platform-en",
+    "title": "TrueRuslan Landing — Static-First Portfolio Platform",
+    "description": "English evidence-first case study of a static portfolio and knowledge platform with clean URLs, canonical registries, GitHub Pages and live production verification.",
+    "displayTitle": "TRUERUSLAN PLATFORM",
+    "kicker": "STATIC-FIRST PLATFORM",
+    "tags": ["DIPLODOC", "GITHUB PAGES", "QUALITY GATES"],
     "accent": "green"
   },
   {
