@@ -22,6 +22,7 @@ on:
       - 'scripts/production-live-routes.test.js'
       - 'scripts/production-live-workflow.test.js'
       - 'scripts/production-portfolio-platform-smoke.cjs'
+      - 'scripts/production-flagship-normalization-smoke.cjs'
       - 'scripts/production-favicon-smoke.cjs'
       - 'scripts/production-favicon-workflow.test.js'
 
@@ -152,6 +153,12 @@ jobs:
         env:
           EXPECTED_DEPLOYED_SHA: ${{ steps.pages.outputs.deployed_sha }}
         run: node scripts/production-portfolio-platform-smoke.cjs
+
+      - name: Run deployed flagship normalization smoke
+        if: github.event_name != 'pull_request'
+        env:
+          EXPECTED_DEPLOYED_SHA: ${{ steps.pages.outputs.deployed_sha }}
+        run: node scripts/production-flagship-normalization-smoke.cjs
 
       - name: Run deployed favicon smoke
         if: github.event_name != 'pull_request'
