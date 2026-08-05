@@ -130,3 +130,45 @@ test('durable state records P3.3 production acceptance and promotes P3.4A', () =
   assert.ok(state.includes('issue #82'), 'P3.3 state must preserve the dependency blocker');
   assert.ok(state.includes('PR #103') && state.includes('PR #104') && state.includes('PR #110'));
 });
+
+test('durable state closes P3.4A after exact deployment and promotes P3.4B', () => {
+  const state = read(PROJECT_STATE);
+  const roadmap = read(ROADMAP);
+  const changelog = read(CHANGELOG);
+  const spec = read(PORTFOLIO_SPEC);
+  const combined = `${state}\n${roadmap}\n${changelog}\n${spec}`;
+
+  for (const marker of [
+    'P3.4A — Deployment success is not production verification',
+    'PR #125',
+    '688b98a58937dbf9b5c9f45667d4cfdef1327294',
+    '9c0a24c6adfd1794adc70facdc1ace4dc01a3d86',
+    'c4f3cb5a3aa71b958d906d15eb975833b46d3571',
+    '#922 / 31014792446',
+    '8934487200',
+    'sha256:61fde2c53551057d5d01b9f409d86c0aa50be6b20f8de3a4e9ae0b66988126ad',
+    'Production Live Smoke #108',
+    'verifier defect',
+    'PR #126',
+    '43ccee7b09220000660e425ea32cc87938a7b653',
+    '50a7185d799eea96adb7dcea8cd20e9e9a400784',
+    '0a1cd6ad40870366fecfdce3bbdae7e8722b2119',
+    '#927 / 31016127657',
+    '8934699715',
+    'sha256:607a2d901e77ebe5862fd760393f6a4435699dd69d1dc8abb910007fc0611b52',
+    '#156 / 31016942589',
+    'Pages deployment ID:            5763802525',
+    '#114 / 31017023851',
+    '8935003712',
+    'sha256:23f344e3562d6b61106c8dc59a4b3e9ce2293192555c9f31ac09e7eb9916d480',
+    '/landing/notes/deployment-success-is-not-production-verification/',
+    'P3.4B — Clean URLs without Cloudflare routing',
+  ]) {
+    assert.ok(combined.includes(marker), `missing P3.4A closure marker: ${marker}`);
+  }
+
+  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.4A ACCEPTED IN PRODUCTION\*\*/);
+  assert.ok(spec.includes('Continue with **P3.4B — Clean URLs without Cloudflare routing**'));
+  assert.ok(state.includes('issue #111'), 'P3.4A closure must preserve search-engine observation');
+  assert.ok(state.includes('issue #82'), 'P3.4A closure must preserve dependency blocker');
+});
