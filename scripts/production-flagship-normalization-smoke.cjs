@@ -10,6 +10,9 @@ const {
 
 const {chromium} = requireQualityTool('playwright', 'Flagship normalization production smoke');
 const PROJECTS = JSON.parse(fs.readFileSync(path.resolve('data/projects.json'), 'utf8'));
+const PROJECT_EVIDENCE = JSON.parse(
+  fs.readFileSync(path.resolve('data/project-evidence.json'), 'utf8'),
+);
 
 const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
 const LEGACY_ORIGIN = 'true-ruslan.github.io/trueruslan-landing';
@@ -23,6 +26,14 @@ function expectedStatus(slug) {
   const project = PROJECTS.find((candidate) => candidate.slug === slug);
   assert(project, `Project Registry is missing ${slug}`);
   return project.statusLabel;
+}
+
+function evidenceVersion(project, label) {
+  const snapshot = PROJECT_EVIDENCE.find((candidate) => candidate.project === project);
+  assert(snapshot, `Project Evidence is missing ${project}`);
+  const version = snapshot.versions.find((candidate) => candidate.label === label);
+  assert(version, `Project Evidence ${project} is missing version ${label}`);
+  return version.value;
 }
 
 function normalizeUrl(value) {
@@ -54,6 +65,7 @@ async function verifyCaseStudy(page, {
   headingMarker,
   expectedHeadings,
   requiredText,
+  evidenceMarkers = [],
   relatedHrefFragments,
   alternateUrl,
   requireEvidence,
@@ -104,7 +116,7 @@ async function verifyCaseStudy(page, {
     const evidence = page.locator(`[data-project-evidence="${slug}"]`);
     await evidence.waitFor({state: 'visible', timeout: 10000});
     const evidenceText = await evidence.innerText();
-    for (const marker of requiredText.filter((value) => ['PR #110', 'M7.8C'].includes(value))) {
+    for (const marker of evidenceMarkers) {
       assert(evidenceText.includes(marker), `${locale} ${slug} evidence misses ${marker}`);
     }
 
@@ -144,8 +156,13 @@ async function verifyCaseStudy(page, {
 async function main() {
   fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
   let browser;
+  const currentVillAIgenceCandidate = evidenceVersion(
+    'livingworld',
+    'Current published candidate',
+  );
   const summary = {
     expectedDeployedSha: EXPECTED_DEPLOYED_SHA,
+    currentVillAIgenceCandidate,
     checkedAt: new Date().toISOString(),
     livingworldRu: {},
     vlezetRu: {},
@@ -192,7 +209,14 @@ async function main() {
         'Связанные материалы',
         'Что бы я сделал иначе',
       ],
-      requiredText: ['0.1.23+1.21.1', 'PR #110', 'Draft', 'cumulative acceptance'],
+      requiredText: [
+        currentVillAIgenceCandidate,
+        'PR #108',
+        'PR #110',
+        'Draft',
+        'cumulative acceptance',
+      ],
+      evidenceMarkers: [currentVillAIgenceCandidate, 'PR #108', 'PR #110'],
       relatedHrefFragments: [
         'server-authoritative-ai-npcs',
         'source-tests-to-installed-acceptance',
@@ -219,7 +243,15 @@ async function main() {
         'Связанные материалы',
         'Что бы я сделал иначе',
       ],
-      requiredText: ['M7.8B', 'M7.8C', 'product-owner retest', 'ACTIVE DEVELOPMENT'],
+      requiredText: [
+        'M7.8B',
+        'M7.8C',
+        'PR #44',
+        'PR #45',
+        'product-owner retest',
+        'ACTIVE DEVELOPMENT',
+      ],
+      evidenceMarkers: ['M7.8C', 'PR #44', 'PR #45'],
       relatedHrefFragments: [
         'probabilistic-proposals-deterministic-authority',
         'green-ci-is-not-product-verification',
@@ -245,7 +277,13 @@ async function main() {
         'Related material',
         'What I would change',
       ],
-      requiredText: ['0.1.23+1.21.1', 'PR #110', 'Draft', 'cumulative acceptance'],
+      requiredText: [
+        currentVillAIgenceCandidate,
+        'PR #108',
+        'PR #110',
+        'Draft',
+        'cumulative acceptance',
+      ],
       relatedHrefFragments: [
         'server-authoritative-ai-npcs',
         'llm-output-is-a-protocol-boundary',
