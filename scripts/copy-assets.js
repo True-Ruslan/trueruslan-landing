@@ -57,7 +57,12 @@ const PUBLICATIONS_MANIFEST = path.join(ROOT, 'data', 'publications.json');
 const SOURCES_MANIFEST = path.join(ROOT, 'data', 'sources.json');
 const PHOTO_ALBUMS_MANIFEST = path.join(ROOT, 'data', 'photo-albums.json');
 const PHOTO_ARCHIVE_MANIFEST = path.join(ROOT, 'data', 'photo-archive.json');
-export const REQUIRED_PROJECT_EVIDENCE = Object.freeze(['livingworld', 'node-zero', 'vlezet']);
+export const REQUIRED_PROJECT_EVIDENCE = Object.freeze([
+  'livingworld',
+  'node-zero',
+  'vlezet',
+  'portfolio-platform',
+]);
 const PROJECT_EVIDENCE_STYLESHEET = '_assets/style/project-evidence.css';
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
@@ -215,6 +220,7 @@ function loadPhotoRegistries(photoAlbumsPath, photoArchivePath, docsDir) {
 
 function englishProjectHref(href) {
   if (href === 'landing/projects/livingworld.html') return 'en/projects/livingworld.html';
+  if (href === 'landing/projects/portfolio-platform.html') return 'en/projects/portfolio-platform.html';
   if (href === 'landing/projects.html') return 'en/projects.html';
   return href;
 }
@@ -311,7 +317,14 @@ export function postprocessOutput({
     outputDir,
     projects,
     i18nPairs
-      ? {targets: ['landing/projects.html', 'en/projects.html', 'en/projects/livingworld.html']}
+      ? {
+        targets: [
+          'landing/projects.html',
+          'en/projects.html',
+          'en/projects/livingworld.html',
+          'en/projects/portfolio-platform.html',
+        ],
+      }
       : undefined,
   );
   const nowPageTarget = applyNowPage(outputDir, nowData, projects);
