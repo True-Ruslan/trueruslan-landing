@@ -35,7 +35,7 @@ test('Vlezet repository drift is recorded without promoting Draft recognition sl
   assert.equal(m79.state, 'pending');
   assert.equal(m79.observedAt, '2026-08-05');
   assert.match(m79.scope, /cd29740cf240d591785fc6607147d2bf07ece0b6/);
-  assert.match(m79.scope, /stacked on PR #42/i);
+  assert.match(m79.scope, /stacked Draft[\s\S]*PR #42|based on PR #42/i);
   assert.match(m79.scope, /0\.85/);
   assert.match(m79.scope, /below|merge-blocking|not accepted/i);
 
