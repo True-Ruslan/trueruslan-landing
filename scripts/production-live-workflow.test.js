@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WORKFLOW = path.join(ROOT, '.github', 'workflows', 'production-live.yml');
 const SMOKE = path.join(ROOT, 'scripts', 'production-live-smoke.cjs');
+const ROUTES = path.join(ROOT, 'scripts', 'production-live-routes.cjs');
 
 test('live production workflow is read-only, deployment-aware and artifact-producing', () => {
   assert.ok(fs.existsSync(WORKFLOW), 'missing live production workflow');
@@ -24,6 +25,8 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
   for (const controlledPath of [
     '.github/workflows/production-live.yml',
     'scripts/production-live-smoke.cjs',
+    'scripts/production-live-routes.cjs',
+    'scripts/production-live-routes.test.js',
     'scripts/production-live-workflow.test.js',
   ]) {
     assert.ok(workflow.includes(controlledPath), `missing live-production PR path: ${controlledPath}`);
@@ -51,16 +54,18 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
   assert.doesNotMatch(workflow, /\bgit\s+(?:commit|push)\b|npm\s+audit\s+fix/);
 });
 
-test('live production smoke covers domain, content, feed, search and telemetry boundaries', () => {
+test('live production smoke covers domain, clean routes, legacy compatibility, feed, search and telemetry boundaries', () => {
   assert.ok(fs.existsSync(SMOKE), 'missing live production smoke script');
-  const source = fs.readFileSync(SMOKE, 'utf8');
+  assert.ok(fs.existsSync(ROUTES), 'missing live production route contract');
+  const source = `${fs.readFileSync(ROUTES, 'utf8')}\n${fs.readFileSync(SMOKE, 'utf8')}`;
 
   for (const marker of [
     'https://trueruslan.ru/',
     'https://www.trueruslan.ru/',
+    'restart-persistence-is-a-product-contract/',
     'restart-persistence-is-a-product-contract.html',
     'feed.xml',
-    '_search/ru/index.html',
+    '_search/ru/',
     'persistence contract',
     'static.cloudflareinsights.com/beacon.min.js',
     'true-ruslan.github.io/trueruslan-landing',
@@ -74,4 +79,6 @@ test('live production smoke covers domain, content, feed, search and telemetry b
   assert.match(source, /EXPECTED_DEPLOYED_SHA/);
   assert.match(source, /page\.screenshot/);
   assert.match(source, /writeFileSync/);
+  assert.match(source, /queryPreserved/);
+  assert.match(source, /fragmentPreserved/);
 });

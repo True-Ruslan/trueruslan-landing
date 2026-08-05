@@ -1,16 +1,17 @@
 const fs = require('fs');
 const path = require('path');
 const {requireQualityTool} = require('./quality-harness/tools.cjs');
+const {
+  APEX,
+  NOTE_URL,
+  WWW_NOTE_URL,
+  LEGACY_NOTE_URL,
+  SEARCH_URL,
+} = require('./production-live-routes.cjs');
 
 const {chromium} = requireQualityTool('playwright', 'Production live smoke');
 
-const APEX = 'https://trueruslan.ru/';
-const WWW = 'https://www.trueruslan.ru/';
-const NOTE_PATH = 'landing/notes/restart-persistence-is-a-product-contract.html';
-const NOTE_URL = new URL(NOTE_PATH, APEX).href;
-const WWW_NOTE_URL = new URL(NOTE_PATH, WWW).href;
 const FEED_URL = new URL('feed.xml', APEX).href;
-const SEARCH_URL = new URL('_search/ru/index.html', APEX).href;
 const SEARCH_QUERY = 'persistence contract';
 const LEGACY_ORIGIN = 'true-ruslan.github.io/trueruslan-landing';
 const CLOUDFLARE_BEACON = 'static.cloudflareinsights.com/beacon.min.js';
@@ -45,6 +46,7 @@ async function main() {
     checkedAt: new Date().toISOString(),
     apex: {},
     www: {},
+    legacy: {},
     note: {},
     feed: {},
     search: {},
@@ -110,6 +112,31 @@ async function main() {
       finalUrl: wwwFinal.href,
       status: wwwResponse.status(),
       apexHostname: true,
+      canonicalPath: true,
+    };
+
+    const legacyRequested = new URL(LEGACY_NOTE_URL);
+    legacyRequested.searchParams.set('source', 'production-smoke');
+    legacyRequested.hash = 'legacy-route';
+    const legacyResponse = await page.goto(legacyRequested.href, {waitUntil: 'networkidle', timeout: 45000});
+    assert(legacyResponse?.ok(), `legacy Note returned HTTP ${legacyResponse?.status() ?? 'none'}`);
+    await page.waitForURL((url) => (
+      url.hostname === 'trueruslan.ru'
+      && url.pathname === new URL(NOTE_URL).pathname
+      && url.search === legacyRequested.search
+      && url.hash === legacyRequested.hash
+    ), {timeout: 10000});
+    const legacyFinal = new URL(page.url());
+    assert(legacyFinal.pathname === new URL(NOTE_URL).pathname, `legacy Note resolved to the wrong path: ${legacyFinal.pathname}`);
+    assert(legacyFinal.search === legacyRequested.search, `legacy Note lost query parameters: ${legacyFinal.search}`);
+    assert(legacyFinal.hash === legacyRequested.hash, `legacy Note lost fragment: ${legacyFinal.hash}`);
+    summary.legacy = {
+      requested: legacyRequested.href,
+      finalUrl: legacyFinal.href,
+      status: legacyResponse.status(),
+      canonicalPath: true,
+      queryPreserved: true,
+      fragmentPreserved: true,
     };
 
     const noteResponse = await page.goto(NOTE_URL, {waitUntil: 'networkidle', timeout: 45000});
@@ -158,7 +185,7 @@ async function main() {
     await searchButton.waitFor({state: 'visible', timeout: 10000});
     await searchInput.fill(SEARCH_QUERY);
     await searchButton.click();
-    const result = page.locator(`a[href*="landing/notes/restart-persistence-is-a-product-contract"]`).first();
+    const result = page.locator('a[href*="landing/notes/restart-persistence-is-a-product-contract"]').first();
     await result.waitFor({state: 'visible', timeout: 15000});
     const resultText = (await result.innerText()).trim();
     const resultHref = await result.getAttribute('href');
