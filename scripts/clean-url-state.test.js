@@ -88,7 +88,7 @@ test('durable state preserves P3.2 production acceptance', () => {
   }
 });
 
-test('durable state records P3.3 production acceptance and promotes P3.4A', () => {
+test('durable state preserves P3.3 production acceptance after later slices', () => {
   const state = read(PROJECT_STATE);
   const roadmap = read(ROADMAP);
   const changelog = read(CHANGELOG);
@@ -121,9 +121,8 @@ test('durable state records P3.3 production acceptance and promotes P3.4A', () =
     assert.ok(combined.includes(marker), `missing P3.3/P3.4 durable marker: ${marker}`);
   }
 
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.3 ACCEPTED IN PRODUCTION\*\*/);
+  assert.ok(spec.includes('### P3.3 — Flagship normalization — DONE'));
   assert.ok(spec.includes('no public canonical/Sitemap/feed URL contains `.html`'));
-  assert.ok(spec.includes('Start with **P3.4A — Deployment success is not production verification**'));
   assert.ok(roadmap.includes('exact artifact и installed acceptance остаются отдельными release gates'));
 
   assert.ok(state.includes('issue #111'), 'P3.3 state must preserve the search-console boundary');
