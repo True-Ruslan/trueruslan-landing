@@ -16,7 +16,7 @@ test('canonical evidence registry covers the controlled flagship evidence projec
 
   assert.deepEqual(
     evidence.map(({project}) => project).sort(),
-    ['livingworld', 'node-zero', 'vlezet'],
+    ['livingworld', 'node-zero', 'portfolio-platform', 'vlezet'],
   );
 
   for (const snapshot of evidence) {
