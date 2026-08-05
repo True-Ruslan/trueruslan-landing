@@ -69,7 +69,8 @@ test('baseline live smoke remains safe for PR execution against current producti
 test('deployment-only platform smoke covers new RU EN clean routes, homepage and search', () => {
   assert.ok(fs.existsSync(PLATFORM_SMOKE), 'missing deployment-only platform smoke script');
   assert.ok(fs.existsSync(ROUTES), 'missing live production route contract');
-  const source = `${fs.readFileSync(ROUTES, 'utf8')}\n${fs.readFileSync(PLATFORM_SMOKE, 'utf8')}`;
+  const platformSource = fs.readFileSync(PLATFORM_SMOKE, 'utf8');
+  const source = `${fs.readFileSync(ROUTES, 'utf8')}\n${platformSource}`;
 
   for (const marker of [
     'landing/projects/portfolio-platform/',
@@ -78,10 +79,13 @@ test('deployment-only platform smoke covers new RU EN clean routes, homepage and
     'TrueRuslan Landing static-first',
     'Production Live Smoke #58',
     'portfolio-platform-production-summary.json',
+    "main.dc-doc-page__content",
   ]) {
     assert.ok(source.includes(marker), `missing deployed platform smoke marker: ${marker}`);
   }
 
+  assert.doesNotMatch(platformSource, /page\.locator\(['"]main['"]\)\.innerText/);
+  assert.match(platformSource, /documentContent\.waitFor\(\{state: 'visible', timeout: 10000\}\)/);
   assert.match(source, /EXPECTED_DEPLOYED_SHA/);
   assert.match(source, /link\[rel="canonical"\]/);
   assert.match(source, /link\[rel="alternate"\]/);
