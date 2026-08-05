@@ -113,6 +113,8 @@ items:
         href: ./landing/notes/source-tests-to-installed-acceptance.md
       - name: GameTests vs installed gameplay
         href: ./landing/notes/gametests-vs-installed-gameplay-acceptance.md
+      - name: PDF validity vs semantic completeness
+        href: ./landing/notes/passive-pdf-validation-vs-semantic-completeness.md
       - name: Probabilistic proposals → deterministic authority
         href: ./landing/notes/probabilistic-proposals-deterministic-authority.md
       - name: Hybrid CV + AI recognition boundaries
