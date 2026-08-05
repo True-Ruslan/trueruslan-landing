@@ -128,7 +128,8 @@ test('normalized case studies expose bounded related material and do not promote
     'product-owner retest',
   ], 'RU Vlezet case study');
 
+  const positivePromotion = /(?:is|является|стал(?:а)?)\s+(?:fully\s+accepted|production-ready)|полностью\s+принят(?:а|о)?/i;
   for (const source of [livingworldRu, livingworldEn, vlezetRu]) {
-    assert.equal(source.includes('production-ready'), false, 'pending flagship must not be promoted to production-ready');
+    assert.doesNotMatch(source, positivePromotion, 'pending flagship must not be positively promoted');
   }
 });
