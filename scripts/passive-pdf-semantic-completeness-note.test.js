@@ -78,8 +78,9 @@ test('passive PDF completeness Note separates artifact validity from semantic tr
 
   assert.match(source, /валидный PDF[^\n]*не доказывает[^\n]*(?:полноту|актуальность)/i);
   assert.match(source, /web-CV[^\n]*canonical editorial source/i);
+  assert.match(source, /byte identity не означает semantic equivalence/i);
   assert.doesNotMatch(source, /parseable PDF[^\n]*(?:гарантирует|полностью доказывает)[^\n]*(?:актуальность|доступность|полноту)/i);
-  assert.doesNotMatch(source, /byte identity[^\n]*(?:равна|означает)[^\n]*semantic equivalence/i);
+  assert.doesNotMatch(source, /byte identity\s+(?:равна|означает)\s+semantic equivalence/i);
 });
 
 test('passive PDF completeness Note is exposed through index toc and page metadata', () => {
