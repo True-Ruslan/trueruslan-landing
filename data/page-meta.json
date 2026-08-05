@@ -270,6 +270,16 @@
     "accent": "green"
   },
   {
+    "path": "landing/notes/passive-pdf-validation-vs-semantic-completeness.html",
+    "card": "note-passive-pdf-completeness",
+    "title": "Почему валидный PDF ещё не доказывает полноту и актуальность резюме",
+    "description": "TrueRuslan Landing resume case study: PDF validity, passive delivery, semantic equivalence, current profile truth and accessibility as separate evidence layers.",
+    "displayTitle": "PDF VALIDITY VS MEANING",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["PDF", "VALIDATION", "SEMANTICS"],
+    "accent": "cyan"
+  },
+  {
     "path": "en/index.html",
     "card": "home-en",
     "title": "Ruslan Nemykin — Backend Engineer",
