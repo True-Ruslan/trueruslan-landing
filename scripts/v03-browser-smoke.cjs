@@ -84,6 +84,19 @@ async function checkPage(browser, baseUrl, {
   }
 }
 
+async function assertProjectTimeline(page, slug) {
+  const timeline = page.locator('.tr-project-timeline');
+  await timeline.waitFor({state: 'visible'});
+  const milestones = await timeline.locator('.tr-project-timeline__item').count();
+  if (milestones < 3) throw new Error(`${slug} timeline has fewer than three milestones.`);
+  if (await timeline.locator('.tr-project-timeline__item--current').count() !== 1) {
+    throw new Error(`${slug} timeline must expose exactly one current milestone.`);
+  }
+  if (await timeline.locator('.tr-project-timeline__item--next').count() < 1) {
+    throw new Error(`${slug} timeline must expose a next milestone.`);
+  }
+}
+
 async function main() {
   const serverRuntime = await startStaticServer({port: PORT});
   let browser;
@@ -102,15 +115,16 @@ async function main() {
       pathname: '/landing/projects/',
       heading: 'Проекты',
       verify: async (page) => {
-        const villaigenceStatus = page.locator('[data-project-status="livingworld"]');
-        const nodeZeroStatus = page.locator('[data-project-status="node-zero"]');
-        await villaigenceStatus.waitFor({state: 'visible'});
-        await nodeZeroStatus.waitFor({state: 'visible'});
-        if ((await villaigenceStatus.innerText()).trim() !== expectedProjectStatus('livingworld')) {
-          throw new Error('VillAIgence status on Projects hub drifted from Project Registry.');
+        for (const slug of ['livingworld', 'node-zero', 'vlezet', 'portfolio-platform']) {
+          const status = page.locator(`[data-project-status="${slug}"]`);
+          await status.waitFor({state: 'visible'});
+          if ((await status.innerText()).trim() !== expectedProjectStatus(slug)) {
+            throw new Error(`${slug} status on Projects hub drifted from Project Registry.`);
+          }
         }
-        if ((await nodeZeroStatus.innerText()).trim() !== expectedProjectStatus('node-zero')) {
-          throw new Error('NODE ZERO status on Projects hub drifted from Project Registry.');
+        const caseStudyHref = await page.locator('a[href*="projects/portfolio-platform"]').first().getAttribute('href');
+        if (!caseStudyHref || !new URL(caseStudyHref, page.url()).pathname.endsWith('/landing/projects/portfolio-platform/')) {
+          throw new Error(`Projects hub does not expose the clean portfolio platform route: ${caseStudyHref || 'missing'}`);
         }
       },
     });
@@ -124,7 +138,7 @@ async function main() {
         const activeCards = await page.locator('[data-tr-now] .tr-active-card').count();
         if (activeCards < 1) throw new Error('Now page contains no registry-derived active project cards.');
         const nowText = await page.locator('[data-tr-now]').innerText();
-        for (const slug of ['livingworld', 'node-zero']) {
+        for (const slug of ['livingworld', 'node-zero', 'portfolio-platform']) {
           if (!nowText.includes(expectedProjectStatus(slug))) {
             throw new Error(`Now page ${slug} status drifted from Project Registry.`);
           }
@@ -171,27 +185,48 @@ async function main() {
     for (const project of [
       {slug: 'livingworld', heading: 'VillAIgence'},
       {slug: 'node-zero', heading: 'NODE ZERO'},
+      {slug: 'portfolio-platform', heading: 'TrueRuslan Landing'},
     ]) {
       await checkPage(browser, serverRuntime.baseUrl, {
         slug: `timeline-${project.slug}`,
         pathname: `/landing/projects/${project.slug}/`,
         heading: project.heading,
         verify: async (page) => {
-          const timeline = page.locator('.tr-project-timeline');
-          await timeline.waitFor({state: 'visible'});
-          const milestones = await timeline.locator('.tr-project-timeline__item').count();
-          if (milestones < 3) throw new Error(`${project.slug} timeline has fewer than three milestones.`);
-          if (await timeline.locator('.tr-project-timeline__item--current').count() !== 1) {
-            throw new Error(`${project.slug} timeline must expose exactly one current milestone.`);
-          }
-          if (await timeline.locator('.tr-project-timeline__item--next').count() < 1) {
-            throw new Error(`${project.slug} timeline must expose a next milestone.`);
+          await assertProjectTimeline(page, project.slug);
+          if (project.slug === 'portfolio-platform') {
+            const evidence = page.locator('[data-project-evidence="portfolio-platform"]');
+            await evidence.waitFor({state: 'visible'});
+            const evidenceText = await evidence.innerText();
+            for (const marker of ['Build #836', 'Pages deployment #147', 'Production Live Smoke #58']) {
+              if (!evidenceText.includes(marker)) throw new Error(`Portfolio platform evidence is missing ${marker}.`);
+            }
+            const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+            if (!canonical || !new URL(canonical).pathname.endsWith('/landing/projects/portfolio-platform/')) {
+              throw new Error(`Portfolio platform canonical route is wrong: ${canonical || 'missing'}`);
+            }
           }
         },
       });
     }
 
-    console.log('Portfolio v0.3 browser, accessibility, registry, navigation, notes and timeline smoke passed.');
+    await checkPage(browser, serverRuntime.baseUrl, {
+      slug: 'portfolio-platform-en',
+      pathname: '/en/projects/portfolio-platform/',
+      heading: 'TrueRuslan Landing',
+      verify: async (page) => {
+        const status = page.locator('[data-project-status="portfolio-platform"]');
+        await status.waitFor({state: 'visible'});
+        if ((await status.innerText()).trim() !== expectedProjectStatus('portfolio-platform')) {
+          throw new Error('English portfolio platform status drifted from Project Registry.');
+        }
+        const alternateRu = await page.locator('link[rel="alternate"][hreflang="ru"]').getAttribute('href');
+        if (!alternateRu || !new URL(alternateRu).pathname.endsWith('/landing/projects/portfolio-platform/')) {
+          throw new Error(`English portfolio platform lacks the correct RU alternate: ${alternateRu || 'missing'}`);
+        }
+      },
+    });
+
+    console.log('Portfolio browser, accessibility, registry, navigation, Notes, timeline and platform case-study smoke passed.');
   } finally {
     if (browser) await browser.close();
     await serverRuntime.stop();
