@@ -22,6 +22,10 @@ test('production live smoke uses repository-native clean canonical routes', () =
     routes.CLEAN_URLS_NOTE_URL,
     'https://trueruslan.ru/landing/notes/clean-urls-without-cloudflare-routing/',
   );
+  assert.equal(
+    routes.HYBRID_RECOGNITION_NOTE_URL,
+    'https://trueruslan.ru/landing/notes/hybrid-cv-ai-recognition-boundaries/',
+  );
   assert.equal(routes.SEARCH_URL, 'https://trueruslan.ru/_search/ru/');
   assert.equal(
     routes.PORTFOLIO_PLATFORM_URL,

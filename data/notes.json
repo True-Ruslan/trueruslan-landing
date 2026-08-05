@@ -148,5 +148,19 @@
       "static-site-quality-gates",
       "static-first-sources-no-js"
     ]
+  },
+  {
+    "slug": "hybrid-cv-ai-recognition-boundaries",
+    "title": "Как соединить local CV и AI, не отдавая модели authority над геометрией",
+    "description": "Vlezet case study: deterministic local Draft, immutable AI proposal identity, fail-closed sanitation, current-state revalidation и explicit atomic Apply.",
+    "published": "2026-08-05",
+    "updated": "2026-08-05",
+    "readingMinutes": 14,
+    "tags": ["Computer Vision", "AI", "Authority", "Validation"],
+    "related": [
+      "probabilistic-proposals-deterministic-authority",
+      "green-ci-is-not-product-verification",
+      "llm-output-is-a-protocol-boundary"
+    ]
   }
 ]

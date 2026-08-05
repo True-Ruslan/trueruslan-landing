@@ -25,6 +25,7 @@ on:
       - 'scripts/production-flagship-normalization-smoke.cjs'
       - 'scripts/production-deployment-verification-note-smoke.cjs'
       - 'scripts/production-clean-urls-note-smoke.cjs'
+      - 'scripts/production-hybrid-recognition-note-smoke.cjs'
       - 'scripts/production-favicon-smoke.cjs'
       - 'scripts/production-favicon-workflow.test.js'
 
@@ -173,6 +174,12 @@ jobs:
         env:
           EXPECTED_DEPLOYED_SHA: ${{ steps.pages.outputs.deployed_sha }}
         run: node scripts/production-clean-urls-note-smoke.cjs
+
+      - name: Run deployed P3.4C Hybrid Recognition Note smoke
+        if: github.event_name != 'pull_request'
+        env:
+          EXPECTED_DEPLOYED_SHA: ${{ steps.pages.outputs.deployed_sha }}
+        run: node scripts/production-hybrid-recognition-note-smoke.cjs
 
       - name: Run deployed favicon smoke
         if: github.event_name != 'pull_request'

@@ -113,6 +113,8 @@ items:
         href: ./landing/notes/source-tests-to-installed-acceptance.md
       - name: Probabilistic proposals → deterministic authority
         href: ./landing/notes/probabilistic-proposals-deterministic-authority.md
+      - name: Hybrid CV + AI recognition boundaries
+        href: ./landing/notes/hybrid-cv-ai-recognition-boundaries.md
       - name: Restart and persistence product contract
         href: ./landing/notes/restart-persistence-is-a-product-contract.md
   - name: Публикации
