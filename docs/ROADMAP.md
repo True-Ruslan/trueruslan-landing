@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.3 Flagship normalization.
+> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4A Deployment Verification Note и verifier closure PR #126.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; product specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -25,6 +25,7 @@
 - no behavioural tracking without explicit privacy review;
 - repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance как разные факты;
 - exact artifact и installed acceptance остаются отдельными release gates;
+- volatile external evidence derives from canonical registries rather than copied verifier literals;
 - no quality-gate weakening.
 
 Главная продуктовая формула:
@@ -69,6 +70,10 @@
 - P3.2 production-selector hotfix — PR #120.
 - P3.2 durable closure — PR #121.
 - P3.3 VillAIgence/Vlezet flagship normalization — PR #122.
+- P3.3 durable closure — PR #123.
+- Current external-project evidence reconciliation — PR #124.
+- P3.4A Deployment Verification Note — PR #125.
+- Current flagship production verifier closure — PR #126.
 
 ---
 
@@ -112,71 +117,114 @@ Normalized production routes:
 /en/projects/livingworld/
 ```
 
-Feature and production evidence:
-
 ```text
 PR #122 RED head:              f2c5b065a8f1a1cd8adbad6ebb4ed7743cb33ad7
-RED Build:                      #871 — expected FAILURE
 PR #122 exact head:            ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46
 PR #122 squash:                c90a221a21f51e897661667f981483bad922ad0d
 Build:                          #893 / 31005675334 — SUCCESS
-CodeQL:                         #368 — SUCCESS
-Dependency Review:              #321 — SUCCESS
-Content Freshness:              #67 — SUCCESS
-unit tests:                     376 PASS / 0 FAIL
 quality artifact:               8930321636
 quality digest:                 sha256:97880f197f9484b41eb38ee606c291a754d889a55160719d948c13b0fc9a4e8a
 Pages:                          #152 / 31006504250 — SUCCESS
 Pages deployment ID:            5761717586
 Production Live Smoke:          #95 / 31006557622 — SUCCESS
-baseline/platform/flagship/favicon smokes: PASS
 production artifact:            8930571510
 production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13
 ```
 
-Accepted outcome:
+Accepted outcome: RU VillAIgence, RU Vlezet and controlled EN VillAIgence use one evidence-first order with canonical status, pending evidence, cross-browser and exact-deployment verification.
 
-- RU VillAIgence, RU Vlezet and controlled EN VillAIgence use one evidence-first order;
-- Project Registry status automatically renders on existing canonical project pages;
-- Project Evidence pending states work in JS and no-JS modes;
-- ordered sections, related links, timelines and evidence are checked in Chromium, Firefox and WebKit;
-- exact deployed pages are checked only after the matching Pages deployment;
-- no route, slug, lifecycle or accepted external-project state was broadened.
+Preserved external boundaries after PR #124:
 
-Preserved external boundaries:
+- Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`; M7.8B accepted; M7.8C PR #42 and stacked PR #44/#45 remain Draft/pending owner gates.
+- VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`; candidate `0.1.25+1.21.1`, PR #103/#104/#108 automation and PR #110 Draft remain separate from cumulative real-provider/gameplay/manual acceptance.
 
-- Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`; M7.8B accepted; M7.8C Draft pending representative real-plan owner retest.
-- VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`; PR #103/#104 automation accepted within scope; PR #110 remains Draft/RED; cumulative real-provider/gameplay/manual acceptance pending.
+## P3.4 — Grounded Engineering Notes — IN PROGRESS
 
-## P3.4 — Grounded Engineering Notes — NEXT
+### P3.4A — Deployment success is not production verification — DONE
 
-Publish a bounded 4–6 Note series from completed, evidenced work.
+Canonical route:
 
-Candidate order:
+```text
+/landing/notes/deployment-success-is-not-production-verification/
+```
 
-1. **Clean URLs without Cloudflare routing** — directory output, canonical/feed/search migration and GitHub Pages redirect limitation.
-2. **Deployment success is not production verification** — exact artifact, Pages deployment and browser smoke as separate evidence layers.
-3. **Hybrid CV + AI recognition boundaries** — local candidates, verification-only AI, deterministic Apply and owner retest.
-4. **GameTests versus installed gameplay acceptance** — development integration, exact production JAR, focused live canaries and cumulative acceptance.
-5. **Passive PDF validation versus semantics** — structural validity, browser delivery and limits of raw-byte inspection.
-6. **Evidence-driven project state** — accepted, failed, pending and Draft signals without automatic promotion.
+Delivered by PR #125:
 
-Acceptance criteria for each Note:
+- grounded RU Note from accepted P3.2/P3.3 evidence;
+- explicit repository readiness → generated artifact → GitHub Pages deployment → Production Live Smoke → bounded acceptance → search-engine observation chain;
+- separate verified fact, inference and limitation;
+- Notes Registry, Notes index, toc, page metadata, clean route, Atom feed and generated search integration;
+- semantic/no-JS content;
+- deployment-only P3.4A route/content/feed/search smoke.
 
-- derived from accepted evidence and existing case studies;
-- clearly separates verified facts, inference and limitation;
-- links to the relevant case study, repository evidence and related Notes;
-- no invented metrics or broadened acceptance claims;
-- deterministic Notes Registry metadata;
-- clean route, Sitemap/search/Atom integration;
-- useful without JavaScript;
-- full exact-head and production matrices pass.
+```text
+PR #125 RED head:              688b98a58937dbf9b5c9f45667d4cfdef1327294
+RED Build:                      #909 / 31013712895 — expected FAILURE
+PR #125 exact head:            9c0a24c6adfd1794adc70facdc1ace4dc01a3d86
+PR #125 squash:                c4f3cb5a3aa71b958d906d15eb975833b46d3571
+Build:                          #922 / 31014792446 — SUCCESS
+quality artifact:               8934487200
+quality digest:                 sha256:61fde2c53551057d5d01b9f409d86c0aa50be6b20f8de3a4e9ae0b66988126ad
+```
 
-Recommended first implementation slice:
+The first exact deployment was not accepted:
 
-**P3.4A — Deployment success is not production verification**.
+```text
+Production Live Smoke #108:    FAILURE
+classification:                 verifier defect
+cause:                          stale hard-coded VillAIgence 0.1.23 evidence
+```
 
-Reason: the platform already has complete repository, generated-artifact, Pages and Production Live Smoke evidence from P3.1–P3.3, so the Note can be fully grounded without waiting for external project acceptance.
+PR #126 corrected the verifier by deriving volatile evidence from `data/project-evidence.json`.
+
+```text
+PR #126 RED head:              43ccee7b09220000660e425ea32cc87938a7b653
+PR #126 exact head:            50a7185d799eea96adb7dcea8cd20e9e9a400784
+PR #126 squash:                0a1cd6ad40870366fecfdce3bbdae7e8722b2119
+Build:                          #927 / 31016127657 — SUCCESS
+quality artifact:               8934699715
+quality digest:                 sha256:607a2d901e77ebe5862fd760393f6a4435699dd69d1dc8abb910007fc0611b52
+Pages:                          #156 / 31016942589 — SUCCESS
+Pages deployment ID:            5763802525
+Production Live Smoke:          #114 / 31017023851 — SUCCESS
+baseline/platform/current-flagship/P3.4A/favicon smokes: PASS
+production artifact:            8935003712
+production digest:              sha256:23f344e3562d6b61106c8dc59a4b3e9ce2293192555c9f31ac09e7eb9916d480
+```
+
+Accepted outcome: P3.4A is published and verified at the exact deployed SHA. The incident itself proves the Note's core claim: deployment success did not substitute for production verification.
+
+### P3.4B — Clean URLs without Cloudflare routing — NEXT
+
+Publish a grounded Note from PR #114/#115 evidence.
+
+Required scope:
+
+1. initial `.html` public identity and why it became undesirable;
+2. repository-native directory output and Diplodoc depth/base constraints;
+3. canonical, hreflang, OpenGraph, Sitemap, Atom and generated-search migration as one contract;
+4. Cloudflare retained for DNS/CDN/analytics, not required as application router;
+5. GitHub Pages inability to emit repository-configured HTTP 301 redirects;
+6. static legacy `.html` compatibility preserving query/fragment with `noindex,follow`;
+7. exact deployment/browser verification versus delayed search-engine observation;
+8. limitations and exit criterion for eventual legacy cleanup.
+
+Acceptance criteria:
+
+- facts derived from accepted PR #114/#115 and production evidence;
+- verified fact, inference and limitation clearly separated;
+- platform case study and relevant Notes linked;
+- deterministic Notes Registry, clean route, Sitemap/search/Atom participation;
+- semantic content without JavaScript;
+- exact-head and deployment-only production verification;
+- no claim that Google/Yandex replacement is complete before observed evidence.
+
+### Later P3.4 candidates
+
+- Hybrid CV + AI recognition boundaries.
+- GameTests versus installed gameplay acceptance.
+- Passive PDF validation versus semantics.
+- Evidence-driven project state.
 
 ## P3.5 — Selective English expansion
 
@@ -209,6 +257,10 @@ Do not add repository code solely to clear a stale cached diagnostic.
 ---
 
 # Operational checkpoints
+
+## Content Freshness owner state
+
+PR #124 reported 0 findings at exact head, but generated issue #78 remains open with an older report until a default-branch owner run refreshes it. Do not manually reinterpret the stale issue body as current project truth.
 
 ## Dependency blocker
 
@@ -244,4 +296,4 @@ Without a reproduced product need, do not plan:
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, commits, exact-head CI, Pages and Production Live Smoke. Confirm PR #122 head `ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46` and squash `c90a221a21f51e897661667f981483bad922ad0d` delivered P3.3; Build #893, Pages #152 and Production Live Smoke #95 passed; Pages deployment ID `5761717586` published the exact accepted SHA; issue #111 remains external observation only; issue #82 remains the dependency blocker; Vlezet and VillAIgence acceptance boundaries are unchanged; continue with **P3.4A — Deployment success is not production verification**.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, commits, exact-head CI, Pages and Production Live Smoke. Confirm PR #125 delivered P3.4A, Production Live Smoke #108 exposed a stale verifier rather than being ignored, PR #126 derived current flagship evidence from the canonical registry, and final Pages #156 / Production Live Smoke #114 accepted exact SHA `0a1cd6ad40870366fecfdce3bbdae7e8722b2119`. Preserve issue #111, issue #82 and issue #78 owner-refresh boundaries. Continue with **P3.4B — Clean URLs without Cloudflare routing**.
