@@ -130,7 +130,7 @@ test('durable state preserves P3.3 production acceptance after later slices', ()
   assert.ok(state.includes('PR #103') && state.includes('PR #104') && state.includes('PR #110'));
 });
 
-test('durable state closes P3.4A after exact deployment and promotes P3.4B', () => {
+test('durable state preserves P3.4A production acceptance after later slices', () => {
   const state = read(PROJECT_STATE);
   const roadmap = read(ROADMAP);
   const changelog = read(CHANGELOG);
@@ -166,8 +166,8 @@ test('durable state closes P3.4A after exact deployment and promotes P3.4B', () 
     assert.ok(combined.includes(marker), `missing P3.4A closure marker: ${marker}`);
   }
 
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.4A ACCEPTED IN PRODUCTION\*\*/);
-  assert.ok(spec.includes('Continue with **P3.4B — Clean URLs without Cloudflare routing**'));
+  assert.ok(spec.includes('### P3.4A — Deployment success is not production verification — DONE'));
+  assert.ok(spec.includes('### P3.4B — Clean URLs without Cloudflare routing — DONE'));
   assert.ok(state.includes('issue #111'), 'P3.4A closure must preserve search-engine observation');
   assert.ok(state.includes('issue #82'), 'P3.4A closure must preserve dependency blocker');
 });
