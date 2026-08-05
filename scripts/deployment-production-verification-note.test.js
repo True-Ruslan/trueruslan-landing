@@ -36,6 +36,10 @@ test('deployment verification note separates every evidence layer', () => {
     'PR #120',
     'main.dc-doc-page__content',
     'search-engine observation',
+    'Проверенный факт',
+    'Инженерный вывод',
+    'Ограничение',
+    '../projects/portfolio-platform.md',
     'не доказывает',
   ]) {
     assert.ok(source.includes(marker), `missing required evidence marker: ${marker}`);
