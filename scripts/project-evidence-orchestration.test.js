@@ -123,8 +123,8 @@ test('postprocessOutput loads and injects canonical project evidence when explic
   assert.deepEqual(result.projectEvidenceTargets, [
     'landing/projects/livingworld.html',
     'landing/projects/node-zero.html',
-    'landing/projects/portfolio-platform.html',
     'landing/projects/vlezet.html',
+    'landing/projects/portfolio-platform.html',
   ]);
   assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet.html'), 'utf8'), /data-evidence-status="verified"/);
   assert.match(fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet.html'), 'utf8'), /Состояние:<\/strong> failed/);
