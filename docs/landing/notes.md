@@ -58,6 +58,12 @@
 
 ## Static-first и доставка контента
 
+### Как clean URLs заработали на GitHub Pages без Cloudflare routing
+
+На evidence PR #114/#115 разбираю, как generated `.html` pages стали repository-native directory routes, почему пришлось согласованно менять Diplodoc base/depth, canonical, Sitemap, Atom feed и search links, а Cloudflare остался DNS/CDN/analytics infrastructure, но не application router.
+
+[Читать заметку →](notes/clean-urls-without-cloudflare-routing.md)
+
 ### Почему build-time data недостаточно без no-JS representation
 
 Во время migration Sources Registry оказалось, что данные могут присутствовать в generated artifact и при этом оставаться недоступными пользователю без JavaScript. Эта заметка — про Diplodoc hydration state, semantic `<noscript>` fallback и более строгий смысл static-first architecture.
