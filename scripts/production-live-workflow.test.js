@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WORKFLOW = path.join(ROOT, '.github', 'workflows', 'production-live.yml');
 const SMOKE = path.join(ROOT, 'scripts', 'production-live-smoke.cjs');
+const PLATFORM_SMOKE = path.join(ROOT, 'scripts', 'production-portfolio-platform-smoke.cjs');
 const ROUTES = path.join(ROOT, 'scripts', 'production-live-routes.cjs');
 
 test('live production workflow is read-only, deployment-aware and artifact-producing', () => {
@@ -28,6 +29,7 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
     'scripts/production-live-routes.cjs',
     'scripts/production-live-routes.test.js',
     'scripts/production-live-workflow.test.js',
+    'scripts/production-portfolio-platform-smoke.cjs',
   ]) {
     assert.ok(workflow.includes(controlledPath), `missing live-production PR path: ${controlledPath}`);
   }
@@ -47,11 +49,43 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
   assert.match(workflow, /EXPECTED_SHA/);
   assert.match(workflow, /playwright@1\.61\.1/);
   assert.match(workflow, /install --with-deps chromium/);
-  assert.match(workflow, /production-live-smoke\.cjs/);
+  assert.match(workflow, /node scripts\/production-live-smoke\.cjs/);
+  assert.match(workflow, /name: Run deployed portfolio platform smoke\s*\n\s*if: github\.event_name != 'pull_request'/);
+  assert.match(workflow, /node scripts\/production-portfolio-platform-smoke\.cjs/);
   assert.match(workflow, /actions\/upload-artifact@[0-9a-f]{40}/i);
   assert.match(workflow, /name:\s*production-live-evidence/);
   assert.match(workflow, /retention-days:\s*30/);
   assert.doesNotMatch(workflow, /\bgit\s+(?:commit|push)\b|npm\s+audit\s+fix/);
+});
+
+test('baseline live smoke remains safe for PR execution against current production', () => {
+  assert.ok(fs.existsSync(SMOKE), 'missing baseline live production smoke script');
+  const source = fs.readFileSync(SMOKE, 'utf8');
+
+  assert.doesNotMatch(source, /PORTFOLIO_PLATFORM_URL|portfolio-platform-production-summary/);
+  assert.match(source, /Production live smoke passed/);
+});
+
+test('deployment-only platform smoke covers new RU EN clean routes, homepage and search', () => {
+  assert.ok(fs.existsSync(PLATFORM_SMOKE), 'missing deployment-only platform smoke script');
+  assert.ok(fs.existsSync(ROUTES), 'missing live production route contract');
+  const source = `${fs.readFileSync(ROUTES, 'utf8')}\n${fs.readFileSync(PLATFORM_SMOKE, 'utf8')}`;
+
+  for (const marker of [
+    'landing/projects/portfolio-platform/',
+    'en/projects/portfolio-platform/',
+    'data-home-flagship="portfolio-platform"',
+    'TrueRuslan Landing static-first',
+    'Production Live Smoke #58',
+    'portfolio-platform-production-summary.json',
+  ]) {
+    assert.ok(source.includes(marker), `missing deployed platform smoke marker: ${marker}`);
+  }
+
+  assert.match(source, /EXPECTED_DEPLOYED_SHA/);
+  assert.match(source, /link\[rel="canonical"\]/);
+  assert.match(source, /link\[rel="alternate"\]/);
+  assert.match(source, /page\.screenshot/);
 });
 
 test('live production smoke covers domain, clean routes, legacy compatibility, feed, search and telemetry boundaries', () => {
