@@ -76,7 +76,9 @@ test('GameTests acceptance Note separates automated, exact-artifact and installe
     assert.ok(source.includes(marker), `missing required P3.4D marker: ${marker}`);
   }
 
-  assert.doesNotMatch(source, /PR #114[^\n]*(?:accepted|принят|merged|слит)/i);
+  assert.match(source, /VillAIgence PR #114 \*\*Draft\*\*/);
+  assert.match(source, /Draft PR #114 не является accepted evidence/);
+  assert.doesNotMatch(source, /PR #114 (?:accepted|принят|merged|слит)/i);
   assert.doesNotMatch(source, /GameTests[^\n]*(?:полностью доказывают|гарантируют).*installed/i);
   assert.doesNotMatch(source, /0\.1\.25[^\n]*(?:полностью принят|fully accepted)/i);
   assert.doesNotMatch(source, /physical microphone[^\n]*(?:автоматизирован|automated)/i);
