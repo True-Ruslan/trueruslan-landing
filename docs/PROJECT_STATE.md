@@ -1,8 +1,8 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-05**, после repository-native clean URL migration в PR #114, исправления production verifier в PR #115 и утверждения следующего milestone Portfolio 1.0.
+> Последнее смысловое обновление: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.1 Homepage evidence paths.
 >
-> Durable snapshot: что представляет собой проект, что принято, какие доказательства существуют, какие границы остаются и что делать дальше.
+> Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
 В новом чате читать по порядку:
 
@@ -23,7 +23,7 @@
 
 Платформа объединяет:
 
-- standalone homepage;
+- standalone RU/EN homepage;
 - Diplodoc knowledge pages;
 - RU/EN web-CV и downloadable PDF resume;
 - evidence-backed case studies;
@@ -35,9 +35,8 @@
 - Photo Stories;
 - Sources Knowledge Base;
 - Project Evidence и Content Freshness;
-- bounded RU/EN;
 - privacy-friendly Cloudflare Web Analytics;
-- production-oriented quality gates.
+- exact-head CI, Pages deployment и production browser verification.
 
 Главная продуктовая формула:
 
@@ -51,20 +50,21 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 
 ---
 
-## 2. Latest accepted product and repository truth
+## 2. Latest accepted product truth
 
-### Product milestone: repository-native clean URLs
+Последний принятый user-facing milestone:
 
-Последний принятый user-facing milestone — PR #114 `feat: publish repository-native clean URLs`.
+**Portfolio 1.0 P3.1 — Homepage evidence paths**, PR #117.
 
 ```text
-feature PR:                     #114 — MERGED
-exact PR head:                  8702afe63ad3dca3ad0c17da47409c1660e126ef
-accepted product squash:        cf07c39378e7c531583e80eaef5edc7e7d1f2bad
-Build:                          #822 / 30962673977 — SUCCESS
-CodeQL:                         #295 / 30962674018 — SUCCESS
-Dependency Review:              #250 / 30962673979 — SUCCESS
-Dependency Audit Evidence:      #57 / 30962673975 — SUCCESS
+feature PR:                     #117 — MERGED
+exact PR head:                  67d3f6593c45d1239630f71be6a3cb15a33f4519
+accepted squash:                fe1a796df37313401c07e25c0672dc32db30a1c4
+RED Build:                      #827 / 30987736270 — expected FAILURE
+final Build:                    #836 / 30989449993 — SUCCESS
+CodeQL:                         #306 / 30989449931 — SUCCESS
+Dependency Review:              #264 / 30989449930 — SUCCESS
+unit tests:                     360 PASS / 0 FAIL
 site integrity:                 PASS
 mobile overflow:                PASS
 browser/accessibility:          PASS
@@ -73,14 +73,86 @@ Firefox/WebKit:                 PASS
 search/VillAIgence search:      PASS
 RU/EN/analytics/metadata:       PASS
 Engineering Map:                PASS
-visual regression:              PASS with unchanged baselines
+visual regression:              PASS
 custom-domain artifact:         PASS
 review threads:                 0 open
-quality artifact:               8913565133
-quality digest:                 sha256:8c3124ed00bf37e1243460cd204ac840084555b101b3f12146832b40effaa7ed
+quality artifact:               8923559602
+quality digest:                 sha256:429dadb1b84c59e73e9a977e296422084e754f235eaeb538b866d749ea43c64e
 ```
 
-Accepted public route examples:
+Exact post-merge production proof:
+
+```text
+Pages workflow:                 #147 / 30989921979 — SUCCESS
+Production Live Smoke:          #58 / 30989981685 — SUCCESS
+deployed SHA:                   fe1a796df37313401c07e25c0672dc32db30a1c4
+```
+
+Production Live Smoke resolved the exact successful Pages deployment and passed the deployed homepage, clean URL, search, feed, favicon and browser/request-error contracts.
+
+---
+
+## 3. Portfolio 1.0 P3.1 — DONE
+
+The homepage is now an evidence-first professional entry point.
+
+### Accepted hierarchy
+
+1. identity and specialization;
+2. three explicit one-action paths:
+   - Resume;
+   - Projects;
+   - Engineering Notes / Publications;
+3. three bounded current evidence signals;
+4. three public flagship projects;
+5. current `/now` context;
+6. Publications and secondary platform surfaces.
+
+### Canonical data boundaries
+
+Homepage project and evidence claims come from:
+
+- `data/projects.json`;
+- `data/project-evidence.json`.
+
+The stable homepage flagship set is intentionally explicit:
+
+- VillAIgence;
+- Vlezet;
+- Engineering Portfolio Platform.
+
+Private NODE ZERO is excluded fail-closed. The homepage does not infer public eligibility from visibility alone; a flagship must remain present, public, active and featured.
+
+### Preserved acceptance boundaries
+
+- VillAIgence `production-JAR startup + restart PASS` is automated installed evidence, not cumulative manual acceptance.
+- Vlezet M7.8B remains the accepted recognition slice; M7.8C remains pending.
+- Portfolio production status describes the deployed static platform, not audience growth or search-engine indexing.
+- English content remains intentionally bounded; Russian-only destinations are labeled.
+
+### Visual acceptance
+
+Only the intentionally changed RU homepage baselines were updated:
+
+- `home-desktop.png`;
+- `home-mobile.png`.
+
+All other visual baselines remained unchanged. Desktop/mobile screenshots were manually reviewed after accessibility, overflow and browser checks passed.
+
+---
+
+## 4. Clean URL contract — DONE
+
+PR #114 moved public content to repository-native directory URLs without Cloudflare routing.
+
+```text
+feature PR:                     #114 — MERGED
+exact head:                     8702afe63ad3dca3ad0c17da47409c1660e126ef
+accepted squash:                cf07c39378e7c531583e80eaef5edc7e7d1f2bad
+Build:                          #822 / 30962673977 — SUCCESS
+```
+
+Public examples:
 
 ```text
 /
@@ -88,170 +160,105 @@ Accepted public route examples:
 /landing/projects/
 /landing/notes/
 /landing/publications/
-/landing/photos/
 /en/
 /_search/ru/
 ```
 
-### Operational closure: clean-route production smoke
-
-PR #115 fixed an outdated post-deployment assertion that still expected a legacy `.html` route after the site correctly resolved to the directory URL.
-
-```text
-operational PR:                 #115 — MERGED
-exact head:                     d28b05afd23f05e997d28e9015f3eab4f0a3be5e
-master squash:                  4260d30cff4ebdbf3f666f4763aa667c8dc7ee6c
-Build:                          #825 / 30983923977 — SUCCESS
-Production Live Smoke #52:      30983923979 — SUCCESS
-CodeQL:                         #293 / 30983924043 — SUCCESS
-Dependency Review:              #253 / 30983923991 — SUCCESS
-review threads:                 0 open
-```
-
-Production Live Smoke #52 validated the current deployed clean-route behavior before merge. PR #115 changed verification contracts, not the public content model.
-
----
-
-## 3. Clean URL contract — DONE
-
-PR #114 moved public pages from `*.html` identities to repository-native directory routes backed by `index.html`.
-
 Permanent contract:
 
-- `/` remains the homepage;
-- generated content is served as `/path/`;
-- internal links use clean directory routes;
+- internal generated links use clean routes;
 - canonical, hreflang, OpenGraph, Sitemap and Atom feed contain clean routes;
-- public Sitemap and feed reject `.html` identities;
-- Diplodoc router pathname, depth and base are aligned with directory routes;
-- internal Lunr/Diplodoc search IDs remain stable while rendered result links are clean;
-- GitHub Pages subpath and custom-domain builds derive their active base from generated canonical state;
-- sibling projects on the same `github.io` origin are not rewritten;
-- local development and all browser-quality checks exercise canonical routes.
+- public Sitemap/feed reject `.html` identities;
+- search keeps stable internal IDs but returns clean public URLs;
+- GitHub Pages subpath and custom-domain builds derive their base from generated canonical state;
+- local/browser/production checks exercise canonical routes.
 
-Legacy `.html` entrypoints remain only as compatibility pages with:
+Legacy `.html` remains only as a static `noindex,follow` compatibility entrypoint preserving query and fragment. GitHub Pages cannot emit repository-defined HTTP 301 redirects; this is the accepted repository-only boundary.
 
-- `noindex,follow`;
-- clean canonical metadata;
-- meta refresh;
-- `location.replace` preserving query and fragment.
+PR #115 aligned Production Live Smoke with canonical clean routes:
 
-GitHub Pages cannot emit repository-configured HTTP 301 redirects. The static compatibility page is therefore the accepted repository-only migration boundary. Cloudflare Rewrite Rules or Workers are not required.
-
-PR #115 permanently separates:
-
-1. canonical clean-route verification;
-2. explicit legacy `.html` compatibility verification.
+```text
+PR #115 squash:                4260d30cff4ebdbf3f666f4763aa667c8dc7ee6c
+Production Live Smoke #52:      SUCCESS
+```
 
 ---
 
-## 4. Search-engine operational state
+## 5. Search-engine operational state
 
-The repository publishes:
+Repository contracts are complete:
 
-- `https://trueruslan.ru/sitemap.xml`;
-- canonical HTTPS metadata;
-- clean URLs;
-- `robots.txt` with Sitemap declaration;
+- HTTPS canonical domain;
+- clean public URLs;
+- `sitemap.xml` and `robots.txt`;
 - root `/favicon.svg`;
 - no public `.html` identities in Sitemap or Atom feed.
 
 Issue #111 remains open only for authenticated Yandex Webmaster operator state and delayed crawler observation:
 
-- confirm or resubmit the Sitemap in the HTTPS property;
+- confirm/resubmit Sitemap in the HTTPS property;
 - confirm HTTP→HTTPS/main mirror state;
 - select “No region”;
-- submit key clean routes for recrawl;
-- recheck diagnostics after 10–14 days.
+- submit representative clean routes for recrawl;
+- recheck diagnostics and indexed URL replacement after 10–14 days.
 
-Google Search Console and Yandex Webmaster recrawl requests may accelerate observation, but repository correctness does not imply immediate index replacement.
+Google Search Console and Yandex Webmaster recrawl may accelerate observation, but a green repository/deployment contract does not imply immediate index replacement.
 
-Explicit non-goals remain:
+Non-goals:
 
-- Yandex Metrica without a separate privacy decision;
+- Yandex Metrica without privacy review;
 - Yandex Business without a real local-service requirement;
-- artificial regional or commercial claims;
+- artificial regional/commercial claims;
 - runtime SEO service or automatic search-console mutation.
 
 ---
 
-## 5. Yandex favicon reconciliation — DONE in repository
+## 6. Resume, distribution and favicon baselines
 
-PR #112 established a crawler-stable root favicon contract.
+### Resume
 
-```text
-feature PR:                     #112 — MERGED
-accepted squash:                18358a4939dc4062669dbcb45850e9beb26e1cac
-Build:                          #778 / 30953202266 — SUCCESS
-source Pages:                   #142 / 30953599246 — SUCCESS
-Production Live Smoke:          #45 / 30953667481 — SUCCESS
-```
-
-Deployed evidence:
+PR #110 remains the latest accepted PDF/timeline baseline.
 
 ```text
-URL:                            https://trueruslan.ru/favicon.svg
-HTTP:                           200
-Content-Type:                   image/svg+xml
-bytes:                          591
-homepage/resume href:           /favicon.svg
-```
-
-Issue #111 must not be treated as evidence of a remaining favicon code defect. Any remaining warning is external crawler/cache state until reproduced against the deployed artifact.
-
----
-
-## 6. Resume baseline — DONE
-
-PR #108 synchronized the August 2026 professional profile. PR #110 published the latest user-managed PDF and aligned the timeline.
-
-```text
-latest resume PR:               #110 — MERGED
 squash:                         4b5bf97d749b9c9bc1d41167da5f860d9c87760e
-Build:                          #765 / 30942487224 — SUCCESS
-source Pages:                   #141 / 30950087819 — SUCCESS
-Production Live Smoke:          #37 / 30950157904 — SUCCESS
+Build:                          #765 — SUCCESS
+Production Live Smoke:          #37 — SUCCESS
 ```
 
-Permanent boundary:
+RU/EN web-CV is semantically checked. PDF is structurally/passively checked; compressed PDF semantics are not guessed from raw bytes.
 
-- RU/EN web-CV and metadata receive semantic checks;
-- PDF receives structural/passive checks;
-- compressed PDF content is not guessed through raw-byte substring matching;
-- semantic PDF extraction requires a reviewed parser;
-- no metrics, leadership claims or proprietary implementation details are invented.
+### Distribution
 
----
-
-## 7. Distribution and external profiles — DONE
-
-Controlled snapshot:
+Controlled external-profile snapshot:
 
 ```text
-profiles:                       4
 verified:                       4
 stale:                          0
 unverified:                     0
 ```
 
-Verified identities:
+GitHub, Habr, Telegram personal and Telegram Blog are verified. Distribution readiness is not an engagement claim.
 
-- GitHub profile;
-- Habr profile;
-- Telegram personal;
-- Telegram Blog.
+### Favicon
 
-Distribution readiness is not an engagement claim. Any state change requires fresh rendered evidence.
+PR #112 established root `/favicon.svg` and deployed crawler-stable links.
+
+```text
+squash:                         18358a4939dc4062669dbcb45850e9beb26e1cac
+Production Live Smoke:          #45 — SUCCESS
+```
+
+Any remaining Yandex warning is external crawler/cache state unless reproduced against production.
 
 ---
 
-## 8. External project boundaries
+## 7. External project boundaries
 
 ### Vlezet
 
-- public lifecycle: `pre-production`;
-- M7.8B remains the latest accepted recognition slice;
-- M7.8C remains pending until exact-head automation and the same real-plan owner retest;
+- lifecycle: `pre-production`;
+- M7.8B remains accepted;
+- M7.8C remains pending exact-head automation plus the same real-plan owner retest;
 - Draft evidence must not promote public status.
 
 ### VillAIgence
@@ -268,18 +275,17 @@ Source/package/GameTest/production-JAR/persistence/server-authority evidence rem
 ### Publications and Photo Stories
 
 - Publications contains only completed, externally verifiable work;
-- a genuine Photo Story requires authentic material, chronology, captions and alt text;
+- genuine Photo Stories require authentic material, chronology, captions and alt text;
 - fake/demo albums remain prohibited.
 
 ---
 
-## 9. Operational and security state
+## 8. Operational and security state
 
 ### Content Freshness
 
 - issue #78 — closed/completed;
 - latest controlled report — 0 findings/errors/warnings;
-- PR runs create evidence without automatic issue mutation;
 - Draft repository activity is recorded without public promotion.
 
 ### Dependencies
@@ -290,7 +296,7 @@ Source/package/GameTest/production-JAR/persistence/server-authority evidence rem
 6 moderate
 ```
 
-All six moderate records reduce to build-time `markdown-it@13.0.2` through Diplodoc compatibility. Issue #82 remains open. Next planned review: **2026-08-17**.
+All six moderate records reduce to build-time `markdown-it@13.0.2` through Diplodoc compatibility. Issue #82 remains open. Review on or after **2026-08-17**.
 
 Do not use:
 
@@ -299,50 +305,43 @@ Do not use:
 - an unreviewed fork;
 - a parser update that breaks Diplodoc internal imports.
 
-A fix is accepted only after upstream compatibility and the complete exact-head matrix pass.
+---
+
+## 9. Approved next product slice
+
+Portfolio 1.0 remains **IN PROGRESS**.
+
+Next slice:
+
+**P3.2 — TrueRuslan Landing flagship case study**.
+
+It must create a dedicated evidence-first destination for the portfolio platform and cover:
+
+1. product purpose and audience;
+2. static-first architecture;
+3. canonical registries and build-time intelligence;
+4. clean URL migration and GitHub Pages constraints;
+5. exact-head CI versus generated artifact versus Pages deployment versus Production Live Smoke;
+6. rejected alternatives and known limitations;
+7. related Engineering Notes, repository and evidence links.
+
+The homepage platform flagship currently links to the Projects hub because the dedicated case study does not yet exist. P3.2 must replace that temporary destination.
 
 ---
 
-## 10. Approved next product milestone
+## 10. Current priorities
 
-The next approved milestone is:
-
-**Portfolio 1.0 — Evidence-first flagship content**.
-
-Approved specification:
-
-`docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`
-
-Goal:
-
-- make Resume, flagship projects and engineering materials explicit primary paths;
-- normalize VillAIgence, Vlezet and TrueRuslan Landing around one evidence-first case-study contract;
-- strengthen related-content navigation;
-- publish grounded Notes from completed engineering work;
-- selectively expand the highest-value English pages.
-
-Recommended first implementation slice:
-
-**P3.1 — Homepage evidence paths**.
-
-It has the highest user-facing value with the smallest architectural surface and establishes the hierarchy required by later flagship and content work.
+1. preserve P3.1 production acceptance and clean URL contracts;
+2. implement P3.2 TrueRuslan Landing flagship;
+3. complete external Google/Yandex recrawl actions and observe index replacement;
+4. normalize VillAIgence and Vlezet under the common case-study contract without changing their accepted states;
+5. publish grounded Engineering Notes from completed work;
+6. review issue #82 on or after 2026-08-17;
+7. draw analytics conclusions only after 3–4 weeks of meaningful aggregate traffic.
 
 ---
 
-## 11. Current priorities
-
-1. preserve the accepted clean URL and production verifier contracts;
-2. complete external Google/Yandex recrawl actions and observe index replacement;
-3. implement P3.1 Homepage evidence paths;
-4. add the TrueRuslan Landing flagship case study;
-5. normalize VillAIgence and Vlezet without changing their acceptance states;
-6. publish grounded Engineering Notes from completed work;
-7. review issue #82 on or after 2026-08-17;
-8. draw analytics conclusions only after 3–4 weeks of meaningful aggregate traffic.
-
----
-
-## 12. Invariants
+## 11. Invariants
 
 - static-first;
 - build-time intelligence;
@@ -367,6 +366,6 @@ It has the highest user-facing value with the smallest architectural surface and
 
 ---
 
-## 13. New-session handoff
+## 12. New-session handoff
 
-> Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md`, `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`, `docs/CUSTOM_DOMAIN.md` and `docs/DISTRIBUTION.md`. Check actual open PRs, latest commits, exact-head CI, latest Pages deployment and Production Live Smoke. Confirm PR #114 squash `cf07c39378e7c531583e80eaef5edc7e7d1f2bad` is the accepted clean URL product milestone; PR #115 squash `4260d30cff4ebdbf3f666f4763aa667c8dc7ee6c` aligns production verification with canonical routes; Production Live Smoke #52 passed; issue #111 contains only authenticated search-console observation work; issue #82 remains the markdown-it/Diplodoc blocker; profile snapshot is `4 verified / 0 stale`; Vlezet M7.8B remains accepted while M7.8C is pending; VillAIgence PR #103/#104 automation remains separate from cumulative manual acceptance; next product slice is P3.1 Homepage evidence paths.
+> Open `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/CHANGELOG.md`, `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`, `docs/CUSTOM_DOMAIN.md` and `docs/DISTRIBUTION.md`. Check actual open PRs, latest commits, exact-head CI, latest Pages deployment and Production Live Smoke. Confirm PR #117 squash `fe1a796df37313401c07e25c0672dc32db30a1c4` is the accepted P3.1 homepage baseline; Build #836, Pages #147 and Production Live Smoke #58 passed; PR #114/#115 remain the clean URL baseline; issue #111 contains only authenticated search-console observation; issue #82 remains the Diplodoc/markdown-it blocker; Vlezet M7.8B remains accepted while M7.8C is pending; VillAIgence PR #103/#104 automation remains separate from cumulative manual acceptance; next product slice is P3.2 TrueRuslan Landing flagship.
