@@ -176,5 +176,19 @@
       "restart-persistence-is-a-product-contract",
       "green-ci-is-not-product-verification"
     ]
+  },
+  {
+    "slug": "passive-pdf-validation-vs-semantic-completeness",
+    "title": "Почему валидный PDF ещё не доказывает полноту и актуальность резюме",
+    "description": "TrueRuslan Landing resume case study: PDF bytes, parseability, passive delivery, text extraction, semantic equivalence, current profile truth and accessibility as separate evidence layers.",
+    "published": "2026-08-06",
+    "updated": "2026-08-06",
+    "readingMinutes": 13,
+    "tags": ["PDF", "Validation", "Semantic Completeness", "Accessibility"],
+    "related": [
+      "deployment-success-is-not-production-verification",
+      "source-tests-to-installed-acceptance",
+      "static-site-quality-gates"
+    ]
   }
 ]
