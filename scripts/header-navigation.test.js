@@ -32,10 +32,10 @@ function assertOrdered(source, markers, label) {
   }
 }
 
-function assertStandaloneTemplate(relativePath, {searchLabel, languageLabel, projectCopy}) {
+function assertStandaloneTemplate(relativePath, {searchLabel, languageLabel}) {
   const html = read(relativePath);
   const header = sliceBetween(html, '<header class="tr-site-header">', '</header>');
-  const heroActions = sliceBetween(html, '<div class="tr-home-actions">', '</div>');
+  const hero = sliceBetween(html, '<section class="tr-home-hero">', '</section>');
 
   assert.match(header, /data-tr-header-utilities/);
   assertOrdered(header, [
@@ -58,24 +58,22 @@ function assertStandaloneTemplate(relativePath, {searchLabel, languageLabel, pro
   }
   assert.match(header, /target="_blank" rel="noopener noreferrer"/);
 
-  assert.match(heroActions, new RegExp(projectCopy));
-  assert.match(heroActions, />GitHub<\/span>/);
-  assert.match(heroActions, />Habr<\/span>/);
-  assert.match(heroActions, />Telegram<\/span>/);
-  assert.doesNotMatch(heroActions, /Резюме|Resume/);
-  assert.doesNotMatch(heroActions, /→|↗/);
+  assert.equal(hero.split('{{HOME_PRIMARY_PATHS}}').length - 1, 1);
+  assert.equal(hero.split('{{HOME_EVIDENCE_SIGNALS}}').length - 1, 1);
+  assert.doesNotMatch(hero, /tr-home-actions/);
+  for (const url of Object.values(URLS)) {
+    assert.doesNotMatch(hero, new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
 }
 
-test('RU and EN standalone headers expose canonical icon utilities and simplified hero actions', () => {
+test('RU and EN standalone headers expose canonical icon utilities and evidence-first hero surfaces', () => {
   assertStandaloneTemplate('templates/index.html', {
     searchLabel: 'Поиск по сайту',
     languageLabel: 'Выбрать язык',
-    projectCopy: 'Посмотреть проекты',
   });
   assertStandaloneTemplate('templates/index.en.html', {
     searchLabel: 'Search the site',
     languageLabel: 'Choose language',
-    projectCopy: 'Explore projects',
   });
 });
 
