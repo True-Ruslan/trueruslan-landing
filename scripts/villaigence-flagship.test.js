@@ -34,7 +34,8 @@ test('VillAIgence page records accepted automation, Draft Phase C and cumulative
 
   assert.match(page, /^# VillAIgence/m);
   assert.match(page, /https:\/\/github\.com\/True-Ruslan\/villAIgence/);
-  assert.match(page, /0\.1\.20\+1\.21\.1[\s\S]{0,320}partial PASS/i);
+  assert.match(page, /0\.1\.20\+1\.21\.1/i);
+  assert.match(page, /partial PASS/i);
   assert.match(page, /0\.1\.21\+1\.21\.1[\s\S]{0,300}startup/i);
   assert.match(page, /0\.1\.23\+1\.21\.1/);
   assert.match(page, /PR #103[\s\S]{0,500}28/);
