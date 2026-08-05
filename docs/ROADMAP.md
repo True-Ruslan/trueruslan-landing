@@ -24,6 +24,7 @@
 - optional aggregate analytics;
 - no behavioural tracking without explicit privacy review;
 - generated artifact, deployed production, search-engine observation и external-product acceptance как разные факты;
+- exact artifact и installed acceptance остаются отдельными release gates;
 - no quality-gate weakening.
 
 Главная продуктовая формула:
