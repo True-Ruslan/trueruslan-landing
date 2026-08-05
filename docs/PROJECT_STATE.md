@@ -184,6 +184,8 @@ production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad86
 
 Routes: `/landing/projects/livingworld/`, `/landing/projects/vlezet/`, `/en/projects/livingworld/`.
 
+### P3.4 — Grounded Engineering Notes — IN PROGRESS
+
 ### P3.4A — Deployment success is not production verification — DONE
 
 Route: `/landing/notes/deployment-success-is-not-production-verification/`.
@@ -238,15 +240,15 @@ Feature and exact production evidence are recorded in section 2. Accepted M7.8B 
 
 ### Search engines
 
-Issue #111 remains open for authenticated Yandex Webmaster actions and delayed crawler observation. Repository readiness and successful deployment do not prove Google/Yandex replacement.
+`issue #111` remains open for authenticated Yandex Webmaster actions and delayed crawler observation. Repository readiness and successful deployment do not prove Google/Yandex replacement.
 
 ### Content Freshness
 
-Issue #78 remains open with an older generated report until a default-branch owner run refreshes it. Do not reinterpret stale issue text as canonical product truth.
+`issue #78` remains open with an older generated report until a default-branch owner run refreshes it. Do not reinterpret stale issue text as canonical product truth.
 
 ### Dependencies
 
-Issue #82 remains the Diplodoc/markdown-it blocker. Review on or after **2026-08-17**. Do not use `npm audit fix --force`, local shims or an unreviewed fork.
+`issue #82` remains the Diplodoc/markdown-it blocker. Review on or after **2026-08-17**. Do not use `npm audit fix --force`, local shims or an unreviewed fork.
 
 ---
 
