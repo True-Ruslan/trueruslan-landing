@@ -143,5 +143,57 @@
         "scope": "Текущий player-foundation остаётся draft milestone. Для него пока не заявлены как проверенные executable gates: Unity validation, EditMode и PlayMode execution, Windows IL2CPP build и graybox launch, gameplay acceptance, allocation checks и воспроизведение из fresh clone."
       }
     ]
+  },
+  {
+    "project": "portfolio-platform",
+    "status": "verified",
+    "lastVerified": "2026-08-05",
+    "versions": [
+      {"label": "Delivery model", "value": "static-first + build-time intelligence"},
+      {"label": "Knowledge build", "value": "Diplodoc"},
+      {"label": "Hosting", "value": "GitHub Pages"},
+      {"label": "Canonical domain", "value": "trueruslan.ru"},
+      {"label": "Public route model", "value": "repository-native directory URLs"},
+      {"label": "Search", "value": "Diplodoc generated local index"},
+      {"label": "Analytics", "value": "optional aggregate Cloudflare Web Analytics"}
+    ],
+    "signals": [
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Repository-native clean URLs PR #114",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/114",
+        "observedAt": "2026-08-05",
+        "scope": "PR #114 moved public page identity to directory routes, cleaned internal links and SEO/feed/search outputs, and retained legacy .html as noindex compatibility entrypoints. It proves the repository-only route contract; GitHub Pages still cannot emit repository-configured HTTP 301 redirects."
+      },
+      {
+        "kind": "ci",
+        "mode": "automated",
+        "label": "Portfolio 1.0 P3.1 exact-head Build #836",
+        "state": "green",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/30989449993",
+        "observedAt": "2026-08-05",
+        "scope": "Exact head 67d3f6593c45d1239630f71be6a3cb15a33f4519 passed 360 unit contracts, generated-site integrity, browser accessibility, Lighthouse, Firefox/WebKit, search, RU/EN, analytics, metadata, visual regression and custom-domain artifact checks. This proves repository and generated-artifact readiness, not deployment."
+      },
+      {
+        "kind": "build",
+        "mode": "automated",
+        "label": "GitHub Pages deployment #147",
+        "state": "published",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/30989921979",
+        "observedAt": "2026-08-05",
+        "scope": "Pages #147 published accepted squash fe1a796df37313401c07e25c0672dc32db30a1c4 through the configured GitHub Pages pipeline. This proves deployment identity and publication completion, not live browser behavior or search-engine indexing."
+      },
+      {
+        "kind": "ci",
+        "mode": "automated",
+        "label": "Production Live Smoke #58",
+        "state": "passed",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/30989981685",
+        "observedAt": "2026-08-05",
+        "scope": "Deployment-driven Production Live Smoke #58 resolved the exact successful Pages build and verified the deployed homepage, canonical clean routes, legacy compatibility, generated search, Atom feed, favicon, analytics boundary and absence of browser/request errors. It does not prove audience growth, engagement or immediate search-index replacement."
+      }
+    ]
   }
 ]
