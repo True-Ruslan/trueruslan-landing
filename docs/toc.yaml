@@ -105,6 +105,8 @@ items:
         href: ./landing/notes/static-first-sources-no-js.md
       - name: CI vs product verification
         href: ./landing/notes/green-ci-is-not-product-verification.md
+      - name: Deployment vs production verification
+        href: ./landing/notes/deployment-success-is-not-production-verification.md
       - name: Source tests → installed acceptance
         href: ./landing/notes/source-tests-to-installed-acceptance.md
       - name: Probabilistic proposals → deterministic authority

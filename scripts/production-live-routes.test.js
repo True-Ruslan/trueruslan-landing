@@ -14,6 +14,10 @@ test('production live smoke uses repository-native clean canonical routes', () =
     routes.WWW_NOTE_URL,
     'https://www.trueruslan.ru/landing/notes/restart-persistence-is-a-product-contract/',
   );
+  assert.equal(
+    routes.DEPLOYMENT_VERIFICATION_NOTE_URL,
+    'https://trueruslan.ru/landing/notes/deployment-success-is-not-production-verification/',
+  );
   assert.equal(routes.SEARCH_URL, 'https://trueruslan.ru/_search/ru/');
   assert.equal(
     routes.PORTFOLIO_PLATFORM_URL,

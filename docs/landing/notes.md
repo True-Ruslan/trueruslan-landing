@@ -36,6 +36,12 @@
 
 [Читать заметку →](notes/green-ci-is-not-product-verification.md)
 
+### Почему успешный deployment ещё не означает production verification
+
+На реальном инциденте PR #119/#120 разбираю, почему repository readiness, generated artifact, GitHub Pages deployment, exact deployed SHA и Production Live Smoke должны оставаться отдельными evidence layers. Успешная публикация подтверждает работу доставки, но не заменяет browser verification уже опубликованной системы.
+
+[Читать заметку →](notes/deployment-success-is-not-production-verification.md)
+
 ### От source tests к installed acceptance: что доказывает каждый release gate
 
 На примере VillAIgence разбираю отдельные уровни release evidence: source contracts, remapped package и embedded identity, GameTests, exact production-JAR startup/restart, rollback и ручную cumulative acceptance. Главный вопрос здесь не «сколько jobs зелёные», а какой конкретный runtime fact доказывает каждый gate.

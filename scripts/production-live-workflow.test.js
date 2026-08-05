@@ -9,6 +9,11 @@ const WORKFLOW = path.join(ROOT, '.github', 'workflows', 'production-live.yml');
 const SMOKE = path.join(ROOT, 'scripts', 'production-live-smoke.cjs');
 const PLATFORM_SMOKE = path.join(ROOT, 'scripts', 'production-portfolio-platform-smoke.cjs');
 const FLAGSHIP_SMOKE = path.join(ROOT, 'scripts', 'production-flagship-normalization-smoke.cjs');
+const DEPLOYMENT_NOTE_SMOKE = path.join(
+  ROOT,
+  'scripts',
+  'production-deployment-verification-note-smoke.cjs',
+);
 const ROUTES = path.join(ROOT, 'scripts', 'production-live-routes.cjs');
 
 test('live production workflow is read-only, deployment-aware and artifact-producing', () => {
@@ -32,6 +37,7 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
     'scripts/production-live-workflow.test.js',
     'scripts/production-portfolio-platform-smoke.cjs',
     'scripts/production-flagship-normalization-smoke.cjs',
+    'scripts/production-deployment-verification-note-smoke.cjs',
   ]) {
     assert.ok(workflow.includes(controlledPath), `missing live-production PR path: ${controlledPath}`);
   }
@@ -56,6 +62,8 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
   assert.match(workflow, /node scripts\/production-portfolio-platform-smoke\.cjs/);
   assert.match(workflow, /name: Run deployed flagship normalization smoke\s*\n\s*if: github\.event_name != 'pull_request'/);
   assert.match(workflow, /node scripts\/production-flagship-normalization-smoke\.cjs/);
+  assert.match(workflow, /name: Run deployed P3\.4A Note smoke\s*\n\s*if: github\.event_name != 'pull_request'/);
+  assert.match(workflow, /node scripts\/production-deployment-verification-note-smoke\.cjs/);
   assert.match(workflow, /actions\/upload-artifact@[0-9a-f]{40}/i);
   assert.match(workflow, /name:\s*production-live-evidence/);
   assert.match(workflow, /retention-days:\s*30/);
@@ -68,7 +76,7 @@ test('baseline live smoke remains safe for PR execution against current producti
 
   assert.doesNotMatch(
     source,
-    /PORTFOLIO_PLATFORM_URL|VILLAIGENCE_URL|VLEZET_URL|flagship-normalization-production-summary/,
+    /PORTFOLIO_PLATFORM_URL|VILLAIGENCE_URL|VLEZET_URL|DEPLOYMENT_VERIFICATION_NOTE_URL|flagship-normalization-production-summary/,
   );
   assert.match(source, /Production live smoke passed/);
 });
@@ -129,6 +137,39 @@ test('deployment-only flagship smoke covers RU VillAIgence, RU Vlezet and EN Vil
   assert.match(source, /EXPECTED_DEPLOYED_SHA/);
   assert.match(source, /link\[rel="canonical"\]/);
   assert.match(source, /link\[rel="alternate"\]/);
+  assert.match(source, /page\.screenshot/);
+});
+
+test('deployment-only P3.4A Note smoke covers route content feed and generated search', () => {
+  assert.ok(fs.existsSync(DEPLOYMENT_NOTE_SMOKE), 'missing deployment-only P3.4A Note smoke');
+  assert.ok(fs.existsSync(ROUTES), 'missing live production route contract');
+  const noteSource = fs.readFileSync(DEPLOYMENT_NOTE_SMOKE, 'utf8');
+  const source = `${fs.readFileSync(ROUTES, 'utf8')}\n${noteSource}`;
+
+  for (const marker of [
+    'landing/notes/deployment-success-is-not-production-verification/',
+    'Почему успешный deployment ещё не означает production verification',
+    'main.dc-doc-page__content',
+    'repository readiness',
+    'generated artifact',
+    'GitHub Pages deployment',
+    'Production Live Smoke',
+    'exact deployed SHA',
+    'PR #119',
+    'PR #120',
+    'search-engine observation',
+    'deployment production verification',
+    'deployment-verification-note-production-summary.json',
+  ]) {
+    assert.ok(source.includes(marker), `missing deployed P3.4A smoke marker: ${marker}`);
+  }
+
+  assert.doesNotMatch(noteSource, /page\.locator\(['"]main['"]\)\.innerText/);
+  assert.match(noteSource, /documentContent\.waitFor\(\{state: 'visible', timeout: 10000\}\)/);
+  assert.match(source, /EXPECTED_DEPLOYED_SHA/);
+  assert.match(source, /link\[rel="canonical"\]/);
+  assert.match(source, /meta\[property="og:url"\]/);
+  assert.match(source, /feed\.xml/);
   assert.match(source, /page\.screenshot/);
 });
 

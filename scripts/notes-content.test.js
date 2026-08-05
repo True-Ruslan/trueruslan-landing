@@ -75,6 +75,7 @@ test('canonical notes include the grounded Engineering Notes milestones', () => 
     'llm-output-is-a-protocol-boundary',
     'source-tests-to-installed-acceptance',
     'probabilistic-proposals-deterministic-authority',
+    'deployment-success-is-not-production-verification',
   ];
   const canonicalNotes = loadNotesManifest();
 
