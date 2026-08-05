@@ -260,6 +260,16 @@
     "accent": "cyan"
   },
   {
+    "path": "landing/notes/gametests-vs-installed-gameplay-acceptance.html",
+    "card": "note-gametests-acceptance",
+    "title": "Почему зелёные GameTests ещё не доказывают installed gameplay acceptance",
+    "description": "VillAIgence release-engineering case study: GameTests, exact production-JAR, provider-client automation and installed canaries as separate acceptance layers.",
+    "displayTitle": "GAMETESTS VS INSTALLED",
+    "kicker": "ENGINEERING NOTE",
+    "tags": ["GAMETESTS", "ACCEPTANCE", "RELEASE ENGINEERING"],
+    "accent": "green"
+  },
+  {
     "path": "en/index.html",
     "card": "home-en",
     "title": "Ruslan Nemykin — Backend Engineer",
