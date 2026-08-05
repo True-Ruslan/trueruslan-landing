@@ -1,14 +1,14 @@
 {
-  "updated": "2026-08-03",
-  "focus": "Сейчас я фиксирую следующий уровень product evidence: M7.8B в Vlezet принят с известными ограничениями точности, а VillAIgence получил автоматическую production-JAR startup/restart проверку. При этом ни один из этих результатов не превращается в более широкий claim: распознавание произвольных планов остаётся assistive, а cumulative provider, multiplayer и gameplay acceptance VillAIgence ещё не завершена.",
+  "updated": "2026-08-05",
+  "focus": "Сейчас я сохраняю строгую границу между опубликованным evidence и принятым продуктом. VillAIgence опубликовал exact production-gated candidate 0.1.25+1.21.1 и получил детерминированные literal-loopback проверки production Chat, STT и TTS клиентов, но cumulative real-provider, Voice Chat, multiplayer и gameplay acceptance остаётся pending. В Vlezet M7.8B остаётся последним принятым recognition slice: PR #42 ждёт product-owner retest, а PR #44 и PR #45 являются только stacked Draft-разработкой M7.9 и M7.8C.1.",
   "learning": [
-    "Exact-artifact acceptance в VillAIgence: как связать risk-based GameTests, remapped production JAR, два JVM-запуска, controlled shutdown и неизменные persistent hashes, не подменяя этим ручную cumulative acceptance",
-    "Assisted recognition в Vlezet после M7.8B: как принимать измеримый и reviewable прогресс при Source F1 0.837989, сохраняя неизвестность, ручную проверку и explicit Apply",
-    "Static-first evidence reconciliation: как обновлять публичный snapshot из source repositories вручную и детерминированно, не отдавая automation право менять product truth"
+    "Evidence layering в VillAIgence: как разделять exact release publication, production-JAR startup/restart, deterministic provider-client acceptance и cumulative installed product acceptance",
+    "Hybrid recognition в Vlezet: как позволить AI предлагать missing openings, сохраняя локальную геометрию immutable, deterministic revalidation, explicit Apply и owner acceptance",
+    "Content Freshness как maintenance guard: как обнаруживать repository drift и обновлять публичный snapshot вручную, не позволяя automation автоматически повышать lifecycle или trust state"
   ],
   "writing": [
-    "Готовлю узкую Engineering Note о переходе source tests → package → exact artifact → installed startup → restart → cumulative acceptance",
-    "Собираю Engineering Note о deterministic authority вокруг LLM/CV proposals: review, revalidation и explicit Apply",
-    "Фиксирую материал о restart и persistence как продуктовом контракте, а не только детали хранения"
+    "Готовлю Engineering Note о том, почему успешный deployment не равен production verification",
+    "Собираю материал о source tests → exact artifact → installed startup/restart → provider boundary → cumulative acceptance",
+    "Фиксирую практику evidence-driven project state для accepted, failed, pending и Draft сигналов"
   ]
 }
