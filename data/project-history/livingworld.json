@@ -23,14 +23,21 @@
     "date": "2026-08",
     "title": "M11 risk-based production-JAR acceptance",
     "description": "PRs #103 and #104 added a 28-scenario risk catalogue, real Fabric GameTests and an isolated exact production-JAR gate. The candidate reached ready state twice, stopped cleanly and preserved six canonical stores across restart; cumulative manual provider and gameplay acceptance remains separate.",
-    "state": "current",
+    "state": "past",
     "version": "0.1.23+1.21.1",
     "evidence": "https://github.com/True-Ruslan/villAIgence/pull/104"
   },
   {
+    "date": "2026-08",
+    "title": "M11 Phase C shared orchestration deadline — Draft/RED",
+    "description": "PR #110 defines the failing contract for one monotonic STT → Chat retries → TTS deadline and exactly-once dialogue and relationship commits. The production APIs are intentionally not implemented yet, so this is active Draft evidence rather than an accepted capability.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/110"
+  },
+  {
     "date": "NEXT",
-    "title": "Cumulative provider, multiplayer and gameplay acceptance",
-    "description": "Run the exact published candidate through real Text/STT/Chat/TTS and Voice Chat, logical two-client lore conflict, focused water and filled-grave canaries, restart and product-owner acceptance before promotion beyond release-candidate status.",
+    "title": "Implement Phase C, then run cumulative acceptance",
+    "description": "Make the shared deadline contract green on one exact artifact, then run real Text/STT/Chat/TTS and Voice Chat, logical two-client lore conflict, focused water and filled-grave canaries, restart and product-owner acceptance before promotion beyond release-candidate status.",
     "state": "next"
   }
 ]
