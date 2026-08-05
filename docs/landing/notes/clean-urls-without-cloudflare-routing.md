@@ -38,7 +38,7 @@ clean URLs без Cloudflare routing
 
 - **Проверенный факт.** PR #114 сформировал repository-native directory URLs, синхронизировал публичные URL-представления и оставил legacy `.html` как статические compatibility entrypoints. PR #115 затем исправил production verifier и подтвердил clean canonical routes отдельно от legacy-переходов.
 - **Инженерный вывод.** Для static-first сайта clean URL лучше рассматривать не как rewrite одного адреса, а как согласованный контракт generated artifact, metadata, navigation, search и compatibility.
-- **Ограничение.** Репозиторий и production browser checks не доказывают, что поисковые системы уже заменили все старые URL. Search-engine observation остаётся внешним и отложенным фактом.
+- **Ограничение.** Репозиторий и production browser checks не доказывают, что поисковые системы уже заменили все старые URL. `search-engine observation` остаётся внешним и отложенным фактом.
 
 ## Почему публичная `.html` identity стала нежелательной
 
@@ -272,7 +272,7 @@ Dependency Review:  #253 — SUCCESS
 
 Эти факты относятся к конкретному deployed SHA. Подробная граница слоёв описана в заметке о [deployment и production verification](deployment-success-is-not-production-verification.md).
 
-## Search-engine observation остаётся отдельным этапом
+## search-engine observation остаётся отдельным этапом
 
 Даже после корректного production deployment Google и Яндекс могут некоторое время хранить старые URL и diagnostics.
 
