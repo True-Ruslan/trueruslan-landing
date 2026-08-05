@@ -61,15 +61,12 @@ test('durable state preserves P3.1 production acceptance', () => {
   }
 });
 
-test('durable state records P3.2 production acceptance and promotes P3.3', () => {
-  const state = read(PROJECT_STATE);
-  const roadmap = read(ROADMAP);
-  const changelog = read(CHANGELOG);
-  const spec = read(PORTFOLIO_SPEC);
-  const combined = `${state}\n${roadmap}\n${changelog}\n${spec}`;
+test('durable state preserves P3.2 production acceptance', () => {
+  const combined = [PROJECT_STATE, ROADMAP, CHANGELOG, PORTFOLIO_SPEC]
+    .map(read)
+    .join('\n');
 
   for (const marker of [
-    'Portfolio 1.0',
     'P3.2 — TrueRuslan Landing flagship',
     'PR #119',
     '6736c9fd917f213621e5e88273304dda8ddda760',
@@ -86,13 +83,50 @@ test('durable state records P3.2 production acceptance and promotes P3.3', () =>
     '/landing/projects/portfolio-platform/',
     '/en/projects/portfolio-platform/',
     'main.dc-doc-page__content',
-    'P3.3 — Flagship normalization',
   ]) {
-    assert.ok(combined.includes(marker), `missing P3.2/P3.3 durable marker: ${marker}`);
+    assert.ok(combined.includes(marker), `missing P3.2 durable marker: ${marker}`);
+  }
+});
+
+test('durable state records P3.3 production acceptance and promotes P3.4A', () => {
+  const state = read(PROJECT_STATE);
+  const roadmap = read(ROADMAP);
+  const changelog = read(CHANGELOG);
+  const spec = read(PORTFOLIO_SPEC);
+  const combined = `${state}\n${roadmap}\n${changelog}\n${spec}`;
+
+  for (const marker of [
+    'P3.3 — Flagship normalization',
+    'PR #122',
+    'f2c5b065a8f1a1cd8adbad6ebb4ed7743cb33ad7',
+    'ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46',
+    'c90a221a21f51e897661667f981483bad922ad0d',
+    '#893 / 31005675334',
+    '#152 / 31006504250',
+    'Pages deployment ID:            5761717586',
+    '#95 / 31006557622',
+    '8930321636',
+    'sha256:97880f197f9484b41eb38ee606c291a754d889a55160719d948c13b0fc9a4e8a',
+    '8930571510',
+    'sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13',
+    '/landing/projects/livingworld/',
+    '/landing/projects/vlezet/',
+    '/en/projects/livingworld/',
+    'PR #110',
+    'M7.8B',
+    'M7.8C',
+    'P3.4 — Grounded Engineering Notes',
+    'P3.4A — Deployment success is not production verification',
+  ]) {
+    assert.ok(combined.includes(marker), `missing P3.3/P3.4 durable marker: ${marker}`);
   }
 
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.2 ACCEPTED IN PRODUCTION\*\*/);
+  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.3 ACCEPTED IN PRODUCTION\*\*/);
   assert.ok(spec.includes('no public canonical/Sitemap/feed URL contains `.html`'));
-  assert.ok(spec.includes('Start with **P3.3 — Flagship normalization**'));
+  assert.ok(spec.includes('Start with **P3.4A — Deployment success is not production verification**'));
   assert.ok(roadmap.includes('exact artifact и installed acceptance остаются отдельными release gates'));
+
+  assert.ok(state.includes('issue #111'), 'P3.3 state must preserve the search-console boundary');
+  assert.ok(state.includes('issue #82'), 'P3.3 state must preserve the dependency blocker');
+  assert.ok(state.includes('PR #103') && state.includes('PR #104') && state.includes('PR #110'));
 });
