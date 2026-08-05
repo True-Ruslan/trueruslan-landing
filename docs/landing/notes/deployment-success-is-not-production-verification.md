@@ -39,6 +39,14 @@ repository readiness
 deployment success ≠ production verification
 ```
 
+Связанный case study: [TrueRuslan Landing — Static-First Portfolio Platform](../projects/portfolio-platform.md).
+
+## Границы утверждений
+
+- **Проверенный факт.** Для P3.2 и P3.3 сохранены отдельные exact-head Build, generated artifact, GitHub Pages deployment и Production Live Smoke evidence.
+- **Инженерный вывод.** Чем ближе проверка к пользовательскому production endpoint, тем уже и точнее должен быть её claim; предыдущий зелёный слой не следует автоматически расширять до следующего.
+- **Ограничение.** Эта модель не доказывает содержательную безошибочность всего текста, полноту ручной product acceptance или фактическое обновление индекса поисковой системы.
+
 ## Слой 1. Repository readiness
 
 Repository readiness отвечает на вопрос:
