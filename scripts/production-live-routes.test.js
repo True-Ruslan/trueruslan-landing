@@ -18,6 +18,10 @@ test('production live smoke uses repository-native clean canonical routes', () =
     routes.DEPLOYMENT_VERIFICATION_NOTE_URL,
     'https://trueruslan.ru/landing/notes/deployment-success-is-not-production-verification/',
   );
+  assert.equal(
+    routes.CLEAN_URLS_NOTE_URL,
+    'https://trueruslan.ru/landing/notes/clean-urls-without-cloudflare-routing/',
+  );
   assert.equal(routes.SEARCH_URL, 'https://trueruslan.ru/_search/ru/');
   assert.equal(
     routes.PORTFOLIO_PLATFORM_URL,
