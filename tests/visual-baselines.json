@@ -6,13 +6,13 @@
   "baselines": {
     "home-desktop.png": {
       "width": 1440,
-      "height": 5278,
-      "rgbDeflateBase64": "eJydkD1LBDEQhtszm+/J7ibZ79wHWNhY2Nj6gxQLQQttFGxF8YcqCto4uT1X79ZDER6GSfbJy8xy24pyhnAfWF5TcIlIdxKJUJZy4ZSsQHUpzDNYgAqEacKBcEMYEKp6cyChwFjGucWHEW4nREyo3gqRGwlIfEL4FsTYF1klwAvtlKkUNMKU2EsotWlFVguNn7wyNZi292XeiDQ6AgoJ1Thwg+fXd6zHp2e/mj3MTBlEKIREd9zMkHhjpss+1uiY0Pu23qPQMY20VDfrfaCrvg27B73PtX16ecOpRFrg7nhc4mRef/YWF8TcPw68wRDylQZ+fMnBD/7J1cPKNAX+XlXMv5syr5QLulr8kA8e55SuW/OzUtlW+engX9zcY728fTy/vsPV9g+P1sYzHndXrvnHsh/GG0GB"
+      "height": 4182,
+      "rgbDeflateBase64": "eNqNkVtPwzAMhR/pmpvtJM16v2bwgAT//9fhlMIYK2XSp+gkPk6OHF2Opo3QXUw969BJWwnjTwIYqbzWJUBrcfQUvY0WJ4FBUCnYRmWO4WRcJiCTlEnMlVWq0IZbGoSO4V6+h8JARY9FT82zn9+oGJKuFje9bqUw2O7Fx/eTQPYbKjWeGaBGaK+JdVAQAJvPksIA1MqvnE+5eRA2Z7lZ0/7B6rknde2xa06BV4xvTGg37SoI3bVUtHDuji8/eE6Q+5dvs3KLcjGtdpY0aX9RPm11Iibt46rnLb+b2anSOkkar9qyXtZt0tJOP/LrBzC/5rOOpcbQY73cHKbhjHx479dpjD1WN34oWiwnauLudxzzAYHPMeE="
     },
     "home-mobile.png": {
       "width": 390,
-      "height": 8418,
-      "rgbDeflateBase64": "eNqVkr9Lw1AQx0fbhuTl/UryXtI0bSNJoxAXnSoOuri5uIgOigoOooiDUhdF1KlIQZAqDqKDi0jBQRTBwcXBwb/IS9NBrIqFD4/vHXfcvbvTZYDtEIuQ2CGRIXUiZg8kiIjJiFoV2425iLhZ4UbIeJDJ6cDV7ePD6weIta3dVCBitZ7fNGwpKrl/ee/LooWVDUN4WUXvCV2WdFHEljdSndBNFxku4nnEHJ3ZiEpERDej509fTUxtzFzCPWr6XISGM2g5scjH0hmSTrxz1IQqc0ubh43rmfl10IurNRXx2sFp46LV3Y9CPI0HGg9VHqg81FKMjqmyIPWAAI+CCyrzU7Q2KisnUMBvU+6Q+llpena5p/loxOqJXuefySEVm/8EggFY+k8IRG3YHbYKyUJlGTv9SfDvrSJYsZHHooCtoi5KWPrY9v/6HdwDd+BI2ikeVIEshbAcofCeXN5t7x/v1c9Aj01ODVfH680b0N/4BL+GWCs="
+      "height": 6714,
+      "rgbDeflateBase64": "eNqV0b9Lw0AUB/DRNppcci+5XNJcflapNulQO4nOUh3VQamDe8VFnEQoOEtBcXF1Fxzc3F0EBxfxjxBUKij+uF5iXaSk8OHxuPs+7rjDTuXz6xucKrAqOLHBYp3VDKdGUqXE8erUTkwrMWlMzBlMfEw8LeNqBsdUg2HiYupjKwI2id0K+NN6GOtRgsDe2T9SwO50z3XbR9hCmCqcZi4srgLxVlptDZiKHUWzJxAZk5CsEq75eMCaDd7Mnmykzb8G+ZwKEipISqGYA49JSBG3Dadq3JCGlqI0OSpxnxG89N6L4yp3e3e/3tp6eu7xnteLy6vj07PXt490d0CGSIayqILOhTKEjfllXrkJCIRQCBS93JeNhCLfH/mNBdkUDlI8vNfprm1ut3cP+Xp9bmmQv755EPmAb/3lh7wGWMgoqaarUU81PY36Kg2y/8oL5X15sPrHgfUDJxxc4A=="
     },
     "projects-desktop.png": {
       "width": 1440,
