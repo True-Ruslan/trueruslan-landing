@@ -28,18 +28,53 @@ const KIND_SET = new Set(PROJECT_EVIDENCE_KIND_VALUES);
 const MODE_SET = new Set(PROJECT_EVIDENCE_MODE_VALUES);
 const SIGNAL_STATE_SET = new Set(PROJECT_EVIDENCE_SIGNAL_STATE_VALUES);
 const SAFE_EXTERNAL = /^https:\/\/[a-zA-Z0-9.-]+(?:[/:?#][^\s]*)?$/;
+const SAFE_LOCAL_HTML = /^(?!\/)(?!.*\.\.)(?!https?:\/\/)[a-zA-Z0-9_./-]+\.html$/;
 const SLUG = /^[a-z0-9-]+$/;
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-const STATUS_COPY = Object.freeze({
-  verified: 'ПРОВЕРЕНО',
-  stale: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ',
-  unverified: 'НЕ ПРОВЕРЕНО',
-});
-
-const MODE_COPY = Object.freeze({
-  automated: 'Автоматическое доказательство',
-  manual: 'Ручная проверка',
+const COPY = Object.freeze({
+  ru: Object.freeze({
+    status: Object.freeze({
+      verified: 'ПРОВЕРЕНО',
+      stale: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ',
+      unverified: 'НЕ ПРОВЕРЕНО',
+    }),
+    mode: Object.freeze({
+      automated: 'Автоматическое доказательство',
+      manual: 'Ручная проверка',
+    }),
+    versionsAria: 'Проверенные версии и параметры',
+    signalsAria: 'Доказательства состояния проекта',
+    openEvidence: 'Открыть доказательство ↗',
+    stateLabel: 'Состояние:',
+    scopeLabel: 'Что подтверждает:',
+    lastVerified: 'Последняя проверка:',
+    noVerificationDate: 'Дата текущей проверки не зафиксирована.',
+    eyebrow: 'Project Evidence',
+    title: 'Проверяемое состояние проекта',
+    noEvidence: 'Текущие доказательства состояния проекта не зафиксированы.',
+  }),
+  en: Object.freeze({
+    status: Object.freeze({
+      verified: 'VERIFIED',
+      stale: 'REVIEW REQUIRED',
+      unverified: 'UNVERIFIED',
+    }),
+    mode: Object.freeze({
+      automated: 'Automated evidence',
+      manual: 'Manual verification',
+    }),
+    versionsAria: 'Verified versions and parameters',
+    signalsAria: 'Project state evidence',
+    openEvidence: 'Open evidence ↗',
+    stateLabel: 'State:',
+    scopeLabel: 'What it proves:',
+    lastVerified: 'Last verified:',
+    noVerificationDate: 'No current verification date is recorded.',
+    eyebrow: 'Project Evidence',
+    title: 'Verifiable project state',
+    noEvidence: 'No current project-state evidence is recorded.',
+  }),
 });
 
 const STATE_COPY = Object.freeze({
@@ -63,6 +98,12 @@ function requireNonEmptyString(value, label) {
   if (typeof value !== 'string' || value.trim() === '') {
     throw new Error(`${label} must be a non-empty string`);
   }
+}
+
+function localeCopy(locale) {
+  const copy = COPY[locale];
+  if (!copy) throw new Error(`unsupported project evidence locale: ${locale}`);
+  return copy;
 }
 
 function isValidIsoCalendarDate(value) {
@@ -216,54 +257,55 @@ export function loadProjectEvidence(manifestPath = DEFAULT_PROJECT_EVIDENCE_PATH
   return validateProjectEvidence(snapshots, {projects});
 }
 
-function renderVersions(versions) {
+function renderVersions(versions, copy) {
   if (versions.length === 0) return '';
   const rows = versions.map((version) => `<div class="tr-project-evidence__version">
     <dt>${escapeHtml(version.label)}</dt>
     <dd>${escapeHtml(version.value)}</dd>
   </div>`).join('\n');
-  return `<dl class="tr-project-evidence__versions" aria-label="Проверенные версии и параметры">
+  return `<dl class="tr-project-evidence__versions" aria-label="${copy.versionsAria}">
 ${rows}
   </dl>`;
 }
 
-function renderSignal(signal) {
+function renderSignal(signal, copy) {
   const link = signal.url
-    ? `<a class="tr-project-evidence__link" href="${escapeHtml(signal.url)}" target="_blank" rel="noopener noreferrer">Открыть доказательство ↗</a>`
+    ? `<a class="tr-project-evidence__link" href="${escapeHtml(signal.url)}" target="_blank" rel="noopener noreferrer">${copy.openEvidence}</a>`
     : '';
 
   return `<article class="tr-project-evidence__signal" data-evidence-kind="${signal.kind}" data-evidence-mode="${signal.mode}">
     <div class="tr-project-evidence__signal-head">
-      <span class="tr-project-evidence__mode">${MODE_COPY[signal.mode]}</span>
+      <span class="tr-project-evidence__mode">${copy.mode[signal.mode]}</span>
       <time datetime="${signal.observedAt}">${signal.observedAt}</time>
     </div>
     <h4>${escapeHtml(signal.label)}</h4>
-    <p class="tr-project-evidence__signal-state"><strong>Состояние:</strong> ${STATE_COPY[signal.state]}</p>
-    <p class="tr-project-evidence__scope"><strong>Что подтверждает:</strong> ${escapeHtml(signal.scope)}</p>
+    <p class="tr-project-evidence__signal-state"><strong>${copy.stateLabel}</strong> ${STATE_COPY[signal.state]}</p>
+    <p class="tr-project-evidence__scope"><strong>${copy.scopeLabel}</strong> ${escapeHtml(signal.scope)}</p>
     ${link}
   </article>`;
 }
 
-export function renderProjectEvidence(snapshot) {
+export function renderProjectEvidence(snapshot, {locale = 'ru'} = {}) {
+  const copy = localeCopy(locale);
   const project = escapeHtml(snapshot.project);
   const status = snapshot.status;
   const lastVerified = snapshot.lastVerified
-    ? `<p class="tr-project-evidence__checked">Последняя проверка: <time datetime="${snapshot.lastVerified}">${snapshot.lastVerified}</time></p>`
-    : '<p class="tr-project-evidence__checked">Дата текущей проверки не зафиксирована.</p>';
-  const versions = renderVersions(snapshot.versions);
+    ? `<p class="tr-project-evidence__checked">${copy.lastVerified} <time datetime="${snapshot.lastVerified}">${snapshot.lastVerified}</time></p>`
+    : `<p class="tr-project-evidence__checked">${copy.noVerificationDate}</p>`;
+  const versions = renderVersions(snapshot.versions, copy);
   const signals = snapshot.signals.length > 0
-    ? `<div class="tr-project-evidence__signals" aria-label="Доказательства состояния проекта">
-${snapshot.signals.map(renderSignal).join('\n')}
+    ? `<div class="tr-project-evidence__signals" aria-label="${copy.signalsAria}">
+${snapshot.signals.map((signal) => renderSignal(signal, copy)).join('\n')}
   </div>`
-    : '<p class="tr-project-evidence__empty">Текущие доказательства состояния проекта не зафиксированы.</p>';
+    : `<p class="tr-project-evidence__empty">${copy.noEvidence}</p>`;
 
-  return `<section class="tr-project-evidence tr-project-evidence--${status}" data-project-evidence="${project}" data-evidence-status="${status}" aria-labelledby="project-evidence-${project}-title">
+  return `<section class="tr-project-evidence tr-project-evidence--${status}" data-project-evidence="${project}" data-evidence-status="${status}" lang="${locale}" aria-labelledby="project-evidence-${project}-${locale}-title">
   <header class="tr-project-evidence__header">
     <div>
-      <p class="tr-project-evidence__eyebrow">Project Evidence</p>
-      <h2 id="project-evidence-${project}-title">Проверяемое состояние проекта</h2>
+      <p class="tr-project-evidence__eyebrow">${copy.eyebrow}</p>
+      <h2 id="project-evidence-${project}-${locale}-title">${copy.title}</h2>
     </div>
-    <span class="tr-project-evidence__status">${STATUS_COPY[status]}</span>
+    <span class="tr-project-evidence__status">${copy.status[status]}</span>
   </header>
   ${lastVerified}
   ${versions}
@@ -278,16 +320,16 @@ function evidencePlaceholderPattern(project, flags = 'i') {
   );
 }
 
-function injectNoJavaScriptFallback(html, project, content) {
-  const existing = new RegExp(`data-tr-project-evidence-noscript=["']${project}["']`, 'i');
+function injectNoJavaScriptFallback(html, project, content, locale) {
+  const existing = new RegExp(`data-tr-project-evidence-noscript=["']${project}-${locale}["']`, 'i');
   if (existing.test(html)) return html;
 
   const rootMarker = /<div\s+id=["']root["']\s*>\s*<\/div>/i;
   if (!rootMarker.test(html)) {
-    throw new Error(`Project Evidence could not place no-JavaScript fallback for ${project}: #root host not found.`);
+    throw new Error(`Project Evidence could not place no-JavaScript fallback for ${project}/${locale}: #root host not found.`);
   }
 
-  const fallback = `<noscript data-tr-project-evidence-noscript="${project}">
+  const fallback = `<noscript data-tr-project-evidence-noscript="${project}-${locale}">
   <div class="tr-project-evidence-noscript">
     ${content}
   </div>
@@ -295,12 +337,55 @@ function injectNoJavaScriptFallback(html, project, content) {
   return html.replace(rootMarker, (rootHost) => `${rootHost}\n${fallback}`);
 }
 
-export function applyProjectEvidence(outputDir, snapshots, {requiredProjects = []} = {}) {
+function normalizeTarget(target, project) {
+  requireObject(target, `project evidence target for ${project}`);
+  if (!SAFE_LOCAL_HTML.test(target.path)) {
+    throw new Error(`unsafe project evidence target for ${project}: ${target.path}`);
+  }
+  localeCopy(target.locale);
+  return {path: target.path, locale: target.locale};
+}
+
+function projectTargets(project, targetsByProject) {
+  const canonical = {path: path.posix.join('landing', 'projects', `${project}.html`), locale: 'ru'};
+  const additional = targetsByProject[project] ?? [];
+  if (!Array.isArray(additional)) {
+    throw new Error(`project evidence targets must be an array for ${project}`);
+  }
+
+  const targets = [canonical, ...additional.map((target) => normalizeTarget(target, project))];
+  const localesByPath = new Map();
+  const unique = [];
+  for (const target of targets) {
+    const existing = localesByPath.get(target.path);
+    if (existing && existing !== target.locale) {
+      throw new Error(`conflicting project evidence locales for ${target.path}: ${existing}/${target.locale}`);
+    }
+    if (existing) continue;
+    localesByPath.set(target.path, target.locale);
+    unique.push(target);
+  }
+  return unique;
+}
+
+export function applyProjectEvidence(
+  outputDir,
+  snapshots,
+  {requiredProjects = [], targetsByProject = {}} = {},
+) {
   if (!Array.isArray(snapshots)) {
     throw new Error('project evidence snapshots must be an array');
   }
   if (!Array.isArray(requiredProjects) || requiredProjects.some((project) => typeof project !== 'string' || !SLUG.test(project))) {
     throw new Error('requiredProjects must contain valid project slugs');
+  }
+  if (!targetsByProject || typeof targetsByProject !== 'object' || Array.isArray(targetsByProject)) {
+    throw new Error('targetsByProject must be an object');
+  }
+  for (const project of Object.keys(targetsByProject)) {
+    if (!requiredProjects.includes(project)) {
+      throw new Error(`project evidence targets reference a non-required project: ${project}`);
+    }
   }
 
   const byProject = new Map(snapshots.map((snapshot) => [snapshot.project, snapshot]));
@@ -310,38 +395,39 @@ export function applyProjectEvidence(outputDir, snapshots, {requiredProjects = [
     const snapshot = byProject.get(project);
     if (!snapshot) throw new Error(`missing required project evidence: ${project}`);
 
-    const relativePath = path.join('landing', 'projects', `${project}.html`);
-    const htmlPath = path.join(outputDir, relativePath);
-    if (!fs.existsSync(htmlPath)) {
-      throw new Error(`generated project page not found for evidence: ${relativePath.replaceAll(path.sep, '/')}`);
+    for (const target of projectTargets(project, targetsByProject)) {
+      const htmlPath = path.join(outputDir, ...target.path.split('/'));
+      if (!fs.existsSync(htmlPath)) {
+        throw new Error(`generated project page not found for evidence: ${target.path}`);
+      }
+
+      const html = fs.readFileSync(htmlPath, 'utf8');
+      const content = renderProjectEvidence(snapshot, {locale: target.locale});
+      let replacements = 0;
+      const transformed = transformGeneratedContent(
+        html,
+        (contentHtml) => {
+          const matches = contentHtml.match(evidencePlaceholderPattern(project, 'gi')) ?? [];
+          if (matches.length === 0) return contentHtml;
+          if (matches.length !== 1) {
+            throw new Error(`Project Evidence requires exactly one placeholder for ${project}/${target.locale}; found ${matches.length}.`);
+          }
+          replacements += 1;
+          return contentHtml.replace(evidencePlaceholderPattern(project), content);
+        },
+        `Project Evidence for ${project}/${target.locale}`,
+      );
+
+      if (!transformed.source || replacements !== 1) {
+        throw new Error(`Project Evidence placeholder not found for required target: ${target.path}`);
+      }
+
+      const finalHtml = transformed.source === 'diplodoc-state'
+        ? injectNoJavaScriptFallback(transformed.html, project, content, target.locale)
+        : transformed.html;
+      fs.writeFileSync(htmlPath, finalHtml, 'utf8');
+      targets.push(target.path);
     }
-
-    const html = fs.readFileSync(htmlPath, 'utf8');
-    const content = renderProjectEvidence(snapshot);
-    let replacements = 0;
-    const transformed = transformGeneratedContent(
-      html,
-      (contentHtml) => {
-        const matches = contentHtml.match(evidencePlaceholderPattern(project, 'gi')) ?? [];
-        if (matches.length === 0) return contentHtml;
-        if (matches.length !== 1) {
-          throw new Error(`Project Evidence requires exactly one placeholder for ${project}; found ${matches.length}.`);
-        }
-        replacements += 1;
-        return contentHtml.replace(evidencePlaceholderPattern(project), content);
-      },
-      `Project Evidence for ${project}`,
-    );
-
-    if (!transformed.source || replacements !== 1) {
-      throw new Error(`Project Evidence placeholder not found for required project: ${project}`);
-    }
-
-    const finalHtml = transformed.source === 'diplodoc-state'
-      ? injectNoJavaScriptFallback(transformed.html, project, content)
-      : transformed.html;
-    fs.writeFileSync(htmlPath, finalHtml, 'utf8');
-    targets.push(relativePath.replaceAll(path.sep, '/'));
   }
 
   return targets;
