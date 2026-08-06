@@ -127,6 +127,25 @@ test('controlled English VillAIgence follows the evidence-first narrative contra
   );
 });
 
+test('controlled English Vlezet follows the evidence-first narrative contract', () => {
+  const source = fs.readFileSync(path.join(EN_PROJECT_DIR, 'vlezet.md'), 'utf8');
+
+  assertMarkerOrder(source, 'vlezet-en', EVIDENCE_FIRST_MARKERS);
+  assert.equal(count(source, '<span data-tr-project-status="vlezet"></span>'), 1);
+  assert.equal(count(source, '<div data-tr-project-evidence="vlezet"></div>'), 1);
+  assert.equal(
+    count(source, '<div data-tr-project-timeline="vlezet"></div>'),
+    0,
+    'vlezet-en: Russian timeline presentation must not be injected',
+  );
+  assert.equal(count(source, '<!-- case-study:failures -->'), 0);
+  assert.equal(
+    count(source, '../../assets/diagrams/vlezet-recognition-authority.svg'),
+    1,
+    'vlezet-en: authority diagram must remain exactly once',
+  );
+});
+
 test('controlled flagship set stays intentionally small', () => {
   assert.deepEqual(FLAGSHIPS.map(({slug}) => slug), [
     'livingworld',
