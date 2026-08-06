@@ -18,6 +18,7 @@ const PAIRS = [
   {id: 'projects', ru: '/landing/projects/', en: '/en/projects/'},
   {id: 'livingworld', ru: '/landing/projects/livingworld/', en: '/en/projects/livingworld/'},
   {id: 'vlezet', ru: '/landing/projects/vlezet/', en: '/en/projects/vlezet/'},
+  {id: 'portfolio-platform', ru: '/landing/projects/portfolio-platform/', en: '/en/projects/portfolio-platform/'},
   {id: 'note-ai-npcs', ru: '/landing/notes/server-authoritative-ai-npcs/', en: '/en/notes/server-authoritative-ai-npcs/'},
   {id: 'note-llm-protocol-boundary', ru: '/landing/notes/llm-output-is-a-protocol-boundary/', en: '/en/notes/llm-output-is-a-protocol-boundary/'},
 ];
@@ -145,6 +146,27 @@ async function assertEnglishRoutes(browser, baseUrl) {
   }
 }
 
+async function assertEnglishVlezetNoJsEvidence(page) {
+  const fallback = page.locator(
+    '[data-tr-project-evidence-noscript="vlezet-en"] [data-project-evidence="vlezet"][lang="en"]',
+  );
+  await fallback.waitFor({state: 'visible', timeout: 5000});
+  const text = (await fallback.innerText()).trim();
+  for (const marker of [
+    'VERIFIED',
+    'Verifiable project state',
+    'Automated evidence',
+    'Last verified:',
+    'M7.8B',
+    'M7.8C product-owner retest',
+    'PR #42',
+  ]) {
+    if (!text.includes(marker)) throw new Error(`vlezet: English no-JS evidence misses ${marker}`);
+  }
+  if (/[А-Яа-яЁё]/.test(text)) throw new Error('vlezet: English no-JS evidence contains Russian presentation copy');
+  return {localizedEvidence: true, markerCount: 7};
+}
+
 async function assertNoJsMetadata(browser, baseUrl) {
   const runtime = await createScenarioPage(browser, {viewport: VIEWPORTS.desktop, colorScheme: 'dark', reducedMotion: 'reduce', javaScriptEnabled: false});
   const {page} = runtime;
@@ -152,12 +174,16 @@ async function assertNoJsMetadata(browser, baseUrl) {
 
   try {
     for (const pair of PAIRS) {
+      let localizedEvidence = null;
       for (const locale of ['en', 'ru']) {
         const route = locale === 'en' ? pair.en : pair.ru;
         const response = await page.goto(`${baseUrl}${route}`, {waitUntil: 'load'});
         if (!response?.ok()) throw new Error(`${pair.id}: no-js ${locale} route failed`);
         if (await page.locator('html').getAttribute('lang') !== locale) throw new Error(`${pair.id}: no-js lang mismatch`);
         await assertSeoPair(page, pair, locale, `${locale}-nojs:${pair.id}`);
+        if (pair.id === 'vlezet' && locale === 'en') {
+          localizedEvidence = await assertEnglishVlezetNoJsEvidence(page);
+        }
       }
       if (pair.id === 'home') {
         const language = page.locator('[data-tr-language="true"]');
@@ -166,7 +192,7 @@ async function assertNoJsMetadata(browser, baseUrl) {
           throw new Error('home: no-js language pair incomplete');
         }
       }
-      results[pair.id] = {noJavaScript: true, seoPair: true};
+      results[pair.id] = {noJavaScript: true, seoPair: true, localizedEvidence};
     }
     return results;
   } finally {
