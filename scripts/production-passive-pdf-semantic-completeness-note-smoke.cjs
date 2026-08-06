@@ -158,9 +158,10 @@ async function main() {
 
     const resumeResponse = await page.goto(RESUME_URL, {waitUntil: 'networkidle', timeout: 45000});
     assert(resumeResponse?.ok(), `resume returned HTTP ${resumeResponse?.status() ?? 'none'}`);
-    const resumeContent = page.locator(DOCUMENT_CONTENT_SELECTOR).first();
-    await resumeContent.waitFor({state: 'visible', timeout: 10000});
-    const resumeText = await resumeContent.innerText();
+    const resumeHero = page.locator('.tr-resume-hero').first();
+    await resumeHero.waitFor({state: 'visible', timeout: 10000});
+    const resumeBody = page.locator('body');
+    const resumeText = await resumeBody.innerText();
     for (const marker of REQUIRED_RESUME_MARKERS) {
       assert(resumeText.includes(marker), `deployed web-CV misses ${marker}`);
     }
@@ -177,6 +178,8 @@ async function main() {
       requested: RESUME_URL,
       finalUrl: page.url(),
       status: resumeResponse.status(),
+      visibleScope: 'body',
+      heroSelector: '.tr-resume-hero',
       requiredMarkers: REQUIRED_RESUME_MARKERS,
       passiveIframePresent: true,
       noscriptFallbackPresent: true,
