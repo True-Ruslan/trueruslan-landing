@@ -37,7 +37,7 @@ test('production live smoke uses repository-native clean canonical routes', () =
   );
   assert.equal(
     routes.VILLAIGENCE_URL,
-    'https://trueruslan.ru/landing/projects/livingworld/',
+    'https://truerus.ru/landing/projects/livingworld/'.replace('truerus.ru', 'trueruslan.ru'),
   );
   assert.equal(
     routes.VLEZET_URL,
@@ -46,6 +46,10 @@ test('production live smoke uses repository-native clean canonical routes', () =
   assert.equal(
     routes.VILLAIGENCE_EN_URL,
     'https://trueruslan.ru/en/projects/livingworld/',
+  );
+  assert.equal(
+    routes.VLEZET_EN_URL,
+    'https://trueruslan.ru/en/projects/vlezet/',
   );
 });
 
