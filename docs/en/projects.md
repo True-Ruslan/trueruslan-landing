@@ -2,7 +2,7 @@
 
 This is a curated English overview of my public engineering work. Project status is derived from the same canonical registry as the Russian site; I do not maintain a separate English status model.
 
-**VillAIgence** and **TrueRuslan Landing** currently have full English case studies. Other detail pages remain in Russian and are marked explicitly.
+**VillAIgence**, **Vlezet** and **TrueRuslan Landing** currently have full English case studies. Other detail pages remain in Russian and are marked explicitly.
 
 ## VillAIgence — server-authoritative AI society
 
@@ -34,7 +34,7 @@ Repository: [True-Ruslan/trueruslan-landing ↗](https://github.com/True-Ruslan/
 
 A local-first apartment planner with millimetre geometry, derived rooms and areas, explainable furniture fit, read-only 3D and reviewable CV/LLM recognition Drafts that require explicit Apply.
 
-[Open case study — Russian (RU) →](../landing/projects/vlezet.md)
+[Open English case study →](projects/vlezet.md)
 
 Repository: [True-Ruslan/vlezet ↗](https://github.com/True-Ruslan/vlezet)
 
