@@ -13,9 +13,9 @@
 
 A first planner prototype is comparatively easy: draw a rectangle, place a sofa and show an approximate area.
 
-A real apartment breaks that model. A wall has a centre axis and thickness. An opening has width, position on a specific host wall and an opening direction. A room exists because walls form a closed topology, not because the interface painted a polygon. Furniture can appear to fit while blocking a door or leaving an unusable passage.
+A real apartment breaks that model. A wall has a centre axis and thickness. An opening has width, a position on a specific host wall and an opening direction. A room exists because walls form a closed topology, not because the interface painted a polygon. Furniture can appear to fit while blocking a door or leaving an unusable passage.
 
-Importing a photograph or PDF adds uncertainty: rotation, margins, perspective, labels, dimension lines, plumbing, furniture and door arcs. Even a syntactically valid LLM response does not prove that reconstructed geometry matches the source plan.
+Importing a photograph or PDF adds uncertainty: rotation, margins, perspective, labels, dimension lines, plumbing, furniture and door arcs. Even syntactically valid LLM output does not prove that reconstructed geometry matches the source plan.
 
 > Recognition may propose geometry. It becomes authoritative only after review, deterministic validation and explicit Apply into the shared document.
 
@@ -24,9 +24,9 @@ Importing a photograph or PDF adds uncertainty: rotation, margins, perspective, 
 
 ### Millimetres are the only persistent world unit
 
-Canvas pixels change with zoom, viewport and display density. The persistent model stores millimetres. Konva, Three.js, on-screen dimensions and PNG export only project that model.
+Canvas pixels change with zoom, viewport and display density. `VlezetDocument` stores millimetres. Konva, Three.js, on-screen dimensions and PNG export only project that canonical model.
 
-### One document instead of several parallel truths
+### One document replaces parallel truths
 
 `VlezetDocument` owns walls, openings, objects and versioned persistence. Rooms, areas, dimensions, 3D meshes and fit diagnostics are derived from it.
 
@@ -38,7 +38,7 @@ Local computer vision and cloud review cannot clear an apartment that the user h
 
 ### An AI proposal is not authoritative geometry
 
-Accepted M7.8B restricted cloud review to exact local candidate IDs. Later Draft PR #45 explores recovery of missing openings only as separate proposals. Each proposal must retain host evidence, pass deterministic raster, topology and overlap checks, remain reviewable, and enter the document only through explicit Apply. The model receives no AI geometry authority.
+Accepted M7.8B restricted cloud verification to exact local candidate identities. Later Draft work explores recovery of missing openings only as separate proposals. Each proposal must retain host evidence, pass deterministic raster, topology and overlap checks, remain reviewable, and enter the document only through explicit Apply. The model receives no AI geometry authority.
 
 ### 3D remains a projection
 
@@ -49,7 +49,7 @@ The Three.js view is read-only. It has no independent coordinate store, furnitur
 
 Milestones **M0 through M7.8B** are accepted in the main product line.
 
-The accepted product already includes:
+The accepted product includes:
 
 - walls, topology, rooms, openings, dimensions and areas in millimetres;
 - furniture with exact transforms and collision, door-zone and clearance diagnostics;
@@ -63,16 +63,13 @@ The accepted product already includes:
 - a versioned recognition benchmark;
 - M7.8B region-first wall extraction, bounded topology and verification-only AI.
 
-M7.8B was accepted with known limitations. On the representative source it produced 27 local wall candidates: 19 were AI-confirmed and 8 remained pending review. Accepted Source geometry F1 and Source topology F1 were both `0.837989`. Openings were intentionally deferred instead of being guessed without host-wall evidence.
+M7.8B was accepted with known limitations. On its representative source it produced 27 local wall candidates: 19 were AI-confirmed and 8 remained pending review. Accepted Source geometry F1 and Source topology F1 were both `0.837989`. Openings were intentionally deferred instead of being guessed without host-wall evidence.
 
-The current acceptance boundary is **M7.8C Opening Classification and Host-Wall Validation**. PR #42 remains a Draft at observed head `c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a`. CI #3138, Recognition Benchmark #316 and M7 Browser Audit #769 pass, but the same representative real-plan product-owner retest is still mandatory.
+The next acceptance boundary is **M7.8C Opening Classification and Host-Wall Validation**. PR #42 remains Draft work awaiting the same representative real-plan product-owner retest.
 
-Parallel work is recorded only as stacked Draft evidence:
+PR #44 extends measurement with a real-fixture benchmark whose wall and opening gates retain an immutable `0.85` threshold. PR #45 explores bounded hybrid proposal recovery on top of that benchmark. Both remain stacked Draft evidence.
 
-- PR #44 at observed head `cd29740cf240d591785fc6607147d2bf07ece0b6` introduces the M7.9 real-fixture benchmark. Standard CI passes, while real wall geometry F1 `0.827338` and real opening F1 `0.627451` remain below the immutable `0.85` merge threshold;
-- PR #45 at observed head `2c4d0f44e56753b9c44dd6c30a720d1a97f50c2e` explores M7.8C.1 hybrid proposal recovery on top of PR #44. AI may return a separate proposal, but it cannot create authoritative geometry without deterministic validation, review and Apply.
-
-PR #42, PR #44 and PR #45 remain Draft work. They do not raise the lifecycle or replace the accepted M7.8B boundary.
+PR #42, PR #44 and PR #45 do not raise the lifecycle or replace the accepted M7.8B boundary. Exact observed heads, run identities, metrics and observation dates belong to the canonical Project Evidence block below rather than to this narrative. Repository activity after the recorded observation date is not an acceptance claim.
 
 The public lifecycle remains **pre-production — ACTIVE DEVELOPMENT**.
 
@@ -87,7 +84,7 @@ The domain model, calculations and semantic history live below React, Konva and 
 
 Undo and Redo store the meaning of an operation: add a wall, change thickness, apply a verified candidate batch or update an opening. One Apply can be undone in one step even when it created several entities.
 
-### Furniture fit uses the shared geometry model
+### Furniture fit uses shared geometry
 
 Fit combines containment, collision, door zones and real distances between rotated outlines. The UI exposes a deterministic result: placement status, shortest clearance, suggested zones and the reasons for a conflict.
 
@@ -107,7 +104,7 @@ Recognition follows an explicit pipeline:
 
 M7.8A introduced a versioned public-safe corpus, Core and Source execution, TP/FP/FN overlays, and metrics for wall geometry, topology, openings, rooms, areas, confidence and reconciliation.
 
-PR #44 extends this model with repository-owned analogues of real plans, but it does not lower a threshold to obtain green CI. Wall and opening F1 below `0.85` remain explicit blockers. Incorrect-high-confidence, unknown-host and stale-decision counters must remain zero.
+The real-fixture work preserves the same principle: a threshold is not lowered to obtain green CI. Incorrect-high-confidence, unknown-host and stale-decision counters must remain zero.
 
 ### Region-first extraction instead of line-first noise
 
@@ -117,33 +114,15 @@ Candidate overload fails closed: an overloaded Draft is not persisted, not sent 
 
 ### Hybrid AI can recover only bounded proposals
 
-PR #45 separates local geometry from AI recovery. Missing doors or windows may appear only as proposal records with host evidence. Local walls remain immutable; AI cannot move or delete them. Thin-wall recovery is a separate future stage.
+Hybrid work separates local geometry from AI recovery. Missing doors or windows may appear only as proposal records with host evidence. Local walls remain immutable; AI cannot move or delete them. Thin-wall recovery is a separate stage.
 
-## Failures that changed the architecture
+### Failures that changed the architecture
 
-### Magnifier and calibration used the wrong coordinate space
+The magnifier and calibration initially used the whole Canvas instead of the rendered image rectangle. Reversing calibration endpoints could rotate a plan. An early real-plan pass produced hundreds of symbol and furniture lines instead of an architectural shell. Valid provider JSON also proved capable of describing spatially wrong geometry.
 
-A wide image produced letterbox margins inside the Canvas. The pointer, magnifier, markers and calibration line were calculated against the whole stage instead of the rendered image rectangle. The correction introduced one transform based on image bounds and rejected input inside the margins.
+These failures established durable rules: one coordinate transform, undirected calibration axes, region-first structural masks, candidate budgets, immutable local identities and deterministic sanitation before any product mutation.
 
-### Reversing A to B must not rotate the plan
-
-For a horizontal or vertical calibration line, its axis matters, not endpoint order. Calibration became an undirected axis, so reversing the selected points no longer rotates the saved plan by roughly 180 degrees.
-
-### OpenCV returned more line data than the program consumed
-
-`HoughLinesP` in OpenCV.js exposes coordinates as flat groups of `x1, y1, x2, y2` in `data32S`. Iterating only through `lines.rows` consumed a fraction of the output. Reading the complete raster then revealed that many lines belonged to symbols rather than walls.
-
-### The first real-plan review produced a symbol network instead of a shell
-
-An early M7.8B iteration created 417 local wall candidates, zero openings and a connected network of labels, furniture and plumbing. The corrective design added a region-first structural mask, bounded fallback, candidate budgets, Draft sanitisation and a ban on cloud-only geometry.
-
-### Valid AI output can still be spatially wrong
-
-Response healing and JSON Schema repair protocol defects. They do not prove that a wall occupies the same location as the source image. Unknown IDs, moved coordinates, cloud-only walls, unbounded lines and overloaded responses are rejected before product state.
-
-### An opening cannot be accepted without a host wall
-
-A gap in a line can be a door, window, label or edge-detection artefact. M7.8B deliberately produced zero openings rather than claiming a confident opening without a verified host wall. M7.8C and hybrid proposals are organised around mandatory host-wall validation.
+An opening cannot be accepted without a host wall. A gap may be a door, window, label or edge-detection artefact. Returning no opening is safer than returning a confident but ungrounded one.
 
 <!-- case-study:alternatives -->
 ## Alternatives considered and rejected
@@ -164,9 +143,9 @@ Rejected. Even when AI may propose a missing opening, the proposal remains a sep
 
 Rejected. It mixes walls with furniture, plumbing, labels and dimension lines. Region-first structural extraction better matches architectural geometry, while Hough remains supplemental evidence.
 
-### Lowering the benchmark threshold for merge
+### Lowering benchmark thresholds for merge
 
-Rejected. PR #44 preserves immutable `0.85` real wall and opening gates plus zero-valued safety counters. A red measured result is more useful than a green pipeline that stopped protecting the product.
+Rejected. A red measured result is more useful than a green pipeline that stopped protecting the product.
 
 ### A separate authoritative 3D model
 
@@ -177,35 +156,35 @@ Rejected. A second geometry store would drift. The 3D view remains a read-only p
 
 <div data-tr-project-evidence="vlezet"></div>
 
-The evidence model separates:
+The registry-backed evidence separates:
 
 - accepted product workflow and deterministic geometry contracts;
 - M7.8A reproducible benchmark authority;
 - M7.8B product-owner acceptance with exact metrics and limitations;
-- PR #42 as a pending Draft with green automated gates and a mandatory owner retest;
-- PR #44 as a stacked Draft with measurable real-fixture blockers;
+- PR #42 as pending Draft work with a mandatory owner retest;
+- PR #44 as stacked Draft measurement with explicit merge blockers;
 - PR #45 as stacked Draft proposal architecture without AI geometry authority.
 
-A `verified` state applies only to the stated scopes. It does not mean that Vlezet can reconstruct an arbitrary architectural plan without manual review, and it does not promote any Draft slice.
+A `verified` state applies only to the stated scopes and observation date. It does not mean that Vlezet can reconstruct an arbitrary architectural plan without manual review, and it does not promote any Draft slice.
 
 <!-- case-study:limitations -->
 ## Known limitations
 
 - some exterior or primary walls may still be missed or fragmented;
-- in the current real-plan retest one thick load-bearing wall appeared as two parallel axes;
+- a thick load-bearing wall may still appear as parallel axes on an unseen plan;
 - visible windows may be absent from a Draft;
 - short plumbing or service-block lines may enter structural candidates;
 - accepted M7.8B Source topology F1 `0.837989` remains below the final M7.8 target of `0.90`;
-- PR #42 automated metrics do not replace owner acceptance on the same real plan;
-- PR #44 real wall and opening F1 remain below the immutable `0.85` threshold;
-- PR #45 Stage 1 proposal recovery has no independent product acceptance;
+- automated metrics do not replace owner acceptance on the same real plan;
+- real wall and opening metrics remain protected by the immutable `0.85` merge threshold;
+- hybrid proposal recovery has no independent product acceptance;
 - perspective-photo recognition is unresolved;
 - room-face derivation, OCR labels, area constraints and confidence calibration remain later slices.
 
 <!-- case-study:next -->
 ## Next accepted step
 
-The next gate is a product-owner retest of the exact PR #42 head against the same representative real plan.
+The next gate is a product-owner retest of the exact current PR #42 head against the same representative real plan.
 
 The retest must confirm:
 
@@ -216,7 +195,7 @@ The retest must confirm:
 5. incremental Apply without duplicates;
 6. independent Undo and Redo for multiple Apply batches.
 
-Only an explicit acceptance result or a concrete defect report can justify the next bounded correction, exact-head automation rerun and possible squash merge of M7.8C. Stacked PR #44 and PR #45 must then satisfy their own immutable metrics, safety counters and product-owner gates; their existence cannot bypass PR #42 acceptance.
+Only an explicit acceptance result or a concrete defect report can justify the next bounded correction, exact-head automation rerun and possible squash merge of M7.8C. Stacked PR #44 and PR #45 must satisfy their own immutable metrics, safety counters and product-owner gates; their existence cannot bypass PR #42 acceptance.
 
 <!-- case-study:related -->
 ## Related material
