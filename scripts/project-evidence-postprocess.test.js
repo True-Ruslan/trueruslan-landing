@@ -67,8 +67,10 @@ test('applyProjectEvidence replaces required placeholders in generated DOM pages
   const nodeZeroHtml = fs.readFileSync(nodeZeroPath, 'utf8');
   assert.match(livingworldHtml, /data-project-evidence="livingworld"/);
   assert.match(livingworldHtml, /data-evidence-status="verified"/);
+  assert.match(livingworldHtml, /lang="ru"/);
   assert.match(nodeZeroHtml, /data-project-evidence="node-zero"/);
   assert.match(nodeZeroHtml, /data-evidence-status="stale"/);
+  assert.match(nodeZeroHtml, /lang="ru"/);
   assert.doesNotMatch(livingworldHtml, /data-tr-project-evidence=/);
   assert.doesNotMatch(nodeZeroHtml, /data-tr-project-evidence=/);
 });
@@ -94,8 +96,9 @@ test('applyProjectEvidence injects Diplodoc state plus semantic no-JavaScript fa
   const html = fs.readFileSync(htmlPath, 'utf8');
   assert.match(html, /data-project-evidence="livingworld"/);
   assert.doesNotMatch(html, /data-tr-project-evidence=/);
-  assert.match(html, /<noscript[^>]*data-tr-project-evidence-noscript="livingworld"/);
+  assert.match(html, /<noscript[^>]*data-tr-project-evidence-noscript="livingworld-ru"/);
   assert.match(html, /data-evidence-status="verified"/);
+  assert.match(html, /lang="ru"/);
   assert.match(html, /Automated contracts passed for this milestone\./);
 });
 
