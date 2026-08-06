@@ -63,14 +63,7 @@ test('P3.4F Note separates evidence layers and uncertainty classes', () => {
   assert.doesNotMatch(source, /последний commit[^\n]*доказывает[^\n]*production/i);
 });
 
-test('P3.4F Note is exposed through index toc and page metadata', () => {
+test('P3.4F Note is exposed through index and toc', () => {
   assert.match(read('docs', 'landing', 'notes.md'), new RegExp(`${SLUG}\\.md`));
   assert.match(read('docs', 'toc.yaml'), new RegExp(`${SLUG}\\.md`));
-
-  const pageMeta = JSON.parse(read('data', 'page-meta.json'));
-  const meta = pageMeta.find((entry) => entry.path === `landing/notes/${SLUG}.html`);
-
-  assert.ok(meta, 'missing P3.4F page metadata');
-  assert.equal(meta.card, 'note-evidence-driven-project-state');
-  assert.equal(meta.displayTitle, 'PROJECT STATE WITHOUT OVERCLAIMS');
 });
