@@ -55,12 +55,19 @@ test('P3.5A publishes a controlled English Vlezet flagship without a second stat
     'product-owner retest',
     'explicit Apply',
     'AI geometry authority',
+    'Exact observed heads, run identities, metrics and observation dates belong to the canonical Project Evidence block',
   ]) {
     assert.ok(page.includes(marker), `missing English Vlezet evidence boundary: ${marker}`);
   }
 
   assert.doesNotMatch(page, /data-tr-project-timeline=/, 'English page must not inject the Russian timeline presentation');
   assert.doesNotMatch(page, /[А-Яа-яЁё]/, 'English Vlezet page contains Cyrillic copy');
+  assert.doesNotMatch(page, /\b[0-9a-f]{40}\b/i, 'volatile commit identities must remain registry-owned');
+  assert.doesNotMatch(
+    page,
+    /\b(?:CI|Recognition Benchmark|M7 Browser Audit) #\d+\b/,
+    'volatile workflow identities must remain registry-owned',
+  );
   assert.doesNotMatch(
     page,
     /PR #(42|44|45)\s+(?:is|was|has been)\s+(?:merged|accepted)/i,
