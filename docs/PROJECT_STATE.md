@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-06**, после production-acceptance Portfolio 1.0 P3.4E Passive PDF Completeness Note.
+> Последнее смысловое обновление: **2026-08-06**, после exact production-acceptance Portfolio 1.0 P3.4F Evidence-driven Project State Note.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -33,96 +33,80 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 
 Последний принятый user-facing milestone:
 
-**P3.4E — Passive PDF validation versus semantic completeness**.
+**P3.4F — Evidence-driven project state**.
 
 Production route:
 
 ```text
-/landing/notes/passive-pdf-validation-vs-semantic-completeness/
+/landing/notes/evidence-driven-project-state/
 ```
 
 Принятая evidence model:
 
-- file existence, stable route, MIME, `%PDF-`, parseability, page count и downloadable bytes доказывают только соответствующий технический слой;
-- валидный и parseable PDF сам по себе не доказывает полноту, актуальность, доступность или semantic equivalence с web-CV;
-- web-CV остаётся canonical editorial source, PDF — bounded distribution artifact;
-- rendered DOM, raw HTML, binary PDF, Atom feed и generated search наблюдаются независимо;
-- настоящий RU/EN no-JavaScript fallback публикуется build-time postprocessor-ом как `<noscript data-tr-resume-fallback>`;
-- raw production HTML проверяется deterministic query `tr_evidence_sha=<exact deployed SHA>` и заголовками `Cache-Control: no-cache` / `Pragma: no-cache`;
-- automated markers не заменяют editorial review, PDF accessibility review, ATS testing и human-readable layout acceptance.
+- canonical registries владеют volatile public facts; narrative prose не становится вторым mutable source of truth;
+- verified fact, engineering inference и limitation обозначаются раздельно;
+- `verified`, `stale` и `unverified` остаются явными trust states и не сворачиваются в общий положительный статус;
+- repository activity, generated artifact, deployed production, external-product acceptance и operator/search-engine observation остаются независимыми evidence layers;
+- Draft PR, pending product-owner acceptance и freshness observations не продвигаются автоматически;
+- evidence фиксирует `observedAt`, exact commit SHA, artifact digest и deployment identity там, где соответствующий слой существует;
+- автоматические отчёты остаются reviewable и non-mutating;
+- semantic/no-JavaScript HTML, canonical/OpenGraph metadata, Atom feed и generated search проверяются отдельно;
+- exact-head CI не заменяет exact-deployment production acceptance.
 
-### Feature PR #134
+### Feature and operational PRs
 
 ```text
-feature PR:                     #134 — MERGED
-TDD RED head:                   ad3d46817bb40002e4f311acac2632929886780f
-RED Build:                      #985 / 31048729901 — expected FAILURE
-RED existing/new contracts:     399 PASS / 4 expected FAIL
-exact accepted head:            fd09071730bf1a6d227ad544734b4ef15bb0a1f0
-accepted squash:                f184236fec2f8985fe9f893a7d6819ad4e6eea37
-final Build:                    #996 / 31049874523 — SUCCESS
-unit tests:                     403 PASS / 0 FAIL
-quality artifact:               8948085565
-quality digest:                 sha256:a31c074f337263d35181a7073fd5cbd6ef8f96ff0af92757c9cdb0c8e27d43b0
+feature PR:                     #141 — MERGED
+TDD RED Build:                  #1024 — expected FAILURE
+PR #141 exact head:             bd7b25019871aa22d56a4a1584f871c0012e5f59
+PR #141 squash:                 cef4275977893ae23e00d9231fd87b3f587b123f
+Build:                          #1037 — SUCCESS
+quality artifact:               8967149410
+quality digest:                 sha256:50f72f4d75dee81b0c61f7edec1e3f07f77be9983473acc69a672e998d4938a9
+CodeQL:                         #531 — SUCCESS
+Dependency Review:              #465 — SUCCESS
 ```
 
-### Production corrections
+Production acceptance также выявила Pages workflow defects, которые были исправлены без ослабления fail-closed semantics:
 
-PR #135–#137 последовательно отделили visible resume hero, bounded rendered DOM и raw HTML response от binary PDF evidence.
-
-PR #138 исправил реальный продуктовый дефект: Diplodoc сохранял fallback copy в serialized state, но не публиковал внешний `<noscript>` surface.
-
-```text
-PR #138 exact head:             a82fbeeb660a2a1eb6d3d6c7963708ef946fcc5f
-PR #138 squash:                 90df9b8741b0d40b6ca3981f649624b55bfc85c1
-Build:                          #1010 / 31083663155 — SUCCESS
-unit tests:                     410 PASS / 0 FAIL
-quality artifact:               8960804973
-quality digest:                 sha256:47292ba7cb21abfc9d0ef7d862efdfc34423ef27a5df1a95145f3fcdb95e142e
-```
-
-PR #139 исправил exact-production observation через deterministic SHA-keyed cache bypass без изменения canonical public URL и без ослабления PDF assertions.
+- PR #142 сделал Pages artifact identity attempt-scoped;
+- PR #143 увеличил polling budget, но был superseded после подтверждения platform 10-minute limit;
+- PR #144 проверил same-run retry, который production logs опровергли как невалидный для cancelled deployment identity;
+- PR #145 оставил один fail-closed deploy action на workflow run и перенёс recovery на новый `github.run_attempt` с уникальным artifact name.
 
 ```text
-PR #139 RED head:               de79262c5db1e484b455409800c3dc060bf474b4
-PR #139 exact head:             0ccd8a5dc669212a46f9d2f3d2f5f6a73685be87
-PR #139 squash:                 a570dc420c83af33b483cb55c5904b3575ff729a
-Build:                          #1013 / 31086478496 — SUCCESS
-unit tests:                     411 PASS / 0 FAIL
-quality artifact:               8961719018
-quality digest:                 sha256:78ba029a7ae88cb9b20f456c0c5cffdd9609a0b4856cc7bbf456cc2e39f02e47
-CodeQL:                         #505 — SUCCESS
-Dependency Review:              #441 — SUCCESS
+final workflow PR:              #145 — MERGED
+PR #145 exact head:             e356279c736c0df25778b60509ba903f7555cc61
+accepted squash / deployed SHA: 8d2c3aa45d2b02ad3c22de75aca3602b009c13e6
+Build:                          #1044 / 31110081521 — SUCCESS
+unit tests:                     420 PASS / 0 FAIL
+quality artifact:               8971423729
+quality digest:                 sha256:afb44aaab0820e923330f4688fedaec3be9ced452dc2ea7de4de5136a09ff0ca
+CodeQL:                         #542 — SUCCESS
+Dependency Review:              #472 — SUCCESS
 review threads:                 0 open
 ```
 
 ### Exact production acceptance
 
 ```text
-Pages workflow:                 #169 / 31086909691 — SUCCESS
-accepted deployed SHA:          a570dc420c83af33b483cb55c5904b3575ff729a
-Pages deployment ID:            5776481884
-Pages created:                  2026-08-06T08:55:36Z
-Pages updated:                  2026-08-06T08:59:33Z
-Production Live Smoke:          #168 / 31086909906 — SUCCESS
+Pages workflow:                 #175 / 31110585951 — SUCCESS
+accepted deployed SHA:          8d2c3aa45d2b02ad3c22de75aca3602b009c13e6
+Pages deployment ID:            5781321808
+Pages artifact:                 8971641004
+Pages artifact digest:          sha256:8ee14188edb566e2d727d857b2bffe9063a3acf76ed5cbfb6afe312011a1a171
+Pages production reports:       8971922945
+Pages reports digest:           sha256:b5fa444bae5b030e650f2a2f1ddc8bf3067188cf18ed23ad46b38cc560045484
+Production Live Smoke:          #190 / 31110583631 — SUCCESS
 baseline/platform/flagship:     PASS
-P3.4A/P3.4B/P3.4C/P3.4D/P3.4E: PASS
+P3.4A/P3.4B/P3.4C/P3.4D/P3.4E/P3.4F: PASS
 favicon smoke:                  PASS
-production artifact:            8961927073
-production digest:              sha256:681f8a098349bc4e44078273f5086f892f0dec7750abbe87de8ecf96702f24bc
+production artifact:            8971978059
+production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a0918e993e436c45efcc607a106
+observedAt:                     2026-08-06T14:36:34Z
 ```
 
-Exact PDF evidence:
-
-```text
-route:                           /assets/documents/cv.pdf
-HTTP/MIME:                       200 / application/pdf
-signature:                       %PDF-
-size:                            277792 bytes
-SHA-256:                         efd99499a483c06394dd0181b5d2be9b0e09265937163f74eeb8c05a0807e613
-```
-
-P3.4E accepted только на exact deployed SHA `a570dc420c83af33b483cb55c5904b3575ff729a`.
+P3.4F accepted только на exact deployed SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`. Repository activity или generated bytes без deployment identity и independent Production Live Smoke не считаются эквивалентным доказательством.
 
 ---
 
@@ -223,7 +207,7 @@ production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad86
 
 Routes: `/landing/projects/livingworld/`, `/landing/projects/vlezet/`, `/en/projects/livingworld/`. PR #110 remains part of the VillAIgence evidence ledger; M7.8B and M7.8C remain distinct.
 
-### P3.4 — Grounded Engineering Notes — IN PROGRESS
+### P3.4 — Grounded Engineering Notes — DONE
 
 #### P3.4A — Deployment success is not production verification — DONE
 
@@ -309,7 +293,24 @@ Source/unit contracts, remapped package, GameTests, exact production-JAR, litera
 
 #### P3.4E — Passive PDF validation versus semantic completeness — DONE
 
-Feature, corrections and exact production evidence are recorded in section 2.
+Feature, corrections and exact production evidence remain preserved in the durable history and specification.
+
+#### P3.4F — Evidence-driven project state — DONE
+
+Route: `/landing/notes/evidence-driven-project-state/`.
+
+Canonical registry ownership, fact/inference/limitation classes, `verified`/`stale`/`unverified` states, five independent evidence layers, non-mutating automation, no-JavaScript content, feed/search discoverability and exact deployment identity are accepted.
+
+```text
+PR #141 squash:                 cef4275977893ae23e00d9231fd87b3f587b123f
+final workflow PR #145 squash:  8d2c3aa45d2b02ad3c22de75aca3602b009c13e6
+Build:                          #1044 / 31110081521 — SUCCESS
+Pages:                          #175 / 31110585951 — SUCCESS
+Pages deployment ID:            5781321808
+Production Live Smoke:          #190 / 31110583631 — SUCCESS
+production artifact:            8971978059
+production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a0918e993e436c45efcc607a106
+```
 
 ---
 
@@ -329,6 +330,6 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**P3.4F — Evidence-driven project state**.
+**P3.5 — Selective English expansion**.
 
-Следующий bounded этап должен формализовать, как public project state выводится из canonical registries, как verified fact отделяется от engineering inference и limitation, и почему repository activity, generated artifact, deployed production, external-product acceptance и operator/search-engine state нельзя сворачивать в один общий статус.
+Следующий bounded этап должен расширять английскую версию только для high-value surfaces: homepage, Resume, три flagship case studies, `/now`, выбранные Engineering Notes и Publications. Он обязан использовать ту же canonical registry/build/search architecture, не создавать отдельный English CMS и не переводить Draft или непроверенные external-project claims.
