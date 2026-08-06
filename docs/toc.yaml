@@ -107,6 +107,8 @@ items:
         href: ./landing/notes/green-ci-is-not-product-verification.md
       - name: Deployment vs production verification
         href: ./landing/notes/deployment-success-is-not-production-verification.md
+      - name: Evidence-driven project state
+        href: ./landing/notes/evidence-driven-project-state.md
       - name: Clean URLs without Cloudflare routing
         href: ./landing/notes/clean-urls-without-cloudflare-routing.md
       - name: Source tests → installed acceptance
