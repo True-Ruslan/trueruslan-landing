@@ -8,8 +8,6 @@
 
 ![Boundary between recognition proposals and authoritative Vlezet geometry](../../assets/diagrams/vlezet-recognition-authority.svg)
 
-<div data-tr-project-timeline="vlezet"></div>
-
 <!-- case-study:problem -->
 ## Problem: an apartment plan must remain accurate after the first impression
 
