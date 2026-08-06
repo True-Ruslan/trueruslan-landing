@@ -17,13 +17,7 @@
     "updated": "2026-07-21",
     "readingMinutes": 7,
     "tags": ["CI", "Reliability", "Playwright", "Lighthouse"],
-    "related": [
-      "portfolio-runtime-boundary",
-      "server-authoritative-ai-npcs",
-      "intersection-observer-giant-table",
-      "static-first-sources-no-js",
-      "green-ci-is-not-product-verification"
-    ]
+    "related": ["portfolio-runtime-boundary", "server-authoritative-ai-npcs", "intersection-observer-giant-table", "static-first-sources-no-js", "green-ci-is-not-product-verification"]
   },
   {
     "slug": "server-authoritative-ai-npcs",
@@ -53,11 +47,7 @@
     "updated": "2026-07-22",
     "readingMinutes": 7,
     "tags": ["Static-first", "No-JS", "Diplodoc", "Architecture"],
-    "related": [
-      "portfolio-runtime-boundary",
-      "static-site-quality-gates",
-      "intersection-observer-giant-table"
-    ]
+    "related": ["portfolio-runtime-boundary", "static-site-quality-gates", "intersection-observer-giant-table"]
   },
   {
     "slug": "green-ci-is-not-product-verification",
@@ -87,11 +77,7 @@
     "updated": "2026-08-03",
     "readingMinutes": 11,
     "tags": ["Release Engineering", "CI", "Acceptance", "Reliability"],
-    "related": [
-      "green-ci-is-not-product-verification",
-      "static-site-quality-gates",
-      "server-authoritative-ai-npcs"
-    ]
+    "related": ["green-ci-is-not-product-verification", "static-site-quality-gates", "server-authoritative-ai-npcs"]
   },
   {
     "slug": "probabilistic-proposals-deterministic-authority",
@@ -101,11 +87,7 @@
     "updated": "2026-08-03",
     "readingMinutes": 12,
     "tags": ["AI", "Authority", "Validation", "Reliability"],
-    "related": [
-      "server-authoritative-ai-npcs",
-      "green-ci-is-not-product-verification",
-      "source-tests-to-installed-acceptance"
-    ]
+    "related": ["server-authoritative-ai-npcs", "green-ci-is-not-product-verification", "source-tests-to-installed-acceptance"]
   },
   {
     "slug": "restart-persistence-is-a-product-contract",
@@ -115,11 +97,7 @@
     "updated": "2026-08-04",
     "readingMinutes": 12,
     "tags": ["Persistence", "Reliability", "Recovery", "Acceptance"],
-    "related": [
-      "source-tests-to-installed-acceptance",
-      "green-ci-is-not-product-verification",
-      "probabilistic-proposals-deterministic-authority"
-    ]
+    "related": ["source-tests-to-installed-acceptance", "green-ci-is-not-product-verification", "probabilistic-proposals-deterministic-authority"]
   },
   {
     "slug": "deployment-success-is-not-production-verification",
@@ -129,11 +107,7 @@
     "updated": "2026-08-05",
     "readingMinutes": 10,
     "tags": ["Deployment", "Verification", "GitHub Pages", "Reliability"],
-    "related": [
-      "green-ci-is-not-product-verification",
-      "static-site-quality-gates",
-      "source-tests-to-installed-acceptance"
-    ]
+    "related": ["green-ci-is-not-product-verification", "static-site-quality-gates", "source-tests-to-installed-acceptance"]
   },
   {
     "slug": "clean-urls-without-cloudflare-routing",
@@ -143,11 +117,7 @@
     "updated": "2026-08-05",
     "readingMinutes": 12,
     "tags": ["Clean URLs", "GitHub Pages", "Static-first", "SEO"],
-    "related": [
-      "deployment-success-is-not-production-verification",
-      "static-site-quality-gates",
-      "static-first-sources-no-js"
-    ]
+    "related": ["deployment-success-is-not-production-verification", "static-site-quality-gates", "static-first-sources-no-js"]
   },
   {
     "slug": "hybrid-cv-ai-recognition-boundaries",
@@ -157,11 +127,7 @@
     "updated": "2026-08-05",
     "readingMinutes": 14,
     "tags": ["Computer Vision", "AI", "Authority", "Validation"],
-    "related": [
-      "probabilistic-proposals-deterministic-authority",
-      "green-ci-is-not-product-verification",
-      "llm-output-is-a-protocol-boundary"
-    ]
+    "related": ["probabilistic-proposals-deterministic-authority", "green-ci-is-not-product-verification", "llm-output-is-a-protocol-boundary"]
   },
   {
     "slug": "gametests-vs-installed-gameplay-acceptance",
@@ -171,11 +137,7 @@
     "updated": "2026-08-05",
     "readingMinutes": 15,
     "tags": ["GameTests", "Release Engineering", "Acceptance", "Reliability"],
-    "related": [
-      "source-tests-to-installed-acceptance",
-      "restart-persistence-is-a-product-contract",
-      "green-ci-is-not-product-verification"
-    ]
+    "related": ["source-tests-to-installed-acceptance", "restart-persistence-is-a-product-contract", "green-ci-is-not-product-verification"]
   },
   {
     "slug": "passive-pdf-validation-vs-semantic-completeness",
@@ -185,10 +147,16 @@
     "updated": "2026-08-06",
     "readingMinutes": 13,
     "tags": ["PDF", "Validation", "Semantic Completeness", "Accessibility"],
-    "related": [
-      "deployment-success-is-not-production-verification",
-      "source-tests-to-installed-acceptance",
-      "static-site-quality-gates"
-    ]
+    "related": ["deployment-success-is-not-production-verification", "source-tests-to-installed-acceptance", "static-site-quality-gates"]
+  },
+  {
+    "slug": "evidence-driven-project-state",
+    "title": "Как описывать состояние проекта без ложной уверенности",
+    "description": "Как canonical registries, observation timestamps, explicit uncertainty and separate repository/artifact/deployment/product/operator layers keep project state current without automatic promotion.",
+    "published": "2026-08-06",
+    "updated": "2026-08-06",
+    "readingMinutes": 11,
+    "tags": ["Evidence", "Project State", "Verification", "Freshness"],
+    "related": ["deployment-success-is-not-production-verification", "passive-pdf-validation-vs-semantic-completeness", "green-ci-is-not-product-verification"]
   }
 ]
