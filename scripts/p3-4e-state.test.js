@@ -21,7 +21,7 @@ function read(file) {
   return fs.readFileSync(file, 'utf8');
 }
 
-test('durable state closes P3.4E after exact production acceptance and promotes P3.4F', () => {
+test('durable state preserves P3.4E production acceptance after later slices', () => {
   const state = read(PROJECT_STATE);
   const roadmap = read(ROADMAP);
   const changelog = read(CHANGELOG);
@@ -73,8 +73,7 @@ test('durable state closes P3.4E after exact production acceptance and promotes 
     assert.ok(combined.includes(marker), `missing P3.4E closure marker: ${marker}`);
   }
 
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.4E ACCEPTED IN PRODUCTION\*\*/);
-  assert.ok(spec.includes('Continue with **P3.4F — Evidence-driven project state**'));
+  assert.match(spec, /### P3\.4E — Passive PDF validation versus semantic completeness — DONE/);
 
   for (const document of [state, roadmap, changelog, spec]) {
     assert.match(document, /parseable|валидн/i);
