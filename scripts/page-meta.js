@@ -8,6 +8,7 @@ import * as utils from 'parse5-utils';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DEFAULT_MANIFEST = path.join(ROOT, 'data', 'page-meta.json');
+const DEFAULT_NOTES_MANIFEST = path.join(ROOT, 'data', 'notes.json');
 const ALLOWED_ACCENTS = new Set(['cyan', 'violet', 'green']);
 const DISPLAY_TEXT = /^[A-Z0-9 .&/+_:-]+$/;
 
@@ -83,8 +84,47 @@ export function validatePageMeta(entries) {
   });
 }
 
-export function loadPageMeta(manifestPath = DEFAULT_MANIFEST) {
-  return validatePageMeta(JSON.parse(fs.readFileSync(manifestPath, 'utf8')));
+function deriveMissingNotePageMeta(entries, notes) {
+  if (!Array.isArray(notes)) throw new Error('Notes metadata source must be an array.');
+  const existingPaths = new Set(entries.map((entry) => entry.path));
+  const derived = [];
+
+  for (const note of notes) {
+    const slug = requireString(note, 'slug');
+    const notePath = `landing/notes/${slug}.html`;
+    if (existingPaths.has(notePath)) continue;
+
+    const title = requireString(note, 'title');
+    const description = requireString(note, 'description');
+    const rawTags = Array.isArray(note.tags) ? note.tags : [];
+    const tags = rawTags.slice(0, 3).map((tag) => String(tag).trim().toUpperCase());
+    if (tags.length === 0) tags.push('ENGINEERING NOTE');
+
+    derived.push({
+      path: notePath,
+      card: `note-${slug}`,
+      title,
+      description,
+      displayTitle: slug.replaceAll('-', ' ').toUpperCase(),
+      kicker: 'ENGINEERING NOTE',
+      tags,
+      accent: 'cyan',
+    });
+    existingPaths.add(notePath);
+  }
+
+  return derived;
+}
+
+export function loadPageMeta(
+  manifestPath = DEFAULT_MANIFEST,
+  {notesManifestPath = DEFAULT_NOTES_MANIFEST, deriveNotes = path.resolve(manifestPath) === path.resolve(DEFAULT_MANIFEST)} = {},
+) {
+  const entries = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  if (!deriveNotes) return validatePageMeta(entries);
+  if (!fs.existsSync(notesManifestPath)) throw new Error(`Notes metadata source not found: ${notesManifestPath}`);
+  const notes = JSON.parse(fs.readFileSync(notesManifestPath, 'utf8'));
+  return validatePageMeta([...entries, ...deriveMissingNotePageMeta(entries, notes)]);
 }
 
 function getAttribute(node, name) {
