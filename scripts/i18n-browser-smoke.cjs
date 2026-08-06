@@ -17,6 +17,7 @@ const PAIRS = [
   {id: 'resume', ru: '/landing/resume/', en: '/en/resume/'},
   {id: 'projects', ru: '/landing/projects/', en: '/en/projects/'},
   {id: 'livingworld', ru: '/landing/projects/livingworld/', en: '/en/projects/livingworld/'},
+  {id: 'vlezet', ru: '/landing/projects/vlezet/', en: '/en/projects/vlezet/'},
   {id: 'note-ai-npcs', ru: '/landing/notes/server-authoritative-ai-npcs/', en: '/en/notes/server-authoritative-ai-npcs/'},
   {id: 'note-llm-protocol-boundary', ru: '/landing/notes/llm-output-is-a-protocol-boundary/', en: '/en/notes/llm-output-is-a-protocol-boundary/'},
 ];
@@ -195,6 +196,7 @@ async function assertQuality(browser, baseUrl) {
   const scenarios = [
     {name: 'home-desktop', route: '/en/', viewport: VIEWPORTS.desktop},
     {name: 'livingworld-mobile', route: '/en/projects/livingworld/', viewport: VIEWPORTS.mobile},
+    {name: 'vlezet-mobile', route: '/en/projects/vlezet/', viewport: VIEWPORTS.mobile},
   ];
   const results = {};
 
