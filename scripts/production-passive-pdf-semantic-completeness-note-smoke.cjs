@@ -170,22 +170,30 @@ async function main() {
     }
     const resumeHtml = await page.content();
     assert(resumeHtml.includes('data-tr-resume-pdf'), 'deployed web-CV misses passive PDF iframe marker');
-    assert(resumeHtml.includes('<noscript>'), 'deployed web-CV misses noscript PDF fallback');
-    assert(resumeHtml.includes('assets/documents/cv.pdf'), 'deployed web-CV misses PDF asset route');
+
+    const rawResumeResponse = await context.request.get(RESUME_URL, {timeout: 30000});
+    assert(rawResumeResponse.ok(), `raw resume returned HTTP ${rawResumeResponse.status()}`);
+    const rawResumeHtml = await rawResumeResponse.text();
+    assert(rawResumeHtml.includes('<noscript>'), 'raw deployed web-CV misses noscript PDF fallback');
+    assert(rawResumeHtml.includes('assets/documents/cv.pdf'), 'raw deployed web-CV misses PDF asset route');
+
     await page.screenshot({
       path: path.join(ARTIFACTS_DIR, 'passive-pdf-resume.png'),
       fullPage: true,
     });
     writeText('passive-pdf-resume.html', resumeHtml);
+    writeText('passive-pdf-resume-raw.html', rawResumeHtml);
     summary.resume = {
       requested: RESUME_URL,
       finalUrl: page.url(),
       status: resumeResponse.status(),
+      rawStatus: rawResumeResponse.status(),
       semanticScopes: ['.tr-resume-hero', DOCUMENT_CONTENT_SELECTOR],
       heroVisible: true,
       requiredMarkers: REQUIRED_RESUME_MARKERS,
       passiveIframePresent: true,
       noscriptFallbackPresent: true,
+      rawPdfRoutePresent: true,
     };
 
     const pdfResponse = await context.request.get(RESUME_PDF_URL, {timeout: 30000});
