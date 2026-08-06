@@ -41,6 +41,12 @@ function normalizeUrl(value) {
   return url.href;
 }
 
+function withEvidenceQuery(value, deployedSha) {
+  const url = new URL(value);
+  url.searchParams.set('tr_evidence_sha', deployedSha);
+  return url.href;
+}
+
 function writeJson(name, value) {
   fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
   fs.writeFileSync(path.join(ARTIFACTS_DIR, name), `${JSON.stringify(value, null, 2)}\n`, 'utf8');
@@ -171,10 +177,20 @@ async function main() {
     const resumeHtml = await page.content();
     assert(resumeHtml.includes('data-tr-resume-pdf'), 'deployed web-CV misses passive PDF iframe marker');
 
-    const rawResumeResponse = await context.request.get(RESUME_URL, {timeout: 30000});
+    const rawResumeUrl = withEvidenceQuery(RESUME_URL, EXPECTED_DEPLOYED_SHA);
+    const rawResumeResponse = await context.request.get(rawResumeUrl, {
+      timeout: 30000,
+      headers: {
+        'cache-control': 'no-cache',
+        pragma: 'no-cache',
+      },
+    });
     assert(rawResumeResponse.ok(), `raw resume returned HTTP ${rawResumeResponse.status()}`);
     const rawResumeHtml = await rawResumeResponse.text();
-    assert(rawResumeHtml.includes('<noscript>'), 'raw deployed web-CV misses noscript PDF fallback');
+    assert(
+      rawResumeHtml.includes('<noscript data-tr-resume-fallback>'),
+      'raw deployed web-CV misses noscript PDF fallback',
+    );
     assert(rawResumeHtml.includes('assets/documents/cv.pdf'), 'raw deployed web-CV misses PDF asset route');
 
     await page.screenshot({
@@ -187,6 +203,7 @@ async function main() {
       requested: RESUME_URL,
       finalUrl: page.url(),
       status: resumeResponse.status(),
+      rawRequested: rawResumeUrl,
       rawStatus: rawResumeResponse.status(),
       semanticScopes: ['.tr-resume-hero', DOCUMENT_CONTENT_SELECTOR],
       heroVisible: true,
