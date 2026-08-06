@@ -37,7 +37,7 @@ test('production live smoke uses repository-native clean canonical routes', () =
   );
   assert.equal(
     routes.VILLAIGENCE_URL,
-    'https://truerus.ru/landing/projects/livingworld/'.replace('truerus.ru', 'trueruslan.ru'),
+    'https://trueruslan.ru/landing/projects/livingworld/',
   );
   assert.equal(
     routes.VLEZET_URL,
