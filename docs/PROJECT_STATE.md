@@ -293,7 +293,7 @@ Source/unit contracts, remapped package, GameTests, exact production-JAR, litera
 
 #### P3.4E — Passive PDF validation versus semantic completeness — DONE
 
-File existence, stable route, `%PDF-`, parseability, MIME, Content-Disposition и downloadable bytes доказывают только ограниченные transport/format properties. Валидный или parseable PDF сам по себе не доказывает completeness, currentness, accessibility, ATS compatibility, human-readable layout или semantic equivalence canonical web-CV.
+File existence, stable route, `%PDF-`, parseability, MIME, Content-Disposition и downloadable bytes доказывают только ограниченные transport/format properties. Валидный или parseable PDF сам по себе не доказывает completeness, currentness, доступность, ATS compatibility, human-readable layout или semantic equivalence canonical web-CV.
 
 Feature, corrections and exact production evidence remain preserved in the durable history and specification.
 
