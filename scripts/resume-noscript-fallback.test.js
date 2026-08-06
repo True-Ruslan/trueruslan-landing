@@ -20,7 +20,7 @@ test('resume no-JS fallback module owns a base-safe idempotent semantic surface'
   assert.match(transformed, /<main class="tr-resume-noscript"/);
   assert.match(transformed, /href="assets\/documents\/cv\.pdf"/);
   assert.match(transformed, />Открыть PDF-резюме</);
-  assert.equal(transformed.includes('raw.githubusercontent.com'), false);
+  assert.equal((transformed.match(/<a\b/g) || []).length, 1);
   assert.equal(injectResumeNoscriptFallback(transformed, {locale: 'ru'}), transformed);
   assert.equal((transformed.match(/data-tr-resume-fallback/g) || []).length, 1);
 });
