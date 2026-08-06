@@ -10,6 +10,7 @@ const pageMeta = JSON.parse(fs.readFileSync(path.join(root, 'data', 'page-meta.j
 const toc = fs.readFileSync(path.join(root, 'docs', 'toc.yaml'), 'utf8');
 const englishProjects = fs.readFileSync(path.join(root, 'docs', 'en', 'projects.md'), 'utf8');
 const browserSmoke = fs.readFileSync(path.join(root, 'scripts', 'i18n-browser-smoke.cjs'), 'utf8');
+const searchSmoke = fs.readFileSync(path.join(root, 'scripts', 'search-smoke.cjs'), 'utf8');
 const productionRoutes = fs.readFileSync(path.join(root, 'scripts', 'production-live-routes.cjs'), 'utf8');
 const productionSmoke = fs.readFileSync(
   path.join(root, 'scripts', 'production-flagship-normalization-smoke.cjs'),
@@ -78,6 +79,9 @@ test('P3.5A publishes a controlled English Vlezet flagship without a second stat
 
   assert.match(browserSmoke, /id: 'vlezet', ru: '\/landing\/projects\/vlezet\/', en: '\/en\/projects\/vlezet\/'/);
   assert.match(browserSmoke, /name: 'vlezet-mobile', route: '\/en\/projects\/vlezet\/'/);
+  assert.match(searchSmoke, /async function assertEnglishVlezetSearchCoverage/);
+  assert.match(searchSmoke, /includes\('en\/projects\/vlezet\/'\)/);
+  assert.match(searchSmoke, /await assertEnglishVlezetSearchCoverage\(page\)/);
 
   assert.match(productionRoutes, /const VLEZET_EN_PATH = 'en\/projects\/vlezet\/';/);
   assert.match(productionRoutes, /const VLEZET_EN_URL = new URL\(VLEZET_EN_PATH, APEX\)\.href;/);
