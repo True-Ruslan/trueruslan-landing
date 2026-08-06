@@ -144,6 +144,8 @@ items:
         href: ./en/resume.md
       - name: VillAIgence
         href: ./en/projects/livingworld.md
+      - name: Vlezet
+        href: ./en/projects/vlezet.md
       - name: TrueRuslan Landing
         href: ./en/projects/portfolio-platform.md
       - name: Server-authoritative AI NPCs
