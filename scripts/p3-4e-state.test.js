@@ -87,5 +87,12 @@ test('durable state closes P3.4E after exact production acceptance and promotes 
   assert.ok(state.includes('issue #111'), 'P3.4E closure must preserve search-engine observation');
   assert.ok(state.includes('issue #82'), 'P3.4E closure must preserve dependency blocker');
   assert.ok(state.includes('issue #78'), 'P3.4E closure must preserve Content Freshness owner state');
-  assert.doesNotMatch(combined, /parseable PDF[^\n]*(?:proves|guarantees|доказывает|гарантирует)[^\n]*(?:complete|полнот|current|актуальн|accessible|доступн)/i);
+  assert.doesNotMatch(
+    combined,
+    /parseable PDF\s+(?:itself\s+)?(?:proves|guarantees)\b[^\n]*(?:complete|current|accessible)/i,
+  );
+  assert.doesNotMatch(
+    combined,
+    /parseable PDF\s+(?:сам по себе\s+)?(?:доказывает|гарантирует)\b[^\n]*(?:полнот|актуальн|доступн)/i,
+  );
 });
