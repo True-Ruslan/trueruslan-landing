@@ -53,6 +53,17 @@ test('Pages workflow uses one attempt-scoped artifact identity for rerun-safe de
   assert.equal((staticWorkflow.match(/PAGES_ARTIFACT_NAME/g) ?? []).length, 3);
 });
 
+test('Pages workflow gives slow deployment queues bounded headroom', () => {
+  const jobTimeout = Number(staticWorkflow.match(/timeout-minutes:\s*(\d+)/)?.[1]);
+  const deploymentTimeoutMs = Number(
+    staticWorkflow.match(/actions\/deploy-pages@[\s\S]*?with:[\s\S]*?timeout:\s*(\d+)/)?.[1],
+  );
+
+  assert.equal(jobTimeout, 30);
+  assert.equal(deploymentTimeoutMs, 1_200_000);
+  assert.ok(deploymentTimeoutMs / 60_000 < jobTimeout);
+});
+
 test('Pages workflow no longer derives canonical production identity from repository coordinates', () => {
   assert.doesNotMatch(staticWorkflow, /github\.repository_owner[^\n]*github\.io/);
   assert.doesNotMatch(staticWorkflow, /github\.event\.repository\.name/);
