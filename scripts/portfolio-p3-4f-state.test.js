@@ -4,26 +4,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
-const projectStatePath = path.join(root, 'docs', 'PROJECT_STATE.md');
-const roadmapPath = path.join(root, 'docs', 'ROADMAP.md');
-const changelogPath = path.join(root, 'docs', 'CHANGELOG.md');
-const specificationPath = path.join(
-  root,
-  'docs',
-  'keystone',
-  'specs',
-  '2026-08-05-portfolio-1-0-evidence-first.md',
+const projectState = fs.readFileSync(path.join(root, 'docs', 'PROJECT_STATE.md'), 'utf8');
+const roadmap = fs.readFileSync(path.join(root, 'docs', 'ROADMAP.md'), 'utf8');
+const changelog = fs.readFileSync(path.join(root, 'docs', 'CHANGELOG.md'), 'utf8');
+const specification = fs.readFileSync(
+  path.join(root, 'docs', 'keystone', 'specs', '2026-08-05-portfolio-1-0-evidence-first.md'),
+  'utf8',
 );
-const projectState = fs.readFileSync(projectStatePath, 'utf8');
-const roadmap = fs.readFileSync(roadmapPath, 'utf8');
-const changelog = fs.readFileSync(changelogPath, 'utf8');
-const specification = fs.readFileSync(specificationPath, 'utf8');
-
-const snapshotDir = path.join(root, 'quality-artifacts', 'durable-source');
-fs.mkdirSync(snapshotDir, {recursive: true});
-for (const sourcePath of [projectStatePath, roadmapPath, changelogPath, specificationPath]) {
-  fs.copyFileSync(sourcePath, path.join(snapshotDir, path.basename(sourcePath)));
-}
 
 const acceptedSha = '8d2c3aa45d2b02ad3c22de75aca3602b009c13e6';
 const pagesRun = '31110585951';
