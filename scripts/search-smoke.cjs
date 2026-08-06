@@ -185,13 +185,13 @@ async function assertPublicationSearchCoverage(page) {
 async function assertEnglishVlezetSearchCoverage(page) {
   const input = page.locator('.tr-search-input').first();
   const button = page.locator('.tr-search-button').first();
-  const query = 'AI geometry authority';
+  const query = 'precise apartment geometry without CAD';
 
   await input.fill(query);
   await button.click();
   await page.waitForFunction(() => {
     const body = document.body.innerText.toLocaleLowerCase('en');
-    const hasPhrase = body.includes('ai geometry authority');
+    const hasPhrase = body.includes('precise apartment geometry without cad');
     const hasEnglishVlezetRoute = [...document.querySelectorAll('a')]
       .some((link) => (link.getAttribute('href') || '').includes('en/projects/vlezet/'));
     return hasPhrase && hasEnglishVlezetRoute;
