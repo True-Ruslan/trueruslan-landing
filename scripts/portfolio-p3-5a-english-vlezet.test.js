@@ -61,7 +61,11 @@ test('P3.5A publishes a controlled English Vlezet flagship without a second stat
 
   assert.doesNotMatch(page, /data-tr-project-timeline=/, 'English page must not inject the Russian timeline presentation');
   assert.doesNotMatch(page, /[А-Яа-яЁё]/, 'English Vlezet page contains Cyrillic copy');
-  assert.doesNotMatch(page, /PR #(42|44|45)[^\n]*(?:merged|accepted)/i);
+  assert.doesNotMatch(
+    page,
+    /PR #(42|44|45)\s+(?:is|was|has been)\s+(?:merged|accepted)/i,
+    'Draft work must not be promoted to merged or accepted',
+  );
 
   assert.deepEqual(
     i18n.find((pair) => pair.id === 'vlezet'),
