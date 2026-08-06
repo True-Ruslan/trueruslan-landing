@@ -37,7 +37,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -91,13 +91,24 @@ jobs:
           path: './docs-html'
       - name: Deploy to GitHub Pages
         id: deployment
+        continue-on-error: true
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
         with:
           artifact_name: ${{ env.PAGES_ARTIFACT_NAME }}
-          timeout: 1200000
+          timeout: 600000
+      - name: Wait before Pages deployment retry
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+      - name: Retry GitHub Pages deployment
+        id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+        with:
+          artifact_name: ${{ env.PAGES_ARTIFACT_NAME }}
+          timeout: 600000
       - name: Smoke test deployed Pages site
         env:
-          DEPLOYED_PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+          DEPLOYED_PAGE_URL: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
         shell: bash
         run: |
           set -o pipefail
