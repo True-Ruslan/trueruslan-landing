@@ -64,11 +64,7 @@ test('durable state preserves P3.4D production acceptance after later slices', (
     assert.ok(combined.includes(marker), `missing P3.4D historical marker: ${marker}`);
   }
 
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.4[DE] ACCEPTED IN PRODUCTION\*\*/);
-  assert.ok(
-    spec.includes('Continue with **P3.4F — Evidence-driven project state**') ||
-      spec.includes('Continue with **P3.4E — Passive PDF validation versus semantic completeness**'),
-  );
+  assert.match(spec, /### P3\.4D — GameTests versus installed gameplay acceptance — DONE/);
   assert.ok(state.includes('issue #111'), 'P3.4D ledger must preserve search-engine observation');
   assert.ok(state.includes('issue #82'), 'P3.4D ledger must preserve dependency blocker');
   assert.ok(state.includes('issue #78'), 'P3.4D ledger must preserve Content Freshness owner state');

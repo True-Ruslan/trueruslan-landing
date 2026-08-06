@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-06**, после production-acceptance Portfolio 1.0 P3.4E Passive PDF Completeness Note.
+> Обновлено: **2026-08-06**, после exact production-acceptance Portfolio 1.0 P3.4F Evidence-driven Project State Note.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -54,6 +54,7 @@
 - P3.4C Hybrid CV + AI Recognition Note — PR #130/#131.
 - P3.4D GameTests Acceptance Note — PR #132/#133.
 - P3.4E Passive PDF Completeness Note — PR #134–#139.
+- P3.4F Evidence-driven Project State Note and Pages recovery contract — PR #141–#145.
 
 ---
 
@@ -88,7 +89,7 @@ Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`; M7.8B accepted, while M7
 
 VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`. PR #103/#104/#105/#108/#110/#112 provide bounded automation. PR #114 remains Draft and cumulative installed acceptance remains separate.
 
-## P3.4 — Grounded Engineering Notes — IN PROGRESS
+## P3.4 — Grounded Engineering Notes — DONE
 
 ### P3.4A — Deployment success is not production verification — DONE
 
@@ -218,21 +219,40 @@ PDF size:                       277792 bytes
 PDF SHA-256:                    efd99499a483c06394dd0181b5d2be9b0e09265937163f74eeb8c05a0807e613
 ```
 
-### P3.4F — Evidence-driven project state — NEXT
+### P3.4F — Evidence-driven project state — DONE
 
-Formalize and publish a bounded model for project state that:
+Accepted model:
 
-1. derives volatile public facts from canonical registries rather than duplicated prose;
-2. separates verified fact, engineering inference and limitation;
-3. distinguishes repository activity, generated artifact, deployed production, external-product acceptance and operator/search-engine state;
-4. does not promote Draft or pending product-owner evidence;
-5. records observation dates and exact evidence identities;
-6. exposes stale/unverified states explicitly;
-7. keeps automatic reports reviewable and non-mutating;
-8. preserves semantic/no-JavaScript content, Atom feed and generated search;
-9. receives exact-head and exact-deployment verification.
+1. volatile public facts derive from canonical registries rather than duplicated prose;
+2. verified fact, engineering inference and limitation are explicit;
+3. repository activity, generated artifact, deployed production, external-product acceptance and operator/search-engine state remain separate;
+4. Draft and pending product-owner evidence are never promoted automatically;
+5. evidence records observation dates and exact identities;
+6. `verified`, `stale` and `unverified` remain visible trust states;
+7. automatic reports remain reviewable and non-mutating;
+8. semantic/no-JavaScript content, canonical/OpenGraph metadata, Atom feed and generated search remain available;
+9. exact-head and exact-deployment verification are mandatory.
 
-## P3.5 — Selective English expansion
+```text
+feature PR #141 squash:         cef4275977893ae23e00d9231fd87b3f587b123f
+final workflow PR #145 squash:  8d2c3aa45d2b02ad3c22de75aca3602b009c13e6
+Build:                          #1044 / 31110081521 — SUCCESS
+quality artifact:               8971423729
+quality digest:                 sha256:afb44aaab0820e923330f4688fedaec3be9ced452dc2ea7de4de5136a09ff0ca
+Pages:                          #175 / 31110585951 — SUCCESS
+accepted deployed SHA:          8d2c3aa45d2b02ad3c22de75aca3602b009c13e6
+Pages deployment ID:            5781321808
+Pages artifact:                 8971641004
+Pages artifact digest:          sha256:8ee14188edb566e2d727d857b2bffe9063a3acf76ed5cbfb6afe312011a1a171
+Production Live Smoke:          #190 / 31110583631 — SUCCESS
+production artifact:            8971978059
+production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a0918e993e436c45efcc607a106
+```
+
+The failed timeout and same-run retry experiments remain part of the operational evidence: PR #143 and PR #144 were superseded by the one-deploy-per-run, fresh-`run_attempt` recovery contract in PR #145.
+
+
+## P3.5 — Selective English expansion — NEXT
 
 Translate only high-value surfaces: homepage, Resume, three flagships, `/now`, selected Notes and Publications. Do not create a separate English CMS, build or search architecture.
 
@@ -250,4 +270,4 @@ After sufficient aggregate traffic, compare aggregate traffic and clean-route in
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4E feature/corrections and exact production acceptance for SHA `a570dc420c83af33b483cb55c5904b3575ff729a`. Preserve issue #111, issue #82 and issue #78 boundaries. Continue with **P3.4F — Evidence-driven project state**.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Continue with **P3.5 — Selective English expansion**.
