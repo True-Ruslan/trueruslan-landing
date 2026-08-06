@@ -84,6 +84,10 @@ test('P3.5A publishes a controlled English Vlezet flagship without a second stat
 
   assert.match(browserSmoke, /id: 'vlezet', ru: '\/landing\/projects\/vlezet\/', en: '\/en\/projects\/vlezet\/'/);
   assert.match(browserSmoke, /name: 'vlezet-mobile', route: '\/en\/projects\/vlezet\/'/);
+  assert.match(browserSmoke, /async function assertEnglishVlezetNoJsEvidence/);
+  assert.match(browserSmoke, /data-tr-project-evidence-noscript=\"vlezet-en\"/);
+  assert.match(browserSmoke, /localizedEvidence = await assertEnglishVlezetNoJsEvidence\(page\)/);
+
   assert.match(searchSmoke, /async function assertEnglishVlezetSearchCoverage/);
   assert.match(searchSmoke, /includes\('en\/projects\/vlezet\/'\)/);
   assert.match(searchSmoke, /await assertEnglishVlezetSearchCoverage\(page\)/);
