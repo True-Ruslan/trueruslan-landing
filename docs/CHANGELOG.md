@@ -1,8 +1,71 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-06**, после production-acceptance Portfolio 1.0 P3.4E Passive PDF Completeness Note.
+> Обновлено: **2026-08-06**, после exact production-acceptance Portfolio 1.0 P3.4F Evidence-driven Project State Note.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-06 — P3.4F Evidence-driven project state
+
+PR #141 опубликовал grounded Engineering Note:
+
+```text
+/landing/notes/evidence-driven-project-state/
+```
+
+Добавлено:
+
+- canonical registries как владельцы volatile public facts;
+- явные классы verified fact, engineering inference и limitation;
+- trust states `verified`, `stale`, `unverified`;
+- независимые repository, generated artifact, deployed production, external-product acceptance и operator/search-engine layers;
+- запрет автоматического promotion Draft PR, freshness observation и pending product-owner evidence;
+- `observedAt`, exact SHA, artifact digest и deployment identity;
+- reviewable/non-mutating automation;
+- semantic/no-JavaScript content, registry-derived metadata/OpenGraph, Atom feed, generated search и отдельный P3.4F production smoke.
+
+```text
+PR #141 RED Build:              #1024 — expected FAILURE
+PR #141 exact head:             bd7b25019871aa22d56a4a1584f871c0012e5f59
+PR #141 squash:                 cef4275977893ae23e00d9231fd87b3f587b123f
+Build:                          #1037 — SUCCESS
+quality artifact:               8967149410
+quality digest:                 sha256:50f72f4d75dee81b0c61f7edec1e3f07f77be9983473acc69a672e998d4938a9
+CodeQL:                         #531 — SUCCESS
+Dependency Review:              #465 — SUCCESS
+```
+
+Exact production acceptance выявила отдельный operational defect в Pages workflow. Исправления выполнялись evidence-first, и неудачные гипотезы не скрыты:
+
+- PR #142 сделал Pages artifact name attempt-scoped и устранил конфликт артефактов на rerun;
+- PR #143 увеличил polling budget, но GitHub Pages всё равно ограничивал deployment десятью минутами;
+- PR #144 добавил same-run retry, однако production logs доказали, что отменённый deployment identity немедленно отменяет второй action того же run;
+- PR #145 удалил disproven retry, сохранил один fail-closed deploy action и закрепил recovery только новым `github.run_attempt` с уникальным артефактом.
+
+```text
+PR #145 exact head:             e356279c736c0df25778b60509ba903f7555cc61
+PR #145 squash / deployed SHA:  8d2c3aa45d2b02ad3c22de75aca3602b009c13e6
+Build:                          #1044 / 31110081521 — SUCCESS
+unit tests:                     420 PASS / 0 FAIL
+quality artifact:               8971423729
+quality digest:                 sha256:afb44aaab0820e923330f4688fedaec3be9ced452dc2ea7de4de5136a09ff0ca
+CodeQL:                         #542 — SUCCESS
+Dependency Review:              #472 — SUCCESS
+Pages:                          #175 / 31110585951 — SUCCESS
+Pages deployment ID:            5781321808
+Pages artifact:                 8971641004
+Pages artifact digest:          sha256:8ee14188edb566e2d727d857b2bffe9063a3acf76ed5cbfb6afe312011a1a171
+Production Live Smoke:          #190 / 31110583631 — SUCCESS
+baseline/platform/flagship/P3.4A/P3.4B/P3.4C/P3.4D/P3.4E/P3.4F/favicon: PASS
+production artifact:            8971978059
+production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a0918e993e436c45efcc607a106
+observedAt:                     2026-08-06T14:36:34Z
+```
+
+P3.4F принят только для exact deployed SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`. Факт публикации Note, успешный build или repository activity по отдельности не заменяют exact deployment identity и independent Production Live Smoke.
+
+Next bounded slice:
+
+**P3.5 — Selective English expansion**.
 
 ## 2026-08-06 — P3.4E Passive PDF validation versus semantic completeness
 
