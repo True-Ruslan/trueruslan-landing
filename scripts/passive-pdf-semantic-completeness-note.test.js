@@ -129,7 +129,11 @@ test('deployment-only P3.4E smoke covers Note route PDF bytes resume semantics f
   assert.match(source, /link\[rel="canonical"\]/);
   assert.match(source, /meta\[property="og:url"\]/);
   assert.match(source, /page\.screenshot/);
-  assert.match(source, /page\.locator\('\.tr-resume-hero'\)/);
-  assert.match(source, /page\.locator\('body'\)/);
-  assert.doesNotMatch(source, /const resumeContent = page\.locator\(DOCUMENT_CONTENT_SELECTOR\)/);
+  assert.match(source, /const resumeHero = page\.locator\('\.tr-resume-hero'\)\.first\(\)/);
+  assert.match(source, /const resumeDocument = page\.locator\(DOCUMENT_CONTENT_SELECTOR\)\.first\(\)/);
+  assert.match(source, /const resumeHeroText = \(await resumeHero\.textContent\(\)\) \|\| ''/);
+  assert.match(source, /const resumeDocumentText = \(await resumeDocument\.textContent\(\)\) \|\| ''/);
+  assert.match(source, /const resumeText = `\$\{resumeHeroText\}\\n\$\{resumeDocumentText\}`/);
+  assert.doesNotMatch(source, /page\.locator\('body'\)/);
+  assert.doesNotMatch(source, /resumeBody\.innerText\(\)/);
 });
