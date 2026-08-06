@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
-import {injectPageMeta, validatePageMeta} from './page-meta.js';
+import {injectPageMeta, loadPageMeta, validatePageMeta} from './page-meta.js';
 
 const validEntry = {
   path: 'landing/notes.html',
@@ -48,6 +51,50 @@ test('validatePageMeta rejects missing fields and invalid display alphabet', () 
     () => validatePageMeta([{...validEntry, displayTitle: 'Engineering Notes'}]),
     /uppercase ASCII display alphabet/,
   );
+});
+
+test('loadPageMeta derives missing Note metadata from the canonical Notes Registry', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'page-meta-notes-'));
+  const pageMetaPath = path.join(root, 'page-meta.json');
+  const notesPath = path.join(root, 'notes.json');
+  fs.writeFileSync(pageMetaPath, `${JSON.stringify([validEntry], null, 2)}\n`, 'utf8');
+  fs.writeFileSync(notesPath, `${JSON.stringify([{
+    slug: 'evidence-driven-project-state',
+    title: 'Как описывать состояние проекта без ложной уверенности',
+    description: 'Canonical project-state evidence model.',
+    tags: ['Evidence', 'Project State', 'Verification'],
+  }], null, 2)}\n`, 'utf8');
+
+  const entries = loadPageMeta(pageMetaPath, {notesManifestPath: notesPath, deriveNotes: true});
+  const derived = entries.find((entry) => entry.path === 'landing/notes/evidence-driven-project-state.html');
+
+  assert.ok(derived);
+  assert.equal(derived.card, 'note-evidence-driven-project-state');
+  assert.equal(derived.title, 'Как описывать состояние проекта без ложной уверенности');
+  assert.equal(derived.displayTitle, 'EVIDENCE DRIVEN PROJECT STATE');
+  assert.deepEqual(derived.tags, ['EVIDENCE', 'PROJECT STATE', 'VERIFICATION']);
+});
+
+test('loadPageMeta does not duplicate an explicitly registered Note path', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'page-meta-explicit-note-'));
+  const explicit = {
+    ...validEntry,
+    path: 'landing/notes/evidence-driven-project-state.html',
+    card: 'note-explicit-project-state',
+  };
+  const pageMetaPath = path.join(root, 'page-meta.json');
+  const notesPath = path.join(root, 'notes.json');
+  fs.writeFileSync(pageMetaPath, `${JSON.stringify([explicit], null, 2)}\n`, 'utf8');
+  fs.writeFileSync(notesPath, `${JSON.stringify([{
+    slug: 'evidence-driven-project-state',
+    title: explicit.title,
+    description: explicit.description,
+    tags: ['Evidence'],
+  }], null, 2)}\n`, 'utf8');
+
+  const entries = loadPageMeta(pageMetaPath, {notesManifestPath: notesPath, deriveNotes: true});
+  assert.equal(entries.filter((entry) => entry.path === explicit.path).length, 1);
+  assert.equal(entries[0].card, explicit.card);
 });
 
 test('injectPageMeta replaces stale metadata idempotently', () => {
