@@ -81,7 +81,7 @@ test('durable state closes P3.4E after exact production acceptance and promotes 
     assert.match(document, /complete|полнот/i);
     assert.match(document, /current|актуальн/i);
     assert.match(document, /accessible|доступн/i);
-    assert.match(document, /semantic equivalence|семантическ/i);
+    assert.match(document, /semantic equivalence|semantically equivalent|семантическ/i);
   }
 
   assert.ok(state.includes('issue #111'), 'P3.4E closure must preserve search-engine observation');
