@@ -9,6 +9,7 @@ const i18n = JSON.parse(fs.readFileSync(path.join(root, 'data', 'i18n.json'), 'u
 const pageMeta = JSON.parse(fs.readFileSync(path.join(root, 'data', 'page-meta.json'), 'utf8'));
 const toc = fs.readFileSync(path.join(root, 'docs', 'toc.yaml'), 'utf8');
 const englishProjects = fs.readFileSync(path.join(root, 'docs', 'en', 'projects.md'), 'utf8');
+const copyAssets = fs.readFileSync(path.join(root, 'scripts', 'copy-assets.js'), 'utf8');
 const browserSmoke = fs.readFileSync(path.join(root, 'scripts', 'i18n-browser-smoke.cjs'), 'utf8');
 const searchSmoke = fs.readFileSync(path.join(root, 'scripts', 'search-smoke.cjs'), 'utf8');
 const productionRoutes = fs.readFileSync(path.join(root, 'scripts', 'production-live-routes.cjs'), 'utf8');
@@ -41,7 +42,6 @@ test('P3.5A publishes a controlled English Vlezet flagship without a second stat
   for (const marker of [
     '# Vlezet',
     'data-tr-project-status="vlezet"',
-    'data-tr-project-timeline="vlezet"',
     'data-tr-project-evidence="vlezet"',
     'https://github.com/True-Ruslan/vlezet',
     'VlezetDocument',
@@ -59,6 +59,7 @@ test('P3.5A publishes a controlled English Vlezet flagship without a second stat
     assert.ok(page.includes(marker), `missing English Vlezet evidence boundary: ${marker}`);
   }
 
+  assert.doesNotMatch(page, /data-tr-project-timeline=/, 'English page must not inject the Russian timeline presentation');
   assert.doesNotMatch(page, /[А-Яа-яЁё]/, 'English Vlezet page contains Cyrillic copy');
   assert.doesNotMatch(page, /PR #(42|44|45)[^\n]*(?:merged|accepted)/i);
 
@@ -77,6 +78,10 @@ test('P3.5A publishes a controlled English Vlezet flagship without a second stat
   assert.match(englishProjects, /\[Open English case study →\]\(projects\/vlezet\.md\)/);
   assert.doesNotMatch(englishProjects, /\[Open case study — Russian \(RU\) →\]\(\.\.\/landing\/projects\/vlezet\.md\)/);
 
+  assert.match(copyAssets, /if \(href === 'landing\/projects\/vlezet\.html'\) return 'en\/projects\/vlezet\.html';/);
+  assert.match(copyAssets, /path: 'en\/projects\/vlezet\.html', locale: 'en'/);
+  assert.match(copyAssets, /'en\/projects\/vlezet\.html'/);
+
   assert.match(browserSmoke, /id: 'vlezet', ru: '\/landing\/projects\/vlezet\/', en: '\/en\/projects\/vlezet\/'/);
   assert.match(browserSmoke, /name: 'vlezet-mobile', route: '\/en\/projects\/vlezet\/'/);
   assert.match(searchSmoke, /async function assertEnglishVlezetSearchCoverage/);
@@ -88,5 +93,6 @@ test('P3.5A publishes a controlled English Vlezet flagship without a second stat
   assert.match(productionSmoke, /VLEZET_EN_URL/);
   assert.match(productionSmoke, /summary\.vlezetEn = await verifyCaseStudy/);
   assert.match(productionSmoke, /alternateUrl: VLEZET_URL/);
-  assert.match(productionSmoke, /requireEvidence: true/);
+  assert.match(productionSmoke, /requireEvidence: true,/);
+  assert.match(productionSmoke, /requireTimeline: false,/);
 });
