@@ -1,6 +1,6 @@
 # Portfolio 1.0 — Evidence-first flagship content
 
-> Status: **IN PROGRESS — P3.4E ACCEPTED IN PRODUCTION**
+> Status: **IN PROGRESS — P3.4F ACCEPTED IN PRODUCTION**
 >
 > Date: **2026-08-06**
 >
@@ -215,22 +215,61 @@ PDF SHA-256:                    efd99499a483c06394dd0181b5d2be9b0e09265937163f74
 
 The exact production verifier accepted the Note only after rendered DOM, raw HTML, binary PDF, Atom feed and generated search passed independently on deployed SHA `a570dc420c83af33b483cb55c5904b3575ff729a`.
 
-### P3.4F — Evidence-driven project state — NEXT
+### P3.4F — Evidence-driven project state — DONE
 
-The next bounded slice must formalize public project state as a derived evidence view rather than duplicated narrative.
+Canonical route:
 
-Acceptance direction:
+```text
+/landing/notes/evidence-driven-project-state/
+```
+
+#### Accepted evidence model
 
 - canonical registries own volatile facts;
 - verified fact, engineering inference and limitation are explicit;
+- `verified`, `stale` and `unverified` remain distinct trust states;
 - repository activity, generated artifact, deployed production, external-product acceptance and operator/search-engine observation remain separate;
-- Draft and stale evidence are visible but never promoted automatically;
-- evidence identity and observation date are recorded;
+- Draft and pending product-owner evidence never promote automatically;
+- evidence identity includes observation date, exact SHA, artifact digest and deployment identity where applicable;
 - automatic reports remain reviewable and non-mutating;
-- semantic/no-JavaScript content, Atom feed and generated search remain available;
-- exact-head and exact-deployment verification are required.
+- semantic/no-JavaScript content, registry-derived metadata/OpenGraph, Atom feed and generated search remain available;
+- exact-head CI and exact-deployment production verification remain separate gates.
 
-Continue with **P3.4F — Evidence-driven project state**.
+#### Feature and workflow evidence
+
+```text
+PR #141 exact head:             bd7b25019871aa22d56a4a1584f871c0012e5f59
+PR #141 squash:                 cef4275977893ae23e00d9231fd87b3f587b123f
+Build:                          #1037 — SUCCESS
+quality artifact:               8967149410
+quality digest:                 sha256:50f72f4d75dee81b0c61f7edec1e3f07f77be9983473acc69a672e998d4938a9
+final workflow PR #145 head:    e356279c736c0df25778b60509ba903f7555cc61
+final workflow PR #145 squash:  8d2c3aa45d2b02ad3c22de75aca3602b009c13e6
+Build:                          #1044 / 31110081521 — SUCCESS
+quality artifact:               8971423729
+quality digest:                 sha256:afb44aaab0820e923330f4688fedaec3be9ced452dc2ea7de4de5136a09ff0ca
+```
+
+PR #142–#145 preserve the failed Pages hypotheses as operational evidence. The accepted contract uses one fail-closed deployment action per workflow run and a new attempt-scoped artifact for an explicit rerun; same-run retry is not treated as valid recovery.
+
+#### Exact production acceptance
+
+```text
+Pages:                          #175 / 31110585951 — SUCCESS
+accepted deployed SHA:          8d2c3aa45d2b02ad3c22de75aca3602b009c13e6
+Pages deployment ID:            5781321808
+Pages artifact:                 8971641004
+Pages artifact digest:          sha256:8ee14188edb566e2d727d857b2bffe9063a3acf76ed5cbfb6afe312011a1a171
+Production Live Smoke:          #190 / 31110583631 — SUCCESS
+production artifact:            8971978059
+production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a0918e993e436c45efcc607a106
+observedAt:                     2026-08-06T14:36:34Z
+```
+
+The exact production verifier accepted canonical/OpenGraph metadata, semantic content, no-JavaScript availability, Atom feed, generated search, every preceding P3.4 smoke and the dedicated P3.4F boundary on deployed SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`.
+
+Continue with **P3.5 — Selective English expansion**.
+
 
 ---
 
