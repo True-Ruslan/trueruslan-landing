@@ -4,6 +4,8 @@ import path from 'node:path';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
+import {loadPageMeta} from './page-meta.js';
+
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SLUG = 'evidence-driven-project-state';
 const TITLE = 'Как описывать состояние проекта без ложной уверенности';
@@ -67,9 +69,16 @@ test('P3.4F Note separates evidence layers and uncertainty classes', () => {
   assert.doesNotMatch(source, /последний commit[^\n]*(?:гарантирует|полностью доказывает)[^\n]*production/i);
 });
 
-test('P3.4F Note is exposed through index and toc', () => {
+test('P3.4F Note is exposed through index toc and registry-derived page metadata', () => {
   assert.match(read('docs', 'landing', 'notes.md'), new RegExp(`${SLUG}\\.md`));
   assert.match(read('docs', 'toc.yaml'), new RegExp(`${SLUG}\\.md`));
+
+  const pageMeta = loadPageMeta();
+  const meta = pageMeta.find((entry) => entry.path === `landing/notes/${SLUG}.html`);
+  assert.ok(meta, 'missing P3.4F page metadata');
+  assert.equal(meta.card, 'note-evidence-driven-project-state');
+  assert.equal(meta.displayTitle, 'EVIDENCE DRIVEN PROJECT STATE');
+  assert.equal(meta.title, TITLE);
 });
 
 test('deployment-only P3.4F smoke covers route content feed search and uncertainty boundaries', () => {
