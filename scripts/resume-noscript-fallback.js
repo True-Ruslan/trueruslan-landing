@@ -55,11 +55,16 @@ export function applyResumeNoscriptFallback(outputDir = DEFAULT_OUTPUT_DIR) {
 
   for (const target of TARGETS) {
     const htmlPath = path.join(outputDir, target.path);
-    if (!fs.existsSync(htmlPath)) {
-      throw new Error(`Generated resume page not found: ${target.path}`);
+    let source;
+    try {
+      source = fs.readFileSync(htmlPath, 'utf8');
+    } catch (error) {
+      if (error?.code === 'ENOENT') {
+        throw new Error(`Generated resume page not found: ${target.path}`, {cause: error});
+      }
+      throw error;
     }
 
-    const source = fs.readFileSync(htmlPath, 'utf8');
     const transformed = injectResumeNoscriptFallback(source, {locale: target.locale});
     if (transformed !== source) {
       fs.writeFileSync(htmlPath, transformed, 'utf8');
