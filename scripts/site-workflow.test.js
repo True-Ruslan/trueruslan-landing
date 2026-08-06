@@ -46,6 +46,13 @@ test('Pages workflow resolves repository site identity before analytics and buil
   assert.match(staticWorkflow, /site-deployment-contract\.json/);
 });
 
+test('Pages workflow uses one attempt-scoped artifact identity for rerun-safe deploys', () => {
+  assert.match(staticWorkflow, /PAGES_ARTIFACT_NAME:\s*github-pages-\$\{\{\s*github\.run_attempt\s*\}\}/);
+  assert.match(staticWorkflow, /name:\s*\$\{\{\s*env\.PAGES_ARTIFACT_NAME\s*\}\}/);
+  assert.match(staticWorkflow, /artifact_name:\s*\$\{\{\s*env\.PAGES_ARTIFACT_NAME\s*\}\}/);
+  assert.equal((staticWorkflow.match(/PAGES_ARTIFACT_NAME/g) ?? []).length, 3);
+});
+
 test('Pages workflow no longer derives canonical production identity from repository coordinates', () => {
   assert.doesNotMatch(staticWorkflow, /github\.repository_owner[^\n]*github\.io/);
   assert.doesNotMatch(staticWorkflow, /github\.event\.repository\.name/);
