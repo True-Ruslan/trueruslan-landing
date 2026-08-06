@@ -1,8 +1,8 @@
 # Portfolio 1.0 — Evidence-first flagship content
 
-> Status: **IN PROGRESS — P3.4D ACCEPTED IN PRODUCTION**
+> Status: **IN PROGRESS — P3.4E ACCEPTED IN PRODUCTION**
 >
-> Date: **2026-08-05**
+> Date: **2026-08-06**
 >
 > Product: `True-Ruslan/trueruslan-landing`
 
@@ -27,6 +27,7 @@ The public narrative remains:
 - Draft evidence never becomes accepted evidence automatically;
 - repository, artifact, deployment, browser, search-engine and external-product acceptance are separate layers;
 - exact artifact and installed acceptance remain separate release gates;
+- valid or parseable bytes do not automatically prove complete, current, accessible or semantically equivalent content;
 - no quality-gate weakening.
 
 ---
@@ -117,44 +118,16 @@ A green Minecraft automation pipeline can accidentally be described as product a
 
 #### Accepted evidence boundary
 
-Accepted bounded automation includes:
-
-- PR #103 and PR #104 release gates;
-- PR #105 focused inventory ownership GameTests;
-- PR #108 deterministic provider-client proof;
-- PR #110 shared deadline and exactly-once effects;
-- PR #112 logical-client concurrency contract;
-- official `0.1.25+1.21.1` artifact from commit `588cc676d356271c4cf74eb21131f6d071476e48`;
-- current accepted branch head `67e0644b355708c06747e3ec4659a337bc4189b3`.
-
-Still pending:
-
-- PR #114 — Draft M11 Phase E automation-completion program;
-- physical Voice Chat and real-provider canaries;
-- `VAI-CONCUR-004` real installed two-client verification;
-- focused inventory/grave/resurrection product-owner canary;
-- broader gameplay and soak evidence;
-- cumulative installed acceptance.
-
-Green GameTests do not prove installed gameplay correctness and the published candidate is not described as fully accepted.
-
-#### Feature evidence
+Accepted bounded automation includes PR #103, PR #104, PR #105, PR #108, PR #110 and PR #112. PR #114 remains Draft. Green GameTests do not prove installed gameplay correctness and the published candidate is not described as fully accepted.
 
 ```text
 PR #132 RED head:              237a3225954e1b4b633422b690b1e3fb02983f89
-RED Build:                      #969 / 31042289632 — expected FAILURE
-RED result:                     394 PASS / 4 expected FAIL
 PR #132 exact head:            b4f49b29dc9c16ff4d3c2412d5b4d2ea18282239
 PR #132 squash:                02894431e042b89943e4bdb3cb43f336fa9ad75d
 Build:                          #978 / 31042919449 — SUCCESS
 unit tests:                     398 PASS / 0 FAIL
 quality artifact:               8945409733
 quality digest:                 sha256:cbf160fc9877e31acc89729ae077ee3f2cad815425be4200253a06659f9339c2
-```
-
-#### Exact production evidence
-
-```text
 Pages:                          #162 / 31043536231 — SUCCESS
 Pages deployment ID:            5768748824
 Production Live Smoke:          #139 / 31043534975 — SUCCESS
@@ -162,26 +135,102 @@ production artifact:            8945575207
 production digest:              sha256:0f1d56a3735f366512e627f7669ae017ed932bf7a2a4ee19ad0fc4ed0c5b347f
 ```
 
-The exact production verifier checked route, title and semantic content, Draft boundaries, canonical, OpenGraph URL, Atom feed and generated search.
+### P3.4E — Passive PDF validation versus semantic completeness — DONE
 
-### P3.4E — Passive PDF validation versus semantic completeness — NEXT
+Canonical route:
 
-The next Note must separate:
+```text
+/landing/notes/passive-pdf-validation-vs-semantic-completeness/
+```
 
-- file existence and stable route;
-- PDF signature/header and parseability;
-- MIME/content disposition and downloadable bytes;
-- passive/no-JavaScript embedding;
-- page count and structural checks;
-- text extraction and required-section coverage;
-- web-CV ↔ PDF semantic equivalence;
-- current professional-profile truth;
-- accessibility and human-readable layout;
-- exact deployed-document verification.
+#### Problem
 
-A parseable PDF must not be described as current, complete, semantically equivalent or accessible without the corresponding evidence.
+A PDF can exist at a stable route, return `application/pdf`, start with `%PDF-`, be downloadable and parseable, yet still be incomplete, stale, inaccessible, hard to read or semantically different from the canonical web-CV.
 
-Continue with **P3.4E — Passive PDF validation versus semantic completeness**.
+#### Evidence model
+
+- file existence and stable route prove delivery location only;
+- MIME, Content-Disposition, `%PDF-`, parseability and binary size prove bounded transport/format properties;
+- page count and structural checks do not prove required-section coverage;
+- text extraction and required markers do not prove current professional truth or good human-readable layout;
+- web-CV ↔ PDF semantic equivalence is a separate editorial contract;
+- rendered DOM proves the JavaScript-enhanced web-CV surface;
+- raw HTML proves the no-JavaScript fallback surface;
+- binary PDF response proves exact deployed bytes;
+- Atom feed and generated search prove Note discoverability;
+- accessibility, ATS compatibility and human layout acceptance remain distinct reviews.
+
+#### Feature evidence
+
+```text
+PR #134 RED head:              ad3d46817bb40002e4f311acac2632929886780f
+RED Build:                      #985 / 31048729901 — expected FAILURE
+RED result:                     399 PASS / 4 expected FAIL
+PR #134 exact head:            fd09071730bf1a6d227ad544734b4ef15bb0a1f0
+PR #134 squash:                f184236fec2f8985fe9f893a7d6819ad4e6eea37
+Build:                          #996 / 31049874523 — SUCCESS
+unit tests:                     403 PASS / 0 FAIL
+quality artifact:               8948085565
+quality digest:                 sha256:a31c074f337263d35181a7073fd5cbd6ef8f96ff0af92757c9cdb0c8e27d43b0
+```
+
+#### Production corrections
+
+PR #135–#137 corrected observable resume scopes without weakening binary or semantic requirements.
+
+PR #138 introduced an idempotent build-time RU/EN `<noscript data-tr-resume-fallback>` postprocessor before clean-route publishing.
+
+```text
+PR #138 exact head:            a82fbeeb660a2a1eb6d3d6c7963708ef946fcc5f
+PR #138 squash:                90df9b8741b0d40b6ca3981f649624b55bfc85c1
+Build:                          #1010 / 31083663155 — SUCCESS
+unit tests:                     410 PASS / 0 FAIL
+quality artifact:               8960804973
+quality digest:                 sha256:47292ba7cb21abfc9d0ef7d862efdfc34423ef27a5df1a95145f3fcdb95e142e
+```
+
+PR #139 made raw production observation deterministic with query `tr_evidence_sha=<EXPECTED_DEPLOYED_SHA>`, `Cache-Control: no-cache` and `Pragma: no-cache`, while preserving the canonical URL and all PDF assertions.
+
+```text
+PR #139 RED head:              de79262c5db1e484b455409800c3dc060bf474b4
+PR #139 exact head:            0ccd8a5dc669212a46f9d2f3d2f5f6a73685be87
+PR #139 squash:                a570dc420c83af33b483cb55c5904b3575ff729a
+Build:                          #1013 / 31086478496 — SUCCESS
+unit tests:                     411 PASS / 0 FAIL
+quality artifact:               8961719018
+quality digest:                 sha256:78ba029a7ae88cb9b20f456c0c5cffdd9609a0b4856cc7bbf456cc2e39f02e47
+```
+
+#### Exact production acceptance
+
+```text
+Pages:                          #169 / 31086909691 — SUCCESS
+Pages deployment ID:            5776481884
+Production Live Smoke:          #168 / 31086909906 — SUCCESS
+production artifact:            8961927073
+production digest:              sha256:681f8a098349bc4e44078273f5086f892f0dec7750abbe87de8ecf96702f24bc
+PDF size:                       277792 bytes
+PDF SHA-256:                    efd99499a483c06394dd0181b5d2be9b0e09265937163f74eeb8c05a0807e613
+```
+
+The exact production verifier accepted the Note only after rendered DOM, raw HTML, binary PDF, Atom feed and generated search passed independently on deployed SHA `a570dc420c83af33b483cb55c5904b3575ff729a`.
+
+### P3.4F — Evidence-driven project state — NEXT
+
+The next bounded slice must formalize public project state as a derived evidence view rather than duplicated narrative.
+
+Acceptance direction:
+
+- canonical registries own volatile facts;
+- verified fact, engineering inference and limitation are explicit;
+- repository activity, generated artifact, deployed production, external-product acceptance and operator/search-engine observation remain separate;
+- Draft and stale evidence are visible but never promoted automatically;
+- evidence identity and observation date are recorded;
+- automatic reports remain reviewable and non-mutating;
+- semantic/no-JavaScript content, Atom feed and generated search remain available;
+- exact-head and exact-deployment verification are required.
+
+Continue with **P3.4F — Evidence-driven project state**.
 
 ---
 
