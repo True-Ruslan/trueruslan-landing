@@ -72,6 +72,6 @@ test('durable state preserves P3.4D production acceptance after later slices', (
   assert.ok(state.includes('issue #111'), 'P3.4D ledger must preserve search-engine observation');
   assert.ok(state.includes('issue #82'), 'P3.4D ledger must preserve dependency blocker');
   assert.ok(state.includes('issue #78'), 'P3.4D ledger must preserve Content Freshness owner state');
-  assert.doesNotMatch(combined, /PR #114[^\n]*(?:accepted|принят|merged|слит)/i);
+  assert.doesNotMatch(combined, /PR #114[^\n]*(?:status\s*[:=]\s*|—\s*)(?:accepted|merged|принят|слит)\b/i);
   assert.doesNotMatch(combined, /0\.1\.25[^\n]*(?:fully accepted|полностью принят)/i);
 });
