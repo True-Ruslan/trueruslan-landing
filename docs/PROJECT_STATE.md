@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4D GameTests Acceptance Note.
+> Последнее смысловое обновление: **2026-08-06**, после production-acceptance Portfolio 1.0 P3.4E Passive PDF Completeness Note.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -33,59 +33,96 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 
 Последний принятый user-facing milestone:
 
-**P3.4D — GameTests versus installed gameplay acceptance**.
+**P3.4E — Passive PDF validation versus semantic completeness**.
 
 Production route:
 
 ```text
-/landing/notes/gametests-vs-installed-gameplay-acceptance/
+/landing/notes/passive-pdf-validation-vs-semantic-completeness/
 ```
 
-Note фиксирует VillAIgence release-evidence model:
+Принятая evidence model:
 
-- source/unit contracts проверяют policy и deterministic wiring;
-- remapped package, embedded `fabric.mod.json`, manifest и SHA-256 проверяют distributable identity;
-- GameTests проверяют mechanics внутри controlled server runtime;
-- exact production-JAR проверяется отдельным two-JVM startup/restart harness;
-- literal-loopback provider-client proof не равен real-provider acceptance;
-- `VAI-CONCUR-003` — logical-client automation, `VAI-CONCUR-004` — real installed two-client canary;
-- physical microphone, Simple Voice Chat и UDP/Opus остаются installed-client evidence;
-- inventory/grave/resurrection canary и cumulative product-owner acceptance остаются отдельными gates;
-- rollback и recovery являются частью acceptance.
+- file existence, stable route, MIME, `%PDF-`, parseability, page count и downloadable bytes доказывают только соответствующий технический слой;
+- валидный и parseable PDF сам по себе не доказывает полноту, актуальность, доступность или semantic equivalence с web-CV;
+- web-CV остаётся canonical editorial source, PDF — bounded distribution artifact;
+- rendered DOM, raw HTML, binary PDF, Atom feed и generated search наблюдаются независимо;
+- настоящий RU/EN no-JavaScript fallback публикуется build-time postprocessor-ом как `<noscript data-tr-resume-fallback>`;
+- raw production HTML проверяется deterministic query `tr_evidence_sha=<exact deployed SHA>` и заголовками `Cache-Control: no-cache` / `Pragma: no-cache`;
+- automated markers не заменяют editorial review, PDF accessibility review, ATS testing и human-readable layout acceptance.
 
-### Feature PR #132
+### Feature PR #134
 
 ```text
-feature PR:                     #132 — MERGED
-TDD RED head:                   237a3225954e1b4b633422b690b1e3fb02983f89
-RED Build:                      #969 / 31042289632 — expected FAILURE
-RED existing/new contracts:     394 PASS / 4 expected FAIL
-exact accepted head:            b4f49b29dc9c16ff4d3c2412d5b4d2ea18282239
-accepted squash:                02894431e042b89943e4bdb3cb43f336fa9ad75d
-final Build:                    #978 / 31042919449 — SUCCESS
-unit tests:                     398 PASS / 0 FAIL
-quality artifact:               8945409733
-quality digest:                 sha256:cbf160fc9877e31acc89729ae077ee3f2cad815425be4200253a06659f9339c2
+feature PR:                     #134 — MERGED
+TDD RED head:                   ad3d46817bb40002e4f311acac2632929886780f
+RED Build:                      #985 / 31048729901 — expected FAILURE
+RED existing/new contracts:     399 PASS / 4 expected FAIL
+exact accepted head:            fd09071730bf1a6d227ad544734b4ef15bb0a1f0
+accepted squash:                f184236fec2f8985fe9f893a7d6819ad4e6eea37
+final Build:                    #996 / 31049874523 — SUCCESS
+unit tests:                     403 PASS / 0 FAIL
+quality artifact:               8948085565
+quality digest:                 sha256:a31c074f337263d35181a7073fd5cbd6ef8f96ff0af92757c9cdb0c8e27d43b0
+```
+
+### Production corrections
+
+PR #135–#137 последовательно отделили visible resume hero, bounded rendered DOM и raw HTML response от binary PDF evidence.
+
+PR #138 исправил реальный продуктовый дефект: Diplodoc сохранял fallback copy в serialized state, но не публиковал внешний `<noscript>` surface.
+
+```text
+PR #138 exact head:             a82fbeeb660a2a1eb6d3d6c7963708ef946fcc5f
+PR #138 squash:                 90df9b8741b0d40b6ca3981f649624b55bfc85c1
+Build:                          #1010 / 31083663155 — SUCCESS
+unit tests:                     410 PASS / 0 FAIL
+quality artifact:               8960804973
+quality digest:                 sha256:47292ba7cb21abfc9d0ef7d862efdfc34423ef27a5df1a95145f3fcdb95e142e
+```
+
+PR #139 исправил exact-production observation через deterministic SHA-keyed cache bypass без изменения canonical public URL и без ослабления PDF assertions.
+
+```text
+PR #139 RED head:               de79262c5db1e484b455409800c3dc060bf474b4
+PR #139 exact head:             0ccd8a5dc669212a46f9d2f3d2f5f6a73685be87
+PR #139 squash:                 a570dc420c83af33b483cb55c5904b3575ff729a
+Build:                          #1013 / 31086478496 — SUCCESS
+unit tests:                     411 PASS / 0 FAIL
+quality artifact:               8961719018
+quality digest:                 sha256:78ba029a7ae88cb9b20f456c0c5cffdd9609a0b4856cc7bbf456cc2e39f02e47
+CodeQL:                         #505 — SUCCESS
+Dependency Review:              #441 — SUCCESS
 review threads:                 0 open
 ```
 
 ### Exact production acceptance
 
 ```text
-Pages workflow:                 #162 / 31043536231 — SUCCESS
-accepted deployed SHA:          02894431e042b89943e4bdb3cb43f336fa9ad75d
-Pages deployment ID:            5768748824
-Pages created:                  2026-08-05T20:19:37Z
-Pages updated:                  2026-08-05T20:20:15Z
-Production Live Smoke:          #139 / 31043534975 — SUCCESS
+Pages workflow:                 #169 / 31086909691 — SUCCESS
+accepted deployed SHA:          a570dc420c83af33b483cb55c5904b3575ff729a
+Pages deployment ID:            5776481884
+Pages created:                  2026-08-06T08:55:36Z
+Pages updated:                  2026-08-06T08:59:33Z
+Production Live Smoke:          #168 / 31086909906 — SUCCESS
 baseline/platform/flagship:     PASS
-P3.4A/P3.4B/P3.4C/P3.4D smokes: PASS
+P3.4A/P3.4B/P3.4C/P3.4D/P3.4E: PASS
 favicon smoke:                  PASS
-production artifact:            8945575207
-production digest:              sha256:0f1d56a3735f366512e627f7669ae017ed932bf7a2a4ee19ad0fc4ed0c5b347f
+production artifact:            8961927073
+production digest:              sha256:681f8a098349bc4e44078273f5086f892f0dec7750abbe87de8ecf96702f24bc
 ```
 
-P3.4D accepted только на этом exact deployed SHA.
+Exact PDF evidence:
+
+```text
+route:                           /assets/documents/cv.pdf
+HTTP/MIME:                       200 / application/pdf
+signature:                       %PDF-
+size:                            277792 bytes
+SHA-256:                         efd99499a483c06394dd0181b5d2be9b0e09265937163f74eeb8c05a0807e613
+```
+
+P3.4E accepted только на exact deployed SHA `a570dc420c83af33b483cb55c5904b3575ff729a`.
 
 ---
 
@@ -188,7 +225,7 @@ Routes: `/landing/projects/livingworld/`, `/landing/projects/vlezet/`, `/en/proj
 
 ### P3.4 — Grounded Engineering Notes — IN PROGRESS
 
-### P3.4A — Deployment success is not production verification — DONE
+#### P3.4A — Deployment success is not production verification — DONE
 
 Route: `/landing/notes/deployment-success-is-not-production-verification/`.
 
@@ -213,7 +250,7 @@ production artifact:            8935003712
 production digest:              sha256:23f344e3562d6b61106c8dc59a4b3e9ce2293192555c9f31ac09e7eb9916d480
 ```
 
-### P3.4B — Clean URLs without Cloudflare routing — DONE
+#### P3.4B — Clean URLs without Cloudflare routing — DONE
 
 Route: `/landing/notes/clean-urls-without-cloudflare-routing/`.
 
@@ -230,7 +267,7 @@ production artifact:            8936914548
 production digest:              sha256:cc250f9ea49d4214c5b815ebb9ee067f540e54124e0edbbef46391ccc2b4fa51
 ```
 
-### P3.4C — Hybrid CV + AI recognition boundaries — DONE
+#### P3.4C — Hybrid CV + AI recognition boundaries — DONE
 
 Route: `/landing/notes/hybrid-cv-ai-recognition-boundaries/`.
 
@@ -249,9 +286,30 @@ production digest:              sha256:9cb66c8e3b2b432c9bbdd160542f3b5566e1e3e21
 
 Accepted M7.8B remains separate from Draft M7.8C and PR #42/#44/#45; product-owner retest remains required.
 
-### P3.4D — GameTests versus installed gameplay acceptance — DONE
+#### P3.4D — GameTests versus installed gameplay acceptance — DONE
 
-Feature and exact production evidence are recorded in section 2. Green GameTests are not installed gameplay acceptance.
+Route: `/landing/notes/gametests-vs-installed-gameplay-acceptance/`.
+
+```text
+PR #132 RED head:              237a3225954e1b4b633422b690b1e3fb02983f89
+PR #132 exact head:            b4f49b29dc9c16ff4d3c2412d5b4d2ea18282239
+PR #132 squash:                02894431e042b89943e4bdb3cb43f336fa9ad75d
+Build:                          #978 / 31042919449 — SUCCESS
+unit tests:                     398 PASS / 0 FAIL
+quality artifact:               8945409733
+quality digest:                 sha256:cbf160fc9877e31acc89729ae077ee3f2cad815425be4200253a06659f9339c2
+Pages:                          #162 / 31043536231 — SUCCESS
+Pages deployment ID:            5768748824
+Production Live Smoke:          #139 / 31043534975 — SUCCESS
+production artifact:            8945575207
+production digest:              sha256:0f1d56a3735f366512e627f7669ae017ed932bf7a2a4ee19ad0fc4ed0c5b347f
+```
+
+Source/unit contracts, remapped package, GameTests, exact production-JAR, literal-loopback, `VAI-CONCUR-003`, `VAI-CONCUR-004`, PR #110, PR #112, Draft PR #114, inventory/grave/resurrection canary, product-owner acceptance, rollback и recovery остаются отдельными evidence layers.
+
+#### P3.4E — Passive PDF validation versus semantic completeness — DONE
+
+Feature, corrections and exact production evidence are recorded in section 2.
 
 ---
 
@@ -271,6 +329,6 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**P3.4E — Passive PDF validation versus semantic completeness**.
+**P3.4F — Evidence-driven project state**.
 
-Следующая bounded Engineering Note должна объяснить, что file existence, MIME, PDF header, page count, passive/no-JavaScript embedding и downloadable bytes доказывают доставку документа, но не доказывают полноту текста, актуальность профессионального профиля, корректную структуру, доступность чтения и semantic equivalence web-CV ↔ PDF.
+Следующий bounded этап должен формализовать, как public project state выводится из canonical registries, как verified fact отделяется от engineering inference и limitation, и почему repository activity, generated artifact, deployed production, external-product acceptance и operator/search-engine state нельзя сворачивать в один общий статус.

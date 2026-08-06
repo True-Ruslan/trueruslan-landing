@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4D GameTests Acceptance Note.
+> Обновлено: **2026-08-06**, после production-acceptance Portfolio 1.0 P3.4E Passive PDF Completeness Note.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -22,6 +22,7 @@
 - repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance как разные факты;
 - exact artifact и installed acceptance остаются отдельными release gates;
 - volatile external evidence derives from canonical registries;
+- валидный или parseable artifact не считается автоматически complete, current, accessible или semantically equivalent;
 - no quality-gate weakening.
 
 Главная продуктовая формула:
@@ -51,7 +52,8 @@
 - P3.4A Deployment Verification Note — PR #125/#126.
 - P3.4B Clean URLs Note — PR #128/#129.
 - P3.4C Hybrid CV + AI Recognition Note — PR #130/#131.
-- P3.4D GameTests Acceptance Note — PR #132.
+- P3.4D GameTests Acceptance Note — PR #132/#133.
+- P3.4E Passive PDF Completeness Note — PR #134–#139.
 
 ---
 
@@ -162,34 +164,73 @@ production artifact:            8945575207
 production digest:              sha256:0f1d56a3735f366512e627f7669ae017ed932bf7a2a4ee19ad0fc4ed0c5b347f
 ```
 
-### P3.4E — Passive PDF validation versus semantic completeness — NEXT
+### P3.4E — Passive PDF validation versus semantic completeness — DONE
 
-Publish a grounded Note explaining the difference between:
+Canonical route:
 
-1. file existence and stable route;
-2. PDF signature/header and parseability;
-3. MIME/content disposition and downloadable bytes;
-4. passive/no-JavaScript embedding;
-5. page count and structural checks;
-6. text extraction and required-section coverage;
-7. web-CV ↔ PDF semantic equivalence;
-8. current professional-profile truth;
-9. accessibility and human-readable layout;
-10. exact deployed-document verification.
+```text
+/landing/notes/passive-pdf-validation-vs-semantic-completeness/
+```
 
-Acceptance criteria:
+Accepted outcome:
 
-- facts derived from the existing resume/PDF build, integrity, browser and content contracts;
-- explicit distinction between artifact validity and semantic completeness;
-- no claim that a parseable PDF is current, complete or accessible;
-- verified fact, engineering inference and limitation explicit;
-- deterministic Notes Registry, clean route, Atom feed and generated search participation;
-- semantic/no-JS content;
-- exact-head and deployment-only production verification.
+- file existence, stable route, `%PDF-`, parseability, MIME, Content-Disposition, downloadable bytes, page count and text extraction remain separate checks;
+- валидный PDF не описывается как автоматически complete, current, accessible или semantically equivalent web-CV;
+- web-CV remains canonical editorial source; PDF remains bounded distribution artifact;
+- rendered DOM, raw HTML, binary PDF, Atom feed and generated search are verified independently;
+- PR #138 publishes a real RU/EN `<noscript data-tr-resume-fallback>` before clean-route output;
+- PR #139 uses deterministic `tr_evidence_sha` plus `Cache-Control: no-cache` and `Pragma: no-cache` for exact raw production observation;
+- automation does not replace editorial, accessibility, ATS or human-readable layout review.
 
-### Later P3.4 candidate
+Feature and correction evidence:
 
-- Evidence-driven project state.
+```text
+PR #134 RED head:              ad3d46817bb40002e4f311acac2632929886780f
+PR #134 exact head:            fd09071730bf1a6d227ad544734b4ef15bb0a1f0
+PR #134 squash:                f184236fec2f8985fe9f893a7d6819ad4e6eea37
+Build:                          #996 / 31049874523 — SUCCESS
+unit tests:                     403 PASS / 0 FAIL
+quality artifact:               8948085565
+quality digest:                 sha256:a31c074f337263d35181a7073fd5cbd6ef8f96ff0af92757c9cdb0c8e27d43b0
+PR #138 squash:                90df9b8741b0d40b6ca3981f649624b55bfc85c1
+Build:                          #1010 / 31083663155 — SUCCESS
+unit tests:                     410 PASS / 0 FAIL
+quality artifact:               8960804973
+quality digest:                 sha256:47292ba7cb21abfc9d0ef7d862efdfc34423ef27a5df1a95145f3fcdb95e142e
+PR #139 RED head:              de79262c5db1e484b455409800c3dc060bf474b4
+PR #139 exact head:            0ccd8a5dc669212a46f9d2f3d2f5f6a73685be87
+PR #139 squash:                a570dc420c83af33b483cb55c5904b3575ff729a
+Build:                          #1013 / 31086478496 — SUCCESS
+unit tests:                     411 PASS / 0 FAIL
+quality artifact:               8961719018
+quality digest:                 sha256:78ba029a7ae88cb9b20f456c0c5cffdd9609a0b4856cc7bbf456cc2e39f02e47
+```
+
+Exact production evidence:
+
+```text
+Pages:                          #169 / 31086909691 — SUCCESS
+Pages deployment ID:            5776481884
+Production Live Smoke:          #168 / 31086909906 — SUCCESS
+production artifact:            8961927073
+production digest:              sha256:681f8a098349bc4e44078273f5086f892f0dec7750abbe87de8ecf96702f24bc
+PDF size:                       277792 bytes
+PDF SHA-256:                    efd99499a483c06394dd0181b5d2be9b0e09265937163f74eeb8c05a0807e613
+```
+
+### P3.4F — Evidence-driven project state — NEXT
+
+Formalize and publish a bounded model for project state that:
+
+1. derives volatile public facts from canonical registries rather than duplicated prose;
+2. separates verified fact, engineering inference and limitation;
+3. distinguishes repository activity, generated artifact, deployed production, external-product acceptance and operator/search-engine state;
+4. does not promote Draft or pending product-owner evidence;
+5. records observation dates and exact evidence identities;
+6. exposes stale/unverified states explicitly;
+7. keeps automatic reports reviewable and non-mutating;
+8. preserves semantic/no-JavaScript content, Atom feed and generated search;
+9. receives exact-head and exact-deployment verification.
 
 ## P3.5 — Selective English expansion
 
@@ -209,4 +250,4 @@ After sufficient aggregate traffic, compare aggregate traffic and clean-route in
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4D feature PR #132 and exact production acceptance for SHA `02894431e042b89943e4bdb3cb43f336fa9ad75d`. Preserve issue #111, issue #82 and issue #78 boundaries. Continue with **P3.4E — Passive PDF validation versus semantic completeness**.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4E feature/corrections and exact production acceptance for SHA `a570dc420c83af33b483cb55c5904b3575ff729a`. Preserve issue #111, issue #82 and issue #78 boundaries. Continue with **P3.4F — Evidence-driven project state**.

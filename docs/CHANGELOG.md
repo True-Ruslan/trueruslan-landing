@@ -1,8 +1,76 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-05**, после production-acceptance Portfolio 1.0 P3.4D GameTests Acceptance Note.
+> Обновлено: **2026-08-06**, после production-acceptance Portfolio 1.0 P3.4E Passive PDF Completeness Note.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-06 — P3.4E Passive PDF validation versus semantic completeness
+
+PR #134 опубликовал grounded Engineering Note:
+
+```text
+/landing/notes/passive-pdf-validation-vs-semantic-completeness/
+```
+
+Добавлено:
+
+- file existence, stable route, `%PDF-`, parseability, MIME, Content-Disposition и downloadable bytes как отдельные технические evidence layers;
+- page count, text extraction и required-section coverage отдельно от binary validity;
+- web-CV ↔ PDF semantic equivalence отдельно от текущей professional-profile truth;
+- явная граница: валидный или parseable PDF не становится автоматически complete, current, accessible или human-readable;
+- web-CV как canonical editorial source, PDF как bounded distribution artifact;
+- rendered DOM, raw HTML, binary PDF, Atom feed и generated search как независимые observation surfaces;
+- exact deployment-only P3.4E smoke.
+
+```text
+PR #134 RED head:              ad3d46817bb40002e4f311acac2632929886780f
+RED Build:                      #985 / 31048729901 — expected FAILURE
+RED result:                     399 PASS / 4 expected FAIL
+PR #134 exact head:            fd09071730bf1a6d227ad544734b4ef15bb0a1f0
+PR #134 squash:                f184236fec2f8985fe9f893a7d6819ad4e6eea37
+Build:                          #996 / 31049874523 — SUCCESS
+unit tests:                     403 PASS / 0 FAIL
+quality artifact:               8948085565
+quality digest:                 sha256:a31c074f337263d35181a7073fd5cbd6ef8f96ff0af92757c9cdb0c8e27d43b0
+```
+
+Exact production verification последовательно обнаружила несколько независимых проблем и не была ослаблена:
+
+- PR #135 исправил слишком узкий resume DOM scope;
+- PR #136 заменил layout-dependent `body.innerText()` на bounded rendered DOM surfaces;
+- PR #137 отделил raw HTML no-JavaScript evidence от scripting-enabled browser DOM;
+- PR #138 исправил реальный product defect и внедрил RU/EN `<noscript data-tr-resume-fallback>` до clean-route publishing;
+- PR #139 исправил stale edge observation deterministic query `tr_evidence_sha=<exact SHA>` и заголовками `Cache-Control: no-cache` / `Pragma: no-cache`.
+
+```text
+PR #138 exact head:            a82fbeeb660a2a1eb6d3d6c7963708ef946fcc5f
+PR #138 squash:                90df9b8741b0d40b6ca3981f649624b55bfc85c1
+Build:                          #1010 / 31083663155 — SUCCESS
+unit tests:                     410 PASS / 0 FAIL
+quality artifact:               8960804973
+quality digest:                 sha256:47292ba7cb21abfc9d0ef7d862efdfc34423ef27a5df1a95145f3fcdb95e142e
+PR #139 RED head:              de79262c5db1e484b455409800c3dc060bf474b4
+PR #139 exact head:            0ccd8a5dc669212a46f9d2f3d2f5f6a73685be87
+PR #139 squash:                a570dc420c83af33b483cb55c5904b3575ff729a
+Build:                          #1013 / 31086478496 — SUCCESS
+unit tests:                     411 PASS / 0 FAIL
+quality artifact:               8961719018
+quality digest:                 sha256:78ba029a7ae88cb9b20f456c0c5cffdd9609a0b4856cc7bbf456cc2e39f02e47
+Pages:                          #169 / 31086909691 — SUCCESS
+Pages deployment ID:            5776481884
+Production Live Smoke:          #168 / 31086909906 — SUCCESS
+baseline/platform/flagship/P3.4A/P3.4B/P3.4C/P3.4D/P3.4E/favicon: PASS
+production artifact:            8961927073
+production digest:              sha256:681f8a098349bc4e44078273f5086f892f0dec7750abbe87de8ecf96702f24bc
+PDF size:                       277792 bytes
+PDF SHA-256:                    efd99499a483c06394dd0181b5d2be9b0e09265937163f74eeb8c05a0807e613
+```
+
+Automated marker checks не заменяют editorial review, PDF accessibility review, ATS testing и human-readable layout acceptance.
+
+Next bounded Note:
+
+**P3.4F — Evidence-driven project state**.
 
 ## 2026-08-05 — P3.4D GameTests versus installed gameplay acceptance
 
@@ -44,10 +112,6 @@ production digest:              sha256:0f1d56a3735f366512e627f7669ae017ed932bf7a
 ```
 
 Green GameTests were not presented as installed gameplay correctness. The published `0.1.25+1.21.1` artifact remains separate from pending installed canaries. PR #114 remains Draft.
-
-Next bounded Note:
-
-**P3.4E — Passive PDF validation versus semantic completeness**.
 
 ## 2026-08-05 — P3.4C Hybrid CV + AI recognition boundaries
 
