@@ -49,19 +49,22 @@ test('Pages workflow resolves repository site identity before analytics and buil
 test('Pages workflow uses one attempt-scoped artifact identity for rerun-safe deploys', () => {
   assert.match(staticWorkflow, /PAGES_ARTIFACT_NAME:\s*github-pages-\$\{\{\s*github\.run_attempt\s*\}\}/);
   assert.match(staticWorkflow, /name:\s*\$\{\{\s*env\.PAGES_ARTIFACT_NAME\s*\}\}/);
-  assert.match(staticWorkflow, /artifact_name:\s*\$\{\{\s*env\.PAGES_ARTIFACT_NAME\s*\}\}/);
-  assert.equal((staticWorkflow.match(/PAGES_ARTIFACT_NAME/g) ?? []).length, 3);
+  assert.equal((staticWorkflow.match(/artifact_name:\s*\$\{\{\s*env\.PAGES_ARTIFACT_NAME\s*\}\}/g) ?? []).length, 2);
 });
 
-test('Pages workflow gives slow deployment queues bounded headroom', () => {
-  const jobTimeout = Number(staticWorkflow.match(/timeout-minutes:\s*(\d+)/)?.[1]);
-  const deploymentTimeoutMs = Number(
-    staticWorkflow.match(/actions\/deploy-pages@[\s\S]*?with:[\s\S]*?timeout:\s*(\d+)/)?.[1],
-  );
+test('Pages workflow retries one platform-timeout deployment without masking final failure', () => {
+  const deployActions = staticWorkflow.match(/uses:\s*actions\/deploy-pages@[^\n]+/g) ?? [];
+  const deploymentTimeouts = staticWorkflow.match(/timeout:\s*600000/g) ?? [];
+  const resolvedPageUrl = /\$\{\{\s*steps\.deployment\.outputs\.page_url\s*\|\|\s*steps\.deployment_retry\.outputs\.page_url\s*\}\}/g;
 
-  assert.equal(jobTimeout, 30);
-  assert.equal(deploymentTimeoutMs, 1_200_000);
-  assert.ok(deploymentTimeoutMs / 60_000 < jobTimeout);
+  assert.equal(Number(staticWorkflow.match(/timeout-minutes:\s*(\d+)/)?.[1]), 30);
+  assert.equal(deployActions.length, 2);
+  assert.equal(deploymentTimeouts.length, 2);
+  assert.doesNotMatch(staticWorkflow, /timeout:\s*1200000/);
+  assert.match(staticWorkflow, /id:\s*deployment\n\s+continue-on-error:\s*true/);
+  assert.match(staticWorkflow, /name:\s*Wait before Pages deployment retry\n\s+if:\s*steps\.deployment\.outcome == 'failure'\n\s+run:\s*sleep 30/);
+  assert.match(staticWorkflow, /name:\s*Retry GitHub Pages deployment\n\s+id:\s*deployment_retry\n\s+if:\s*steps\.deployment\.outcome == 'failure'/);
+  assert.equal((staticWorkflow.match(resolvedPageUrl) ?? []).length, 2);
 });
 
 test('Pages workflow no longer derives canonical production identity from repository coordinates', () => {
