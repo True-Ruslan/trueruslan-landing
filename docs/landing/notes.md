@@ -42,6 +42,12 @@
 
 [Читать заметку →](notes/deployment-success-is-not-production-verification.md)
 
+### Как описывать состояние проекта без ложной уверенности
+
+Project state должен показывать не только текущий статус, но и источник, дату наблюдения, exact identity, evidence layer и оставшиеся ограничения. Разбираю canonical registry, `verified / stale / unverified`, Draft boundaries и почему автоматический freshness report остаётся reviewable и non-mutating.
+
+[Читать заметку →](notes/evidence-driven-project-state.md)
+
 ### От source tests к installed acceptance: что доказывает каждый release gate
 
 На примере VillAIgence разбираю отдельные уровни release evidence: source contracts, remapped package и embedded identity, GameTests, exact production-JAR startup/restart, rollback и ручную cumulative acceptance. Главный вопрос здесь не «сколько jobs зелёные», а какой конкретный runtime fact доказывает каждый gate.
