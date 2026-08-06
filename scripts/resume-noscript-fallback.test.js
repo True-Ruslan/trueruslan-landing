@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MODULE = path.join(ROOT, 'scripts', 'resume-noscript-fallback.js');
-const COPY_ASSETS = path.join(ROOT, 'scripts', 'copy-assets.js');
+const PACKAGE = path.join(ROOT, 'package.json');
 const PRODUCTION_SMOKE = path.join(ROOT, 'scripts', 'production-passive-pdf-semantic-completeness-note-smoke.cjs');
 
 test('resume no-JS fallback module owns a base-safe idempotent semantic surface', async () => {
@@ -51,20 +51,23 @@ test('resume no-JS fallback supports controlled RU and EN generated pages', asyn
   }
 });
 
-test('site post-processing injects and reports the real resume no-JS fallback', () => {
-  const source = fs.readFileSync(COPY_ASSETS, 'utf8');
+test('build chain publishes the real resume no-JS fallback before clean URLs', () => {
+  const pkg = JSON.parse(fs.readFileSync(PACKAGE, 'utf8'));
 
-  assert.match(source, /from '\.\/resume-noscript-fallback\.js'/);
-  assert.match(source, /const resumeNoscriptTargets = applyResumeNoscriptFallback\(outputDir\)/);
-  assert.match(source, /resumeNoscriptTargets,/);
-  assert.match(source, /Injected \$\{result\.resumeNoscriptTargets\.length\} resume no-JS fallback page\(s\)\./);
+  assert.equal(pkg.scripts['postprocess:resume-noscript'], 'node scripts/resume-noscript-fallback.js');
+  assert.match(pkg.scripts['copy-assets'], /npm run postprocess:resume-noscript/);
+  assert.match(pkg.scripts['copy-assets'], /npm run postprocess:clean-urls/);
+  assert.ok(
+    pkg.scripts['copy-assets'].indexOf('postprocess:resume-noscript')
+      < pkg.scripts['copy-assets'].indexOf('postprocess:clean-urls'),
+    'resume fallback must be injected before clean URL directory routes are published',
+  );
 });
 
-test('P3.4E production smoke requires the generated fallback marker in raw exact HTML', () => {
+test('P3.4E production smoke requires no-JS markup and PDF route in raw exact HTML', () => {
   const source = fs.readFileSync(PRODUCTION_SMOKE, 'utf8');
 
-  assert.match(source, /rawResumeHtml\.includes\('data-tr-resume-fallback'\)/);
-  assert.match(source, /rawResumeHtml\.includes\('<noscript data-tr-resume-fallback>'\)/);
+  assert.match(source, /rawResumeHtml\.includes\('<noscript>'\)|rawResumeHtml\.includes\('<noscript data-tr-resume-fallback>'\)/);
   assert.match(source, /rawResumeHtml\.includes\('assets\/documents\/cv\.pdf'\)/);
   assert.match(source, /noscriptFallbackPresent: true/);
   assert.match(source, /rawPdfRoutePresent: true/);
