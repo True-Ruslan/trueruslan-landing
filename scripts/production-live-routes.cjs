@@ -7,6 +7,7 @@ const CLEAN_URLS_NOTE_PATH = 'landing/notes/clean-urls-without-cloudflare-routin
 const HYBRID_RECOGNITION_NOTE_PATH = 'landing/notes/hybrid-cv-ai-recognition-boundaries/';
 const GAMETESTS_ACCEPTANCE_NOTE_PATH = 'landing/notes/gametests-vs-installed-gameplay-acceptance/';
 const PASSIVE_PDF_COMPLETENESS_NOTE_PATH = 'landing/notes/passive-pdf-validation-vs-semantic-completeness/';
+const EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_PATH = 'landing/notes/evidence-driven-project-state/';
 const RESUME_PATH = 'landing/resume/';
 const RESUME_PDF_PATH = 'assets/documents/cv.pdf';
 const SEARCH_PATH = '_search/ru/';
@@ -24,6 +25,7 @@ const CLEAN_URLS_NOTE_URL = new URL(CLEAN_URLS_NOTE_PATH, APEX).href;
 const HYBRID_RECOGNITION_NOTE_URL = new URL(HYBRID_RECOGNITION_NOTE_PATH, APEX).href;
 const GAMETESTS_ACCEPTANCE_NOTE_URL = new URL(GAMETESTS_ACCEPTANCE_NOTE_PATH, APEX).href;
 const PASSIVE_PDF_COMPLETENESS_NOTE_URL = new URL(PASSIVE_PDF_COMPLETENESS_NOTE_PATH, APEX).href;
+const EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_URL = new URL(EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_PATH, APEX).href;
 const RESUME_URL = new URL(RESUME_PATH, APEX).href;
 const RESUME_PDF_URL = new URL(RESUME_PDF_PATH, APEX).href;
 const SEARCH_URL = new URL(SEARCH_PATH, APEX).href;
@@ -43,6 +45,7 @@ module.exports = {
   HYBRID_RECOGNITION_NOTE_PATH,
   GAMETESTS_ACCEPTANCE_NOTE_PATH,
   PASSIVE_PDF_COMPLETENESS_NOTE_PATH,
+  EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_PATH,
   RESUME_PATH,
   RESUME_PDF_PATH,
   SEARCH_PATH,
@@ -59,6 +62,7 @@ module.exports = {
   HYBRID_RECOGNITION_NOTE_URL,
   GAMETESTS_ACCEPTANCE_NOTE_URL,
   PASSIVE_PDF_COMPLETENESS_NOTE_URL,
+  EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_URL,
   RESUME_URL,
   RESUME_PDF_URL,
   SEARCH_URL,
