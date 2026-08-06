@@ -155,7 +155,7 @@ async function assertEnglishVlezetNoJsEvidence(page) {
   for (const marker of [
     'VERIFIED',
     'Verifiable project state',
-    'Automated evidence',
+    'AUTOMATED EVIDENCE',
     'Last verified:',
     'M7.8B',
     'M7.8C product-owner retest',
