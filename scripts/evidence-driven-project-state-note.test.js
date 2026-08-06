@@ -60,7 +60,8 @@ test('P3.4F Note separates evidence layers and uncertainty classes', () => {
 
   assert.match(source, /Draft[^\n]*не является[^\n]*accepted evidence/i);
   assert.match(source, /автоматическ[^\n]*не[^\n]*(?:повышает|продвигает|изменяет)[^\n]*статус/i);
-  assert.doesNotMatch(source, /последний commit[^\n]*доказывает[^\n]*production/i);
+  assert.match(source, /последний commit[^\n]*не доказывает[^\n]*production/i);
+  assert.doesNotMatch(source, /последний commit[^\n]*(?:гарантирует|полностью доказывает)[^\n]*production/i);
 });
 
 test('P3.4F Note is exposed through index and toc', () => {
