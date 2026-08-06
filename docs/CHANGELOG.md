@@ -177,6 +177,8 @@ production digest:              sha256:23f344e3562d6b61106c8dc59a4b3e9ce22931925
 
 ## 2026-08-05 — P3.3 Flagship normalization
 
+PR #122 нормализовал RU VillAIgence, RU Vlezet и controlled EN VillAIgence. Lifecycle и external acceptance boundaries не расширялись.
+
 ```text
 PR #122 RED head:              f2c5b065a8f1a1cd8adbad6ebb4ed7743cb33ad7
 PR #122 exact head:            ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46
@@ -193,6 +195,8 @@ production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad86
 
 ## 2026-08-05 — P3.2 TrueRuslan Landing flagship
 
+PR #119 создал RU/EN platform case study; PR #120 закрепил production selector `main.dc-doc-page__content`.
+
 ```text
 PR #119 head:                  6736c9fd917f213621e5e88273304dda8ddda760
 PR #119 squash:                d11aeddeed492dce512e123d216e0191a5906ca9
@@ -208,6 +212,8 @@ production digest:              sha256:71198afc2ae475a9322ee74f5ea54a5b2190baa88
 
 ## 2026-08-05 — P3.1 Homepage evidence paths
 
+PR #117 сделал homepage evidence-first entry point; PR #118 синхронизировал durable state.
+
 ```text
 PR #117 squash:                fe1a796df37313401c07e25c0672dc32db30a1c4
 Build:                          #836 / 30989449993 — SUCCESS
@@ -216,6 +222,8 @@ Production Live Smoke:          #58 / 30989981685 — SUCCESS
 ```
 
 ## Repository-native clean URLs
+
+PR #114/#115 established the directory-route contract.
 
 ```text
 PR #114 squash:                cf07c39378e7c531583e80eaef5edc7e7d1f2bad
