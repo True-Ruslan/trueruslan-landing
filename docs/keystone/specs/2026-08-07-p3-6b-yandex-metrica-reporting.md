@@ -38,6 +38,8 @@ limit=1
 
 `date1` and `date2` are derived from the already validated P3.6 baseline/current windows. The adapter does not accept independent API date arguments from the workflow, preventing the external source from silently drifting away from the measurement comparison windows.
 
+Every API request has a bounded **15 second timeout** backed by an `AbortSignal`; an API outage cannot leave the manual checkpoint waiting indefinitely.
+
 The response is reduced immediately to:
 
 ```json
@@ -54,7 +56,7 @@ The raw API response is not written to disk or uploaded.
 
 P3.6B is fail-closed. A response is rejected when:
 
-- the HTTP request fails;
+- the HTTP request fails or exceeds the bounded timeout;
 - the body is not valid JSON;
 - `sampled` is not exactly `false`;
 - the response exposes unexpected dimensions;
@@ -171,7 +173,7 @@ P3.6B uses the aggregate Reporting API. **No Logs API** or equivalent raw visit/
 
 ### Browser tracking remains out of scope
 
-P3.6B does **not** add a Yandex Metrica browser tracking tag to TrueRuslan pages.
+The **browser tracking tag is out of scope** for P3.6B. This slice does **not** add a Yandex Metrica browser tracking tag to TrueRuslan pages.
 
 The accepted frontend analytics policy currently forbids a silent expansion into cookies and persistent browser identifiers, custom events, cross-site tracking or session replay. Yandex's GDPR guidance explicitly treats the browser tracking tag and cookies as a user-facing privacy/consent concern. Therefore adding a frontend Metrica tag would require a separate product/privacy design and acceptance step rather than being smuggled into this API integration.
 
@@ -197,7 +199,7 @@ If the counter does not yet exist or does not have historical data for the P3.6 
 - Partial credential configuration: hard failure before report generation.
 - Invalid/expired token or inaccessible counter: hard API failure.
 - Sampled or malformed response: hard failure.
-- API outage/network failure: hard failure for the Metrica-enabled manual run; no fallback values are invented.
+- API outage/network failure: bounded hard failure for the Metrica-enabled manual run; no fallback values are invented.
 - Ordinary PR/master synthetic runs: independent of Yandex availability and credentials.
 
 ## Acceptance boundary
