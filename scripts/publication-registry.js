@@ -80,6 +80,23 @@ function normalizeStringArray(value, {field, id, required = false, max = 12} = {
   return Object.freeze(normalized);
 }
 
+function normalizeEnglishPresentation(value, {id}) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(`invalid publication English presentation for ${id}`);
+  }
+  const allowed = new Set(['summary', 'topics']);
+  for (const field of Object.keys(value)) {
+    if (!allowed.has(field)) throw new Error(`unsupported publication English presentation field for ${id}: ${field}`);
+  }
+  if (typeof value.summary !== 'string' || value.summary.trim() === '') {
+    throw new Error(`publication English summary is required for ${id}`);
+  }
+  return Object.freeze({
+    summary: value.summary.trim(),
+    topics: normalizeStringArray(value.topics, {field: 'en.topics', id, required: true, max: 8}),
+  });
+}
+
 function requireHttpsUrl(value, label) {
   if (typeof value !== 'string' || value.trim() === '') throw new Error(`${label} must be an https URL`);
   let parsed;
@@ -189,6 +206,7 @@ export function validatePublicationRegistry(raw, {
     const topics = normalizeStringArray(entry.topics, {field: 'topics', id, required: true, max: 8});
     const relatedProjects = normalizeStringArray(entry.relatedProjects, {field: 'relatedProjects', id});
     const relatedNotes = normalizeStringArray(entry.relatedNotes, {field: 'relatedNotes', id});
+    const en = entry.en === undefined ? undefined : normalizeEnglishPresentation(entry.en, {id});
 
     if (projects) {
       for (const slug of relatedProjects) {
@@ -211,6 +229,7 @@ export function validatePublicationRegistry(raw, {
       language,
       summary,
       topics,
+      ...(en ? {en} : {}),
       canonicalUrl,
       links: normalizeLinks(entry.links, {id, canonicalUrl}),
       featured,
@@ -227,8 +246,14 @@ export function validatePublicationRegistry(raw, {
 }
 
 export function loadPublicationRegistry(manifestPath = DEFAULT_PUBLICATIONS_PATH, options = {}) {
-  if (!fs.existsSync(manifestPath)) throw new Error(`publication registry not found: ${manifestPath}`);
-  return validatePublicationRegistry(JSON.parse(fs.readFileSync(manifestPath, 'utf8')), options);
+  let raw;
+  try {
+    raw = fs.readFileSync(manifestPath, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') throw new Error(`publication registry not found: ${manifestPath}`);
+    throw error;
+  }
+  return validatePublicationRegistry(JSON.parse(raw), options);
 }
 
 export function getFeaturedPublications(publications, limit = 3) {
