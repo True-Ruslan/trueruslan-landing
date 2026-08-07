@@ -18,18 +18,25 @@ export const DEFAULT_PUBLICATION_INCLUDE_PATH = path.join(
   '_includes',
   'publications-catalogue.md',
 );
+export const DEFAULT_PUBLICATION_EN_INCLUDE_PATH = path.join(
+  DOCS_DIR,
+  '_includes',
+  'publications-catalogue.en.md',
+);
 
 export function renderPublicationCatalogueInclude(publications, {
   projectLabels,
   noteLabels,
+  locale = 'ru',
 } = {}) {
   const catalogue = renderPublicationCatalogue(publications, {
     projectLabels,
     noteLabels,
+    locale,
   });
 
   return `<!-- GENERATED: data/publications.json; DO NOT EDIT -->
-<div data-tr-publications-prebuild>
+<div data-tr-publications-prebuild data-tr-publications-locale="${locale}">
 ${catalogue}
 </div>
 `;
@@ -40,6 +47,7 @@ export function writePublicationCatalogueInclude({
   publications,
   projectLabels,
   noteLabels,
+  locale = 'ru',
 } = {}) {
   if (!Array.isArray(publications) || publications.length === 0) {
     throw new Error('publications are required to generate the catalogue include');
@@ -48,6 +56,7 @@ export function writePublicationCatalogueInclude({
   const content = renderPublicationCatalogueInclude(publications, {
     projectLabels,
     noteLabels,
+    locale,
   });
   fs.mkdirSync(path.dirname(outputPath), {recursive: true});
   fs.writeFileSync(outputPath, content, 'utf8');
@@ -56,6 +65,7 @@ export function writePublicationCatalogueInclude({
 
 export function generatePublicationContent({
   outputPath = DEFAULT_PUBLICATION_INCLUDE_PATH,
+  enOutputPath = DEFAULT_PUBLICATION_EN_INCLUDE_PATH,
   docsDir = DOCS_DIR,
   projectsPath = PROJECTS_PATH,
   notesPath = NOTES_PATH,
@@ -67,19 +77,32 @@ export function generatePublicationContent({
     projectSlugs: new Set(projects.map(({slug}) => slug)),
     noteSlugs: new Set(notes.map(({slug}) => slug)),
   });
+  const projectLabels = new Map(projects.map(({slug, name}) => [slug, name]));
+  const noteLabels = new Map(notes.map(({slug, title}) => [slug, title]));
 
-  return writePublicationCatalogueInclude({
-    outputPath,
-    publications,
-    projectLabels: new Map(projects.map(({slug, name}) => [slug, name])),
-    noteLabels: new Map(notes.map(({slug, title}) => [slug, title])),
+  return Object.freeze({
+    ru: writePublicationCatalogueInclude({
+      outputPath,
+      publications,
+      projectLabels,
+      noteLabels,
+      locale: 'ru',
+    }),
+    en: writePublicationCatalogueInclude({
+      outputPath: enOutputPath,
+      publications,
+      projectLabels,
+      noteLabels,
+      locale: 'en',
+    }),
   });
 }
 
 function main() {
   try {
-    const outputPath = generatePublicationContent();
-    console.log(`Generated publication catalogue include: ${outputPath}`);
+    const outputPaths = generatePublicationContent();
+    console.log(`Generated publication catalogue include: ${outputPaths.ru}`);
+    console.log(`Generated English publication catalogue include: ${outputPaths.en}`);
   } catch (error) {
     console.error(`Publication catalogue generation failed: ${error.message}`);
     process.exit(1);
