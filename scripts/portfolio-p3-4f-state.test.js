@@ -24,23 +24,21 @@ function assertAcceptedEvidence(document, label) {
   assert.match(document, new RegExp(productionRun), `${label}: missing Production Live run`);
 }
 
-test('durable state closes P3.4F after exact production acceptance and promotes P3.5', () => {
+test('durable state preserves P3.4F production acceptance after later P3.5 slices', () => {
   assert.match(projectState, /#### P3\.4F — Evidence-driven project state — DONE/);
-  assert.match(projectState, /\*\*P3\.5 — Selective English expansion\*\*/);
+  assert.match(projectState, /P3\.4F exact production acceptance/);
   assert.doesNotMatch(projectState, /Continue with:\s+\*\*P3\.4F/);
   assertAcceptedEvidence(projectState, 'PROJECT_STATE');
 
   assert.match(roadmap, /### P3\.4F — Evidence-driven project state — DONE/);
-  assert.match(roadmap, /## P3\.5 — Selective English expansion — NEXT/);
+  assert.match(roadmap, /## P3\.5 — Selective English expansion — (?:NEXT|IN PROGRESS|DONE)/);
   assert.doesNotMatch(roadmap, /### P3\.4F — Evidence-driven project state — NEXT/);
   assertAcceptedEvidence(roadmap, 'ROADMAP');
 
   assert.match(changelog, /## 2026-08-06 — P3\.4F Evidence-driven project state/);
-  assert.match(changelog, /Next bounded slice:\s+\*\*P3\.5 — Selective English expansion\*\*/);
   assertAcceptedEvidence(changelog, 'CHANGELOG');
 
-  assert.match(specification, /> Status: \*\*IN PROGRESS — P3\.4F ACCEPTED IN PRODUCTION\*\*/);
   assert.match(specification, /### P3\.4F — Evidence-driven project state — DONE/);
-  assert.match(specification, /Continue with \*\*P3\.5 — Selective English expansion\*\*/);
+  assert.match(specification, /P3\.5/);
   assertAcceptedEvidence(specification, 'Portfolio specification');
 });
