@@ -151,9 +151,9 @@ function primaryActionLabel(publication, copy) {
 }
 
 function renderTopics(topics, copy) {
-  return `<ul class="tr-publication-card__topics" aria-label="${escapeHtml(copy.topics)}">${topics
+  return `<div class="tr-publication-card__topics-block"><span class="tr-publication-card__topics-label">${escapeHtml(copy.topics)}</span><ul class="tr-publication-card__topics">${topics
     .map((topic) => `<li>${escapeHtml(topic)}</li>`)
-    .join('')}</ul>`;
+    .join('')}</ul></div>`;
 }
 
 function renderSecondaryLinks(publication, copy, locale) {
