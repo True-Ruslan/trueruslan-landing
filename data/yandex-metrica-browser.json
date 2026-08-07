@@ -1,0 +1,17 @@
+{
+  "provider": "yandex-metrica",
+  "measurement": "aggregate-traffic",
+  "activation": "explicit-consent-required",
+  "providerCookies": "after-consent-only",
+  "consentStorage": "first-party-preference-only",
+  "sessionReplay": false,
+  "clickMap": false,
+  "linkTracking": false,
+  "accurateBounce": false,
+  "trackHash": false,
+  "sendTitle": false,
+  "customEvents": false,
+  "userParameters": false,
+  "ecommerce": false,
+  "noscriptTracking": false
+}

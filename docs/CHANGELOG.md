@@ -1,8 +1,16 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-07**, после exact acceptance P3.6A Measurement readiness; P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-07**, после реального подключения P3.6B Reports API и реализации P3.6C browser collection в PR #158; P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-07 — P3.6B real Reports API connection and P3.6C consent-gated browser collection
+
+P3.6B moved from synthetic-only readiness to a real authenticated Yandex Metrica Reports API connection. The configured repository counter and read-only OAuth access were verified by connection-check run `31201235872` — SUCCESS for completed UTC day 2026-08-06. This accepts the API connection/tooling boundary only; P3.6 measurement remains open.
+
+P3.6C is implemented in **PR #158** with **explicit consent** before any Yandex browser provider request. The final postprocessor is after clean URLs; generated pages contain only a first-party consent controller until opt-in. Webvisor/session replay, Click Map, link tracking, accurate-bounce events, hash tracking, title transmission, custom events, user parameters, ecommerce and noscript tracking are disabled or forbidden. Consent withdrawal disables future collection and denied-state reloads do not load the provider.
+
+P3.6C is **pending production acceptance** until PR #158 is merged, the exact SHA is deployed by Pages with the real counter variable, the final artifact verifier passes, and Production Live Smoke proves a fresh RU/EN context makes zero Yandex provider requests before consent. P3.6 itself remains NOT ACCEPTED pending real observation windows, traffic-sufficiency assessment and human review.
 
 ## 2026-08-07 — P3.6A Measurement readiness
 

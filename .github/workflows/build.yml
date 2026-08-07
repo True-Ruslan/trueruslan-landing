@@ -117,6 +117,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/analytics-browser-smoke.cjs 2>&1 | tee analytics-browser-smoke.log
+      - name: Yandex Metrica consent browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/yandex-metrica-browser-smoke.cjs 2>&1 | tee yandex-metrica-browser-smoke.log
       - name: Metadata and OpenGraph browser smoke
         shell: bash
         run: |
@@ -162,6 +167,7 @@ jobs:
           cp villaigence-search-smoke.log quality-artifacts/villaigence-search-smoke.log 2>/dev/null || true
           cp i18n-browser-smoke.log quality-artifacts/i18n-browser-smoke.log 2>/dev/null || true
           cp analytics-browser-smoke.log quality-artifacts/analytics-browser-smoke.log 2>/dev/null || true
+          cp yandex-metrica-browser-smoke.log quality-artifacts/yandex-metrica-browser-smoke.log 2>/dev/null || true
           cp metadata-smoke.log quality-artifacts/metadata-smoke.log 2>/dev/null || true
           cp engineering-graph-smoke.log quality-artifacts/engineering-graph-smoke.log 2>/dev/null || true
           cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
@@ -183,6 +189,7 @@ jobs:
           cp docs-html/landing/engineering-map/index.html quality-artifacts/engineering-map-generated.html 2>/dev/null || true
           cp docs-html/landing/photos/index.html quality-artifacts/photo-stories-generated.html 2>/dev/null || true
           cp artifacts/browser-summary.json quality-artifacts/browser-summary.json 2>/dev/null || true
+          cp artifacts/yandex-metrica-browser-summary.json quality-artifacts/yandex-metrica-browser-summary.json 2>/dev/null || true
           cp artifacts/vlezet-desktop.png quality-artifacts/vlezet-desktop.png 2>/dev/null || true
           cp artifacts/vlezet-mobile.png quality-artifacts/vlezet-mobile.png 2>/dev/null || true
           cp artifacts/villaigence-desktop.png quality-artifacts/villaigence-desktop.png 2>/dev/null || true

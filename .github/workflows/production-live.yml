@@ -21,6 +21,8 @@ on:
       - 'scripts/production-live-routes.cjs'
       - 'scripts/production-live-routes.test.js'
       - 'scripts/production-live-workflow.test.js'
+      - 'scripts/production-yandex-metrica-consent-smoke.cjs'
+      - 'scripts/production-yandex-metrica-consent-workflow.test.js'
       - 'scripts/production-portfolio-platform-smoke.cjs'
       - 'scripts/production-flagship-normalization-smoke.cjs'
       - 'scripts/production-p3-5b-english-now-smoke.cjs'
@@ -155,6 +157,12 @@ jobs:
           PAGES_UPDATED_AT: ${{ steps.pages.outputs.pages_updated_at }}
           PAGES_RUN_URL: ${{ steps.pages.outputs.pages_run_url }}
         run: node scripts/production-live-smoke.cjs
+
+      - name: Run deployed Yandex Metrica pre-consent smoke
+        if: github.event_name != 'pull_request'
+        env:
+          EXPECTED_DEPLOYED_SHA: ${{ steps.pages.outputs.deployed_sha }}
+        run: node scripts/production-yandex-metrica-consent-smoke.cjs
 
       - name: Run deployed portfolio platform smoke
         if: github.event_name != 'pull_request'
