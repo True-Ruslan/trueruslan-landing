@@ -353,10 +353,21 @@ export function postprocessOutput({
   const projectEvidenceStylesheetTargets = applyProjectEvidenceStylesheet(outputDir, projectEvidenceTargets);
   const noteTargets = applyNoteEnhancements(outputDir, notes);
   const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
+  const publicationProjectLabels = new Map(projects.map(({slug, name}) => [slug, name]));
+  const publicationNoteLabels = new Map(notes.map(({slug, title}) => [slug, title]));
   const publicationShowcaseTarget = publications
     ? applyPublicationsShowcase(outputDir, publications, {
-      projectLabels: new Map(projects.map(({slug, name}) => [slug, name])),
-      noteLabels: new Map(notes.map(({slug, title}) => [slug, title])),
+      locale: 'ru',
+      projectLabels: publicationProjectLabels,
+      noteLabels: publicationNoteLabels,
+    })
+    : null;
+  const publicationShowcaseEnTarget = publications && i18nPairs
+    ? applyPublicationsShowcase(outputDir, publications, {
+      target: 'en/publications.html',
+      locale: 'en',
+      projectLabels: publicationProjectLabels,
+      noteLabels: publicationNoteLabels,
     })
     : null;
   const sourcesKnowledgeBaseTarget = sources
@@ -407,6 +418,7 @@ export function postprocessOutput({
     feedPath,
     feedDiscoveryUpdated,
     publicationShowcaseTarget,
+    publicationShowcaseEnTarget,
     sourcesKnowledgeBaseTarget,
     photoStoryRoutes: photoStories.routes,
     photoStoryIndexPath: photoStories.indexPath,
@@ -437,6 +449,7 @@ function main() {
     console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
     console.log(`Atom feed written: ${result.feedPath}`);
     if (result.publicationShowcaseTarget) console.log(`Publications showcase injected: ${result.publicationShowcaseTarget}`);
+    if (result.publicationShowcaseEnTarget) console.log(`English Publications showcase injected: ${result.publicationShowcaseEnTarget}`);
     if (result.sourcesKnowledgeBaseTarget) console.log(`Sources Knowledge Base injected: ${result.sourcesKnowledgeBaseTarget}`);
     if (result.photoStoryIndexPath) console.log(`Photo Stories written: ${result.photoStoryIndexPath}`);
     console.log(`Engineering Map injected: ${result.engineeringGraphTarget}`);
