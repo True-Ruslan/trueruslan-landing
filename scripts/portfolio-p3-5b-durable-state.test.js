@@ -31,18 +31,19 @@ function assertAcceptanceEvidence(text, label) {
   assert.ok(text.includes(PRODUCTION_DIGEST), `${label} must record the Production Live artifact digest`);
 }
 
-test('ROADMAP closes P3.5B and makes P3.5C the next bounded slice', () => {
+test('ROADMAP preserves P3.5B acceptance after P3.5C and advances only to P3.6', () => {
   const roadmap = read('docs/ROADMAP.md');
   assert.match(roadmap, /### P3\.5B — English \/now — DONE/);
-  assert.match(roadmap, /### P3\.5C — English Publications — NEXT/);
+  assert.match(roadmap, /### P3\.5C — English Publications — DONE/);
+  assert.match(roadmap, /P3\.6 — Measurement checkpoint — NEXT/);
   assertAcceptanceEvidence(roadmap, 'ROADMAP');
 });
 
-test('PROJECT_STATE records P3.5B as latest accepted product truth', () => {
+test('PROJECT_STATE preserves P3.5B exact acceptance after later product truth advances', () => {
   const state = read('docs/PROJECT_STATE.md');
-  assert.match(state, /Latest accepted product truth[\s\S]*P3\.5B — English \/now/);
+  assert.match(state, /Latest accepted product truth[\s\S]*P3\.5C — English Publications/);
   assert.match(state, /P3\.5B exact production acceptance/);
-  assert.match(state, /P3\.5C — English Publications — NEXT/);
+  assert.match(state, /P3\.5C exact production acceptance/);
   assertAcceptanceEvidence(state, 'PROJECT_STATE');
 });
 
@@ -54,10 +55,11 @@ test('CHANGELOG records the P3.5B feature, production verifier correction and ex
   assertAcceptanceEvidence(changelog, 'CHANGELOG');
 });
 
-test('Portfolio 1.0 spec advances from accepted P3.5B to P3.5C next', () => {
+test('Portfolio 1.0 spec preserves accepted P3.5B while P3.5C is accepted and P3.6 is next', () => {
   const spec = read('docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md');
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.5B ACCEPTED IN PRODUCTION\*\*/);
+  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.5C ACCEPTED IN PRODUCTION\*\*/);
   assert.match(spec, /### P3\.5B — English \/now — DONE/);
-  assert.match(spec, /### P3\.5C — English Publications — NEXT/);
+  assert.match(spec, /### P3\.5C — English Publications — DONE/);
+  assert.match(spec, /P3\.6 — Measurement checkpoint — NEXT/);
   assertAcceptanceEvidence(spec, 'Portfolio 1.0 spec');
 });

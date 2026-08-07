@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5B English /now.
+> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5C English Publications.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -57,6 +57,7 @@
 - P3.4F Evidence-driven Project State Note and Pages recovery contract — PR #141–#145.
 - P3.5A English Vlezet flagship — PR #148.
 - P3.5B English /now — PR #150/#151.
+- P3.5C English Publications — PR #153.
 
 ---
 
@@ -295,13 +296,28 @@ production artifact:            8987452957
 production digest:              sha256:2fe174a95fca6daa28d261f281576597d6d383d432a7a0cc32f9cdbb231d08b5
 ```
 
-### P3.5C — English Publications — NEXT
+### P3.5C — English Publications — DONE
 
-Translate the Publications presentation as a separate bounded slice while preserving the same canonical publication registry and single generated search. Do not create a second publication-state registry or a second site-wide search owner.
+Accepted route: `/en/publications/`. English presentation reuses the same canonical `data/publications.json`; original titles, source language and Habr canonical URLs remain bibliographic identity. English summaries/topics, Catalogue, Featured and semantic no-JavaScript fallback are localized without a second publication registry or search owner. The single generated Diplodoc search is verified with registry-derived English content rather than snippet wording.
 
-## P3.6 — Measurement checkpoint
+```text
+PR #153 squash / deployed SHA:  f189d100785f0aea363df306fb7a923c06ee61a2
+Build:                          #1158 / 31179795922 — SUCCESS
+quality artifact:               8994422472
+quality digest:                 sha256:60ccfc9a37515a6a78bea2b8876e05e3119581d72b90ab4a1a8d2954a3da26d0
+Pages:                          #182 / 31180427543 — SUCCESS
+Pages deployment ID:            5794904843
+Pages artifact:                 8994536006
+Pages artifact digest:          sha256:847a0705f2ce1896a2046abdfec428b4c4ef43cf39270f62fb675b3e785468b1
+Production Live Smoke:          #263 / 31180478038 — SUCCESS
+P3.5C English Publications smoke: PASS
+production artifact:            8994603193
+production digest:              sha256:f7eedbffc29f7f8ed322cf14d654ad19f0cc35fca3e53aa1bcd64000ca652d80
+```
 
-After sufficient aggregate traffic, compare aggregate traffic and clean-route indexing without making engagement claims from insufficient data.
+## P3.6 — Measurement checkpoint — NEXT
+
+After sufficient aggregate traffic, compare aggregate traffic and clean-route indexing without making engagement claims from insufficient data. P3.6 is an observation checkpoint, not permission to infer engagement or product impact from an insufficient sample.
 
 ---
 
@@ -313,4 +329,4 @@ After sufficient aggregate traffic, compare aggregate traffic and clean-route in
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Continue with **P3.5C — English Publications**.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Continue with **P3.6 — Measurement checkpoint**, but do not infer engagement until sufficient aggregate traffic exists.

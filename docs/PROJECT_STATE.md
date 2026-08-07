@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5B English /now.
+> Последнее смысловое обновление: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5C English Publications.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -33,12 +33,12 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 
 Последний принятый user-facing milestone:
 
-**P3.5B — English /now**.
+**P3.5C — English Publications**.
 
 Production route:
 
 ```text
-/en/now/
+/en/publications/
 ```
 
 Inherited evidence model from P3.4F:
@@ -159,6 +159,32 @@ production digest:              sha256:2fe174a95fca6daa28d261f281576597d6d383d43
 ```
 
 P3.5B is accepted only on exact deployed SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`; PR #150 repository/build success and the earlier failed production-verifier run are not treated as equivalent production acceptance.
+
+### P3.5C exact production acceptance
+
+P3.5C publishes `/en/publications/` without creating a second publication registry or search owner. `data/publications.json` remains canonical: original publication titles, source language and Habr canonical URLs remain bibliographic identity, while English summaries and topics are bounded presentation fields in the same records. Catalogue, Featured, semantic no-JavaScript fallback and the single generated Diplodoc search are verified independently.
+
+Feature verification exposed two test-model boundaries without weakening product requirements: localization assertions were scoped to UI nodes so original Russian bibliographic titles remain valid, and the Topics label moved from sanitizer-sensitive `aria-label` to real screen-reader-only DOM text that survives Diplodoc output. Search acceptance uses unique registry-derived English text `syntax overhead` and asserts the `/en/publications/` route rather than depending on bounded snippet wording.
+
+```text
+PR #153 squash / deployed SHA:  f189d100785f0aea363df306fb7a923c06ee61a2
+Build:                          #1158 / 31179795922 — SUCCESS
+quality artifact:               8994422472
+quality digest:                 sha256:60ccfc9a37515a6a78bea2b8876e05e3119581d72b90ab4a1a8d2954a3da26d0
+CodeQL:                         #663 / 31179795959 — SUCCESS
+Dependency Review:              #586 / 31179796022 — SUCCESS
+Distribution Readiness:         #137 / 31179795919 — SUCCESS
+Pages:                          #182 / 31180427543 — SUCCESS
+Pages deployment ID:            5794904843
+Pages artifact:                 8994536006
+Pages artifact digest:          sha256:847a0705f2ce1896a2046abdfec428b4c4ef43cf39270f62fb675b3e785468b1
+Production Live Smoke:          #263 / 31180478038 — SUCCESS
+P3.5C English Publications smoke: PASS
+production artifact:            8994603193
+production digest:              sha256:f7eedbffc29f7f8ed322cf14d654ad19f0cc35fca3e53aa1bcd64000ca652d80
+```
+
+P3.5C is accepted only on exact deployed SHA `f189d100785f0aea363df306fb7a923c06ee61a2`; exact-head CI without the corresponding Pages deployment identity and Production Live Smoke is not equivalent production acceptance.
 
 ---
 
