@@ -13,6 +13,7 @@ const REQUIRED_PAIRS = [
   'resume',
   'projects',
   'now',
+  'publications',
   'livingworld',
   'vlezet',
   'portfolio-platform',
@@ -25,7 +26,7 @@ const validPairs = [
   {id: 'about', ru: 'landing/about.html', en: 'en/about.html'},
 ];
 
-test('canonical i18n manifest contains the controlled ten-page milestone', () => {
+test('canonical i18n manifest contains the controlled eleven-page milestone', () => {
   const pairs = loadI18nManifest();
   assert.deepEqual(pairs.map((pair) => pair.id).sort(), [...REQUIRED_PAIRS].sort());
 });
