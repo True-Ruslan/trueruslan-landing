@@ -33,11 +33,13 @@ test('durable state preserves P3.5A exact production evidence after later P3.5 s
 
   assert.match(roadmap, /P3\.5A[^\n]*(DONE|accepted)/i);
   assert.match(roadmap, /P3\.5B[^\n]*English[^\n]*\/now[^\n]*(DONE|accepted)/i);
-  assert.match(roadmap, /P3\.5C[^\n]*Publications[^\n]*NEXT/i);
+  assert.match(roadmap, /P3\.5C[^\n]*Publications[^\n]*(DONE|accepted)/i);
+  assert.match(roadmap, /P3\.6[^\n]*Measurement checkpoint[^\n]*NEXT/i);
 
   assert.match(spec, /P3\.5A[^\n]*(DONE|accepted)/i);
   assert.match(spec, /P3\.5B[^\n]*English[^\n]*\/now[^\n]*(DONE|accepted)/i);
-  assert.match(spec, /P3\.5C[^\n]*Publications[^\n]*NEXT/i);
+  assert.match(spec, /P3\.5C[^\n]*Publications[^\n]*(DONE|accepted)/i);
+  assert.match(spec, /P3\.6[^\n]*Measurement checkpoint[^\n]*NEXT/i);
 
   assert.match(changelog, /P3\.5A[^\n]*English Vlezet/i);
 });
