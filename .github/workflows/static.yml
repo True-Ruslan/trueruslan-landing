@@ -69,6 +69,8 @@ jobs:
           ANALYTICS_SITE_TOKEN: ${{ vars.TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN }}
         run: node scripts/analytics-deployment.js
       - name: Build docs
+        env:
+          TR_YANDEX_METRIKA_COUNTER_ID: ${{ vars.YANDEX_METRIKA_COUNTER_ID }}
         run: npm run build:docs
       - name: Check generated site integrity
         run: npm run check:site
@@ -81,6 +83,23 @@ jobs:
             expectation: process.env.ANALYTICS_EXPECTATION,
             token: process.env.TR_CLOUDFLARE_WEB_ANALYTICS_TOKEN,
           });
+          console.log(JSON.stringify(result, null, 2));
+          if (!result.ok) process.exit(1);
+          NODE
+      - name: Verify generated Yandex Metrica consent state
+        env:
+          TR_YANDEX_METRIKA_COUNTER_ID: ${{ vars.YANDEX_METRIKA_COUNTER_ID }}
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import {
+            verifyMetricaBrowserArtifact,
+            writeMetricaBrowserDeploymentReport,
+          } from './scripts/yandex-metrica-browser-deployment.js';
+          const result = verifyMetricaBrowserArtifact('docs-html', {
+            counterId: process.env.TR_YANDEX_METRIKA_COUNTER_ID,
+          });
+          writeMetricaBrowserDeploymentReport(result, 'metrica-browser-deployment-report.json');
           console.log(JSON.stringify(result, null, 2));
           if (!result.ok) process.exit(1);
           NODE
@@ -118,5 +137,6 @@ jobs:
             production-smoke-report.json
             site-deployment-contract.json
             analytics-deployment-contract.json
+            metrica-browser-deployment-report.json
           if-no-files-found: warn
           retention-days: 14
