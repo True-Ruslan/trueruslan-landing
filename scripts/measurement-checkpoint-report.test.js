@@ -12,6 +12,7 @@ import {
 function fixture() {
   return {
     schemaVersion: 1,
+    evidenceClass: 'operator-observed',
     cleanUrlMigrationAt: '2026-08-05T00:00:00Z',
     baseline: {
       window: {start: '2026-07-22T00:00:00Z', end: '2026-08-04T23:59:59Z'},
@@ -61,6 +62,7 @@ test('runMeasurementCheckpointReport writes only derived JSON and Markdown evide
 
     const result = runMeasurementCheckpointReport({inputPath, outputDir, minimumObservationDays: 10});
     assert.equal(result.report.status, 'ready-for-human-review');
+    assert.equal(result.report.evidence.class, 'operator-observed');
     assert.equal(path.basename(result.jsonPath), 'measurement-checkpoint-report.json');
     assert.equal(path.basename(result.markdownPath), 'measurement-checkpoint-report.md');
     assert.equal(fs.existsSync(result.jsonPath), true);
@@ -73,6 +75,7 @@ test('runMeasurementCheckpointReport writes only derived JSON and Markdown evide
     assert.equal(JSON.stringify(stored).includes('sessionId'), false);
 
     const markdown = fs.readFileSync(result.markdownPath, 'utf8');
+    assert.match(markdown, /Evidence class: \*\*operator-observed\*\*/);
     assert.match(markdown, /ready-for-human-review/);
     assert.match(markdown, /No automatic engagement conclusion/);
   } finally {
