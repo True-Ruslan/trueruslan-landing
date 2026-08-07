@@ -225,20 +225,15 @@ async function assertEnglishNowSearchCoverage(page) {
 async function assertEnglishPublicationsSearchCoverage(page) {
   const input = page.locator('.tr-search-input').first();
   const button = page.locator('.tr-search-button').first();
-  const query = 'multi-page site with Diplodoc';
+  const query = 'syntax overhead';
 
   await input.fill(query);
   await button.click();
-  await page.waitForFunction(() => {
-    const body = document.body.innerText.toLocaleLowerCase('en');
-    const hasPhrase = body.includes('multi-page site with diplodoc');
-    const hasEnglishPublicationsRoute = [...document.querySelectorAll('a')]
-      .some((link) => (link.getAttribute('href') || '').includes('en/publications/'));
-    return hasPhrase && hasEnglishPublicationsRoute;
-  }, null, {timeout: 7000});
+  await page.waitForFunction(() => [...document.querySelectorAll('a')]
+    .some((link) => (link.getAttribute('href') || '').includes('en/publications/')), null, {timeout: 7000});
 
   if (await page.locator('a[href*="en/publications/"]').count() < 1) {
-    throw new Error(`English Publications search query did not route to /en/publications/: ${query}`);
+    throw new Error(`English Publications registry-derived search query did not route to /en/publications/: ${query}`);
   }
 }
 

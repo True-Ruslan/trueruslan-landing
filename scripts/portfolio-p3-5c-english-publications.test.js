@@ -96,6 +96,7 @@ test('P3.5C keeps one generated search and integrates English Publications acros
 
   const searchSmoke = read('scripts/search-smoke.cjs');
   assert.match(searchSmoke, /assertEnglishPublicationsSearchCoverage/);
+  assert.match(searchSmoke, /syntax overhead/);
   assert.match(searchSmoke, /en\/publications\//);
 
   const i18nSmoke = read('scripts/i18n-browser-smoke.cjs');

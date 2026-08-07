@@ -29,7 +29,7 @@ test('P3.5C production smoke pins English Publications route, canonical identiti
   assert.match(source, /Read on Habr/);
   assert.match(source, /August 23, 2025/);
   assert.match(source, /data-tr-publications-noscript=\\?"en\\?"/);
-  assert.match(source, /multi-page site with Diplodoc/);
+  assert.match(source, /syntax overhead/);
   assert.match(source, /en\/publications\//);
   assert.match(source, /LEGACY_ORIGIN/);
   assert.doesNotMatch(source, /bodyText\.includes\('Author'\)/);

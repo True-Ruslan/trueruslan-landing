@@ -173,11 +173,12 @@ async function verifySearch(page) {
   assert(response?.ok(), `generated search returned HTTP ${response?.status() ?? 'none'}`);
   const input = page.locator('.tr-search-input').first();
   const button = page.locator('.tr-search-button').first();
-  await input.fill('multi-page site with Diplodoc');
+  const query = 'syntax overhead';
+  await input.fill(query);
   await button.click();
   await page.waitForFunction(() => [...document.querySelectorAll('a')]
     .some((link) => (link.getAttribute('href') || '').includes('en/publications/')), null, {timeout: 10000});
-  assert(await page.locator('a[href*="en/publications/"]').count() >= 1, 'generated search does not expose English Publications route');
+  assert(await page.locator('a[href*="en/publications/"]').count() >= 1, `generated search does not expose English Publications for registry-derived query: ${query}`);
   return {route: SEARCH_URL, englishPublicationsFound: true};
 }
 
