@@ -1,0 +1,118 @@
+name: Measurement Checkpoint
+
+on:
+  workflow_dispatch:
+    inputs:
+      minimum_observation_days:
+        description: Minimum days since the clean-URL migration
+        required: true
+        default: '10'
+        type: string
+  pull_request:
+    paths:
+      - '.github/workflows/measurement-checkpoint.yml'
+      - 'scripts/measurement-checkpoint.js'
+      - 'scripts/measurement-checkpoint-report.js'
+      - 'scripts/measurement-checkpoint*.test.js'
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/measurement-checkpoint.yml'
+      - 'scripts/measurement-checkpoint.js'
+      - 'scripts/measurement-checkpoint-report.js'
+      - 'scripts/measurement-checkpoint*.test.js'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: measurement-checkpoint-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  measurement-checkpoint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      MEASUREMENT_OUTPUT: measurement-artifacts
+      MINIMUM_OBSERVATION_DAYS: ${{ github.event_name == 'workflow_dispatch' && inputs.minimum_observation_days || '10' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Synthetic aggregate measurement fixture
+        if: github.event_name != 'workflow_dispatch'
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/measurement-observations.json" <<'JSON'
+          {
+            "schemaVersion": 1,
+            "evidenceClass": "synthetic",
+            "cleanUrlMigrationAt": "2026-08-05T00:00:00Z",
+            "baseline": {
+              "window": {"start": "2026-07-22T00:00:00Z", "end": "2026-08-04T23:59:59Z"},
+              "cloudflare": {"pageviews": 80},
+              "search": {
+                "google": {"impressions": 30, "clicks": 3, "indexedCleanUrls": 4, "indexedLegacyHtmlUrls": 11},
+                "yandex": {"impressions": 20, "clicks": 2, "indexedCleanUrls": 3, "indexedLegacyHtmlUrls": 12}
+              }
+            },
+            "current": {
+              "window": {"start": "2026-08-05T00:00:00Z", "end": "2026-08-18T23:59:59Z"},
+              "cloudflare": {"pageviews": 110},
+              "search": {
+                "google": {"impressions": 45, "clicks": 4, "indexedCleanUrls": 10, "indexedLegacyHtmlUrls": 5},
+                "yandex": {"impressions": 32, "clicks": 3, "indexedCleanUrls": 9, "indexedLegacyHtmlUrls": 6}
+              }
+            },
+            "operatorAssessment": {
+              "aggregateTrafficSufficient": true,
+              "assessedAt": "2026-08-19T08:00:00Z",
+              "basis": "Synthetic aggregate fixture proves the deterministic report pipeline only; it is not production measurement evidence."
+            }
+          }
+          JSON
+
+      - name: Materialize manual aggregate observations
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          P3_6_MEASUREMENT_OBSERVATIONS_JSON: ${{ secrets.P3_6_MEASUREMENT_OBSERVATIONS_JSON }}
+        run: |
+          if [[ -z "$P3_6_MEASUREMENT_OBSERVATIONS_JSON" ]]; then
+            echo "P3_6_MEASUREMENT_OBSERVATIONS_JSON is required for a manual measurement checkpoint." >&2
+            exit 1
+          fi
+          printf '%s' "$P3_6_MEASUREMENT_OBSERVATIONS_JSON" > "$RUNNER_TEMP/measurement-observations.json"
+          chmod 600 "$RUNNER_TEMP/measurement-observations.json"
+
+      - name: Generate bounded measurement report
+        shell: bash
+        run: |
+          node scripts/measurement-checkpoint-report.js \
+            --input "$RUNNER_TEMP/measurement-observations.json" \
+            --output-dir "$MEASUREMENT_OUTPUT" \
+            --minimum-observation-days "$MINIMUM_OBSERVATION_DAYS"
+
+      - name: Publish report summary
+        shell: bash
+        run: cat "$MEASUREMENT_OUTPUT/measurement-checkpoint-report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload measurement evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: measurement-checkpoint-report
+          path: |
+            measurement-artifacts/measurement-checkpoint-report.json
+            measurement-artifacts/measurement-checkpoint-report.md
+          if-no-files-found: error
+          retention-days: 30
