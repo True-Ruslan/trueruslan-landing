@@ -47,6 +47,10 @@ test('production live smoke uses repository-native clean canonical routes', () =
     routes.VILLAIGENCE_EN_URL,
     'https://trueruslan.ru/en/projects/livingworld/',
   );
+  assert.equal(
+    routes.VLEZET_EN_URL,
+    'https://trueruslan.ru/en/projects/vlezet/',
+  );
 });
 
 test('production live smoke preserves explicit legacy route coverage', () => {

@@ -6,6 +6,7 @@ const {
   VILLAIGENCE_URL,
   VLEZET_URL,
   VILLAIGENCE_EN_URL,
+  VLEZET_EN_URL,
 } = require('./production-live-routes.cjs');
 
 const {chromium} = requireQualityTool('playwright', 'Flagship normalization production smoke');
@@ -69,6 +70,7 @@ async function verifyCaseStudy(page, {
   relatedHrefFragments,
   alternateUrl,
   requireEvidence,
+  requireTimeline = requireEvidence,
 }) {
   const response = await page.goto(url, {waitUntil: 'networkidle', timeout: 45000});
   assert(response?.ok(), `${locale} ${slug} returned HTTP ${response?.status() ?? 'none'}`);
@@ -119,7 +121,9 @@ async function verifyCaseStudy(page, {
     for (const marker of evidenceMarkers) {
       assert(evidenceText.includes(marker), `${locale} ${slug} evidence misses ${marker}`);
     }
+  }
 
+  if (requireTimeline) {
     const timeline = page.locator('.tr-project-timeline');
     await timeline.waitFor({state: 'visible', timeout: 10000});
     assert(
@@ -149,6 +153,8 @@ async function verifyCaseStudy(page, {
     statusText,
     headings,
     related,
+    evidenceChecked: requireEvidence,
+    timelineChecked: requireTimeline,
     legacyOriginAbsent: true,
   };
 }
@@ -167,6 +173,7 @@ async function main() {
     livingworldRu: {},
     vlezetRu: {},
     livingworldEn: {},
+    vlezetEn: {},
     diagnostics: {
       pageErrors: [],
       firstPartyRequestFailures: [],
@@ -256,7 +263,7 @@ async function main() {
         'probabilistic-proposals-deterministic-authority',
         'green-ci-is-not-product-verification',
       ],
-      alternateUrl: null,
+      alternateUrl: VLEZET_EN_URL,
       requireEvidence: true,
     });
 
@@ -291,6 +298,42 @@ async function main() {
       ],
       alternateUrl: VILLAIGENCE_URL,
       requireEvidence: false,
+    });
+
+    summary.vlezetEn = await verifyCaseStudy(page, {
+      slug: 'vlezet',
+      locale: 'en',
+      url: VLEZET_EN_URL,
+      headingMarker: 'Vlezet',
+      expectedHeadings: [
+        'Problem',
+        'Constraints',
+        'Current lifecycle',
+        'Architecture',
+        'Alternatives',
+        'Evidence boundary',
+        'Known limitations',
+        'Next accepted step',
+        'Related material',
+        'Retrospective',
+      ],
+      requiredText: [
+        'M7.8B',
+        'M7.8C',
+        'PR #42',
+        'PR #44',
+        'PR #45',
+        'product-owner retest',
+        'ACTIVE DEVELOPMENT',
+      ],
+      evidenceMarkers: ['M7.8C', 'PR #44', 'PR #45'],
+      relatedHrefFragments: [
+        'probabilistic-proposals-deterministic-authority',
+        'green-ci-is-not-product-verification',
+      ],
+      alternateUrl: VLEZET_URL,
+      requireEvidence: true,
+      requireTimeline: false,
     });
 
     assert(summary.diagnostics.pageErrors.length === 0, `page errors: ${summary.diagnostics.pageErrors.join(' | ')}`);

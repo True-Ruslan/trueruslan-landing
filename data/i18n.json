@@ -4,6 +4,7 @@
   {"id":"resume","ru":"landing/resume.html","en":"en/resume.html"},
   {"id":"projects","ru":"landing/projects.html","en":"en/projects.html"},
   {"id":"livingworld","ru":"landing/projects/livingworld.html","en":"en/projects/livingworld.html"},
+  {"id":"vlezet","ru":"landing/projects/vlezet.html","en":"en/projects/vlezet.html"},
   {"id":"portfolio-platform","ru":"landing/projects/portfolio-platform.html","en":"en/projects/portfolio-platform.html"},
   {"id":"note-ai-npcs","ru":"landing/notes/server-authoritative-ai-npcs.html","en":"en/notes/server-authoritative-ai-npcs.html"},
   {"id":"note-llm-protocol-boundary","ru":"landing/notes/llm-output-is-a-protocol-boundary.html","en":"en/notes/llm-output-is-a-protocol-boundary.html"}

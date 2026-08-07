@@ -63,6 +63,11 @@ export const REQUIRED_PROJECT_EVIDENCE = Object.freeze([
   'vlezet',
   'portfolio-platform',
 ]);
+export const LOCALIZED_PROJECT_EVIDENCE_TARGETS = Object.freeze({
+  vlezet: Object.freeze([
+    Object.freeze({path: 'en/projects/vlezet.html', locale: 'en'}),
+  ]),
+});
 const PROJECT_EVIDENCE_STYLESHEET = '_assets/style/project-evidence.css';
 
 const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
@@ -220,6 +225,7 @@ function loadPhotoRegistries(photoAlbumsPath, photoArchivePath, docsDir) {
 
 function englishProjectHref(href) {
   if (href === 'landing/projects/livingworld.html') return 'en/projects/livingworld.html';
+  if (href === 'landing/projects/vlezet.html') return 'en/projects/vlezet.html';
   if (href === 'landing/projects/portfolio-platform.html') return 'en/projects/portfolio-platform.html';
   if (href === 'landing/projects.html') return 'en/projects.html';
   return href;
@@ -322,6 +328,7 @@ export function postprocessOutput({
           'landing/projects.html',
           'en/projects.html',
           'en/projects/livingworld.html',
+          'en/projects/vlezet.html',
           'en/projects/portfolio-platform.html',
         ],
       }
@@ -330,7 +337,10 @@ export function postprocessOutput({
   const nowPageTarget = applyNowPage(outputDir, nowData, projects);
   const timelineTargets = applyProjectTimelines(outputDir, projects, projectHistoryDir);
   const projectEvidenceTargets = projectEvidence
-    ? applyProjectEvidence(outputDir, projectEvidence, {requiredProjects: REQUIRED_PROJECT_EVIDENCE})
+    ? applyProjectEvidence(outputDir, projectEvidence, {
+      requiredProjects: REQUIRED_PROJECT_EVIDENCE,
+      targetsByProject: i18nPairs ? LOCALIZED_PROJECT_EVIDENCE_TARGETS : {},
+    })
     : [];
   const projectEvidenceStylesheetTargets = applyProjectEvidenceStylesheet(outputDir, projectEvidenceTargets);
   const noteTargets = applyNoteEnhancements(outputDir, notes);

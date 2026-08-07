@@ -330,6 +330,16 @@
     "accent": "green"
   },
   {
+    "path": "en/projects/vlezet.html",
+    "card": "vlezet-en",
+    "title": "Vlezet — Precise Apartment Geometry and Recognition",
+    "description": "English case study of a local-first apartment planner with millimetre geometry, derived rooms, furniture fit and reviewable CV/LLM recognition Drafts.",
+    "displayTitle": "VLEZET",
+    "kicker": "GEOMETRY AND RECOGNITION",
+    "tags": ["TYPESCRIPT", "GEOMETRY", "COMPUTER VISION"],
+    "accent": "cyan"
+  },
+  {
     "path": "en/projects/portfolio-platform.html",
     "card": "portfolio-platform-en",
     "title": "TrueRuslan Landing — Static-First Portfolio Platform",

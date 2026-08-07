@@ -182,6 +182,26 @@ async function assertPublicationSearchCoverage(page) {
   }
 }
 
+async function assertEnglishVlezetSearchCoverage(page) {
+  const input = page.locator('.tr-search-input').first();
+  const button = page.locator('.tr-search-button').first();
+  const query = 'precise apartment geometry without CAD';
+
+  await input.fill(query);
+  await button.click();
+  await page.waitForFunction(() => {
+    const body = document.body.innerText.toLocaleLowerCase('en');
+    const hasPhrase = body.includes('precise apartment geometry without cad');
+    const hasEnglishVlezetRoute = [...document.querySelectorAll('a')]
+      .some((link) => (link.getAttribute('href') || '').includes('en/projects/vlezet/'));
+    return hasPhrase && hasEnglishVlezetRoute;
+  }, null, {timeout: 7000});
+
+  if (await page.locator('a[href*="en/projects/vlezet/"]').count() < 1) {
+    throw new Error(`English Vlezet search query did not route to the English case study: ${query}`);
+  }
+}
+
 async function assertSameOriginBackNavigation(page, baseUrl) {
   const sourcePath = '/landing/projects/';
   const sourceUrl = `${baseUrl}${sourcePath}`;
@@ -247,6 +267,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
 
     if (name === 'desktop') {
       await assertPublicationSearchCoverage(page);
+      await assertEnglishVlezetSearchCoverage(page);
       await assertSameOriginBackNavigation(page, baseUrl);
     }
     diagnostics.assertClean(name);
@@ -261,6 +282,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
       backNavigation: true,
       controlVisuals: true,
       publicationQueries: name === 'desktop' ? 3 : 0,
+      englishVlezetQueries: name === 'desktop' ? 1 : 0,
     };
   } finally {
     await runtime.close();
