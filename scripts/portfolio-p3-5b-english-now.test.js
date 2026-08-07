@@ -9,6 +9,10 @@ import {loadNowData, renderNowContent} from './now-page.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 
+function read(relativePath) {
+  return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+}
+
 const projects = [{
   slug: 'livingworld',
   name: 'VillAIgence',
@@ -49,7 +53,7 @@ test('English now renderer localizes presentation and keeps project identity reg
 });
 
 test('English now route is wired into one i18n, metadata and navigation architecture', () => {
-  const i18n = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'i18n.json'), 'utf8'));
+  const i18n = JSON.parse(read('data/i18n.json'));
   const pair = i18n.find(({id}) => id === 'now');
   assert.deepEqual(pair, {
     id: 'now',
@@ -57,16 +61,41 @@ test('English now route is wired into one i18n, metadata and navigation architec
     en: 'en/now.html',
   });
 
-  const pageMeta = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'page-meta.json'), 'utf8'));
+  const pageMeta = JSON.parse(read('data/page-meta.json'));
   const meta = pageMeta.find(({path: pagePath}) => pagePath === 'en/now.html');
   assert.equal(meta?.title, 'Now — Ruslan Nemykin');
   assert.match(meta?.description ?? '', /current engineering focus/i);
 
-  const source = fs.readFileSync(path.join(ROOT, 'docs', 'en', 'now.md'), 'utf8');
+  const source = read('docs/en/now.md');
   assert.match(source, /^# Now$/m);
   assert.match(source, /data-tr-now-placeholder/);
   assert.doesNotMatch(source, /[А-Яа-яЁё]/);
 
-  const toc = fs.readFileSync(path.join(ROOT, 'docs', 'toc.yaml'), 'utf8');
+  const toc = read('docs/toc.yaml');
   assert.match(toc, /name: Now\s+href: \.\/en\/now\.md/);
+});
+
+test('English now is covered by browser, generated-search and exact-deployment gates', () => {
+  const copyAssets = read('scripts/copy-assets.js');
+  assert.match(copyAssets, /target: 'en\/now\.html'/);
+  assert.match(copyAssets, /locale: 'en'/);
+  assert.match(copyAssets, /hrefTransform: englishProjectHref/);
+
+  const i18nSmoke = read('scripts/i18n-browser-smoke.cjs');
+  assert.match(i18nSmoke, /id: 'now'/);
+  assert.match(i18nSmoke, /data-tr-now-noscript=\\?"en\\?"/);
+  assert.match(i18nSmoke, /Current work/);
+
+  const searchSmoke = read('scripts/search-smoke.cjs');
+  assert.match(searchSmoke, /assertEnglishNowSearchCoverage/);
+  assert.match(searchSmoke, /en\/now\//);
+
+  const routes = read('scripts/production-live-routes.cjs');
+  assert.match(routes, /NOW_EN_PATH = 'en\/now\/'/);
+  assert.match(routes, /NOW_EN_URL/);
+
+  assert.equal(fs.existsSync(path.join(ROOT, 'scripts', 'production-p3-5b-english-now-smoke.cjs')), true);
+  const workflow = read('.github/workflows/production-live.yml');
+  assert.match(workflow, /production-p3-5b-english-now-smoke\.cjs/);
+  assert.match(workflow, /Run deployed P3\.5B English Now smoke/);
 });
