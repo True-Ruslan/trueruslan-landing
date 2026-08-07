@@ -4,45 +4,208 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  p3-6a-state-patch:
-    if: github.actor != 'github-actions[bot]' && github.head_ref == 'docs/p3-6a-readiness-acceptance'
+  build-docs:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 40
     steps:
-      - name: Checkout P3.6A closure branch
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: docs/p3-6a-readiness-acceptance
-          persist-credentials: true
-
+          persist-credentials: false
       - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '24'
-
-      - name: Apply deterministic P3.6A durable-state patch
-        run: node scripts/temp-p3-6a-state-patch.cjs
-
-      - name: Verify patch
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Test
         shell: bash
         run: |
-          git diff --check
-          git status --short
-
-      - name: Commit patched durable state
+          set -o pipefail
+          npm test 2>&1 | tee test.log
+      - name: Build docs
         shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            docs/PROJECT_STATE.md \
-            docs/ROADMAP.md \
-            docs/CHANGELOG.md \
-            docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md \
-            docs/keystone/specs/2026-08-07-p3-6-measurement-readiness.md
-          git diff --cached --quiet && { echo "Expected durable-state patch produced no changes" >&2; exit 1; }
-          git commit -m "docs: close P3.6A readiness acceptance"
-          git push origin HEAD:docs/p3-6a-readiness-acceptance
+          set -o pipefail
+          npm run build:docs 2>&1 | tee build-docs.log
+      - name: Check generated site integrity
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run check:site 2>&1 | tee site-integrity.log
+      - name: Install pinned browser quality tools
+        run: >-
+          npm install --prefix .quality-tools --package-lock=false --no-save
+          playwright@1.61.1 @axe-core/playwright@4.12.1 lighthouse@13.4.0 pngjs@7.0.0
+      - name: Mobile layout overflow smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/layout-overflow-smoke.cjs 2>&1 | tee layout-overflow.log
+      - name: Install Firefox and WebKit for compatibility smoke
+        run: node .quality-tools/node_modules/playwright/cli.js install --with-deps firefox webkit
+      - name: Browser smoke, accessibility and Lighthouse
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/browser-quality.cjs 2>&1 | tee browser-quality.log
+      - name: Publications browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/publications-browser-smoke.cjs 2>&1 | tee publications-browser-smoke.log
+      - name: Sources Knowledge Base browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/sources-knowledge-base-smoke.cjs 2>&1 | tee sources-knowledge-base-smoke.log
+      - name: Project Evidence browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/project-evidence-smoke.cjs 2>&1 | tee project-evidence-smoke.log
+      - name: VillAIgence diagram browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/villaigence-diagram-smoke.cjs 2>&1 | tee villaigence-diagram-smoke.log
+      - name: NODE ZERO diagram browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/node-zero-diagram-smoke.cjs 2>&1 | tee node-zero-diagram-smoke.log
+      - name: Photo Stories browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/photo-stories-browser-smoke.cjs 2>&1 | tee photo-stories-browser-smoke.log
+      - name: Portfolio v0.3 browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/v03-browser-smoke.cjs 2>&1 | tee v03-browser-smoke.log
+      - name: Firefox and WebKit compatibility smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/cross-browser-smoke.cjs 2>&1 | tee cross-browser-smoke.log
+      - name: Generated search browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/search-smoke.cjs 2>&1 | tee search-smoke.log
+      - name: VillAIgence generated search smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/villaigence-search-smoke.cjs 2>&1 | tee villaigence-search-smoke.log
+      - name: Minimal RU EN browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/i18n-browser-smoke.cjs 2>&1 | tee i18n-browser-smoke.log
+      - name: Privacy-friendly analytics browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/analytics-browser-smoke.cjs 2>&1 | tee analytics-browser-smoke.log
+      - name: Metadata and OpenGraph browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/metadata-smoke.cjs 2>&1 | tee metadata-smoke.log
+      - name: Engineering Map browser and accessibility smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/engineering-graph-smoke.cjs 2>&1 | tee engineering-graph-smoke.log
+      - name: Visual regression
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/visual-regression.cjs 2>&1 | tee visual-regression.log
+      - name: Verify custom domain artifact
+        shell: bash
+        run: |
+          set -o pipefail
+          rm -rf docs-html
+          SITE_URL=https://trueruslan.ru npm run build:docs 2>&1 | tee custom-domain-build.log
+          npm run check:site 2>&1 | tee custom-domain-integrity.log
+          node scripts/site-artifact.js docs-html https://trueruslan.ru https://true-ruslan.github.io/trueruslan-landing 2>&1 | tee custom-domain-artifact.log
+      - name: Preserve quality diagnostics
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p quality-artifacts
+          cp test.log quality-artifacts/test.log 2>/dev/null || true
+          cp build-docs.log quality-artifacts/build-docs.log 2>/dev/null || true
+          cp site-integrity.log quality-artifacts/site-integrity.log 2>/dev/null || true
+          cp layout-overflow.log quality-artifacts/layout-overflow.log 2>/dev/null || true
+          cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
+          cp publications-browser-smoke.log quality-artifacts/publications-browser-smoke.log 2>/dev/null || true
+          cp sources-knowledge-base-smoke.log quality-artifacts/sources-knowledge-base-smoke.log 2>/dev/null || true
+          cp project-evidence-smoke.log quality-artifacts/project-evidence-smoke.log 2>/dev/null || true
+          cp villaigence-diagram-smoke.log quality-artifacts/villaigence-diagram-smoke.log 2>/dev/null || true
+          cp node-zero-diagram-smoke.log quality-artifacts/node-zero-diagram-smoke.log 2>/dev/null || true
+          cp photo-stories-browser-smoke.log quality-artifacts/photo-stories-browser-smoke.log 2>/dev/null || true
+          cp v03-browser-smoke.log quality-artifacts/v03-browser-smoke.log 2>/dev/null || true
+          cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
+          cp search-smoke.log quality-artifacts/search-smoke 2>/dev/null || true
+          cp villaigence-search-smoke.log quality-artifacts/villaigence-search-smoke.log 2>/dev/null || true
+          cp i18n-browser-smoke.log quality-artifacts/i18n-browser-smoke.log 2>/dev/null || true
+          cp analytics-browser-smoke.log quality-artifacts/analytics-browser-smoke.log 2>/dev/null || true
+          cp metadata-smoke.log quality-artifacts/metadata-smoke.log 2>/dev/null || true
+          cp engineering-graph-smoke.log quality-artifacts/engineering-graph-smoke.log 2>/dev/null || true
+          cp visual-regression.log quality-artifacts/visual-regression.log 2>/dev/null || true
+          cp custom-domain-build.log quality-artifacts/custom-domain-build.log 2>/dev/null || true
+          cp custom-domain-integrity.log quality-artifacts/custom-domain-integrity.log 2>/dev/null || true
+          cp custom-domain-artifact.log quality-artifacts/custom-domain-artifact.log 2>/dev/null || true
+          cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
+          cp docs-html/landing/resume/index.html quality-artifacts/resume-generated.html 2>/dev/null || true
+          cp docs-html/landing/resume.html quality-artifacts/resume-legacy-redirect.html 2>/dev/null || true
+          cp docs-html/landing/publications/index.html quality-artifacts/publications-generated.html 2>/dev/null || true
+          cp docs-html/en/index.html quality-artifacts/en-home-generated.html 2>/dev/null || true
+          cp docs-html/en/projects/livingworld/index.html quality-artifacts/en-livingworld-generated.html 2>/dev/null || true
+          cp docs-html/landing/now/index.html quality-artifacts/now-generated.html 2>/dev/null || true
+          cp docs-html/landing/bibliography/index.html quality-artifacts/sources-knowledge-base-generated.html 2>/dev/null || true
+          cp docs-html/landing/projects/vlezet/index.html quality-artifacts/vlezet-generated.html 2>/dev/null || true
+          cp docs-html/landing/projects/livingworld/index.html quality-artifacts/villaigence-generated.html 2>/dev/null || true
+          cp docs-html/landing/projects/node-zero/index.html quality-artifacts/node-zero-generated.html 2>/dev/null || true
+          cp docs-html/feed.xml quality-artifacts/feed.xml 2>/dev/null || true
+          cp docs-html/landing/engineering-map/index.html quality-artifacts/engineering-map-generated.html 2>/dev/null || true
+          cp docs-html/landing/photos/index.html quality-artifacts/photo-stories-generated.html 2>/dev/null || true
+          cp artifacts/browser-summary.json quality-artifacts/browser-summary.json 2>/dev/null || true
+          cp artifacts/vlezet-desktop.png quality-artifacts/vlezet-desktop.png 2>/dev/null || true
+          cp artifacts/vlezet-mobile.png quality-artifacts/vlezet-mobile.png 2>/dev/null || true
+          cp artifacts/villaigence-desktop.png quality-artifacts/villaigence-desktop.png 2>/dev/null || true
+          cp artifacts/villaigence-mobile.png quality-artifacts/villaigence-mobile.png 2>/dev/null || true
+          cp artifacts/project-evidence-vlezet-mobile.png quality-artifacts/project-evidence-vlezet-mobile.png 2>/dev/null || true
+          cp artifacts/project-evidence-livingworld-mobile.png quality-artifacts/project-evidence-villaigence-mobile.png 2>/dev/null || true
+          cp artifacts/project-evidence-summary.json quality-artifacts/project-evidence-summary.json 2>/dev/null || true
+          cp artifacts/villaigence-authority-and-acceptance.png quality-artifacts/villaigence-authority-and-acceptance.png 2>/dev/null || true
+          cp artifacts/villaigence-diagram-summary.json quality-artifacts/villaigence-diagram-summary.json 2>/dev/null || true
+          cp artifacts/search-villaigence.png quality-artifacts/search-villaigence.png 2>/dev/null || true
+          cp artifacts/villaigence-search-summary.json quality-artifacts/villaigence-search-summary.json 2>/dev/null || true
+          cp artifacts/node-zero-architecture.png quality-artifacts/node-zero-architecture.png 2>/dev/null || true
+          cp artifacts/node-zero-system-flow.png quality-artifacts/node-zero-system-flow.png 2>/dev/null || true
+          cp artifacts/node-zero-diagrams-summary.json quality-artifacts/node-zero-diagrams-summary.json 2>/dev/null || true
+          cp artifacts/photo-stories-desktop.png quality-artifacts/photo-stories-desktop.png 2>/dev/null || true
+          cp artifacts/photo-stories-mobile.png quality-artifacts/photo-stories-mobile.png 2>/dev/null || true
+          cp artifacts/photo-stories-reduced-motion.png quality-artifacts/photo-stories-reduced-motion.png 2>/dev/null || true
+          cp artifacts/photo-stories-summary.json quality-artifacts/photo-stories-summary.json 2>/dev/null || true
+      - name: Upload quality evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: quality-artifacts
+          path: quality-artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
