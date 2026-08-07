@@ -14,6 +14,14 @@ on:
       - 'scripts/measurement-checkpoint.js'
       - 'scripts/measurement-checkpoint-report.js'
       - 'scripts/measurement-checkpoint*.test.js'
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/measurement-checkpoint.yml'
+      - 'scripts/measurement-checkpoint.js'
+      - 'scripts/measurement-checkpoint-report.js'
+      - 'scripts/measurement-checkpoint*.test.js'
 
 permissions:
   contents: read
@@ -43,7 +51,7 @@ jobs:
           cache: npm
 
       - name: Synthetic aggregate measurement fixture
-        if: github.event_name == 'pull_request'
+        if: github.event_name != 'workflow_dispatch'
         shell: bash
         run: |
           cat > "$RUNNER_TEMP/measurement-observations.json" <<'JSON'
