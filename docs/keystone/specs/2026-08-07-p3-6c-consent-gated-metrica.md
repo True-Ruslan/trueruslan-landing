@@ -20,7 +20,7 @@ With a configured counter, generated HTML contains a first-party consent control
 
 The only first-party preference is `tr_privacy_consent_v1 = granted | denied`. It stores the analytics choice, not a visitor identity. Before consent and after denial the controller sets `window['disableYaCounter' + counterId] = true` and does not load the provider tag.
 
-The settings control lets the visitor withdraw / отозвать consent. Withdrawal sets the disable flag, stores `denied`, and later page loads do not load the provider. Provider cookies that already exist after a prior opt-in **may persist until provider/browser expiry**; P3.6C does not claim they are deleted immediately.
+The settings control lets the visitor withdraw / отозвать consent. An initial denial before the provider is loaded immediately stores `denied`, keeps the disable flag active and leaves the provider unloaded. If the visitor withdraws consent **after Metrica has already been initialized in the current document**, the controller first stores `denied` and sets the disable flag, then reloads the page. The new document reads the denied preference and sets `disableYaCounter... = true` before any Metrica initialization, so the provider tag is not loaded again. This avoids relying on an undocumented assumption that changing the flag after `init` tears down an already initialized library. Provider cookies that already exist after a prior opt-in **may persist until provider/browser expiry**; P3.6C does not claim they are deleted immediately.
 
 ## Bounded initialization
 
@@ -43,7 +43,7 @@ The consent text describes traffic statistics and provider cookies. It does not 
 
 ## Verification
 
-PR builds intentionally receive no counter ID. A fake-counter browser smoke injects the controller into a temporary artifact and proves: zero Yandex requests before consent; zero after denial; one attempted tag load after opt-in; the exact bounded `init` object; zero new requests after withdrawal plus reload; and RU/EN copy. Fake provider traffic is intercepted locally.
+PR builds intentionally receive no counter ID. A fake-counter browser smoke injects the controller into a temporary artifact and proves: zero Yandex requests before consent; zero after denial; one attempted tag load after opt-in; the exact bounded `init` object; withdrawal after active initialization forces a reload; the reloaded denied-state document makes zero new Yandex requests and contains no provider script; and RU/EN copy is correct. Fake provider traffic is intercepted locally.
 
 The Pages workflow verifies the final artifact before upload and rejects missing or duplicate controllers, wrong counter binding, static Yandex scripts, noscript tracking, or broader options. The verification report omits the counter ID.
 
