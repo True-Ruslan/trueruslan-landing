@@ -114,13 +114,14 @@ function validateOperatorAssessment(value) {
   if (typeof assessment.aggregateTrafficSufficient !== 'boolean') {
     throw new Error('operatorAssessment.aggregateTrafficSufficient must be boolean');
   }
-  requireTimestamp(assessment.assessedAt, 'operatorAssessment.assessedAt');
+  const assessedMs = requireTimestamp(assessment.assessedAt, 'operatorAssessment.assessedAt');
   if (typeof assessment.basis !== 'string' || assessment.basis.trim().length < 12) {
     throw new Error('operatorAssessment.basis must explain the aggregate-traffic judgement');
   }
   return Object.freeze({
     aggregateTrafficSufficient: assessment.aggregateTrafficSufficient,
     assessedAt: assessment.assessedAt,
+    assessedMs,
     basis: assessment.basis.trim(),
   });
 }
@@ -160,9 +161,19 @@ export function analyzeMeasurementCheckpoint(input, {minimumObservationDays = 10
   if (current.window.startMs <= baseline.window.endMs) {
     throw new Error('current observation window must start after the baseline window');
   }
+  if (operatorAssessment.assessedMs < current.window.endMs) {
+    throw new Error('operator assessment must be recorded after the current observation window ends');
+  }
 
   const observationDays = Math.max(0, Math.floor((current.window.endMs - migrationMs) / DAY_MS));
   const windowSufficient = observationDays >= minimumObservationDays;
+  const baselineDurationMs = baseline.window.endMs - baseline.window.startMs;
+  const currentDurationMs = current.window.endMs - current.window.startMs;
+  const comparisonWindowDurationsMatch = baselineDurationMs === currentDurationMs;
+  if (windowSufficient && !comparisonWindowDurationsMatch) {
+    throw new Error('baseline and current comparison window durations must match before descriptive deltas are reviewed');
+  }
+
   const operatorTrafficSufficient = operatorAssessment.aggregateTrafficSufficient;
   const readyForHumanReview = windowSufficient && operatorTrafficSufficient;
   const status = !windowSufficient
@@ -187,6 +198,7 @@ export function analyzeMeasurementCheckpoint(input, {minimumObservationDays = 10
       minimumObservationDays,
       observationDays,
       observationWindowSufficient: windowSufficient,
+      comparisonWindowDurationsMatch,
       operatorTrafficSufficient,
       operatorAssessedAt: operatorAssessment.assessedAt,
       operatorBasis: operatorAssessment.basis,
@@ -224,6 +236,8 @@ export function renderMeasurementCheckpointMarkdown(report) {
     `Status: **${report.status}**`,
     '',
     `Observation window after clean-URL migration: **${report.readiness.observationDays} day(s)**; minimum: **${report.readiness.minimumObservationDays}**.`,
+    '',
+    `Comparison windows have equal duration: **${report.readiness.comparisonWindowDurationsMatch}**.`,
     '',
     `Operator assertion: aggregate traffic sufficient = **${report.readiness.operatorTrafficSufficient}**.`,
     '',
