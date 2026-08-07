@@ -14,6 +14,7 @@ on:
       - 'scripts/measurement-checkpoint.js'
       - 'scripts/measurement-checkpoint-report.js'
       - 'scripts/measurement-checkpoint*.test.js'
+      - 'scripts/yandex-metrica-*.js'
   push:
     branches:
       - master
@@ -22,6 +23,7 @@ on:
       - 'scripts/measurement-checkpoint.js'
       - 'scripts/measurement-checkpoint-report.js'
       - 'scripts/measurement-checkpoint*.test.js'
+      - 'scripts/yandex-metrica-*.js'
 
 permissions:
   contents: read
@@ -64,7 +66,8 @@ jobs:
               "search": {
                 "google": {"impressions": 30, "clicks": 3, "indexedCleanUrls": 4, "indexedLegacyHtmlUrls": 11},
                 "yandex": {"impressions": 20, "clicks": 2, "indexedCleanUrls": 3, "indexedLegacyHtmlUrls": 12}
-              }
+              },
+              "metrica": {"visits": 41, "pageviews": 73, "users": 35}
             },
             "current": {
               "window": {"start": "2026-08-05T00:00:00Z", "end": "2026-08-18T23:59:59Z"},
@@ -72,7 +75,8 @@ jobs:
               "search": {
                 "google": {"impressions": 45, "clicks": 4, "indexedCleanUrls": 10, "indexedLegacyHtmlUrls": 5},
                 "yandex": {"impressions": 32, "clicks": 3, "indexedCleanUrls": 9, "indexedLegacyHtmlUrls": 6}
-              }
+              },
+              "metrica": {"visits": 58, "pageviews": 104, "users": 46}
             },
             "operatorAssessment": {
               "aggregateTrafficSufficient": true,
@@ -81,6 +85,8 @@ jobs:
             }
           }
           JSON
+          chmod 600 "$RUNNER_TEMP/measurement-observations.json"
+          echo "MEASUREMENT_INPUT=$RUNNER_TEMP/measurement-observations.json" >> "$GITHUB_ENV"
 
       - name: Materialize manual aggregate observations
         if: github.event_name == 'workflow_dispatch'
@@ -94,12 +100,51 @@ jobs:
           fi
           printf '%s' "$P3_6_MEASUREMENT_OBSERVATIONS_JSON" > "$RUNNER_TEMP/measurement-observations.json"
           chmod 600 "$RUNNER_TEMP/measurement-observations.json"
+          echo "MEASUREMENT_INPUT=$RUNNER_TEMP/measurement-observations.json" >> "$GITHUB_ENV"
+
+      - name: Resolve optional Yandex Metrica enrichment
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          YANDEX_METRIKA_COUNTER_ID: ${{ vars.YANDEX_METRIKA_COUNTER_ID }}
+          YANDEX_METRIKA_OAUTH_TOKEN: ${{ secrets.YANDEX_METRIKA_OAUTH_TOKEN }}
+        run: |
+          counter_set=false
+          token_set=false
+          [[ -n "$YANDEX_METRIKA_COUNTER_ID" ]] && counter_set=true
+          [[ -n "$YANDEX_METRIKA_OAUTH_TOKEN" ]] && token_set=true
+
+          if [[ "$counter_set" == false && "$token_set" == false ]]; then
+            echo "METRICA_ENABLED=false" >> "$GITHUB_ENV"
+            echo "Yandex Metrica enrichment: disabled (credentials not configured)."
+            exit 0
+          fi
+
+          if [[ "$counter_set" != "$token_set" ]]; then
+            echo "Both Yandex Metrica credentials must be configured together: repository variable YANDEX_METRIKA_COUNTER_ID and secret YANDEX_METRIKA_OAUTH_TOKEN." >&2
+            exit 1
+          fi
+
+          echo "METRICA_ENABLED=true" >> "$GITHUB_ENV"
+          echo "Yandex Metrica enrichment: enabled."
+
+      - name: Enrich manual observations from Yandex Metrica Reports API
+        if: github.event_name == 'workflow_dispatch' && env.METRICA_ENABLED == 'true'
+        shell: bash
+        env:
+          YANDEX_METRIKA_COUNTER_ID: ${{ vars.YANDEX_METRIKA_COUNTER_ID }}
+          YANDEX_METRIKA_OAUTH_TOKEN: ${{ secrets.YANDEX_METRIKA_OAUTH_TOKEN }}
+        run: |
+          node scripts/yandex-metrica-enrich.js \
+            --input "$MEASUREMENT_INPUT" \
+            --output "$RUNNER_TEMP/measurement-observations-enriched.json"
+          echo "MEASUREMENT_INPUT=$RUNNER_TEMP/measurement-observations-enriched.json" >> "$GITHUB_ENV"
 
       - name: Generate bounded measurement report
         shell: bash
         run: |
           node scripts/measurement-checkpoint-report.js \
-            --input "$RUNNER_TEMP/measurement-observations.json" \
+            --input "$MEASUREMENT_INPUT" \
             --output-dir "$MEASUREMENT_OUTPUT" \
             --minimum-observation-days "$MINIMUM_OBSERVATION_DAYS"
 

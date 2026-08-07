@@ -187,3 +187,32 @@ test('measurement markdown labels operator assertions and refuses automatic impa
   assert.match(markdown, /Google clean URLs indexed/i);
   assert.match(markdown, /Yandex legacy HTML URLs indexed/i);
 });
+
+test('optional Yandex Metrica aggregates become descriptive comparisons without changing readiness semantics', () => {
+  const input = fixture();
+  input.baseline.metrica = {visits: 41, pageviews: 73, users: 35};
+  input.current.metrica = {visits: 58, pageviews: 104, users: 46};
+
+  const report = analyzeMeasurementCheckpoint(input, {minimumObservationDays: 10});
+  assert.equal(report.status, 'ready-for-human-review');
+  assert.equal(report.readiness.readyForHumanReview, true);
+  assert.deepEqual(report.comparisons.metrica.visits, {baseline: 41, current: 58, delta: 17});
+  assert.deepEqual(report.comparisons.metrica.pageviews, {baseline: 73, current: 104, delta: 31});
+  assert.deepEqual(report.comparisons.metrica.users, {baseline: 35, current: 46, delta: 11});
+  assert.match(report.evidence.sources.metrica, /Yandex Metrica Reports API/i);
+  assert.equal(report.claims.automaticConclusionsAllowed, false);
+
+  const markdown = renderMeasurementCheckpointMarkdown(report);
+  assert.match(markdown, /Yandex Metrica visits/i);
+  assert.match(markdown, /Yandex Metrica pageviews/i);
+  assert.match(markdown, /Yandex Metrica users/i);
+});
+
+test('Yandex Metrica aggregates must be present in both comparison windows or neither', () => {
+  const input = fixture();
+  input.current.metrica = {visits: 58, pageviews: 104, users: 46};
+  assert.throws(
+    () => analyzeMeasurementCheckpoint(input, {minimumObservationDays: 10}),
+    /Metrica.*both.*windows/i,
+  );
+});

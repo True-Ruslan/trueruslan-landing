@@ -23,6 +23,12 @@ const SEARCH_METRICS = Object.freeze([
   'indexedLegacyHtmlUrls',
 ]);
 
+const METRICA_METRICS = Object.freeze([
+  'visits',
+  'pageviews',
+  'users',
+]);
+
 function normalizedKey(value) {
   return String(value).replace(/[^a-z0-9]/gi, '').toLowerCase();
 }
@@ -63,21 +69,28 @@ function requireNonNegativeInteger(value, label) {
   return value;
 }
 
-function validateSearchEngine(value, label) {
-  const engine = requireObject(value, label);
+function validateMetricObject(value, label, metrics) {
+  const source = requireObject(value, label);
   const result = {};
-  for (const metric of SEARCH_METRICS) {
-    result[metric] = requireNonNegativeInteger(engine[metric], `${label}.${metric}`);
+  for (const metric of metrics) {
+    result[metric] = requireNonNegativeInteger(source[metric], `${label}.${metric}`);
   }
-
-  const unknown = Object.keys(engine).filter((key) => !SEARCH_METRICS.includes(key));
+  const unknown = Object.keys(source).filter((key) => !metrics.includes(key));
   if (unknown.length) throw new Error(`${label} contains unsupported field(s): ${unknown.join(', ')}`);
   return Object.freeze(result);
 }
 
+function validateSearchEngine(value, label) {
+  return validateMetricObject(value, label, SEARCH_METRICS);
+}
+
+function validateMetrica(value, label) {
+  return validateMetricObject(value, label, METRICA_METRICS);
+}
+
 function validateSnapshot(value, label) {
   const snapshot = requireObject(value, label);
-  const allowed = new Set(['window', 'cloudflare', 'search']);
+  const allowed = new Set(['window', 'cloudflare', 'search', 'metrica']);
   const unknown = Object.keys(snapshot).filter((key) => !allowed.has(key));
   if (unknown.length) throw new Error(`${label} contains unsupported field(s): ${unknown.join(', ')}`);
 
@@ -104,6 +117,7 @@ function validateSnapshot(value, label) {
       google: validateSearchEngine(search.google, `${label}.search.google`),
       yandex: validateSearchEngine(search.yandex, `${label}.search.yandex`),
     }),
+    metrica: snapshot.metrica === undefined ? null : validateMetrica(snapshot.metrica, `${label}.metrica`),
   });
 }
 
@@ -131,25 +145,35 @@ function delta(baseline, current) {
   return Object.freeze({baseline, current, delta: current - baseline});
 }
 
-function compareEngine(baseline, current) {
+function compareMetrics(baseline, current, metrics) {
   return Object.freeze(Object.fromEntries(
-    SEARCH_METRICS.map((metric) => [metric, delta(baseline[metric], current[metric])]),
+    metrics.map((metric) => [metric, delta(baseline[metric], current[metric])]),
   ));
 }
 
-function evidenceSources(evidenceClass) {
-  if (evidenceClass === 'synthetic') {
-    return Object.freeze({
+function compareEngine(baseline, current) {
+  return compareMetrics(baseline, current, SEARCH_METRICS);
+}
+
+function evidenceSources(evidenceClass, hasMetrica) {
+  const sources = evidenceClass === 'synthetic'
+    ? {
       cloudflare: 'synthetic aggregate Cloudflare fixture (not production measurement evidence)',
       google: 'synthetic aggregate Google Search Console fixture (not production measurement evidence)',
       yandex: 'synthetic aggregate Yandex Webmaster fixture (not production measurement evidence)',
-    });
+    }
+    : {
+      cloudflare: 'operator-observed aggregate Cloudflare Web Analytics',
+      google: 'operator-observed aggregate Google Search Console',
+      yandex: 'operator-observed aggregate Yandex Webmaster',
+    };
+
+  if (hasMetrica) {
+    sources.metrica = evidenceClass === 'synthetic'
+      ? 'synthetic aggregate Yandex Metrica Reports API fixture (not production measurement evidence)'
+      : 'operator-retrieved aggregate Yandex Metrica Reports API';
   }
-  return Object.freeze({
-    cloudflare: 'operator-observed aggregate Cloudflare Web Analytics',
-    google: 'operator-observed aggregate Google Search Console',
-    yandex: 'operator-observed aggregate Yandex Webmaster',
-  });
+  return Object.freeze(sources);
 }
 
 export function analyzeMeasurementCheckpoint(input, {minimumObservationDays = 10} = {}) {
@@ -171,6 +195,13 @@ export function analyzeMeasurementCheckpoint(input, {minimumObservationDays = 10
   const baseline = validateSnapshot(root.baseline, 'baseline');
   const current = validateSnapshot(root.current, 'current');
   const operatorAssessment = validateOperatorAssessment(root.operatorAssessment);
+
+  const hasBaselineMetrica = baseline.metrica !== null;
+  const hasCurrentMetrica = current.metrica !== null;
+  if (hasBaselineMetrica !== hasCurrentMetrica) {
+    throw new Error('Yandex Metrica aggregates must be present in both comparison windows or neither');
+  }
+  const hasMetrica = hasBaselineMetrica && hasCurrentMetrica;
 
   if (baseline.window.endMs >= migrationMs) {
     throw new Error('baseline observation window must end before clean URL migration');
@@ -211,7 +242,7 @@ export function analyzeMeasurementCheckpoint(input, {minimumObservationDays = 10
       class: evidenceClass,
       baselineWindow: {start: baseline.window.start, end: baseline.window.end},
       currentWindow: {start: current.window.start, end: current.window.end},
-      sources: evidenceSources(evidenceClass),
+      sources: evidenceSources(evidenceClass, hasMetrica),
     },
     readiness: {
       readyForHumanReview,
@@ -228,6 +259,7 @@ export function analyzeMeasurementCheckpoint(input, {minimumObservationDays = 10
       cloudflarePageviews: delta(baseline.cloudflare.pageviews, current.cloudflare.pageviews),
       google: compareEngine(baseline.search.google, current.search.google),
       yandex: compareEngine(baseline.search.yandex, current.search.yandex),
+      metrica: hasMetrica ? compareMetrics(baseline.metrica, current.metrica, METRICA_METRICS) : null,
     },
     claims: {
       automaticConclusionsAllowed: false,
@@ -252,6 +284,25 @@ function comparisonRow(label, comparison) {
 
 export function renderMeasurementCheckpointMarkdown(report) {
   requireObject(report, 'measurement report');
+  const comparisonRows = [
+    comparisonRow('Cloudflare pageviews', report.comparisons.cloudflarePageviews),
+    comparisonRow('Google impressions', report.comparisons.google.impressions),
+    comparisonRow('Google clicks', report.comparisons.google.clicks),
+    comparisonRow('Google clean URLs indexed', report.comparisons.google.indexedCleanUrls),
+    comparisonRow('Google legacy HTML URLs indexed', report.comparisons.google.indexedLegacyHtmlUrls),
+    comparisonRow('Yandex impressions', report.comparisons.yandex.impressions),
+    comparisonRow('Yandex clicks', report.comparisons.yandex.clicks),
+    comparisonRow('Yandex clean URLs indexed', report.comparisons.yandex.indexedCleanUrls),
+    comparisonRow('Yandex legacy HTML URLs indexed', report.comparisons.yandex.indexedLegacyHtmlUrls),
+  ];
+  if (report.comparisons.metrica) {
+    comparisonRows.push(
+      comparisonRow('Yandex Metrica visits', report.comparisons.metrica.visits),
+      comparisonRow('Yandex Metrica pageviews', report.comparisons.metrica.pageviews),
+      comparisonRow('Yandex Metrica users', report.comparisons.metrica.users),
+    );
+  }
+
   const lines = [
     '# Portfolio measurement checkpoint',
     '',
@@ -269,15 +320,7 @@ export function renderMeasurementCheckpointMarkdown(report) {
     '',
     '| Aggregate metric | Baseline | Current | Delta |',
     '| --- | ---: | ---: | ---: |',
-    comparisonRow('Cloudflare pageviews', report.comparisons.cloudflarePageviews),
-    comparisonRow('Google impressions', report.comparisons.google.impressions),
-    comparisonRow('Google clicks', report.comparisons.google.clicks),
-    comparisonRow('Google clean URLs indexed', report.comparisons.google.indexedCleanUrls),
-    comparisonRow('Google legacy HTML URLs indexed', report.comparisons.google.indexedLegacyHtmlUrls),
-    comparisonRow('Yandex impressions', report.comparisons.yandex.impressions),
-    comparisonRow('Yandex clicks', report.comparisons.yandex.clicks),
-    comparisonRow('Yandex clean URLs indexed', report.comparisons.yandex.indexedCleanUrls),
-    comparisonRow('Yandex legacy HTML URLs indexed', report.comparisons.yandex.indexedLegacyHtmlUrls),
+    ...comparisonRows,
     '',
     '## Evidence boundary',
     '',

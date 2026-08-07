@@ -22,6 +22,7 @@ The checkpoint accepts only aggregate observations from:
 - Cloudflare Web Analytics — aggregate pageviews;
 - Google Search Console — aggregate impressions, clicks, indexed clean URLs and indexed legacy `.html` URLs;
 - Yandex Webmaster — the same aggregate search/indexing fields;
+- optional Yandex Metrica Reports API enrichment — aggregate visits, pageviews and users only;
 - an explicit operator assertion stating whether the aggregate traffic volume is sufficient for descriptive review.
 
 The analyzer rejects raw or user-level tracking fields such as session/user/visitor/client/device identifiers, IP addresses, cookies, email, referrer and user-agent data.
@@ -123,6 +124,8 @@ The secret must contain `evidenceClass: "operator-observed"` and JSON shaped lik
 }
 ```
 
+When P3.6B Yandex Metrica enrichment is configured, the workflow derives the optional `metrica` object for both comparison windows from the exact same window dates. Operators should not manually duplicate those Metrica values in the base JSON when API enrichment is enabled.
+
 ## Workflow behavior
 
 `.github/workflows/measurement-checkpoint.yml` has three bounded execution modes:
@@ -147,6 +150,22 @@ measurement-checkpoint-report.md
 ```
 
 The report itself contains its evidence class, so synthetic pipeline artifacts cannot be mistaken for operator-observed measurement evidence.
+
+## P3.6B — optional Yandex Metrica Reports API enrichment
+
+P3.6B adds a bounded optional enrichment stage to the manual path. It is specified in `docs/keystone/specs/2026-08-07-p3-6b-yandex-metrica-reporting.md`.
+
+The synthetic PR/master path includes fixed aggregate Metrica fixture values only to prove the schema/report pipeline. It never calls Yandex and remains `synthetic-pipeline-proof`.
+
+For a manual run, the workflow checks the repository variable `YANDEX_METRIKA_COUNTER_ID` and Actions secret `YANDEX_METRIKA_OAUTH_TOKEN` as one configuration pair. If both are absent, the checkpoint behaves exactly as P3.6A did. If only one is present, the run fails closed. If both are present, the workflow calls the read-only Yandex Metrica Reports API for the exact baseline/current windows and writes an enriched temporary input at:
+
+```text
+$RUNNER_TEMP/measurement-observations-enriched.json
+```
+
+Neither temporary observation file is uploaded. Only the derived measurement report is retained.
+
+The Metrica API path does not change the P3.6 acceptance semantics. A successful authenticated API call proves only that aggregate observations were retrieved; it does not by itself make the sample sufficient, produce an engagement conclusion, or accept P3.6.
 
 ## Local/reproducible execution
 
