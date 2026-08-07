@@ -29,6 +29,65 @@ const LOCALES = Object.freeze({
   }),
 });
 
+async function assertEnglishPresentation(page, label, expectedCardCount) {
+  const publicationRoot = page.locator('[data-tr-publications-root]').first();
+  await publicationRoot.waitFor({state: 'visible', timeout: 5000});
+  const rootText = (await publicationRoot.textContent()) || '';
+  if (!rootText.includes('Technical articles')) {
+    throw new Error(`${label}: English catalogue section heading is missing.`);
+  }
+  if (/Технические статьи|Техническая статья|Автор|Темы|Читать на/i.test(rootText)) {
+    throw new Error(`${label}: English catalogue leaks Russian UI labels.`);
+  }
+
+  const cards = page.locator('[data-tr-publication-id]');
+  const metaKinds = cards.locator('.tr-publication-card__meta span:first-child');
+  const metaRoles = cards.locator('.tr-publication-card__meta span:last-child');
+  const topicLists = cards.locator('.tr-publication-card__topics[aria-label="Topics"]');
+  const actions = cards.locator('.tr-publication-card__primary');
+  const originalTitles = cards.locator('h3 a[lang="ru"]');
+
+  for (const [name, locator] of [
+    ['publication kind metadata', metaKinds],
+    ['publication role metadata', metaRoles],
+    ['Topics semantic labels', topicLists],
+    ['primary publication actions', actions],
+    ['original Russian publication titles', originalTitles],
+  ]) {
+    const count = await locator.count();
+    if (count !== expectedCardCount) {
+      throw new Error(`${label}: expected ${expectedCardCount} ${name}, got ${count}.`);
+    }
+  }
+
+  for (const text of await metaKinds.allTextContents()) {
+    if (!text.includes('Technical article')) {
+      throw new Error(`${label}: publication kind source text is not localized: ${text}`);
+    }
+  }
+  for (const text of await metaRoles.allTextContents()) {
+    if (text.trim() !== 'Author') {
+      throw new Error(`${label}: publication role source text is not Author: ${text}`);
+    }
+  }
+  for (const text of await actions.allTextContents()) {
+    if (!text.includes('Read on Habr')) {
+      throw new Error(`${label}: publication action source text is not localized: ${text}`);
+    }
+  }
+
+  const augustDates = page.locator('[data-tr-publication-id] time[datetime="2025-08-23"]');
+  const expectedAugustCopies = expectedCardCount / EXPECTED_PUBLICATION_IDS.length;
+  if (await augustDates.count() !== expectedAugustCopies) {
+    throw new Error(`${label}: expected ${expectedAugustCopies} August 23 publication date(s).`);
+  }
+  for (const text of await augustDates.allTextContents()) {
+    if (text.trim() !== 'August 23, 2025') {
+      throw new Error(`${label}: publication date source text is not localized: ${text}`);
+    }
+  }
+}
+
 async function assertPublicationContent(page, label, {javaScriptEnabled, locale}) {
   const copy = LOCALES[locale];
   const heading = (await page.locator('h1').first().innerText()).trim();
@@ -66,16 +125,7 @@ async function assertPublicationContent(page, label, {javaScriptEnabled, locale}
   }
 
   if (locale === 'en') {
-    for (const marker of ['Technical articles', 'Technical article', 'Author', 'Topics', 'Read on Habr', 'August 23, 2025']) {
-      if (!pageText.includes(marker)) throw new Error(`${label}: English presentation misses ${marker}`);
-    }
-    if (/Технические статьи|Техническая статья|Автор|Темы|Читать на/.test(pageText)) {
-      throw new Error(`${label}: English presentation leaks Russian UI labels.`);
-    }
-    const originalTitles = page.locator('[data-tr-publication-id] h3 a[lang="ru"]');
-    if (await originalTitles.count() !== expectedCardCount) {
-      throw new Error(`${label}: every original Russian publication title must declare lang=ru.`);
-    }
+    await assertEnglishPresentation(page, label, expectedCardCount);
   }
 
   const unsafeExternal = page.locator('[data-tr-publication-id] a[target="_blank"]:not([rel="noopener noreferrer"])');
