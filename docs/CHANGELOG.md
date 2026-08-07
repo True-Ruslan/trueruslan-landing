@@ -1,8 +1,38 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5C English Publications.
+> Обновлено: **2026-08-07**, после exact acceptance P3.6A Measurement readiness; P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-07 — P3.6A Measurement readiness
+
+PR #155 added the bounded P3.6 measurement-readiness layer without manufacturing external analytics evidence. The analyzer accepts aggregate Cloudflare/Search Console/Yandex observations only, rejects raw/user-level telemetry, enforces the migration observation window, equal-duration comparison windows and post-window operator assessment, and emits descriptive deltas without automatic engagement or product-impact conclusions.
+
+Synthetic PR/master proof is explicitly separated from real measurement: it reports `synthetic-pipeline-proof`, keeps `readyForHumanReview=false` and is **not production measurement evidence**. Manual real input must be `operator-observed`; raw observations live only under `$RUNNER_TEMP` and are never uploaded.
+
+```text
+PR #155 squash / deployed SHA:       7cc56d024fbde53156a9136b14b00c81c6718811
+PR Build:                            #1187 / 31185270870 — SUCCESS
+PR quality artifact:                 8996659434
+PR quality digest:                   sha256:07b6c53547894d1456525ed5574ecb9554c15a2178c16193435cf91937b06a32
+PR Measurement Checkpoint:           #16 / 31185271128 — SUCCESS
+PR synthetic artifact:               8996446081
+PR synthetic digest:                 sha256:7a1f05c829867c7bc0fff757a512a95f11e2c1fcb27a3684d2acc90ecfbef87a
+post-merge Measurement Checkpoint:   #17 / 31185967995 — SUCCESS
+post-merge synthetic artifact:       8996722305
+post-merge synthetic digest:         sha256:d6ab858824c2284a964a4b37f0e7377bb322af8baed922b8af83b27bbb36bce9
+Pages:                               #184 / 31185967012 — SUCCESS
+Pages deployment ID:                 5795968137
+Pages artifact:                      8996733610
+Pages artifact digest:               sha256:bda25b1331e9843a7b6f3364f47fdbea8f5fa7ef09a6445c55729062f3e6bfbf
+Production Live Smoke:               #267 / 31186078593 — SUCCESS
+production artifact:                 8996831585
+production digest:                   sha256:d8e4fae2cf63bfc1d2c8742eea68d4fbdb3d9ef588df834d2e65473fa22a475d
+```
+
+Synthetic workflow evidence is classified as `synthetic-pipeline-proof`, has `readyForHumanReview=false`, and is **not production measurement evidence**. Real P3.6 remains open until `operator-observed` aggregate observations exist, the minimum post-migration window has elapsed, baseline/current windows have equal duration, the operator assessment occurs after the current window closes, traffic sufficiency is explicitly assessed, and a human reviews the descriptive report. No automatic engagement, causality or product-impact conclusion is permitted.
+
+P3.6 remains **NEXT / WAITING** for real external aggregate evidence and human review.
 
 ## 2026-08-07 — P3.5C English Publications
 

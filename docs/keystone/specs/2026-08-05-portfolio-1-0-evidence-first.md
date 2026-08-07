@@ -1,6 +1,6 @@
 # Portfolio 1.0 — Evidence-first flagship content
 
-> Status: **IN PROGRESS — P3.5C ACCEPTED IN PRODUCTION**
+> Status: **IN PROGRESS — P3.6A MEASUREMENT READINESS ACCEPTED; P3.6 MEASUREMENT WAITING**
 >
 > Date: **2026-08-07**
 >
@@ -332,9 +332,35 @@ production artifact:            8994603193
 production digest:              sha256:f7eedbffc29f7f8ed322cf14d654ad19f0cc35fca3e53aa1bcd64000ca652d80
 ```
 
-### P3.6 — Measurement checkpoint — NEXT
+### P3.6A — Measurement readiness — DONE
 
-Measurement remains bounded by sufficient aggregate traffic. Until that evidence exists, no engagement or product-impact conclusion is promoted from sparse analytics.
+The repository now owns the bounded measurement machinery, not the missing external evidence. Inputs are aggregate-only and explicitly classified as `operator-observed` or `synthetic`. Synthetic executions always produce `synthetic-pipeline-proof`, preserve `readyForHumanReview=false`, and are not production measurement evidence. Raw/user-level telemetry is rejected; raw observation input is never uploaded.
+
+```text
+PR #155 squash / deployed SHA:       7cc56d024fbde53156a9136b14b00c81c6718811
+PR Build:                            #1187 / 31185270870 — SUCCESS
+PR quality artifact:                 8996659434
+PR quality digest:                   sha256:07b6c53547894d1456525ed5574ecb9554c15a2178c16193435cf91937b06a32
+PR Measurement Checkpoint:           #16 / 31185271128 — SUCCESS
+PR synthetic artifact:               8996446081
+PR synthetic digest:                 sha256:7a1f05c829867c7bc0fff757a512a95f11e2c1fcb27a3684d2acc90ecfbef87a
+post-merge Measurement Checkpoint:   #17 / 31185967995 — SUCCESS
+post-merge synthetic artifact:       8996722305
+post-merge synthetic digest:         sha256:d6ab858824c2284a964a4b37f0e7377bb322af8baed922b8af83b27bbb36bce9
+Pages:                               #184 / 31185967012 — SUCCESS
+Pages deployment ID:                 5795968137
+Pages artifact:                      8996733610
+Pages artifact digest:               sha256:bda25b1331e9843a7b6f3364f47fdbea8f5fa7ef09a6445c55729062f3e6bfbf
+Production Live Smoke:               #267 / 31186078593 — SUCCESS
+production artifact:                 8996831585
+production digest:                   sha256:d8e4fae2cf63bfc1d2c8742eea68d4fbdb3d9ef588df834d2e65473fa22a475d
+```
+
+Synthetic workflow evidence is classified as `synthetic-pipeline-proof`, has `readyForHumanReview=false`, and is **not production measurement evidence**. Real P3.6 remains open until `operator-observed` aggregate observations exist, the minimum post-migration window has elapsed, baseline/current windows have equal duration, the operator assessment occurs after the current window closes, traffic sufficiency is explicitly assessed, and a human reviews the descriptive report. No automatic engagement, causality or product-impact conclusion is permitted.
+
+### P3.6 — Measurement checkpoint — NEXT / WAITING
+
+Real measurement remains bounded by sufficient `operator-observed` aggregate traffic and the documented minimum-window/equal-duration/operator-timestamp rules. Until that evidence exists and is reviewed by a human, no engagement, causality or product-impact conclusion is promoted.
 
 ---
 
