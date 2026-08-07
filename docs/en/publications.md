@@ -4,7 +4,7 @@
 
 This catalogue collects material that has already been published or presented on external platforms. Original publication titles remain in their source language and link to the canonical external page; English summaries and topics provide a concise presentation layer without replacing the bibliographic identity.
 
-This is separate from [Engineering Notes](../landing/notes.md), which are published directly on this site. Publications keeps externally verifiable articles, talks and research material connected to their canonical source pages.
+This is separate from [Engineering Notes (RU)](../landing/notes.md), which are published directly on this site. Publications keeps externally verifiable articles, talks and research material connected to their canonical source pages.
 
 <div data-tr-publications-featured></div>
 
