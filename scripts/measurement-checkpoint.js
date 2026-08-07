@@ -1,4 +1,5 @@
 const DAY_MS = 24 * 60 * 60 * 1000;
+const EVIDENCE_CLASSES = new Set(['operator-observed', 'synthetic']);
 
 const PRIVACY_FORBIDDEN_KEYS = new Set([
   'sessionid',
@@ -136,17 +137,36 @@ function compareEngine(baseline, current) {
   ));
 }
 
+function evidenceSources(evidenceClass) {
+  if (evidenceClass === 'synthetic') {
+    return Object.freeze({
+      cloudflare: 'synthetic aggregate Cloudflare fixture (not production measurement evidence)',
+      google: 'synthetic aggregate Google Search Console fixture (not production measurement evidence)',
+      yandex: 'synthetic aggregate Yandex Webmaster fixture (not production measurement evidence)',
+    });
+  }
+  return Object.freeze({
+    cloudflare: 'operator-observed aggregate Cloudflare Web Analytics',
+    google: 'operator-observed aggregate Google Search Console',
+    yandex: 'operator-observed aggregate Yandex Webmaster',
+  });
+}
+
 export function analyzeMeasurementCheckpoint(input, {minimumObservationDays = 10} = {}) {
   assertPrivacyBoundary(input);
   const root = requireObject(input, 'measurement checkpoint input');
-  const allowed = new Set(['schemaVersion', 'cleanUrlMigrationAt', 'baseline', 'current', 'operatorAssessment']);
+  const allowed = new Set(['schemaVersion', 'evidenceClass', 'cleanUrlMigrationAt', 'baseline', 'current', 'operatorAssessment']);
   const unknown = Object.keys(root).filter((key) => !allowed.has(key));
   if (unknown.length) throw new Error(`measurement checkpoint input contains unsupported field(s): ${unknown.join(', ')}`);
   if (root.schemaVersion !== 1) throw new Error('measurement checkpoint schemaVersion must be 1');
+  if (!EVIDENCE_CLASSES.has(root.evidenceClass)) {
+    throw new Error('measurement checkpoint evidenceClass must be operator-observed or synthetic');
+  }
   if (!Number.isInteger(minimumObservationDays) || minimumObservationDays < 1) {
     throw new Error('minimumObservationDays must be a positive integer');
   }
 
+  const evidenceClass = root.evidenceClass;
   const migrationMs = requireTimestamp(root.cleanUrlMigrationAt, 'cleanUrlMigrationAt');
   const baseline = validateSnapshot(root.baseline, 'baseline');
   const current = validateSnapshot(root.current, 'current');
@@ -174,24 +194,24 @@ export function analyzeMeasurementCheckpoint(input, {minimumObservationDays = 10
     throw new Error('baseline and current comparison window durations must match before descriptive deltas are reviewed');
   }
 
-  const operatorTrafficSufficient = operatorAssessment.aggregateTrafficSufficient;
-  const readyForHumanReview = windowSufficient && operatorTrafficSufficient;
-  const status = !windowSufficient
-    ? 'insufficient-observation-window'
-    : (!operatorTrafficSufficient ? 'insufficient-aggregate-traffic' : 'ready-for-human-review');
+  const isSynthetic = evidenceClass === 'synthetic';
+  const operatorTrafficSufficient = isSynthetic ? false : operatorAssessment.aggregateTrafficSufficient;
+  const readyForHumanReview = !isSynthetic && windowSufficient && operatorTrafficSufficient;
+  const status = isSynthetic
+    ? 'synthetic-pipeline-proof'
+    : (!windowSufficient
+      ? 'insufficient-observation-window'
+      : (!operatorTrafficSufficient ? 'insufficient-aggregate-traffic' : 'ready-for-human-review'));
 
   const report = {
     schemaVersion: 1,
     status,
     cleanUrlMigrationAt: root.cleanUrlMigrationAt,
     evidence: {
+      class: evidenceClass,
       baselineWindow: {start: baseline.window.start, end: baseline.window.end},
       currentWindow: {start: current.window.start, end: current.window.end},
-      sources: {
-        cloudflare: 'operator-observed aggregate Cloudflare Web Analytics',
-        google: 'operator-observed aggregate Google Search Console',
-        yandex: 'operator-observed aggregate Yandex Webmaster',
-      },
+      sources: evidenceSources(evidenceClass),
     },
     readiness: {
       readyForHumanReview,
@@ -202,7 +222,7 @@ export function analyzeMeasurementCheckpoint(input, {minimumObservationDays = 10
       operatorTrafficSufficient,
       operatorAssessedAt: operatorAssessment.assessedAt,
       operatorBasis: operatorAssessment.basis,
-      operatorAssertionClass: 'operator assertion',
+      operatorAssertionClass: isSynthetic ? 'synthetic fixture field' : 'operator assertion',
     },
     comparisons: {
       cloudflarePageviews: delta(baseline.cloudflare.pageviews, current.cloudflare.pageviews),
@@ -213,7 +233,9 @@ export function analyzeMeasurementCheckpoint(input, {minimumObservationDays = 10
       automaticConclusionsAllowed: false,
       engagementConclusion: null,
       productImpactConclusion: null,
-      boundary: 'Descriptive aggregate deltas only. Human review is required for any engagement, causality or product-impact conclusion.',
+      boundary: isSynthetic
+        ? 'Synthetic pipeline proof only; these values are not production measurement evidence and cannot support engagement, causality or product-impact conclusions.'
+        : 'Descriptive aggregate deltas only. Human review is required for any engagement, causality or product-impact conclusion.',
     },
   };
 
@@ -233,13 +255,15 @@ export function renderMeasurementCheckpointMarkdown(report) {
   const lines = [
     '# Portfolio measurement checkpoint',
     '',
+    `Evidence class: **${report.evidence.class}**`,
+    '',
     `Status: **${report.status}**`,
     '',
     `Observation window after clean-URL migration: **${report.readiness.observationDays} day(s)**; minimum: **${report.readiness.minimumObservationDays}**.`,
     '',
     `Comparison windows have equal duration: **${report.readiness.comparisonWindowDurationsMatch}**.`,
     '',
-    `Operator assertion: aggregate traffic sufficient = **${report.readiness.operatorTrafficSufficient}**.`,
+    `${report.evidence.class === 'synthetic' ? 'Synthetic fixture field' : 'Operator assertion'}: aggregate traffic sufficient = **${report.readiness.operatorTrafficSufficient}**.`,
     '',
     `Operator basis: ${report.readiness.operatorBasis}`,
     '',
@@ -257,11 +281,12 @@ export function renderMeasurementCheckpointMarkdown(report) {
     '',
     '## Evidence boundary',
     '',
+    `- ${report.claims.boundary}`,
     '- No automatic engagement conclusion.',
     '- No automatic product-impact conclusion.',
     '- No causal claim is derived from these descriptive aggregate deltas.',
     '- Raw visitor, session, device, IP, cookie, referrer and user-level fields are rejected by the input contract.',
-    '- `ready-for-human-review` means only that the bounded evidence package is complete enough to inspect.',
+    '- `ready-for-human-review` means only that an operator-observed bounded evidence package is complete enough to inspect.',
     '',
   ];
   return lines.join('\n');
