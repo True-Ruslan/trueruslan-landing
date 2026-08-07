@@ -15,7 +15,7 @@ test('P3.6B runbook documents the bounded Yandex Metrica Reports API contract', 
   const spec = read('docs/keystone/specs/2026-08-07-p3-6b-yandex-metrica-reporting.md');
 
   assert.match(spec, /Reports API/i);
-  assert.ok(spec.includes('https://api-metrika.yandex.net/stat/v1/data'));
+  assert.match(spec, /^GET https:\/\/api-metrika\.yandex\.net\/stat\/v1\/data$/m);
   assert.match(spec, /ym:s:visits/);
   assert.match(spec, /ym:s:pageviews/);
   assert.match(spec, /ym:s:users/);
