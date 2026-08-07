@@ -94,4 +94,5 @@ replaceExactly(
   `## Acceptance of P3.6\n\nP3.6A is accepted on exact squash SHA \`${SHA}\`. The analyzer, CLI, workflow contract, PR synthetic proof, post-merge synthetic proof, Pages deployment and Production Live regressions are green.\n\n${evidenceBlock}\n\nThe post-merge measurement artifact identifies itself as \`synthetic\` / \`synthetic-pipeline-proof\`, keeps \`readyForHumanReview=false\`, and is evidence of pipeline operation only — not production measurement evidence.\n\n**P3.6 itself remains open** until real \`operator-observed\` aggregate observations exist, the minimum external observation window has elapsed, comparable equal-duration windows are available, the operator has explicitly assessed traffic sufficiency after the current window closes, and the resulting report has been reviewed without promoting unsupported engagement or causality claims.`,
 );
 
+// This no-op comment exists only to trigger the already-present temporary push workflow.
 console.log('P3.6A durable acceptance patched successfully.');
