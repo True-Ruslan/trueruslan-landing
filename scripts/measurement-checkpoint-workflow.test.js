@@ -17,6 +17,7 @@ test('measurement workflow is manual/PR-safe, minimally privileged and never per
 
   assert.match(workflow, /workflow_dispatch:/);
   assert.match(workflow, /pull_request:/);
+  assert.match(workflow, /push:\s*\n\s+branches:\s*\n\s+- master/);
   assert.doesNotMatch(workflow, /schedule:/);
   assert.match(workflow, /permissions:\s*\n\s+contents: read/);
   assert.doesNotMatch(workflow, /issues: write|contents: write|pull-requests: write/);
@@ -33,9 +34,10 @@ test('measurement workflow is manual/PR-safe, minimally privileged and never per
   assert.doesNotMatch(uploadBlock, /measurement-observations\.json|RUNNER_TEMP/);
 });
 
-test('pull-request workflow proves the report pipeline with synthetic aggregate-only observations', () => {
+test('PR and master-push workflow paths prove the report pipeline with synthetic aggregate-only observations', () => {
   const workflow = readWorkflow();
   assert.match(workflow, /Synthetic aggregate measurement fixture/);
+  assert.match(workflow, /if: github\.event_name != 'workflow_dispatch'/);
   assert.match(workflow, /aggregateTrafficSufficient/);
   assert.match(workflow, /indexedCleanUrls/);
   assert.match(workflow, /indexedLegacyHtmlUrls/);
