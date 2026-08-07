@@ -62,6 +62,9 @@ test('English renderer preserves canonical identity while localizing presentatio
   assert.match(html, /покорить Diplodoc/);
   assert.match(html, /English publication summary/);
   assert.match(html, /Documentation/);
+  assert.match(html, /tr-publication-card__topics-label">Topics<\/span>/);
+  assert.match(html, /<ul class="tr-publication-card__topics">/);
+  assert.doesNotMatch(html, /tr-publication-card__topics" aria-label=/);
   assert.match(html, /Read on Habr ↗/);
   assert.doesNotMatch(html, /Технические статьи|Техническая статья|Автор|Темы|Читать на/);
 });
@@ -71,10 +74,12 @@ test('English featured and prebuild catalogue are rendered from the same canonic
   const featured = renderFeaturedPublications([entry], {surface: 'page', locale: 'en'});
   assert.match(featured, /Featured/);
   assert.match(featured, /English publication summary/);
+  assert.match(featured, /tr-publication-card__topics-label">Topics<\/span>/);
 
   const include = renderPublicationCatalogueInclude([entry], {locale: 'en'});
   assert.match(include, /data-tr-publications-locale="en"/);
   assert.match(include, /Technical articles/);
   assert.match(include, /English publication summary/);
+  assert.match(include, /tr-publication-card__topics-label">Topics<\/span>/);
   assert.match(include, /покорить Diplodoc/);
 });
