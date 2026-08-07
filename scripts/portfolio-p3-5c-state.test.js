@@ -35,7 +35,7 @@ function assertAcceptanceEvidence(source, label) {
   }
 }
 
-test('PROJECT_STATE records P3.5C as the latest exact production-accepted truth', () => {
+test('PROJECT_STATE records P3.5C as the latest exact production-accepted user-facing truth', () => {
   const state = read('docs/PROJECT_STATE.md');
   assert.match(state, /P3\.5C — English Publications/);
   assert.match(state, /Latest accepted product truth[\s\S]*P3\.5C — English Publications/);
@@ -52,12 +52,12 @@ test('ROADMAP closes P3.5C and makes P3.6 a bounded measurement checkpoint', () 
   assertAcceptanceEvidence(roadmap, 'ROADMAP');
 });
 
-test('Portfolio 1.0 specification records P3.5C production acceptance without weakening evidence boundaries', () => {
+test('Portfolio 1.0 specification preserves P3.5C production acceptance after later milestones', () => {
   const spec = read('docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md');
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.5C ACCEPTED IN PRODUCTION\*\*/);
   assert.match(spec, /### P3\.5C — English Publications — DONE/);
   assert.match(spec, /one generated site-wide search|single generated Diplodoc search/i);
   assert.match(spec, /original publication (?:identities|titles)/i);
+  assert.match(spec, /P3\.6 — Measurement checkpoint — NEXT/);
   assertAcceptanceEvidence(spec, 'Portfolio 1.0 spec');
 });
 

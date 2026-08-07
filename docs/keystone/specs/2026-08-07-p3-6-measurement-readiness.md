@@ -1,6 +1,6 @@
 # Portfolio 1.0 P3.6 — measurement readiness
 
-> Status: **P3.6A IMPLEMENTED / P3.6 MEASUREMENT NOT YET ACCEPTED**
+> Status: **P3.6A ACCEPTED / P3.6 MEASUREMENT NOT YET ACCEPTED**
 >
 > Date: **2026-08-07**
 
@@ -163,6 +163,28 @@ The generated JSON is machine-reviewable; the Markdown report is intended for hu
 
 ## Acceptance of P3.6
 
-P3.6A can be accepted when the analyzer, CLI, workflow contract and synthetic post-merge workflow proof are green. That post-merge artifact must identify itself as `synthetic` / `synthetic-pipeline-proof` and is evidence of pipeline operation only.
+P3.6A is accepted on exact squash SHA `7cc56d024fbde53156a9136b14b00c81c6718811`. The analyzer, CLI, workflow contract, PR synthetic proof, post-merge synthetic proof, Pages deployment and Production Live regressions are green.
 
-**P3.6 itself must remain open** until real `operator-observed` aggregate observations exist, the minimum external observation window has elapsed, comparable equal-duration windows are available, the operator has explicitly assessed traffic sufficiency after the current window closes, and the resulting report has been reviewed without promoting unsupported engagement or causality claims.
+```text
+PR #155 squash / deployed SHA:       7cc56d024fbde53156a9136b14b00c81c6718811
+PR Build:                            #1187 / 31185270870 — SUCCESS
+PR quality artifact:                 8996659434
+PR quality digest:                   sha256:07b6c53547894d1456525ed5574ecb9554c15a2178c16193435cf91937b06a32
+PR Measurement Checkpoint:           #16 / 31185271128 — SUCCESS
+PR synthetic artifact:               8996446081
+PR synthetic digest:                 sha256:7a1f05c829867c7bc0fff757a512a95f11e2c1fcb27a3684d2acc90ecfbef87a
+post-merge Measurement Checkpoint:   #17 / 31185967995 — SUCCESS
+post-merge synthetic artifact:       8996722305
+post-merge synthetic digest:         sha256:d6ab858824c2284a964a4b37f0e7377bb322af8baed922b8af83b27bbb36bce9
+Pages:                               #184 / 31185967012 — SUCCESS
+Pages deployment ID:                 5795968137
+Pages artifact:                      8996733610
+Pages artifact digest:               sha256:bda25b1331e9843a7b6f3364f47fdbea8f5fa7ef09a6445c55729062f3e6bfbf
+Production Live Smoke:               #267 / 31186078593 — SUCCESS
+production artifact:                 8996831585
+production digest:                   sha256:d8e4fae2cf63bfc1d2c8742eea68d4fbdb3d9ef588df834d2e65473fa22a475d
+```
+
+The post-merge measurement artifact identifies itself as `synthetic` / `synthetic-pipeline-proof`, keeps `readyForHumanReview=false`, and is evidence of pipeline operation only — not production measurement evidence.
+
+**P3.6 itself remains open** until real `operator-observed` aggregate observations exist, the minimum external observation window has elapsed, comparable equal-duration windows are available, the operator has explicitly assessed traffic sufficiency after the current window closes, and the resulting report has been reviewed without promoting unsupported engagement or causality claims.

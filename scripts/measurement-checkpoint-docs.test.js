@@ -14,7 +14,7 @@ function read(relativePath) {
 test('P3.6 measurement runbook preserves aggregate-only and no-conclusion boundaries', () => {
   const spec = read('docs/keystone/specs/2026-08-07-p3-6-measurement-readiness.md');
 
-  assert.match(spec, /P3\.6A IMPLEMENTED \/ P3\.6 MEASUREMENT NOT YET ACCEPTED/);
+  assert.match(spec, /P3\.6A ACCEPTED \/ P3\.6 MEASUREMENT NOT YET ACCEPTED/);
   assert.match(spec, /P3_6_MEASUREMENT_OBSERVATIONS_JSON/);
   assert.match(spec, /evidenceClass: \"operator-observed\"/);
   assert.match(spec, /evidenceClass: \"synthetic\"/);

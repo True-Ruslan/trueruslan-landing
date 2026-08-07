@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5C English Publications.
+> Последнее смысловое обновление: **2026-08-07**, после exact acceptance P3.6A Measurement readiness; реальный P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -185,6 +185,34 @@ production digest:              sha256:f7eedbffc29f7f8ed322cf14d654ad19f0cc35fca
 ```
 
 P3.5C is accepted only on exact deployed SHA `f189d100785f0aea363df306fb7a923c06ee61a2`; exact-head CI without the corresponding Pages deployment identity and Production Live Smoke is not equivalent production acceptance.
+
+### P3.6A — Measurement readiness — DONE
+
+P3.6A is the latest accepted engineering/tooling milestone. It adds a privacy-bounded aggregate measurement analyzer, deterministic JSON/Markdown report CLI, manual secret-backed workflow and synthetic PR/master proof without changing the latest accepted user-facing product truth (P3.5C).
+
+```text
+PR #155 squash / deployed SHA:       7cc56d024fbde53156a9136b14b00c81c6718811
+PR Build:                            #1187 / 31185270870 — SUCCESS
+PR quality artifact:                 8996659434
+PR quality digest:                   sha256:07b6c53547894d1456525ed5574ecb9554c15a2178c16193435cf91937b06a32
+PR Measurement Checkpoint:           #16 / 31185271128 — SUCCESS
+PR synthetic artifact:               8996446081
+PR synthetic digest:                 sha256:7a1f05c829867c7bc0fff757a512a95f11e2c1fcb27a3684d2acc90ecfbef87a
+post-merge Measurement Checkpoint:   #17 / 31185967995 — SUCCESS
+post-merge synthetic artifact:       8996722305
+post-merge synthetic digest:         sha256:d6ab858824c2284a964a4b37f0e7377bb322af8baed922b8af83b27bbb36bce9
+Pages:                               #184 / 31185967012 — SUCCESS
+Pages deployment ID:                 5795968137
+Pages artifact:                      8996733610
+Pages artifact digest:               sha256:bda25b1331e9843a7b6f3364f47fdbea8f5fa7ef09a6445c55729062f3e6bfbf
+Production Live Smoke:               #267 / 31186078593 — SUCCESS
+production artifact:                 8996831585
+production digest:                   sha256:d8e4fae2cf63bfc1d2c8742eea68d4fbdb3d9ef588df834d2e65473fa22a475d
+```
+
+Synthetic workflow evidence is classified as `synthetic-pipeline-proof`, has `readyForHumanReview=false`, and is **not production measurement evidence**. Real P3.6 remains open until `operator-observed` aggregate observations exist, the minimum post-migration window has elapsed, baseline/current windows have equal duration, the operator assessment occurs after the current window closes, traffic sufficiency is explicitly assessed, and a human reviews the descriptive report. No automatic engagement, causality or product-impact conclusion is permitted.
+
+**P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**
 
 ---
 
@@ -410,6 +438,6 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**P3.5C — English Publications — NEXT**.
+**P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**
 
-P3.5B уже публикует `/en/now/` из того же canonical now-data contract без второго English state registry. Следующий bounded этап локализует Publications presentation поверх существующего publication registry и одного generated search. Draft или непроверенные external-project claims не продвигаются.
+P3.6A measurement-readiness tooling уже принято на exact SHA `7cc56d024fbde53156a9136b14b00c81c6718811`. Сам P3.6 остаётся observation checkpoint: запускать его только с реальными `operator-observed` aggregate observations после минимального post-migration window, с equal-duration baseline/current windows, explicit traffic-sufficiency assessment после закрытия current window и human review. Synthetic `synthetic-pipeline-proof` не является production measurement evidence и не разрешает engagement, causality или product-impact claims.
