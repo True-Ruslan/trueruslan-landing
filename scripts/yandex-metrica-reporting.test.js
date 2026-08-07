@@ -121,6 +121,37 @@ test('Reports API fetch sends OAuth only in the Authorization header and returns
   assert.equal(calls[0].url.includes(TOKEN), false);
 });
 
+test('Reports API request always carries a bounded abort signal', async () => {
+  let signal = null;
+  await fetchYandexMetricaTotals({
+    counterId: COUNTER_ID,
+    oauthToken: TOKEN,
+    date1: '2026-08-05',
+    date2: '2026-08-18',
+    fetchImpl: async (_url, options) => {
+      signal = options.signal;
+      return response(validApiBody());
+    },
+  });
+
+  assert.ok(signal instanceof AbortSignal, 'Reports API fetch must receive an AbortSignal');
+  assert.equal(signal.aborted, false);
+});
+
+test('Reports API fetch rejects invalid timeout configuration', async () => {
+  await assert.rejects(
+    () => fetchYandexMetricaTotals({
+      counterId: COUNTER_ID,
+      oauthToken: TOKEN,
+      date1: '2026-08-05',
+      date2: '2026-08-18',
+      timeoutMs: 0,
+      fetchImpl: async () => response(validApiBody()),
+    }),
+    /timeout/i,
+  );
+});
+
 test('Reports API fetch fails closed on auth errors, sampling and malformed totals', async () => {
   await assert.rejects(
     () => fetchYandexMetricaTotals({
