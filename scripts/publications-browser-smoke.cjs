@@ -36,8 +36,12 @@ async function assertEnglishPresentation(page, label, expectedCardCount) {
   if (!rootText.includes('Technical articles')) {
     throw new Error(`${label}: English catalogue section heading is missing.`);
   }
-  if (/Технические статьи|Техническая статья|Автор|Темы|Читать на/i.test(rootText)) {
-    throw new Error(`${label}: English catalogue leaks Russian UI labels.`);
+
+  const sectionHeadings = publicationRoot.locator('.tr-publications__group-head h2');
+  for (const text of await sectionHeadings.allTextContents()) {
+    if (text.trim() === 'Технические статьи') {
+      throw new Error(`${label}: catalogue section heading leaked Russian UI copy.`);
+    }
   }
 
   const cards = page.locator('[data-tr-publication-id]');
@@ -61,17 +65,22 @@ async function assertEnglishPresentation(page, label, expectedCardCount) {
   }
 
   for (const text of await metaKinds.allTextContents()) {
-    if (!text.includes('Technical article')) {
+    if (!text.includes('Technical article') || text.includes('Техническая статья')) {
       throw new Error(`${label}: publication kind source text is not localized: ${text}`);
     }
   }
   for (const text of await metaRoles.allTextContents()) {
-    if (text.trim() !== 'Author') {
+    if (text.trim() !== 'Author' || text.trim() === 'Автор') {
       throw new Error(`${label}: publication role source text is not Author: ${text}`);
     }
   }
+  for (const labelValue of await topicLists.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label')))) {
+    if (labelValue !== 'Topics' || labelValue === 'Темы') {
+      throw new Error(`${label}: publication topics aria-label is not localized: ${labelValue}`);
+    }
+  }
   for (const text of await actions.allTextContents()) {
-    if (!text.includes('Read on Habr')) {
+    if (!text.includes('Read on Habr') || text.includes('Читать на')) {
       throw new Error(`${label}: publication action source text is not localized: ${text}`);
     }
   }
