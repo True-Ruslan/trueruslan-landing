@@ -438,6 +438,6 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**P3.5C — English Publications — NEXT**.
+**P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**
 
-P3.5B уже публикует `/en/now/` из того же canonical now-data contract без второго English state registry. Следующий bounded этап локализует Publications presentation поверх существующего publication registry и одного generated search. Draft или непроверенные external-project claims не продвигаются.
+P3.6A measurement-readiness tooling уже принято на exact SHA `7cc56d024fbde53156a9136b14b00c81c6718811`. Сам P3.6 остаётся observation checkpoint: запускать его только с реальными `operator-observed` aggregate observations после минимального post-migration window, с equal-duration baseline/current windows, explicit traffic-sufficiency assessment после закрытия current window и human review. Synthetic `synthetic-pipeline-proof` не является production measurement evidence и не разрешает engagement, causality или product-impact claims.
