@@ -42,13 +42,13 @@ async function assertSeoPair(page) {
   return {canonical, ru, en, fallback};
 }
 
-async function assertCanonicalPublicationCards(root) {
+async function assertCanonicalPublicationCards(root, label) {
   const observed = {};
   for (const publication of PUBLICATIONS) {
     assert(publication.en?.summary, `canonical registry misses English presentation for ${publication.id}`);
     const cards = root.locator(`[data-tr-publication-id="${publication.id}"]`);
     const count = await cards.count();
-    assert(count === 1, `${publication.id} expected one catalogue card, got ${count}`);
+    assert(count === 1, `${label}: ${publication.id} expected one card, got ${count}`);
 
     const card = cards.first();
     const title = card.locator('h3 a').first();
@@ -56,61 +56,66 @@ async function assertCanonicalPublicationCards(root) {
     const titleLanguage = await title.getAttribute('lang');
     const text = await card.innerText();
 
-    assert(href && normalizeUrl(href) === normalizeUrl(publication.canonicalUrl), `${publication.id} canonical external URL drifted: ${href || 'missing'}`);
-    assert(titleLanguage === publication.language, `${publication.id} original title must declare lang=${publication.language}`);
-    assert(text.includes(publication.title), `${publication.id} original publication title is missing`);
-    assert(text.includes(publication.en.summary), `${publication.id} English summary is missing`);
+    assert(href && normalizeUrl(href) === normalizeUrl(publication.canonicalUrl), `${label}: ${publication.id} canonical external URL drifted: ${href || 'missing'}`);
+    assert(titleLanguage === publication.language, `${label}: ${publication.id} original title must declare lang=${publication.language}`);
+    assert(text.includes(publication.title), `${label}: ${publication.id} original publication title is missing`);
+    assert(text.includes(publication.en.summary), `${label}: ${publication.id} English summary is missing`);
     for (const topic of publication.en.topics) {
-      assert(text.includes(topic), `${publication.id} English topic is missing: ${topic}`);
+      assert(text.includes(topic), `${label}: ${publication.id} English topic is missing: ${topic}`);
     }
     observed[publication.id] = {href, titleLanguage, summary: publication.en.summary};
   }
   return observed;
 }
 
-async function assertEnglishPresentation(root, label) {
-  const rootText = (await root.textContent()) || '';
-  assert(rootText.includes('Technical articles'), `${label} misses Technical articles section`);
-
-  const sectionHeadings = root.locator('.tr-publications__group-head h2');
-  for (const text of await sectionHeadings.allTextContents()) {
-    assert(text.trim() !== 'Технические статьи', `${label} catalogue section heading leaked Russian UI copy`);
-  }
-
+async function assertEnglishCardSet(root, label) {
   const expected = PUBLICATIONS.length;
-  const metaKinds = root.locator('.tr-publication-card__meta span:first-child');
-  const metaRoles = root.locator('.tr-publication-card__meta span:last-child');
-  const topicLists = root.locator('.tr-publication-card__topics[aria-label="Topics"]');
-  const actions = root.locator('.tr-publication-card__primary');
-  const originalTitles = root.locator('h3 a[lang="ru"]');
+  const cards = root.locator('[data-tr-publication-id]');
+  assert(await cards.count() === expected, `${label}: expected ${expected} cards`);
+
+  const metaKinds = cards.locator('.tr-publication-card__meta span:first-child');
+  const metaRoles = cards.locator('.tr-publication-card__meta span:last-child');
+  const topicLists = cards.locator('.tr-publication-card__topics');
+  const actions = cards.locator('.tr-publication-card__primary');
+  const originalTitles = cards.locator('h3 a[lang="ru"]');
 
   for (const [name, locator] of [
     ['publication kind metadata', metaKinds],
     ['publication role metadata', metaRoles],
-    ['Topics semantic labels', topicLists],
+    ['topic lists', topicLists],
     ['primary publication actions', actions],
     ['original Russian publication titles', originalTitles],
   ]) {
     const count = await locator.count();
-    assert(count === expected, `${label} expected ${expected} ${name}, got ${count}`);
+    assert(count === expected, `${label}: expected ${expected} ${name}, got ${count}`);
   }
 
   for (const text of await metaKinds.allTextContents()) {
-    assert(text.includes('Technical article') && !text.includes('Техническая статья'), `${label} publication kind source text is not localized: ${text}`);
+    assert(text.includes('Technical article') && !text.includes('Техническая статья'), `${label}: publication kind is not localized: ${text}`);
   }
   for (const text of await metaRoles.allTextContents()) {
-    assert(text.trim() === 'Author' && text.trim() !== 'Автор', `${label} publication role source text is not Author: ${text}`);
+    assert(text.trim() === 'Author', `${label}: publication role is not Author: ${text}`);
   }
   for (const labelValue of await topicLists.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label')))) {
-    assert(labelValue === 'Topics' && labelValue !== 'Темы', `${label} publication topics aria-label is not localized: ${labelValue}`);
+    assert(labelValue === 'Topics', `${label}: publication topics aria-label is not localized: ${labelValue}`);
   }
   for (const text of await actions.allTextContents()) {
-    assert(text.includes('Read on Habr') && !text.includes('Читать на'), `${label} publication action source text is not localized: ${text}`);
+    assert(text.includes('Read on Habr') && !text.includes('Читать на'), `${label}: publication action is not localized: ${text}`);
   }
 
   const augustDate = root.locator('time[datetime="2025-08-23"]');
-  assert(await augustDate.count() === 1, `${label} expected one August 23 publication date`);
-  assert((await augustDate.textContent()).trim() === 'August 23, 2025', `${label} August publication date is not localized`);
+  assert(await augustDate.count() === 1, `${label}: expected one August 23 publication date`);
+  assert((await augustDate.textContent()).trim() === 'August 23, 2025', `${label}: August publication date is not localized`);
+}
+
+async function assertEnglishCatalogue(catalogue, label) {
+  const rootText = (await catalogue.textContent()) || '';
+  assert(rootText.includes('Technical articles'), `${label}: misses Technical articles section`);
+  for (const text of await catalogue.locator('.tr-publications__group-head h2').allTextContents()) {
+    assert(text.trim() !== 'Технические статьи', `${label}: catalogue section heading leaked Russian UI copy`);
+  }
+  await assertEnglishCardSet(catalogue, label);
+  return assertCanonicalPublicationCards(catalogue, label);
 }
 
 async function verifyRendered(page) {
@@ -123,13 +128,19 @@ async function verifyRendered(page) {
 
   const catalogue = page.locator('[data-tr-publications-root]').first();
   await catalogue.waitFor({state: 'visible', timeout: 10000});
-  await assertEnglishPresentation(catalogue, 'English Publications rendered catalogue');
-  const publications = await assertCanonicalPublicationCards(catalogue);
+  const publications = await assertEnglishCatalogue(catalogue, 'English Publications rendered catalogue');
+
+  const featured = page.locator('.tr-publications-featured--page').first();
+  await featured.waitFor({state: 'visible', timeout: 10000});
+  const featuredHeading = (await featured.locator('h2').first().textContent())?.trim();
+  assert(featuredHeading === 'Featured', `English Publications featured heading drifted: ${featuredHeading}`);
+  await assertEnglishCardSet(featured, 'English Publications rendered featured');
+  await assertCanonicalPublicationCards(featured, 'English Publications rendered featured');
 
   const html = await page.content();
   assert(!html.includes(LEGACY_ORIGIN), 'English Publications leaks legacy Pages origin');
   await page.screenshot({path: path.join(ARTIFACTS_DIR, 'p3-5c-english-publications.png'), fullPage: true});
-  return {status: response.status(), heading, seo, publications};
+  return {status: response.status(), heading, seo, publications, featured: true};
 }
 
 async function verifyNoJavaScript(browser) {
@@ -148,8 +159,7 @@ async function verifyNoJavaScript(browser) {
     const fallbackHeading = (await fallback.locator('h1').first().textContent()).trim();
     assert(fallbackHeading === 'Publications and talks', `English Publications no-JS heading drifted: ${fallbackHeading}`);
     const catalogue = fallback.locator('[data-tr-publications-root]');
-    await assertEnglishPresentation(catalogue, 'English Publications no-JS catalogue');
-    const publications = await assertCanonicalPublicationCards(catalogue);
+    const publications = await assertEnglishCatalogue(catalogue, 'English Publications no-JS catalogue');
     return {status: response.status(), fallbackVisible: true, publications};
   } finally {
     await context.close();
