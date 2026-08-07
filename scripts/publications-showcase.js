@@ -7,7 +7,7 @@ import {
   renderPublicationCatalogue,
 } from './publication-renderer.js';
 
-const TARGET = 'landing/publications.html';
+const DEFAULT_TARGET = 'landing/publications.html';
 const FEATURED_PLACEHOLDER = /<div\s+data-tr-publications-featured(?:="")?\s*><\/div>/;
 const PREBUILD_CATALOGUE = /<div\b[^>]*\bdata-tr-publications-root(?:="")?[^>]*>/;
 const STYLE_MARKER = 'data-tr-publications-style';
@@ -31,9 +31,10 @@ function injectStylesheet(html) {
   return html.replace('</head>', `  ${link}\n</head>`);
 }
 
-function injectNoScriptFallback(html, catalogue) {
-  if (html.includes(NOSCRIPT_MARKER)) return html;
-  const fallback = `<noscript data-tr-publications-noscript><style>#root{display:none!important}</style><section class="tr-publications-noscript"><h1>Публикации и выступления</h1>${catalogue}</section></noscript>`;
+function injectNoScriptFallback(html, catalogue, locale) {
+  if (html.includes(`${NOSCRIPT_MARKER}="${locale}"`)) return html;
+  const heading = locale === 'en' ? 'Publications and talks' : 'Публикации и выступления';
+  const fallback = `<noscript ${NOSCRIPT_MARKER}="${locale}"><style>#root{display:none!important}</style><section class="tr-publications-noscript"><h1>${heading}</h1>${catalogue}</section></noscript>`;
   const rootPattern = /(<div\s+id="root"[^>]*><\/div>)/;
   if (rootPattern.test(html)) return html.replace(rootPattern, `$1${fallback}`);
   if (html.includes('</body>')) return html.replace('</body>', `${fallback}</body>`);
@@ -41,31 +42,37 @@ function injectNoScriptFallback(html, catalogue) {
 }
 
 export function applyPublicationsShowcase(outputDir, publications, {
+  target = DEFAULT_TARGET,
+  locale = 'ru',
   projectLabels,
   noteLabels,
 } = {}) {
-  const htmlPath = path.join(outputDir, TARGET);
-  if (!fs.existsSync(htmlPath)) throw new Error(`publication showcase page not found: ${htmlPath}`);
+  const htmlPath = path.join(outputDir, ...target.split('/'));
+  let source;
+  try {
+    source = fs.readFileSync(htmlPath, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') throw new Error(`publication showcase page not found: ${target}`);
+    throw error;
+  }
 
-  const featured = renderFeaturedPublications(publications, {surface: 'page'});
-  const catalogue = renderPublicationCatalogue(publications, {projectLabels, noteLabels});
-  const source = fs.readFileSync(htmlPath, 'utf8');
-
+  const featured = renderFeaturedPublications(publications, {surface: 'page', locale});
+  const catalogue = renderPublicationCatalogue(publications, {projectLabels, noteLabels, locale});
   const transformed = transformGeneratedContent(
     source,
     (content) => injectFeaturedPublications(content, featured),
-    'publication featured placeholder and prebuild catalogue',
+    `publication featured placeholder and prebuild catalogue (${locale})`,
   );
 
   if (!transformed.source) {
-    throw new Error('publication featured placeholder or generated catalogue is missing');
+    throw new Error(`publication featured placeholder or generated catalogue is missing for ${target}`);
   }
 
   let html = injectStylesheet(transformed.html);
   if (transformed.source === 'diplodoc-state') {
-    html = injectNoScriptFallback(html, catalogue);
+    html = injectNoScriptFallback(html, catalogue, locale);
   }
 
-  fs.writeFileSync(htmlPath, html);
-  return TARGET;
+  fs.writeFileSync(htmlPath, html, 'utf8');
+  return target;
 }
