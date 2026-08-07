@@ -37,6 +37,8 @@ The clean-URL migration boundary is `2026-08-05T00:00:00Z`.
 
 The default minimum observation window is **10 days**, matching the existing external recheck boundary around issue #111. A report created earlier remains valid evidence of **insufficient observation time**, not evidence of product impact.
 
+Once the minimum observation window is satisfied, baseline and current windows must have **equal duration** before descriptive deltas are accepted for review. The operator assessment timestamp must also be on or after the end of the current observation window; an assessment cannot certify data that had not finished accumulating.
+
 Possible report states:
 
 - `insufficient-observation-window` — the minimum post-migration window has not elapsed;
@@ -153,4 +155,4 @@ The generated JSON is machine-reviewable; the Markdown report is intended for hu
 
 P3.6A can be accepted when the analyzer, CLI, workflow contract and synthetic post-merge workflow proof are green.
 
-**P3.6 itself must remain open** until real aggregate observations exist, the minimum external observation window has elapsed, the operator has explicitly assessed traffic sufficiency, and the resulting report has been reviewed without promoting unsupported engagement or causality claims.
+**P3.6 itself must remain open** until real aggregate observations exist, the minimum external observation window has elapsed, comparable equal-duration windows are available, the operator has explicitly assessed traffic sufficiency after the current window closes, and the resulting report has been reviewed without promoting unsupported engagement or causality claims.
