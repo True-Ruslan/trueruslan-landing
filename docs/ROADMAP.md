@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-07**, после exact acceptance P3.6A Measurement readiness; P3.6 measurement ожидает внешние aggregate observations.
+> Обновлено: **2026-08-07**, после реального подключения P3.6B Reports API и реализации P3.6C browser collection в PR #158; P3.6 measurement ожидает внешние aggregate observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -340,6 +340,16 @@ production digest:                   sha256:d8e4fae2cf63bfc1d2c8742eea68d4fbdb3d
 ```
 
 Synthetic workflow evidence is classified as `synthetic-pipeline-proof`, has `readyForHumanReview=false`, and is **not production measurement evidence**. Real P3.6 remains open until `operator-observed` aggregate observations exist, the minimum post-migration window has elapsed, baseline/current windows have equal duration, the operator assessment occurs after the current window closes, traffic sufficiency is explicitly assessed, and a human reviews the descriptive report. No automatic engagement, causality or product-impact conclusion is permitted.
+
+### P3.6B — Yandex Metrica Reports API — CONNECTED / DONE AS TOOLING
+
+PR #157 added bounded read-only aggregate Reports API enrichment. The real authenticated connection is verified by run `31201235872` — SUCCESS. The browser OAuth boundary remains separate and the token is not exposed to generated pages.
+
+### P3.6C — Consent-gated Yandex Metrica browser collection — PR #158 / PENDING PRODUCTION ACCEPTANCE
+
+Implemented with **explicit consent**: no Yandex provider network/script/cookies before opt-in; Webvisor, Click Map, link tracking, accurate-bounce events, hash tracking, title transmission, custom events, user parameters, ecommerce and noscript tracking are disabled or forbidden. PR CI uses a fake counter and intercepts provider traffic; the production verifier never grants consent.
+
+Next acceptance gate for P3.6C is exact merged Pages deployment plus Production Live pre-consent verification. This does not close P3.6 measurement.
 
 ## P3.6 — Measurement checkpoint — NEXT / WAITING
 

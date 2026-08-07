@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-07**, после exact acceptance P3.6A Measurement readiness; реальный P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-07**, после реального подключения P3.6B Reports API и реализации P3.6C browser collection в PR #158; P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -211,6 +211,26 @@ production digest:                   sha256:d8e4fae2cf63bfc1d2c8742eea68d4fbdb3d
 ```
 
 Synthetic workflow evidence is classified as `synthetic-pipeline-proof`, has `readyForHumanReview=false`, and is **not production measurement evidence**. Real P3.6 remains open until `operator-observed` aggregate observations exist, the minimum post-migration window has elapsed, baseline/current windows have equal duration, the operator assessment occurs after the current window closes, traffic sufficiency is explicitly assessed, and a human reviews the descriptive report. No automatic engagement, causality or product-impact conclusion is permitted.
+
+### P3.6B — Yandex Metrica Reports API — CONNECTED / TOOLING ACCEPTED
+
+P3.6B extends the accepted P3.6A measurement tooling with read-only aggregate Yandex Metrica Reports API enrichment. The real authenticated connection was verified against the configured counter; OAuth remains least-privilege `metrika:read` and is confined to GitHub Actions.
+
+```text
+PR #157 squash / deployed SHA:       f0600dceef16d3471f5a2c67fecd28ff18f174dc
+real connection check:               31201235872 — SUCCESS
+probe day:                            2026-08-06 UTC
+```
+
+The successful authenticated probe proves API/counter access only. It does **not** accept P3.6 measurement, manufacture historical traffic or replace the observation-window and human-review gates.
+
+### P3.6C — Consent-gated Yandex Metrica browser collection — PR #158 / PENDING PRODUCTION ACCEPTANCE
+
+P3.6C implements explicit-consent browser collection as progressive enhancement. No Yandex provider script, provider request or provider cookie is allowed before explicit consent. The bounded init disables Webvisor/session replay, Click Map, outbound-link tracking, accurate-bounce events, hash tracking and page-title transmission; custom events, user parameters, ecommerce and noscript tracking remain out of scope.
+
+PR #158 has deterministic policy/schema contracts, final-artifact verification, fake-counter Chromium consent lifecycle coverage and an exact-deployment pre-consent production verifier. **Production acceptance remains pending** until the merged SHA is deployed by Pages and independent Production Live Smoke proves the real artifact keeps Yandex network/scripts/cookies at zero before consent.
+
+P3.6 remains open: browser collection readiness is not equivalent to real equal-duration aggregate observations, sufficient traffic or human review.
 
 **P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**
 
