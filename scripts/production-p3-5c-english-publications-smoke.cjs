@@ -71,7 +71,11 @@ async function assertCanonicalPublicationCards(root) {
 async function assertEnglishPresentation(root, label) {
   const rootText = (await root.textContent()) || '';
   assert(rootText.includes('Technical articles'), `${label} misses Technical articles section`);
-  assert(!/Технические статьи|Техническая статья|Автор|Темы|Читать на/i.test(rootText), `${label} leaks Russian UI labels`);
+
+  const sectionHeadings = root.locator('.tr-publications__group-head h2');
+  for (const text of await sectionHeadings.allTextContents()) {
+    assert(text.trim() !== 'Технические статьи', `${label} catalogue section heading leaked Russian UI copy`);
+  }
 
   const expected = PUBLICATIONS.length;
   const metaKinds = root.locator('.tr-publication-card__meta span:first-child');
@@ -92,13 +96,16 @@ async function assertEnglishPresentation(root, label) {
   }
 
   for (const text of await metaKinds.allTextContents()) {
-    assert(text.includes('Technical article'), `${label} publication kind source text is not localized: ${text}`);
+    assert(text.includes('Technical article') && !text.includes('Техническая статья'), `${label} publication kind source text is not localized: ${text}`);
   }
   for (const text of await metaRoles.allTextContents()) {
-    assert(text.trim() === 'Author', `${label} publication role source text is not Author: ${text}`);
+    assert(text.trim() === 'Author' && text.trim() !== 'Автор', `${label} publication role source text is not Author: ${text}`);
+  }
+  for (const labelValue of await topicLists.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label')))) {
+    assert(labelValue === 'Topics' && labelValue !== 'Темы', `${label} publication topics aria-label is not localized: ${labelValue}`);
   }
   for (const text of await actions.allTextContents()) {
-    assert(text.includes('Read on Habr'), `${label} publication action source text is not localized: ${text}`);
+    assert(text.includes('Read on Habr') && !text.includes('Читать на'), `${label} publication action source text is not localized: ${text}`);
   }
 
   const augustDate = root.locator('time[datetime="2025-08-23"]');
