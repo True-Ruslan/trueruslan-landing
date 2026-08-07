@@ -1,8 +1,35 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5A English Vlezet flagship.
+> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5B English /now.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-07 — P3.5B English /now
+
+PR #150 published the controlled English current-work route `/en/now/` from the same canonical `data/now.json`: one shared update date, localized presentation, Project Registry-derived cards, RU/EN canonical pairing, metadata/OpenGraph, generated search and semantic no-JavaScript fallback. No `now-en.json` or second current-state model was introduced.
+
+The first exact deployment was healthy, but the new P3.5B production verifier failed because it inspected raw relative project hrefs without applying Diplodoc's `<base href="../../">`. The exact Pages artifact proved the page itself resolved correctly in browsers. PR #151 added a RED regression and corrected the verifier to resolve hrefs through `document.baseURI` before exact canonical comparison; product code and content did not need a corrective change.
+
+```text
+PR #150 feature squash:         b0b041968b955ed619cbfe560640dde1244833de
+PR #151 final squash/deployed:  96ea3ec5de18d99a811405b36a5b60066d9c374c
+feature Build:                  #1105 / 31158466856 — SUCCESS
+feature quality artifact:       8986214202
+feature quality digest:         sha256:e89e69f84cdcc00bc6b0656caee9e2282211eb3fba57c1e1b46b64cece1861eb
+correction Build:               #1107 / 31159529244 — SUCCESS
+correction quality artifact:    8986592511
+correction quality digest:      sha256:e519aa06bca1d2a9c1a581c9504daef0b4933f21bfc6596a19299bae137af0bf
+Pages:                          #180 / 31161876484 — SUCCESS
+Pages deployment ID:            5791352097
+Pages artifact:                 8987394027
+Pages artifact digest:          sha256:7c456d8e8f534bed6c2f2c410f615004c7d2dff37b71fe0ea7709cfb7129f999
+Production Live Smoke:          #230 / 31161925498 — SUCCESS
+P3.5B English Now smoke:        PASS
+production artifact:            8987452957
+production digest:              sha256:2fe174a95fca6daa28d261f281576597d6d383d432a7a0cc32f9cdbb231d08b5
+```
+
+Next bounded slice: **P3.5C — English Publications — NEXT**.
 
 ## 2026-08-07 — P3.5A English Vlezet flagship
 
