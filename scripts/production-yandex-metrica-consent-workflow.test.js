@@ -17,7 +17,7 @@ test('Production Live runs the Yandex pre-consent smoke only against deployed pr
   assert.match(workflow, /production-yandex-metrica-consent-smoke\.cjs/);
   assert.match(workflow, /Run deployed Yandex Metrica pre-consent smoke/);
   assert.match(workflow, /if:\s*github\.event_name != 'pull_request'/);
-  assert.match(workflow, /production-yandex-metrica-consent-summary\.json/);
+  assert.match(smoke, /production-yandex-metrica-consent-summary\.json/);
   assert.match(smoke, /trueruslan\.ru|APEX/);
 });
 
@@ -26,8 +26,8 @@ test('production Metrica smoke never grants consent or sends test telemetry', ()
   assert.doesNotMatch(smoke, /data-tr-consent=["']granted["']/i);
   assert.doesNotMatch(smoke, /\.click\(.*granted|click\([^\n]*allow/i);
   assert.doesNotMatch(smoke, /window\.ym\s*\(|\bym\s*\(/);
-  assert.match(smoke, /mc\.yandex\./);
-  assert.match(smoke, /zero Yandex|0 Yandex|length !== 0/i);
+  assert.match(smoke, /YANDEX_HOST_PATTERN/);
+  assert.match(smoke, /yandexRequests\.length === 0/);
 });
 
 test('production Metrica smoke proves controller, disable flag, no provider script and no provider cookies', () => {
