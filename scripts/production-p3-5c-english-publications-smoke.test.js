@@ -9,7 +9,7 @@ const source = fs.readFileSync(path.join(__dirname, 'production-p3-5c-english-pu
 const routes = fs.readFileSync(path.join(__dirname, 'production-live-routes.cjs'), 'utf8');
 const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'production-live.yml'), 'utf8');
 
-test('P3.5C production smoke pins English Publications route, canonical identities, no-JS and search', () => {
+test('P3.5C production smoke pins English Publications route, canonical identities, structural presentation, no-JS and search', () => {
   assert.match(routes, /PUBLICATIONS_PATH = 'landing\/publications\/'/);
   assert.match(routes, /PUBLICATIONS_EN_PATH = 'en\/publications\/'/);
   assert.match(source, /PUBLICATIONS_URL/);
@@ -17,10 +17,17 @@ test('P3.5C production smoke pins English Publications route, canonical identiti
   assert.match(source, /publication\.canonicalUrl/);
   assert.match(source, /titleLanguage === publication\.language/);
   assert.match(source, /publication\.en\.summary/);
+  assert.match(source, /assertEnglishPresentation/);
+  assert.match(source, /\.tr-publication-card__topics\[aria-label=\\?"Topics\\?"\]/);
+  assert.match(source, /\.tr-publication-card__meta span:last-child/);
+  assert.match(source, /text\.trim\(\) === 'Author'/);
+  assert.match(source, /Read on Habr/);
+  assert.match(source, /August 23, 2025/);
   assert.match(source, /data-tr-publications-noscript=\\?"en\\?"/);
   assert.match(source, /multi-page site with Diplodoc/);
   assert.match(source, /en\/publications\//);
   assert.match(source, /LEGACY_ORIGIN/);
+  assert.doesNotMatch(source, /bodyText\.includes\('Author'\)/);
 });
 
 test('P3.5C production smoke remains deployment-only in Production Live workflow', () => {
