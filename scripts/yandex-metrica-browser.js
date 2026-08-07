@@ -1,7 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 import {globSync} from 'glob';
+
+const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+export const DEFAULT_METRICA_BROWSER_POLICY_PATH = path.join(ROOT_DIR, 'data', 'yandex-metrica-browser.json');
 
 const POLICY_FIELDS = Object.freeze([
   'provider',
@@ -79,6 +83,17 @@ export function validateMetricaBrowserPolicy(policy) {
   }
 
   return Object.freeze({...policy});
+}
+
+export function loadMetricaBrowserPolicy(policyPath = DEFAULT_METRICA_BROWSER_POLICY_PATH) {
+  const source = fs.readFileSync(policyPath, 'utf8');
+  let parsed;
+  try {
+    parsed = JSON.parse(source);
+  } catch (error) {
+    throw new Error(`invalid Yandex Metrica browser policy JSON: ${error.message}`);
+  }
+  return validateMetricaBrowserPolicy(parsed);
 }
 
 export function normalizeMetricaCounterId(counterId) {
