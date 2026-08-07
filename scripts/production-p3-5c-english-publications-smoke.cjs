@@ -75,6 +75,7 @@ async function assertEnglishCardSet(root, label) {
 
   const metaKinds = cards.locator('.tr-publication-card__meta span:first-child');
   const metaRoles = cards.locator('.tr-publication-card__meta span:last-child');
+  const topicLabels = cards.locator('.tr-publication-card__topics-label');
   const topicLists = cards.locator('.tr-publication-card__topics');
   const actions = cards.locator('.tr-publication-card__primary');
   const originalTitles = cards.locator('h3 a[lang="ru"]');
@@ -82,6 +83,7 @@ async function assertEnglishCardSet(root, label) {
   for (const [name, locator] of [
     ['publication kind metadata', metaKinds],
     ['publication role metadata', metaRoles],
+    ['topic labels', topicLabels],
     ['topic lists', topicLists],
     ['primary publication actions', actions],
     ['original Russian publication titles', originalTitles],
@@ -96,8 +98,8 @@ async function assertEnglishCardSet(root, label) {
   for (const text of await metaRoles.allTextContents()) {
     assert(text.trim() === 'Author', `${label}: publication role is not Author: ${text}`);
   }
-  for (const labelValue of await topicLists.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label')))) {
-    assert(labelValue === 'Topics', `${label}: publication topics aria-label is not localized: ${labelValue}`);
+  for (const text of await topicLabels.allTextContents()) {
+    assert(text.trim() === 'Topics', `${label}: publication topics label is not localized: ${text}`);
   }
   for (const text of await actions.allTextContents()) {
     assert(text.includes('Read on Habr') && !text.includes('Читать на'), `${label}: publication action is not localized: ${text}`);
