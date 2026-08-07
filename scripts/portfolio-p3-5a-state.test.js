@@ -16,7 +16,7 @@ const PAGES_RUN = '31155442788';
 const DEPLOYMENT_ID = '5790177102';
 const PRODUCTION_RUN = '31155442779';
 
-test('durable state closes P3.5A on exact production evidence and promotes English /now', () => {
+test('durable state preserves P3.5A exact production evidence after later P3.5 slices', () => {
   const state = read('docs/PROJECT_STATE.md');
   const roadmap = read('docs/ROADMAP.md');
   const changelog = read('docs/CHANGELOG.md');
@@ -30,14 +30,14 @@ test('durable state closes P3.5A on exact production evidence and promotes Engli
   assert.match(state, new RegExp(PAGES_RUN));
   assert.match(state, new RegExp(DEPLOYMENT_ID));
   assert.match(state, new RegExp(PRODUCTION_RUN));
-  assert.match(state, /P3\.5B[^\n]*English[^\n]*\/now[^\n]*(NEXT|следующ)/i);
 
   assert.match(roadmap, /P3\.5A[^\n]*(DONE|accepted)/i);
-  assert.match(roadmap, /P3\.5B[^\n]*English[^\n]*\/now[^\n]*NEXT/i);
-  assert.match(roadmap, /P3\.5C[^\n]*Publications/i);
+  assert.match(roadmap, /P3\.5B[^\n]*English[^\n]*\/now[^\n]*(DONE|accepted)/i);
+  assert.match(roadmap, /P3\.5C[^\n]*Publications[^\n]*NEXT/i);
 
   assert.match(spec, /P3\.5A[^\n]*(DONE|accepted)/i);
-  assert.match(spec, /P3\.5B[^\n]*English[^\n]*\/now[^\n]*NEXT/i);
+  assert.match(spec, /P3\.5B[^\n]*English[^\n]*\/now[^\n]*(DONE|accepted)/i);
+  assert.match(spec, /P3\.5C[^\n]*Publications[^\n]*NEXT/i);
 
   assert.match(changelog, /P3\.5A[^\n]*English Vlezet/i);
 });
