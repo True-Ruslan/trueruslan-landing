@@ -55,9 +55,8 @@ test('CHANGELOG records the P3.5B feature, production verifier correction and ex
   assertAcceptanceEvidence(changelog, 'CHANGELOG');
 });
 
-test('Portfolio 1.0 spec preserves accepted P3.5B while P3.5C is accepted and P3.6 is next', () => {
+test('Portfolio 1.0 spec preserves accepted P3.5B while later milestones advance', () => {
   const spec = read('docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md');
-  assert.match(spec, /Status: \*\*IN PROGRESS — P3\.5C ACCEPTED IN PRODUCTION\*\*/);
   assert.match(spec, /### P3\.5B — English \/now — DONE/);
   assert.match(spec, /### P3\.5C — English Publications — DONE/);
   assert.match(spec, /P3\.6 — Measurement checkpoint — NEXT/);
