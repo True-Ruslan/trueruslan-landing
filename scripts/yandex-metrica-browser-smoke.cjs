@@ -134,21 +134,20 @@ async function assertLifecycle(browser, baseUrl) {
       throw new Error(`after grant: init options escaped privacy contract ${JSON.stringify(options)}`);
     }
 
-    // withdraw consent using the persistent settings control; disable future collection immediately.
-    await page.locator('[data-tr-metrica-settings]').click();
-    await page.locator('button[data-tr-consent="denied"]').click();
-    current = await state(page);
-    if (current.choice !== 'denied' || current.disabled !== true) {
-      throw new Error(`withdraw: expected disable flag and denied preference ${JSON.stringify(current)}`);
-    }
+    // Withdrawal after an initialized provider must force a reload. Yandex documents
+    // disableYaCounter as a pre-initialization opt-out, so the new document must start denied.
     const requestsAtWithdrawal = intercepted.length;
-    await page.reload({waitUntil: 'networkidle'});
+    await page.locator('[data-tr-metrica-settings]').click();
+    await Promise.all([
+      page.waitForNavigation({waitUntil: 'networkidle', timeout: 5000}),
+      page.locator('button[data-tr-consent="denied"]').click(),
+    ]);
     current = await state(page);
     if (intercepted.length !== requestsAtWithdrawal) {
       throw new Error(`withdraw reload: expected zero new Yandex requests, got ${intercepted.length - requestsAtWithdrawal}`);
     }
     if (current.disabled !== true || current.choice !== 'denied' || current.providerScripts.length !== 0) {
-      throw new Error(`withdraw reload: provider must remain disabled ${JSON.stringify(current)}`);
+      throw new Error(`withdraw reload: provider must restart disabled before initialization ${JSON.stringify(current)}`);
     }
     diagnostics.assertClean('metrica-consent:lifecycle');
 
@@ -156,6 +155,7 @@ async function assertLifecycle(browser, baseUrl) {
       beforeConsentRequests: 0,
       afterDenialRequests: 0,
       grantRequests: 1,
+      withdrawalForcesReload: true,
       withdrawalAddsRequests: 0,
       boundedInit: true,
       persistedPreference: 'denied',
