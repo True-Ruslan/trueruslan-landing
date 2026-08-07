@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-07**, после реального подключения P3.6B Reports API и реализации P3.6C browser collection в PR #158; P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-08**, после exact-production acceptance P3.6C consent-gated Yandex Metrica browser collection; P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -224,13 +224,27 @@ probe day:                            2026-08-06 UTC
 
 The successful authenticated probe proves API/counter access only. It does **not** accept P3.6 measurement, manufacture historical traffic or replace the observation-window and human-review gates.
 
-### P3.6C — Consent-gated Yandex Metrica browser collection — PR #158 / PENDING PRODUCTION ACCEPTANCE
+### P3.6C — Consent-gated Yandex Metrica browser collection — PRODUCTION ACCEPTED
 
-P3.6C implements explicit-consent browser collection as progressive enhancement. No Yandex provider script, provider request or provider cookie is allowed before explicit consent. The bounded init disables Webvisor/session replay, Click Map, outbound-link tracking, accurate-bounce events, hash tracking and page-title transmission; custom events, user parameters, ecommerce and noscript tracking remain out of scope.
+P3.6C implements **explicit consent** browser collection as progressive enhancement. No Yandex provider script, provider request or provider cookie is allowed before explicit consent. The bounded init disables Webvisor/session replay, Click Map, outbound-link tracking, accurate-bounce events, hash tracking and page-title transmission; custom events, user parameters, ecommerce and noscript tracking remain out of scope. Withdrawal after active initialization persists `denied`, sets the disable flag and reloads into a pre-init denied state.
 
-PR #158 has deterministic policy/schema contracts, final-artifact verification, fake-counter Chromium consent lifecycle coverage and an exact-deployment pre-consent production verifier. **Production acceptance remains pending** until the merged SHA is deployed by Pages and independent Production Live Smoke proves the real artifact keeps Yandex network/scripts/cookies at zero before consent.
+The owner confirmed the counter-side privacy gate before production acceptance. Exact Pages #187 built the real-counter artifact from merged SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`; the final verifier accepted one bounded controller on representative RU/EN routes. Deployment-triggered Production Live #288 resolved the exact successful Pages deployment and the real-site Yandex pre-consent smoke proved **zero Yandex requests before consent**.
 
-P3.6 remains open: browser collection readiness is not equivalent to real equal-duration aggregate observations, sufficient traffic or human review.
+```text
+PR #158 squash / deployed SHA:       9bccf042fa6f9ce3ab289c7d023077c137ab238c
+Pages:                               #187 / 31227641778 — SUCCESS
+Pages deployment ID:                 5803497490
+Pages artifact:                      9012660943
+Pages artifact digest:               sha256:79e2f08aae0523b5d84274be08cd2e554ab4d88e8f01e7f745fc6547109be622
+Pages production reports:            9012663370
+Pages reports digest:                sha256:baa0333182cd825287a67e0cca9b444bef1273ce631409d2bc945f53f161767d
+Production Live Smoke:               #288 / 31227681975 — SUCCESS
+Yandex pre-consent production smoke: PASS — zero Yandex requests before consent
+production artifact:                 9012692719
+production digest:                   sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a
+```
+
+P3.6C is accepted only for the exact deployed SHA and evidence above. P3.6 remains open: production collection acceptance is not equivalent to real equal-duration aggregate observations, sufficient traffic or human review.
 
 **P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**
 

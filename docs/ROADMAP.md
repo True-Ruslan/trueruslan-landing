@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-07**, после реального подключения P3.6B Reports API и реализации P3.6C browser collection в PR #158; P3.6 measurement ожидает внешние aggregate observations.
+> Обновлено: **2026-08-08**, после exact-production acceptance P3.6C consent-gated Yandex Metrica browser collection; P3.6 measurement ожидает внешние aggregate observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -58,6 +58,9 @@
 - P3.5A English Vlezet flagship — PR #148.
 - P3.5B English /now — PR #150/#151.
 - P3.5C English Publications — PR #153.
+- P3.6A Measurement readiness — PR #155.
+- P3.6B Yandex Metrica Reports API connection — PR #157.
+- P3.6C consent-gated Yandex Metrica browser collection — PR #158 / PRODUCTION ACCEPTED.
 
 ---
 
@@ -345,11 +348,25 @@ Synthetic workflow evidence is classified as `synthetic-pipeline-proof`, has `re
 
 PR #157 added bounded read-only aggregate Reports API enrichment. The real authenticated connection is verified by run `31201235872` — SUCCESS. The browser OAuth boundary remains separate and the token is not exposed to generated pages.
 
-### P3.6C — Consent-gated Yandex Metrica browser collection — PR #158 / PENDING PRODUCTION ACCEPTANCE
+### P3.6C — Consent-gated Yandex Metrica browser collection — PRODUCTION ACCEPTED
 
-Implemented with **explicit consent**: no Yandex provider network/script/cookies before opt-in; Webvisor, Click Map, link tracking, accurate-bounce events, hash tracking, title transmission, custom events, user parameters, ecommerce and noscript tracking are disabled or forbidden. PR CI uses a fake counter and intercepts provider traffic; the production verifier never grants consent.
+Accepted with **explicit consent**: no Yandex provider network/script/cookies before opt-in; Webvisor, Click Map, link tracking, accurate-bounce events, hash tracking, title transmission, custom events, user parameters, ecommerce and noscript tracking are disabled or forbidden. PR CI uses a fake counter and intercepts provider traffic; production acceptance automation never grants consent.
 
-Next acceptance gate for P3.6C is exact merged Pages deployment plus Production Live pre-consent verification. This does not close P3.6 measurement.
+```text
+PR #158 squash / deployed SHA:       9bccf042fa6f9ce3ab289c7d023077c137ab238c
+Pages:                               #187 / 31227641778 — SUCCESS
+Pages deployment ID:                 5803497490
+Pages artifact:                      9012660943
+Pages artifact digest:               sha256:79e2f08aae0523b5d84274be08cd2e554ab4d88e8f01e7f745fc6547109be622
+Pages production reports:            9012663370
+Pages reports digest:                sha256:baa0333182cd825287a67e0cca9b444bef1273ce631409d2bc945f53f161767d
+Production Live Smoke:               #288 / 31227681975 — SUCCESS
+Yandex pre-consent production smoke: PASS — zero Yandex requests before consent
+production artifact:                 9012692719
+production digest:                   sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a
+```
+
+The owner confirmed the counter-side privacy settings before acceptance. P3.6C is accepted only on exact deployed SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`. This does **not** close P3.6 measurement.
 
 ## P3.6 — Measurement checkpoint — NEXT / WAITING
 
@@ -365,4 +382,4 @@ After sufficient aggregate traffic, run the manual checkpoint with real `operato
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Continue with **P3.6 — Measurement checkpoint — NEXT / WAITING** only when real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Confirm P3.6B real Reports API connection run `31201235872`. Confirm P3.6C production acceptance for SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, Pages run `31227641778`, deployment `5803497490`, Production Live run `31227681975` and production evidence digest `sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a`. Continue with **P3.6 — Measurement checkpoint — NEXT / WAITING** only when real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
