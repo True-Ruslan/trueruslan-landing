@@ -12,6 +12,11 @@ P3.6A provides the bounded machinery for that future review. It does **not** man
 
 ## Evidence boundary
 
+Every input declares an explicit evidence class:
+
+- `operator-observed` — sanitized aggregates actually observed by the operator and eligible for the bounded readiness states below;
+- `synthetic` — test-only fixture data used to prove the pipeline. Its report status is always `synthetic-pipeline-proof` and it can never become `ready-for-human-review`.
+
 The checkpoint accepts only aggregate observations from:
 
 - Cloudflare Web Analytics — aggregate pageviews;
@@ -39,11 +44,13 @@ The default minimum observation window is **10 days**, matching the existing ext
 
 Once the minimum observation window is satisfied, baseline and current windows must have **equal duration** before descriptive deltas are accepted for review. The operator assessment timestamp must also be on or after the end of the current observation window; an assessment cannot certify data that had not finished accumulating.
 
-Possible report states:
+Operator-observed report states:
 
 - `insufficient-observation-window` — the minimum post-migration window has not elapsed;
 - `insufficient-aggregate-traffic` — the window is long enough, but the operator explicitly considers the aggregate sample too sparse;
 - `ready-for-human-review` — the bounded evidence package is complete enough to inspect manually.
+
+Synthetic fixtures use only `synthetic-pipeline-proof` and are never measurement evidence.
 
 `ready-for-human-review` is not equivalent to “engagement improved”.
 
@@ -55,11 +62,12 @@ The manual workflow reads a repository secret named:
 P3_6_MEASUREMENT_OBSERVATIONS_JSON
 ```
 
-The secret must contain JSON shaped like this example. The numbers below are illustrative only and are **not production observations**.
+The secret must contain `evidenceClass: "operator-observed"` and JSON shaped like this example. The numbers below are illustrative only and are **not production observations**.
 
 ```json
 {
   "schemaVersion": 1,
+  "evidenceClass": "operator-observed",
   "cleanUrlMigrationAt": "2026-08-05T00:00:00Z",
   "baseline": {
     "window": {
@@ -119,9 +127,9 @@ The secret must contain JSON shaped like this example. The numbers below are ill
 
 `.github/workflows/measurement-checkpoint.yml` has three bounded execution modes:
 
-1. **Pull request** — synthetic aggregate fixture verifies the report pipeline. No external/private metric is needed.
-2. **Push to `master` when the measurement pipeline itself changes** — the same synthetic fixture proves the merged workflow actually executes and uploads derived evidence.
-3. **Manual `workflow_dispatch`** — reads `P3_6_MEASUREMENT_OBSERVATIONS_JSON` and performs the real aggregate checkpoint.
+1. **Pull request** — a fixture with `evidenceClass: "synthetic"` verifies the report pipeline. No external/private metric is needed, and the report is permanently classified as `synthetic-pipeline-proof`.
+2. **Push to `master` when the measurement pipeline itself changes** — the same synthetic fixture proves the merged workflow actually executes and uploads derived test evidence.
+3. **Manual `workflow_dispatch`** — reads `P3_6_MEASUREMENT_OBSERVATIONS_JSON`; the analyzer requires `evidenceClass: "operator-observed"` before the result can ever become `ready-for-human-review`.
 
 The raw observations file exists only at:
 
@@ -138,6 +146,8 @@ measurement-checkpoint-report.json
 measurement-checkpoint-report.md
 ```
 
+The report itself contains its evidence class, so synthetic pipeline artifacts cannot be mistaken for operator-observed measurement evidence.
+
 ## Local/reproducible execution
 
 Given a sanitized local observation file:
@@ -153,6 +163,6 @@ The generated JSON is machine-reviewable; the Markdown report is intended for hu
 
 ## Acceptance of P3.6
 
-P3.6A can be accepted when the analyzer, CLI, workflow contract and synthetic post-merge workflow proof are green.
+P3.6A can be accepted when the analyzer, CLI, workflow contract and synthetic post-merge workflow proof are green. That post-merge artifact must identify itself as `synthetic` / `synthetic-pipeline-proof` and is evidence of pipeline operation only.
 
-**P3.6 itself must remain open** until real aggregate observations exist, the minimum external observation window has elapsed, comparable equal-duration windows are available, the operator has explicitly assessed traffic sufficiency after the current window closes, and the resulting report has been reviewed without promoting unsupported engagement or causality claims.
+**P3.6 itself must remain open** until real `operator-observed` aggregate observations exist, the minimum external observation window has elapsed, comparable equal-duration windows are available, the operator has explicitly assessed traffic sufficiency after the current window closes, and the resulting report has been reviewed without promoting unsupported engagement or causality claims.
