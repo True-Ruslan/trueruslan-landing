@@ -38,6 +38,7 @@ test('PR and master-push workflow paths prove the report pipeline with synthetic
   const workflow = readWorkflow();
   assert.match(workflow, /Synthetic aggregate measurement fixture/);
   assert.match(workflow, /if: github\.event_name != 'workflow_dispatch'/);
+  assert.match(workflow, /"evidenceClass": "synthetic"/);
   assert.match(workflow, /aggregateTrafficSufficient/);
   assert.match(workflow, /indexedCleanUrls/);
   assert.match(workflow, /indexedLegacyHtmlUrls/);
