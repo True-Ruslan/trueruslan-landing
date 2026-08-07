@@ -1,8 +1,10 @@
 # P3.6C — Consent-gated Yandex Metrica browser collection
 
-> Status: IMPLEMENTED IN PR #158 / PRODUCTION ACCEPTANCE PENDING EXACT DEPLOYMENT
+> Status: PRODUCTION ACCEPTED
 >
-> Date: 2026-08-07
+> Implemented: 2026-08-07
+>
+> Production accepted: 2026-08-08
 
 ## Scope
 
@@ -51,7 +53,7 @@ Analytics failure never controls rendering, navigation, search, evidence labels 
 
 ## Counter-side operator gate
 
-Frontend controls do not configure every counter-side feature. Before final production acceptance, verify in Yandex Metrica:
+Frontend controls do not configure every counter-side feature. The owner reviewed and confirmed the following counter-side gate before final production acceptance on 2026-08-08:
 
 - **Do not store full IP addresses of site visitors / Не сохранять полный IP-адрес посетителей** — enabled;
 - Webvisor disabled (`code_options.visor = false`);
@@ -70,4 +72,22 @@ The existing OAuth permission remains `metrika:read`. OAuth is not part of brows
 
 P3.6C requires exact-head CI, consent lifecycle browser smoke, security/dependency gates, zero unresolved review findings, exact Pages deployment, final artifact verification with the real counter variable, and a Production Live Smoke proving zero Yandex provider requests on a fresh page before consent. Production acceptance automation must not click Allow on the real site.
 
-Even after P3.6C acceptance, **P3.6 MEASUREMENT remains NOT ACCEPTED** until its real equal-duration observation windows, minimum duration, traffic-sufficiency assessment and human review are complete.
+## Exact production acceptance evidence
+
+```text
+PR #158 squash / deployed SHA:       9bccf042fa6f9ce3ab289c7d023077c137ab238c
+Pages:                               #187 / 31227641778 — SUCCESS
+Pages deployment ID:                 5803497490
+Pages artifact:                      9012660943
+Pages artifact digest:               sha256:79e2f08aae0523b5d84274be08cd2e554ab4d88e8f01e7f745fc6547109be622
+Pages production reports:            9012663370
+Pages reports digest:                sha256:baa0333182cd825287a67e0cca9b444bef1273ce631409d2bc945f53f161767d
+Production Live Smoke:               #288 / 31227681975 — SUCCESS
+Yandex pre-consent production smoke: PASS — zero Yandex requests before consent
+production artifact:                 9012692719
+production digest:                   sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a
+```
+
+Pages #187 injected the consent controller into 90 final HTML pages and the production artifact verifier returned `ok: true` for representative RU/EN routes. Deployment-triggered Production Live #288 checked out exact SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, resolved the matching successful Pages deployment on its first attempt, and passed `production-yandex-metrica-consent-smoke.cjs` with **zero Yandex requests before consent**. The production acceptance automation did not grant consent.
+
+P3.6C is **PRODUCTION ACCEPTED** only for this exact evidence chain. Even after P3.6C acceptance, **P3.6 MEASUREMENT remains NOT ACCEPTED** until its real equal-duration observation windows, minimum duration, traffic-sufficiency assessment and human review are complete.
