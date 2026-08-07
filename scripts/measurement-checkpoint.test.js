@@ -20,6 +20,7 @@ function snapshot({start, end, pageviews, google, yandex}) {
 function fixture(overrides = {}) {
   return {
     schemaVersion: 1,
+    evidenceClass: 'operator-observed',
     cleanUrlMigrationAt: '2026-08-05T00:00:00Z',
     baseline: snapshot({
       start: '2026-07-22T00:00:00Z',
@@ -57,6 +58,7 @@ test('measurement checkpoint remains fail-closed before the minimum external obs
 
   const report = analyzeMeasurementCheckpoint(input, {minimumObservationDays: 10});
   assert.equal(report.status, 'insufficient-observation-window');
+  assert.equal(report.evidence.class, 'operator-observed');
   assert.equal(report.readiness.readyForHumanReview, false);
   assert.equal(report.readiness.minimumObservationDays, 10);
   assert.ok(report.readiness.observationDays < 10);
@@ -85,6 +87,7 @@ test('ready checkpoint computes descriptive aggregate deltas without inventing e
   const report = analyzeMeasurementCheckpoint(fixture(), {minimumObservationDays: 10});
 
   assert.equal(report.status, 'ready-for-human-review');
+  assert.equal(report.evidence.class, 'operator-observed');
   assert.equal(report.readiness.readyForHumanReview, true);
   assert.deepEqual(report.comparisons.cloudflarePageviews, {baseline: 80, current: 110, delta: 30});
   assert.deepEqual(report.comparisons.google.impressions, {baseline: 30, current: 45, delta: 15});
@@ -97,6 +100,24 @@ test('ready checkpoint computes descriptive aggregate deltas without inventing e
   assert.equal(report.claims.engagementConclusion, null);
   assert.equal(report.claims.productImpactConclusion, null);
   assert.match(report.claims.boundary, /descriptive/i);
+});
+
+test('synthetic fixtures are permanently classified as pipeline proof, never operator evidence', () => {
+  const report = analyzeMeasurementCheckpoint(fixture({evidenceClass: 'synthetic'}), {minimumObservationDays: 10});
+
+  assert.equal(report.status, 'synthetic-pipeline-proof');
+  assert.equal(report.evidence.class, 'synthetic');
+  assert.equal(report.readiness.readyForHumanReview, false);
+  assert.equal(report.readiness.operatorTrafficSufficient, false);
+  assert.match(report.evidence.sources.cloudflare, /synthetic/i);
+  assert.match(report.claims.boundary, /synthetic.*not production measurement evidence/i);
+});
+
+test('measurement checkpoint rejects unknown evidence classes', () => {
+  assert.throws(
+    () => analyzeMeasurementCheckpoint(fixture({evidenceClass: 'estimated'})),
+    /evidenceClass/i,
+  );
 });
 
 test('measurement checkpoint rejects raw or user-level tracking fields', () => {
@@ -157,6 +178,7 @@ test('measurement markdown labels operator assertions and refuses automatic impa
   const report = analyzeMeasurementCheckpoint(fixture(), {minimumObservationDays: 10});
   const markdown = renderMeasurementCheckpointMarkdown(report);
 
+  assert.match(markdown, /Evidence class: \*\*operator-observed\*\*/);
   assert.match(markdown, /ready-for-human-review/);
   assert.match(markdown, /Operator assertion/i);
   assert.match(markdown, /No automatic engagement conclusion/i);
