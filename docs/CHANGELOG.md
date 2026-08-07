@@ -1,8 +1,34 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5B English /now.
+> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5C English Publications.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-07 — P3.5C English Publications
+
+PR #153 published `/en/publications/` as a controlled English catalogue over the same canonical `data/publications.json`. Original Russian publication titles, source language and canonical Habr URLs remain bibliographic identity; English summaries/topics are presentation fields in the same records. No second publication registry, second site-wide search index or English-only publication state was introduced.
+
+Verification found and corrected two model mismatches without weakening acceptance. First, broad Russian-copy checks could match substrings inside legitimate original titles, so localization assertions were scoped to actual UI nodes. Second, Diplodoc sanitized `aria-label` from prebuilt Catalogue state, so the Topics semantic label was moved to real screen-reader-only DOM text. Generated-search acceptance now queries unique registry-derived English content (`syntax overhead`) and requires the `/en/publications/` result rather than assuming a specific bounded snippet.
+
+```text
+PR #153 squash / deployed SHA:  f189d100785f0aea363df306fb7a923c06ee61a2
+Build:                          #1158 / 31179795922 — SUCCESS
+quality artifact:               8994422472
+quality digest:                 sha256:60ccfc9a37515a6a78bea2b8876e05e3119581d72b90ab4a1a8d2954a3da26d0
+CodeQL:                         #663 / 31179795959 — SUCCESS
+Dependency Review:              #586 / 31179796022 — SUCCESS
+Distribution Readiness:         #137 / 31179795919 — SUCCESS
+Pages:                          #182 / 31180427543 — SUCCESS
+Pages deployment ID:            5794904843
+Pages artifact:                 8994536006
+Pages artifact digest:          sha256:847a0705f2ce1896a2046abdfec428b4c4ef43cf39270f62fb675b3e785468b1
+Production Live Smoke:          #263 / 31180478038 — SUCCESS
+P3.5C English Publications smoke: PASS
+production artifact:            8994603193
+production digest:              sha256:f7eedbffc29f7f8ed322cf14d654ad19f0cc35fca3e53aa1bcd64000ca652d80
+```
+
+Next bounded checkpoint: **P3.6 — Measurement checkpoint — NEXT**, only after sufficient aggregate traffic.
 
 ## 2026-08-07 — P3.5B English /now
 

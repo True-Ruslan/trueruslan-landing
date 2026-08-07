@@ -1,6 +1,6 @@
 # Portfolio 1.0 — Evidence-first flagship content
 
-> Status: **IN PROGRESS — P3.5B ACCEPTED IN PRODUCTION**
+> Status: **IN PROGRESS — P3.5C ACCEPTED IN PRODUCTION**
 >
 > Date: **2026-08-07**
 >
@@ -311,10 +311,30 @@ production artifact:            8987452957
 production digest:              sha256:2fe174a95fca6daa28d261f281576597d6d383d432a7a0cc32f9cdbb231d08b5
 ```
 
-### P3.5C — English Publications — NEXT
+### P3.5C — English Publications — DONE
 
-Localize the Publications presentation over the existing canonical publication registry. Preserve original publication identities and external canonical URLs, one generated site-wide search and the existing Notes-only Atom feed. Do not create a second publication registry, English-only lifecycle state or a second search index.
+Controlled route `/en/publications/` localizes presentation over the existing canonical publication registry. Original publication titles, source language and external canonical URLs remain bibliographic identity; English summaries/topics remain bounded presentation fields in the same records. One generated site-wide search remains authoritative, and the Notes Atom feed remains Notes-only. No second publication registry, English-only lifecycle state or second search index was introduced.
 
+The accepted accessibility contract uses real screen-reader-only Topics text instead of relying on an `aria-label` that Diplodoc may sanitize in prebuilt Catalogue state. Search acceptance uses unique registry-derived English content and verifies the English Publications route without treating snippet formatting as product truth.
+
+```text
+PR #153 squash / deployed SHA:  f189d100785f0aea363df306fb7a923c06ee61a2
+Build:                          #1158 / 31179795922 — SUCCESS
+quality artifact:               8994422472
+quality digest:                 sha256:60ccfc9a37515a6a78bea2b8876e05e3119581d72b90ab4a1a8d2954a3da26d0
+Pages:                          #182 / 31180427543 — SUCCESS
+Pages deployment ID:            5794904843
+Pages artifact:                 8994536006
+Pages artifact digest:          sha256:847a0705f2ce1896a2046abdfec428b4c4ef43cf39270f62fb675b3e785468b1
+Production Live Smoke:          #263 / 31180478038 — SUCCESS
+P3.5C English Publications smoke: PASS
+production artifact:            8994603193
+production digest:              sha256:f7eedbffc29f7f8ed322cf14d654ad19f0cc35fca3e53aa1bcd64000ca652d80
+```
+
+### P3.6 — Measurement checkpoint — NEXT
+
+Measurement remains bounded by sufficient aggregate traffic. Until that evidence exists, no engagement or product-impact conclusion is promoted from sparse analytics.
 
 ---
 
