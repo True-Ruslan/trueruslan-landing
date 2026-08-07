@@ -1,3 +1,8 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import {globSync} from 'glob';
+
 const POLICY_FIELDS = Object.freeze([
   'provider',
   'measurement',
@@ -29,6 +34,10 @@ const FORBIDDEN_FLAGS = Object.freeze([
   'ecommerce',
   'noscriptTracking',
 ]);
+
+const METRICA_MARKER = 'data-tr-analytics="yandex-metrica-consent"';
+const METRICA_TAG_SRC = 'https://mc.yandex.ru/metrika/tag.js';
+const CONSENT_STORAGE_KEY = 'tr_privacy_consent_v1';
 
 export function validateMetricaBrowserPolicy(policy) {
   if (!policy || typeof policy !== 'object' || Array.isArray(policy)) {
@@ -80,4 +89,68 @@ export function normalizeMetricaCounterId(counterId) {
     throw new Error('Yandex Metrica counter ID must be a positive decimal identifier');
   }
   return normalized;
+}
+
+function consentControllerHtml(counterId) {
+  return `<style data-tr-metrica-consent-style>
+.tr-metrica-consent{position:fixed;z-index:2147483000;right:16px;bottom:16px;max-width:min(420px,calc(100vw - 32px));box-sizing:border-box;padding:16px;border:1px solid color-mix(in srgb,currentColor 24%,transparent);border-radius:12px;background:Canvas;color:CanvasText;box-shadow:0 8px 30px rgba(0,0,0,.18);font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.tr-metrica-consent[hidden]{display:none}.tr-metrica-consent__title{margin:0 0 6px;font-size:16px;font-weight:700}.tr-metrica-consent__text{margin:0}.tr-metrica-consent__actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.tr-metrica-consent button{min-height:38px;padding:7px 12px;border:1px solid currentColor;border-radius:8px;background:transparent;color:inherit;font:inherit;cursor:pointer}.tr-metrica-consent button[data-tr-consent="granted"]{background:CanvasText;color:Canvas}.tr-metrica-settings{position:fixed;z-index:2147482999;right:12px;bottom:12px;padding:6px 9px;border:1px solid color-mix(in srgb,currentColor 22%,transparent);border-radius:8px;background:Canvas;color:CanvasText;font:12px/1.3 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;opacity:.78}.tr-metrica-settings[hidden]{display:none}@media(max-width:520px){.tr-metrica-consent{right:10px;bottom:10px;max-width:calc(100vw - 20px)}.tr-metrica-settings{right:8px;bottom:8px}}@media(prefers-reduced-motion:reduce){.tr-metrica-consent,.tr-metrica-settings{scroll-behavior:auto}}
+</style><script ${METRICA_MARKER} data-tr-metrica-counter="${counterId}">(function(){
+'use strict';
+var counterId=${counterId};
+var storageKey='${CONSENT_STORAGE_KEY}';
+var disableKey='disableYaCounter'+counterId;
+var tagSrc='${METRICA_TAG_SRC}';
+var loaded=false;
+var root=null;
+var settings=null;
+var locale=(location.pathname==='/en'||location.pathname.indexOf('/en/')===0)?'en':'ru';
+var copy=locale==='en'?{title:'Analytics',text:'Allow anonymous traffic statistics via Yandex Metrica? The provider may set cookies after you opt in.',allow:'Allow',deny:'Decline',settings:'Analytics settings'}:{title:'Аналитика',text:'Разрешить анонимную статистику посещений через Яндекс.Метрику? После согласия провайдер может устанавливать cookies.',allow:'Разрешить',deny:'Отказаться',settings:'Настройки аналитики'};
+function readChoice(){try{var value=localStorage.getItem(storageKey);return value==='granted'||value==='denied'?value:null}catch(_error){return null}}
+function writeChoice(value){try{localStorage.setItem(storageKey,value);return true}catch(_error){return false}}
+function setDisabled(value){window[disableKey]=value}
+function ensureYm(){if(typeof window.ym!=='function'){var queue=function(){(queue.a=queue.a||[]).push(arguments)};queue.l=Date.now();window.ym=queue}}
+function loadMetrica(){if(loaded)return;loaded=true;setDisabled(false);ensureYm();window.ym(counterId,'init',{clickmap:false,trackLinks:false,accurateTrackBounce:false,webvisor:false,trackHash:false,sendTitle:false});var script=document.createElement('script');script.async=true;script.src=tagSrc;script.setAttribute('data-tr-metrica-provider','yandex-metrica');script.onerror=function(){loaded=false};document.head.appendChild(script)}
+function hidePrompt(){if(root)root.hidden=true;if(settings)settings.hidden=false}
+function showPrompt(){if(root)root.hidden=false;if(settings)settings.hidden=true}
+function choose(value){if(value==='granted'){if(!writeChoice('granted')){setDisabled(true);showPrompt();return}hidePrompt();loadMetrica();return}setDisabled(true);writeChoice('denied');hidePrompt()}
+function buildUi(){root=document.createElement('section');root.className='tr-metrica-consent';root.setAttribute('data-tr-metrica-consent-dialog','');root.setAttribute('role','dialog');root.setAttribute('aria-label',copy.title);var title=document.createElement('p');title.className='tr-metrica-consent__title';title.textContent=copy.title;var text=document.createElement('p');text.className='tr-metrica-consent__text';text.textContent=copy.text;var actions=document.createElement('div');actions.className='tr-metrica-consent__actions';var deny=document.createElement('button');deny.type='button';deny.setAttribute('data-tr-consent','denied');deny.textContent=copy.deny;var allow=document.createElement('button');allow.type='button';allow.setAttribute('data-tr-consent','granted');allow.textContent=copy.allow;deny.addEventListener('click',function(){choose('denied')});allow.addEventListener('click',function(){choose('granted')});actions.appendChild(deny);actions.appendChild(allow);root.appendChild(title);root.appendChild(text);root.appendChild(actions);document.body.appendChild(root);settings=document.createElement('button');settings.type='button';settings.className='tr-metrica-settings';settings.setAttribute('data-tr-metrica-settings','');settings.textContent=copy.settings;settings.addEventListener('click',showPrompt);document.body.appendChild(settings)}
+function start(){buildUi();var choice=readChoice();if(choice==='granted'){hidePrompt();loadMetrica();return}setDisabled(true);if(choice==='denied'){hidePrompt();return}showPrompt()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();</script>`;
+}
+
+export function injectConsentGatedMetricaIntoHtml(html, policy, counterId) {
+  validateMetricaBrowserPolicy(policy);
+  const normalizedCounterId = normalizeMetricaCounterId(counterId);
+  if (!normalizedCounterId) return html;
+  if (html.includes(METRICA_MARKER)) return html;
+  if (!/<\/body>/i.test(html)) {
+    throw new Error('generated HTML body not found for Yandex Metrica consent injection');
+  }
+  return html.replace(/<\/body>/i, `${consentControllerHtml(normalizedCounterId)}</body>`);
+}
+
+export function applyConsentGatedMetrica(outputDir, policy, counterId) {
+  const validatedPolicy = validateMetricaBrowserPolicy(policy);
+  const normalizedCounterId = normalizeMetricaCounterId(counterId);
+  const summary = {
+    enabled: Boolean(normalizedCounterId),
+    provider: validatedPolicy.provider,
+    updated: [],
+  };
+  if (!normalizedCounterId) return summary;
+  if (!fs.existsSync(outputDir)) {
+    throw new Error(`Yandex Metrica output directory not found: ${outputDir}`);
+  }
+
+  const htmlFiles = globSync(path.join(outputDir, '**', '*.html'), {nodir: true}).sort();
+  for (const htmlPath of htmlFiles) {
+    const source = fs.readFileSync(htmlPath, 'utf8');
+    const updated = injectConsentGatedMetricaIntoHtml(source, validatedPolicy, normalizedCounterId);
+    if (updated === source) continue;
+    fs.writeFileSync(htmlPath, updated, 'utf8');
+    summary.updated.push(path.relative(outputDir, htmlPath).replaceAll(path.sep, '/'));
+  }
+  summary.updated.sort();
+  return summary;
 }
