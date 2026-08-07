@@ -2,7 +2,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const {requireQualityTool} = require('./quality-harness/tools.cjs');
-const {NOW_URL, NOW_EN_URL, SEARCH_URL} = require('./production-live-routes.cjs');
+const {
+  NOW_URL,
+  NOW_EN_URL,
+  SEARCH_URL,
+  VLEZET_EN_URL,
+  VILLAIGENCE_EN_URL,
+} = require('./production-live-routes.cjs');
 
 const {chromium} = requireQualityTool('playwright', 'P3.5B English Now production smoke');
 const NOW = JSON.parse(fs.readFileSync(path.resolve('data/now.json'), 'utf8'));
@@ -52,9 +58,17 @@ async function verifyRendered(page) {
   }
   assert(text.includes(NOW.en.focus), 'English Now does not expose the canonical English focus text');
   assert(!/Сейчас в работе|Что изучаю|Что пишу/.test(text), 'English Now contains Russian presentation headings');
-  const links = await now.locator('a[data-project]').evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
-  assert(links.some((href) => href?.includes('/en/projects/vlezet/')), 'English Now misses translated Vlezet project link');
-  assert(links.some((href) => href?.includes('/en/projects/livingworld/')), 'English Now misses translated VillAIgence project link');
+
+  const links = await now.locator('a[data-project]').evaluateAll((nodes) => nodes.map((node) => ({
+    project: node.getAttribute('data-project'),
+    rawHref: node.getAttribute('href'),
+    href: new URL(node.getAttribute('href') || '', document.baseURI).href,
+  })));
+  const vlezet = links.find(({project}) => project === 'vlezet');
+  const livingworld = links.find(({project}) => project === 'livingworld');
+  assert(vlezet && normalizeUrl(vlezet.href) === normalizeUrl(VLEZET_EN_URL), `English Now Vlezet route drifted: ${JSON.stringify(vlezet)}`);
+  assert(livingworld && normalizeUrl(livingworld.href) === normalizeUrl(VILLAIGENCE_EN_URL), `English Now VillAIgence route drifted: ${JSON.stringify(livingworld)}`);
+
   const html = await page.content();
   assert(!html.includes(LEGACY_ORIGIN), 'English Now leaks the legacy Pages origin');
   await page.screenshot({path: path.join(ARTIFACTS_DIR, 'p3-5b-english-now.png'), fullPage: true});
