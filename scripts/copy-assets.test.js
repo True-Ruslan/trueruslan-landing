@@ -24,7 +24,26 @@ const testAnalyticsPolicy = Object.freeze({
   sessionReplay: false,
 });
 
+const testMetricaPolicy = Object.freeze({
+  provider: 'yandex-metrica',
+  measurement: 'aggregate-traffic',
+  activation: 'explicit-consent-required',
+  providerCookies: 'after-consent-only',
+  consentStorage: 'first-party-preference-only',
+  sessionReplay: false,
+  clickMap: false,
+  linkTracking: false,
+  accurateBounce: false,
+  trackHash: false,
+  sendTitle: false,
+  customEvents: false,
+  userParameters: false,
+  ecommerce: false,
+  noscriptTracking: false,
+});
+
 const testAnalyticsToken = 'testAnalyticsToken0123456789ABCDEF';
+const testMetricaCounterId = '987654321';
 
 test('walkAssets copies supported image and PDF files preserving paths', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'landing-assets-'));
@@ -86,6 +105,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
   const dataDir = path.join(tempRoot, 'data');
   const pageMetaPath = path.join(dataDir, 'page-meta.json');
   const analyticsPolicyPath = path.join(dataDir, 'analytics.json');
+  const metricaPolicyPath = path.join(dataDir, 'yandex-metrica-browser.json');
   const engineeringGraphPath = path.join(dataDir, 'engineering-graph.json');
   const projectRegistryPath = path.join(dataDir, 'projects.json');
   const nowPath = path.join(dataDir, 'now.json');
@@ -111,6 +131,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
     '<!doctype html><html><head><link rel="canonical" href="{{SITE_URL}}/"></head><body class="g-root"><h1>Руслан Немыкин</h1><section>{{CURRENTLY_BUILDING}}</section></body></html>',
   );
   fs.writeFileSync(analyticsPolicyPath, JSON.stringify(testAnalyticsPolicy));
+  fs.writeFileSync(metricaPolicyPath, JSON.stringify(testMetricaPolicy));
   fs.writeFileSync(projectRegistryPath, JSON.stringify([{
     slug: 'test-project',
     name: 'Test Project',
@@ -185,6 +206,8 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
     pageMetaPath,
     analyticsPolicyPath,
     analyticsToken: testAnalyticsToken,
+    metricaPolicyPath,
+    metricaCounterId: testMetricaCounterId,
     engineeringGraphPath,
     projectRegistryPath,
     projectHistoryDir: historyDir,
@@ -216,6 +239,9 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
   assert.equal(result.analytics.enabled, true);
   assert.equal(result.analytics.provider, 'cloudflare-web-analytics');
   assert.ok(result.analytics.updated.includes('index.html'));
+  assert.equal(result.metricaAnalytics.enabled, true);
+  assert.equal(result.metricaAnalytics.provider, 'yandex-metrica');
+  assert.ok(result.metricaAnalytics.updated.includes('index.html'));
   assert.match(projectsHtml, /PRODUCTION/);
   assert.match(mapHtml, /data-tr-engineering-graph-build="ready"/);
   assert.match(mapHtml, /data-tr-engineering-graph-data/);
@@ -232,6 +258,9 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
   assert.match(html, /data-tr-local-path="\/assets\/og\/home\.png"/);
   assert.match(html, /data-tr-analytics="cloudflare-web-analytics"/);
   assert.match(html, /testAnalyticsToken0123456789ABCDEF/);
+  assert.match(html, /data-tr-analytics="yandex-metrica-consent"/);
+  assert.match(html, /data-tr-metrica-counter="987654321"/);
+  assert.doesNotMatch(html, /<script[^>]+src=["']https:\/\/mc\.yandex\.ru\//i);
   assert.doesNotMatch(html, /g-root_theme_light/);
   assert.doesNotMatch(html, /_bundle\//);
   assert.match(html, /application\/ld\+json/);
