@@ -65,10 +65,11 @@ updateFile('docs/PROJECT_STATE.md', (text) => {
     '> Последнее смысловое обновление: **2026-08-07**, после реального подключения P3.6B Reports API и реализации P3.6C browser collection в PR #158; P3.6 measurement остаётся открытым.',
     'PROJECT_STATE header',
   );
+  const marker = 'No automatic engagement, causality or product-impact conclusion is permitted.\n\n**P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**';
   next = replaceExactlyOnce(
     next,
-    '**P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**',
-    `${projectBlock}**P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**`,
+    marker,
+    `No automatic engagement, causality or product-impact conclusion is permitted.\n\n${projectBlock}**P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**`,
     'PROJECT_STATE P3.6 insertion',
   );
   return next;
