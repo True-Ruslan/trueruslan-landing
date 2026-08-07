@@ -202,6 +202,26 @@ async function assertEnglishVlezetSearchCoverage(page) {
   }
 }
 
+async function assertEnglishNowSearchCoverage(page) {
+  const input = page.locator('.tr-search-input').first();
+  const button = page.locator('.tr-search-button').first();
+  const query = 'deliberately bounded snapshot of current engineering focus';
+
+  await input.fill(query);
+  await button.click();
+  await page.waitForFunction(() => {
+    const body = document.body.innerText.toLocaleLowerCase('en');
+    const hasPhrase = body.includes('deliberately bounded snapshot of current engineering focus');
+    const hasEnglishNowRoute = [...document.querySelectorAll('a')]
+      .some((link) => (link.getAttribute('href') || '').includes('en/now/'));
+    return hasPhrase && hasEnglishNowRoute;
+  }, null, {timeout: 7000});
+
+  if (await page.locator('a[href*="en/now/"]').count() < 1) {
+    throw new Error(`English Now search query did not route to /en/now/: ${query}`);
+  }
+}
+
 async function assertSameOriginBackNavigation(page, baseUrl) {
   const sourcePath = '/landing/projects/';
   const sourceUrl = `${baseUrl}${sourcePath}`;
@@ -268,6 +288,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
     if (name === 'desktop') {
       await assertPublicationSearchCoverage(page);
       await assertEnglishVlezetSearchCoverage(page);
+      await assertEnglishNowSearchCoverage(page);
       await assertSameOriginBackNavigation(page, baseUrl);
     }
     diagnostics.assertClean(name);
@@ -283,6 +304,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
       controlVisuals: true,
       publicationQueries: name === 'desktop' ? 3 : 0,
       englishVlezetQueries: name === 'desktop' ? 1 : 0,
+      englishNowQueries: name === 'desktop' ? 1 : 0,
     };
   } finally {
     await runtime.close();

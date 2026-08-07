@@ -11,6 +11,8 @@ const EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_PATH = 'landing/notes/evidence-driven-p
 const RESUME_PATH = 'landing/resume/';
 const RESUME_PDF_PATH = 'assets/documents/cv.pdf';
 const SEARCH_PATH = '_search/ru/';
+const NOW_PATH = 'landing/now/';
+const NOW_EN_PATH = 'en/now/';
 const PORTFOLIO_PLATFORM_PATH = 'landing/projects/portfolio-platform/';
 const PORTFOLIO_PLATFORM_EN_PATH = 'en/projects/portfolio-platform/';
 const VILLAIGENCE_PATH = 'landing/projects/livingworld/';
@@ -30,6 +32,8 @@ const EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_URL = new URL(EVIDENCE_DRIVEN_PROJECT_S
 const RESUME_URL = new URL(RESUME_PATH, APEX).href;
 const RESUME_PDF_URL = new URL(RESUME_PDF_PATH, APEX).href;
 const SEARCH_URL = new URL(SEARCH_PATH, APEX).href;
+const NOW_URL = new URL(NOW_PATH, APEX).href;
+const NOW_EN_URL = new URL(NOW_EN_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_URL = new URL(PORTFOLIO_PLATFORM_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_EN_URL = new URL(PORTFOLIO_PLATFORM_EN_PATH, APEX).href;
 const VILLAIGENCE_URL = new URL(VILLAIGENCE_PATH, APEX).href;
@@ -51,6 +55,8 @@ module.exports = {
   RESUME_PATH,
   RESUME_PDF_PATH,
   SEARCH_PATH,
+  NOW_PATH,
+  NOW_EN_PATH,
   PORTFOLIO_PLATFORM_PATH,
   PORTFOLIO_PLATFORM_EN_PATH,
   VILLAIGENCE_PATH,
@@ -69,6 +75,8 @@ module.exports = {
   RESUME_URL,
   RESUME_PDF_URL,
   SEARCH_URL,
+  NOW_URL,
+  NOW_EN_URL,
   PORTFOLIO_PLATFORM_URL,
   PORTFOLIO_PLATFORM_EN_URL,
   VILLAIGENCE_URL,

@@ -16,6 +16,7 @@ const PAIRS = [
   {id: 'about', ru: '/landing/about/', en: '/en/about/'},
   {id: 'resume', ru: '/landing/resume/', en: '/en/resume/'},
   {id: 'projects', ru: '/landing/projects/', en: '/en/projects/'},
+  {id: 'now', ru: '/landing/now/', en: '/en/now/'},
   {id: 'livingworld', ru: '/landing/projects/livingworld/', en: '/en/projects/livingworld/'},
   {id: 'vlezet', ru: '/landing/projects/vlezet/', en: '/en/projects/vlezet/'},
   {id: 'portfolio-platform', ru: '/landing/projects/portfolio-platform/', en: '/en/projects/portfolio-platform/'},
@@ -167,6 +168,19 @@ async function assertEnglishVlezetNoJsEvidence(page) {
   return {localizedEvidence: true, markerCount: 7};
 }
 
+async function assertEnglishNowNoJs(page) {
+  const fallback = page.locator('[data-tr-now-noscript="en"] [data-tr-now][lang="en"]');
+  await fallback.waitFor({state: 'visible', timeout: 5000});
+  const text = (await fallback.innerText()).trim();
+  for (const marker of ['Current work', "What I'm learning", "What I'm writing", 'VillAIgence', 'M7.8B']) {
+    if (!text.includes(marker)) throw new Error(`now: English no-JS fallback misses ${marker}`);
+  }
+  if (/Сейчас в работе|Что изучаю|Что пишу/.test(text)) {
+    throw new Error('now: English no-JS fallback contains Russian presentation copy');
+  }
+  return {localizedNow: true, markerCount: 5};
+}
+
 async function assertNoJsMetadata(browser, baseUrl) {
   const runtime = await createScenarioPage(browser, {viewport: VIEWPORTS.desktop, colorScheme: 'dark', reducedMotion: 'reduce', javaScriptEnabled: false});
   const {page} = runtime;
@@ -183,6 +197,9 @@ async function assertNoJsMetadata(browser, baseUrl) {
         await assertSeoPair(page, pair, locale, `${locale}-nojs:${pair.id}`);
         if (pair.id === 'vlezet' && locale === 'en') {
           localizedEvidence = await assertEnglishVlezetNoJsEvidence(page);
+        }
+        if (pair.id === 'now' && locale === 'en') {
+          localizedEvidence = await assertEnglishNowNoJs(page);
         }
       }
       if (pair.id === 'home') {
@@ -223,6 +240,7 @@ async function assertQuality(browser, baseUrl) {
     {name: 'home-desktop', route: '/en/', viewport: VIEWPORTS.desktop},
     {name: 'livingworld-mobile', route: '/en/projects/livingworld/', viewport: VIEWPORTS.mobile},
     {name: 'vlezet-mobile', route: '/en/projects/vlezet/', viewport: VIEWPORTS.mobile},
+    {name: 'now-mobile', route: '/en/now/', viewport: VIEWPORTS.mobile},
   ];
   const results = {};
 

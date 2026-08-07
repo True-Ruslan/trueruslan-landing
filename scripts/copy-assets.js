@@ -335,6 +335,14 @@ export function postprocessOutput({
       : undefined,
   );
   const nowPageTarget = applyNowPage(outputDir, nowData, projects);
+  const nowPageEnTarget = i18nPairs
+    ? applyNowPage(outputDir, nowData, projects, {
+      target: 'en/now.html',
+      locale: 'en',
+      hrefTransform: englishProjectHref,
+      ctaTransform: englishProjectCta,
+    })
+    : null;
   const timelineTargets = applyProjectTimelines(outputDir, projects, projectHistoryDir);
   const projectEvidenceTargets = projectEvidence
     ? applyProjectEvidence(outputDir, projectEvidence, {
@@ -391,6 +399,7 @@ export function postprocessOutput({
     standaloneHomeEnPath,
     projectStatusTargets,
     nowPageTarget,
+    nowPageEnTarget,
     timelineTargets,
     projectEvidenceTargets,
     projectEvidenceStylesheetTargets,
@@ -421,6 +430,7 @@ function main() {
     if (result.standaloneHomeEnPath) console.log(`English standalone homepage written: ${result.standaloneHomeEnPath}`);
     console.log(`Injected ${result.projectStatusTargets} registry-derived project status badge(s).`);
     console.log(`Now page injected: ${result.nowPageTarget}`);
+    if (result.nowPageEnTarget) console.log(`English Now page injected: ${result.nowPageEnTarget}`);
     console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
     if (result.projectEvidenceTargets.length) console.log(`Injected ${result.projectEvidenceTargets.length} Project Evidence block(s).`);
     if (result.projectEvidenceStylesheetTargets.length) console.log(`Wired Project Evidence stylesheet into ${result.projectEvidenceStylesheetTargets.length} page(s).`);

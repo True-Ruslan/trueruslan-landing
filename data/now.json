@@ -10,5 +10,18 @@
     "Готовлю Engineering Note о том, почему успешный deployment не равен production verification",
     "Собираю материал о source tests → exact artifact → installed startup/restart → provider boundary → cumulative acceptance",
     "Фиксирую практику evidence-driven project state для accepted, failed, pending и Draft сигналов"
-  ]
+  ],
+  "en": {
+    "focus": "I am keeping a strict boundary between published evidence and accepted product state. VillAIgence has published the exact production-gated candidate 0.1.25+1.21.1 and has deterministic literal-loopback checks for the production Chat, STT and TTS clients, while cumulative real-provider, Voice Chat, multiplayer and gameplay acceptance remains pending. In Vlezet, M7.8B remains the latest accepted recognition slice: PR #42 is waiting for a product-owner retest, while PR #44 and PR #45 are stacked Draft work for M7.9 and M7.8C.1 only.",
+    "learning": [
+      "Evidence layering in VillAIgence: separating exact release publication, production-JAR startup/restart, deterministic provider-client acceptance and cumulative installed-product acceptance",
+      "Hybrid recognition in Vlezet: allowing AI to propose missing openings while keeping local geometry immutable, deterministic revalidation, explicit Apply and owner acceptance",
+      "Content Freshness as a maintenance guard: detecting repository drift and updating the public snapshot manually without allowing automation to promote lifecycle or trust state"
+    ],
+    "writing": [
+      "An Engineering Note on why a successful deployment is not the same as production verification",
+      "A practical chain from source tests to exact artifact, installed startup/restart, provider boundary and cumulative acceptance",
+      "Evidence-driven project-state practices for accepted, failed, pending and Draft signals"
+    ]
+  }
 }
