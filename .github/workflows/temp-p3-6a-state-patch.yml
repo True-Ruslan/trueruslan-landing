@@ -1,0 +1,35 @@
+name: Temporary P3.6A state patch
+
+on:
+  push:
+    branches:
+      - docs/p3-6a-readiness-acceptance
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: docs/p3-6a-readiness-acceptance
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+      - name: Apply deterministic P3.6A durable-state patch
+        run: node scripts/temp-p3-6a-state-patch.cjs
+      - name: Verify patch
+        run: |
+          git diff --check
+          git status --short
+      - name: Commit durable state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md docs/keystone/specs/2026-08-07-p3-6-measurement-readiness.md
+          git diff --cached --quiet && exit 1
+          git commit -m "docs: close P3.6A readiness acceptance"
+          git push origin HEAD:docs/p3-6a-readiness-acceptance
