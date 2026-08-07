@@ -1,5 +1,6 @@
 const REPORTS_API_URL = 'https://api-metrika.yandex.net/stat/v1/data';
 const REPORT_METRICS = Object.freeze(['ym:s:visits', 'ym:s:pageviews', 'ym:s:users']);
+const DEFAULT_TIMEOUT_MS = 15_000;
 
 function requireDate(value, label) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
@@ -33,6 +34,13 @@ function requireObject(value, label) {
 function requireAggregate(value, label) {
   if (!Number.isSafeInteger(value) || value < 0) {
     throw new Error(`${label} must be a non-negative safe integer`);
+  }
+  return value;
+}
+
+function requireTimeout(value) {
+  if (!Number.isSafeInteger(value) || value < 1 || value > 60_000) {
+    throw new Error('Yandex Metrica Reports API timeout must be an integer between 1 and 60000 milliseconds');
   }
   return value;
 }
@@ -106,11 +114,13 @@ export async function fetchYandexMetricaTotals({
   oauthToken,
   date1,
   date2,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
   fetchImpl = globalThis.fetch,
 } = {}) {
   if (typeof fetchImpl !== 'function') {
     throw new Error('Yandex Metrica Reports API fetch implementation is required');
   }
+  const normalizedTimeout = requireTimeout(timeoutMs);
   const normalizedToken = normalizeYandexMetricaOAuthToken(oauthToken);
   const url = buildYandexMetricaReportUrl({counterId, date1, date2});
 
@@ -123,6 +133,7 @@ export async function fetchYandexMetricaTotals({
         Accept: 'application/json',
       },
       redirect: 'error',
+      signal: AbortSignal.timeout(normalizedTimeout),
     });
   } catch (error) {
     throw new Error(`Yandex Metrica Reports API request failed: ${error instanceof Error ? error.message : String(error)}`);
