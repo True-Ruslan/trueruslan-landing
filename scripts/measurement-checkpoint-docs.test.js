@@ -16,6 +16,9 @@ test('P3.6 measurement runbook preserves aggregate-only and no-conclusion bounda
 
   assert.match(spec, /P3\.6A IMPLEMENTED \/ P3\.6 MEASUREMENT NOT YET ACCEPTED/);
   assert.match(spec, /P3_6_MEASUREMENT_OBSERVATIONS_JSON/);
+  assert.match(spec, /evidenceClass: \"operator-observed\"/);
+  assert.match(spec, /evidenceClass: \"synthetic\"/);
+  assert.match(spec, /synthetic-pipeline-proof/);
   assert.match(spec, /\$RUNNER_TEMP\/measurement-observations\.json/);
   assert.match(spec, /insufficient-observation-window/);
   assert.match(spec, /insufficient-aggregate-traffic/);
