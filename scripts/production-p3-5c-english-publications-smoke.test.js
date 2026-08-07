@@ -20,8 +20,10 @@ test('P3.5C production smoke pins English Publications route, canonical identiti
   assert.match(source, /assertEnglishCardSet/);
   assert.match(source, /assertEnglishCatalogue/);
   assert.match(source, /\.tr-publications-featured--page/);
+  assert.match(source, /\.tr-publication-card__topics-label/);
   assert.match(source, /\.tr-publication-card__topics/);
-  assert.match(source, /getAttribute\('aria-label'\)/);
+  assert.match(source, /text\.trim\(\) === 'Topics'/);
+  assert.doesNotMatch(source, /getAttribute\('aria-label'\)/);
   assert.match(source, /\.tr-publication-card__meta span:last-child/);
   assert.match(source, /text\.trim\(\) === 'Author'/);
   assert.match(source, /Read on Habr/);
