@@ -122,6 +122,37 @@ test('measurement checkpoint rejects invalid temporal ordering', () => {
   assert.throws(() => analyzeMeasurementCheckpoint(input), /baseline.*before.*migration/i);
 });
 
+test('ready comparison rejects unequal baseline and current window durations', () => {
+  const input = fixture({
+    current: snapshot({
+      start: '2026-08-05T00:00:00Z',
+      end: '2026-08-16T23:59:59Z',
+      pageviews: 95,
+      google: {impressions: 40, clicks: 4, indexedCleanUrls: 9, indexedLegacyHtmlUrls: 6},
+      yandex: {impressions: 28, clicks: 3, indexedCleanUrls: 8, indexedLegacyHtmlUrls: 7},
+    }),
+    operatorAssessment: {
+      aggregateTrafficSufficient: true,
+      assessedAt: '2026-08-17T08:00:00Z',
+      basis: 'The sample is sufficient, but the current comparison window is shorter than baseline.',
+    },
+  });
+
+  assert.throws(() => analyzeMeasurementCheckpoint(input, {minimumObservationDays: 10}), /comparison window durations must match/i);
+});
+
+test('operator assessment cannot predate the current observation window end', () => {
+  const input = fixture({
+    operatorAssessment: {
+      aggregateTrafficSufficient: true,
+      assessedAt: '2026-08-18T12:00:00Z',
+      basis: 'This assertion was made before the current observation window had actually finished.',
+    },
+  });
+
+  assert.throws(() => analyzeMeasurementCheckpoint(input), /operator assessment.*after.*current observation window/i);
+});
+
 test('measurement markdown labels operator assertions and refuses automatic impact claims', () => {
   const report = analyzeMeasurementCheckpoint(fixture(), {minimumObservationDays: 10});
   const markdown = renderMeasurementCheckpointMarkdown(report);
