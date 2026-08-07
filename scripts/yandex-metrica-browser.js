@@ -119,7 +119,7 @@ var loaded=false;
 var root=null;
 var settings=null;
 var locale=(location.pathname==='/en'||location.pathname.indexOf('/en/')===0)?'en':'ru';
-var copy=locale==='en'?{title:'Analytics',text:'Allow anonymous traffic statistics via Yandex Metrica? The provider may set cookies after you opt in.',allow:'Allow',deny:'Decline',settings:'Analytics settings'}:{title:'Аналитика',text:'Разрешить анонимную статистику посещений через Яндекс.Метрику? После согласия провайдер может устанавливать cookies.',allow:'Разрешить',deny:'Отказаться',settings:'Настройки аналитики'};
+var copy=locale==='en'?{title:'Analytics',text:'Allow traffic statistics via Yandex Metrica? The provider may set cookies after you opt in.',allow:'Allow',deny:'Decline',settings:'Analytics settings'}:{title:'Аналитика',text:'Разрешить статистику посещений через Яндекс.Метрику? После согласия провайдер может устанавливать cookies.',allow:'Разрешить',deny:'Отказаться',settings:'Настройки аналитики'};
 function readChoice(){try{var value=localStorage.getItem(storageKey);return value==='granted'||value==='denied'?value:null}catch(_error){return null}}
 function writeChoice(value){try{localStorage.setItem(storageKey,value);return true}catch(_error){return false}}
 function setDisabled(value){window[disableKey]=value}
