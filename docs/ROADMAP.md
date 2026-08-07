@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-06**, после exact production-acceptance Portfolio 1.0 P3.4F Evidence-driven Project State Note.
+> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5A English Vlezet flagship.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -55,6 +55,7 @@
 - P3.4D GameTests Acceptance Note — PR #132/#133.
 - P3.4E Passive PDF Completeness Note — PR #134–#139.
 - P3.4F Evidence-driven Project State Note and Pages recovery contract — PR #141–#145.
+- P3.5A English Vlezet flagship — PR #148.
 
 ---
 
@@ -252,9 +253,29 @@ production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a091
 The failed timeout and same-run retry experiments remain part of the operational evidence: PR #143 and PR #144 were superseded by the one-deploy-per-run, fresh-`run_attempt` recovery contract in PR #145.
 
 
-## P3.5 — Selective English expansion — NEXT
+## P3.5 — Selective English expansion — IN PROGRESS
 
-Translate only high-value surfaces: homepage, Resume, three flagships, `/now`, selected Notes and Publications. Do not create a separate English CMS, build or search architecture.
+### P3.5A — English Vlezet flagship — DONE
+
+Accepted route: `/en/projects/vlezet/`. One RU/EN pair, canonical metadata, generated search, localized registry-derived Project Evidence, semantic no-JavaScript fallback and exact-deployment flagship smoke are accepted without a second lifecycle/evidence model.
+
+```text
+PR #148 squash / deployed SHA:  17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87
+Build:                          #1081 / 31153441505 — SUCCESS
+Pages:                          #177 / 31155442788 — SUCCESS
+Pages deployment ID:            5790177102
+Production Live Smoke:          #214 / 31155442779 — SUCCESS
+production artifact:            8985006008
+production digest:              sha256:a91b35963c685068c6ee79aff269de3baa297d9a6b8fcc321a945e696db84784
+```
+
+### P3.5B — English /now — NEXT
+
+Add a controlled English `/now` surface from the same canonical now-data contract. Keep one updated date, one evidence boundary and one build/search architecture; do not create `now-en.json` or a second current-state model.
+
+### P3.5C — English Publications — PLANNED
+
+Translate the Publications presentation as a separate bounded slice while preserving the same publication registry and single generated search.
 
 ## P3.6 — Measurement checkpoint
 
@@ -270,4 +291,4 @@ After sufficient aggregate traffic, compare aggregate traffic and clean-route in
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Continue with **P3.5 — Selective English expansion**.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Continue with **P3.5B — English /now**.

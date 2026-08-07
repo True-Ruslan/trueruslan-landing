@@ -1,8 +1,35 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-06**, после exact production-acceptance Portfolio 1.0 P3.4F Evidence-driven Project State Note.
+> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5A English Vlezet flagship.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-07 — P3.5A English Vlezet flagship
+
+PR #148 completed the third controlled English flagship at `/en/projects/vlezet/` without creating a second project-state model.
+
+Added canonical RU/EN pairing, metadata/OpenGraph, navigation, generated search, localized registry-derived Project Evidence, semantic no-JavaScript fallback, mobile/accessibility coverage and exact-deployment flagship verification. Volatile heads/run identities remain owned by dated canonical evidence rather than article prose.
+
+GitHub Advanced Security found a potential check-then-read filesystem race in Project Evidence. A RED regression reproduced the class, direct reads with fail-closed `ENOENT` handling removed it, and CodeQL automatically resolved the review thread on the corrected head.
+
+```text
+PR #148 squash / deployed SHA:  17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87
+Build:                          #1081 / 31153441505 — SUCCESS
+unit tests:                     428 PASS / 0 FAIL
+quality artifact:               8984294852
+quality digest:                 sha256:31615e8b6240535e653bf618cc913d00515675636ddfc2ecff7ed11b3ec50b2f
+CodeQL:                         #581 / 31153441477 — SUCCESS
+Dependency Review:              #509 / 31153441537 — SUCCESS
+Distribution Readiness:         #95 / 31153441483 — SUCCESS
+Pages:                          #177 / 31155442788 — SUCCESS
+Pages deployment ID:            5790177102
+Production Live Smoke:          #214 / 31155442779 — SUCCESS
+production artifact:            8985006008
+production digest:              sha256:a91b35963c685068c6ee79aff269de3baa297d9a6b8fcc321a945e696db84784
+post-merge CodeQL:              #582 / 31155442796 — SUCCESS
+```
+
+Next bounded slice: **P3.5B — English /now — NEXT**. Publications remains P3.5C.
 
 ## 2026-08-06 — P3.4F Evidence-driven project state
 

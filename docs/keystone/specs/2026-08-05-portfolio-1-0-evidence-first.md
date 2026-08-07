@@ -1,8 +1,8 @@
 # Portfolio 1.0 — Evidence-first flagship content
 
-> Status: **IN PROGRESS — P3.4F ACCEPTED IN PRODUCTION**
+> Status: **IN PROGRESS — P3.5A ACCEPTED IN PRODUCTION**
 >
-> Date: **2026-08-06**
+> Date: **2026-08-07**
 >
 > Product: `True-Ruslan/trueruslan-landing`
 
@@ -268,7 +268,27 @@ observedAt:                     2026-08-06T14:36:34Z
 
 The exact production verifier accepted canonical/OpenGraph metadata, semantic content, no-JavaScript availability, Atom feed, generated search, every preceding P3.4 smoke and the dedicated P3.4F boundary on deployed SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`.
 
-Continue with **P3.5 — Selective English expansion**.
+### P3.5A — English Vlezet flagship — DONE
+
+Controlled route `/en/projects/vlezet/` reuses canonical Vlezet lifecycle and evidence registries. Presentation copy is localized, while volatile project identities remain registry-owned. Browser/no-JavaScript/search/metadata contracts and the exact-deployment flagship smoke passed without introducing a separate English CMS or search index.
+
+```text
+PR #148 squash / deployed SHA:  17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87
+Build:                          #1081 / 31153441505 — SUCCESS
+unit tests:                     428 PASS / 0 FAIL
+CodeQL:                         #581 / 31153441477 — SUCCESS
+Pages:                          #177 / 31155442788 — SUCCESS
+Pages deployment ID:            5790177102
+Production Live Smoke:          #214 / 31155442779 — SUCCESS
+production artifact:            8985006008
+production digest:              sha256:a91b35963c685068c6ee79aff269de3baa297d9a6b8fcc321a945e696db84784
+```
+
+The CodeQL TOCTOU finding discovered during review was reproduced, fixed without behavior weakening and automatically resolved on the corrected exact head.
+
+### P3.5B — English /now — NEXT
+
+Publish English current-work context from the same canonical `now` data contract. Preserve one updated date, one acceptance boundary and one build/search architecture. P3.5C Publications remains a separate later slice.
 
 
 ---
