@@ -50,6 +50,16 @@
     "accent": "cyan"
   },
   {
+    "path": "en/now.html",
+    "card": "now-en",
+    "title": "Now — Ruslan Nemykin",
+    "description": "Current engineering focus of Ruslan Nemykin: active projects, what I am learning and technical writing in progress.",
+    "displayTitle": "NOW",
+    "kicker": "CURRENT FOCUS",
+    "tags": ["BUILDING", "LEARNING", "WRITING"],
+    "accent": "cyan"
+  },
+  {
     "path": "landing/engineering-map.html",
     "card": "engineering-map",
     "title": "Engineering Map — Руслан Немыкин",

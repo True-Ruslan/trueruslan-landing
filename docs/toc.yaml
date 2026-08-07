@@ -142,6 +142,8 @@ items:
         href: ./en/about.md
       - name: Resume
         href: ./en/resume.md
+      - name: Now
+        href: ./en/now.md
       - name: VillAIgence
         href: ./en/projects/livingworld.md
       - name: Vlezet
