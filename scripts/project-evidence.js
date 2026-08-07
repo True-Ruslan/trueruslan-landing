@@ -100,6 +100,17 @@ function requireNonEmptyString(value, label) {
   }
 }
 
+function readRequiredUtf8File(filePath, missingMessage) {
+  try {
+    return fs.readFileSync(filePath, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') {
+      throw new Error(missingMessage, {cause: error});
+    }
+    throw error;
+  }
+}
+
 function localeCopy(locale) {
   const copy = COPY[locale];
   if (!copy) throw new Error(`unsupported project evidence locale: ${locale}`);
@@ -249,11 +260,11 @@ export function validateProjectEvidence(snapshots, {projects} = {}) {
 }
 
 export function loadProjectEvidence(manifestPath = DEFAULT_PROJECT_EVIDENCE_PATH, {projects} = {}) {
-  if (!fs.existsSync(manifestPath)) {
-    throw new Error(`project evidence registry not found: ${manifestPath}`);
-  }
-
-  const snapshots = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const manifest = readRequiredUtf8File(
+    manifestPath,
+    `project evidence registry not found: ${manifestPath}`,
+  );
+  const snapshots = JSON.parse(manifest);
   return validateProjectEvidence(snapshots, {projects});
 }
 
@@ -397,11 +408,10 @@ export function applyProjectEvidence(
 
     for (const target of projectTargets(project, targetsByProject)) {
       const htmlPath = path.join(outputDir, ...target.path.split('/'));
-      if (!fs.existsSync(htmlPath)) {
-        throw new Error(`generated project page not found for evidence: ${target.path}`);
-      }
-
-      const html = fs.readFileSync(htmlPath, 'utf8');
+      const html = readRequiredUtf8File(
+        htmlPath,
+        `generated project page not found for evidence: ${target.path}`,
+      );
       const content = renderProjectEvidence(snapshot, {locale: target.locale});
       let replacements = 0;
       const transformed = transformGeneratedContent(
