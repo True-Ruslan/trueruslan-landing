@@ -19,6 +19,10 @@ function publications() {
     language: 'ru',
     summary: 'Практический разбор статической публикации.',
     topics: ['Diplodoc'],
+    en: {
+      summary: 'A practical static publishing walkthrough.',
+      topics: ['Diplodoc'],
+    },
     canonicalUrl: 'https://habr.com/ru/articles/936508/',
     links: [],
     featured: true,
@@ -29,8 +33,8 @@ function publications() {
   }], {asOf: '2026-08-02'});
 }
 
-function catalogueHtml() {
-  return `<div data-tr-publications-prebuild>${renderPublicationCatalogue(publications())}</div>`;
+function catalogueHtml(locale = 'ru') {
+  return `<div data-tr-publications-prebuild>${renderPublicationCatalogue(publications(), {locale})}</div>`;
 }
 
 function encodedStateHtml(content) {
@@ -62,7 +66,7 @@ test('applyPublicationsShowcase replaces the direct featured placeholder and pre
   assert.doesNotMatch(html, /data-tr-publications-noscript/);
 });
 
-test('applyPublicationsShowcase patches Diplodoc state and adds one compact no-JS catalogue', () => {
+test('applyPublicationsShowcase patches Diplodoc state and adds one compact locale-addressable no-JS catalogue', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-publications-state-'));
   const htmlPath = path.join(outputDir, 'landing', 'publications.html');
   fs.mkdirSync(path.dirname(htmlPath), {recursive: true});
@@ -70,19 +74,39 @@ test('applyPublicationsShowcase patches Diplodoc state and adds one compact no-J
 
   applyPublicationsShowcase(outputDir, publications());
   const html = fs.readFileSync(htmlPath, 'utf8');
-  const fallbackStart = html.indexOf('<noscript data-tr-publications-noscript>');
+  const fallbackStart = html.indexOf('<noscript data-tr-publications-noscript="ru">');
   const fallbackEnd = html.indexOf('</noscript>', fallbackStart);
   const fallback = html.slice(fallbackStart, fallbackEnd);
 
   assert.match(html, /id="diplodoc-state"/);
   assert.match(html, /Diplodoc и GitHub Pages/);
-  assert.match(html, /<noscript data-tr-publications-noscript>/);
+  assert.match(html, /<noscript data-tr-publications-noscript="ru">/);
   assert.match(fallback, /#root\{display:none!important\}/);
   assert.match(fallback, /<h1>Публикации и выступления<\/h1>/);
   assert.match(fallback, /Технические статьи/);
   assert.doesNotMatch(fallback, /Избранное/);
   assert.equal((fallback.match(/data-tr-publication-id/g) ?? []).length, 1);
   assert.equal((html.match(/data-tr-publications-noscript/g) ?? []).length, 1);
+});
+
+test('applyPublicationsShowcase writes the English target from the same publication records', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-publications-en-state-'));
+  const htmlPath = path.join(outputDir, 'en', 'publications.html');
+  fs.mkdirSync(path.dirname(htmlPath), {recursive: true});
+  fs.writeFileSync(htmlPath, encodedStateHtml(`<h1>Publications and talks</h1><div data-tr-publications-featured></div>${catalogueHtml('en')}`));
+
+  assert.equal(applyPublicationsShowcase(outputDir, publications(), {
+    target: 'en/publications.html',
+    locale: 'en',
+  }), 'en/publications.html');
+
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  assert.match(html, /data-tr-publications-noscript="en"/);
+  assert.match(html, /Publications and talks/);
+  assert.match(html, /Technical articles/);
+  assert.match(html, /A practical static publishing walkthrough/);
+  assert.match(html, /lang=\\?"ru\\?"/);
+  assert.doesNotMatch(html, /Технические статьи|Техническая статья|Автор|Темы|Читать на/);
 });
 
 test('applyPublicationsShowcase fails closed when the generated catalogue is missing', () => {
