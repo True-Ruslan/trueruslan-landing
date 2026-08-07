@@ -1,6 +1,6 @@
 # Portfolio 1.0 — Evidence-first flagship content
 
-> Status: **IN PROGRESS — P3.5A ACCEPTED IN PRODUCTION**
+> Status: **IN PROGRESS — P3.5B ACCEPTED IN PRODUCTION**
 >
 > Date: **2026-08-07**
 >
@@ -286,9 +286,34 @@ production digest:              sha256:a91b35963c685068c6ee79aff269de3baa297d9a6
 
 The CodeQL TOCTOU finding discovered during review was reproduced, fixed without behavior weakening and automatically resolved on the corrected exact head.
 
-### P3.5B — English /now — NEXT
+### P3.5B — English /now — DONE
 
-Publish English current-work context from the same canonical `now` data contract. Preserve one updated date, one acceptance boundary and one build/search architecture. P3.5C Publications remains a separate later slice.
+Controlled route `/en/now/` reuses the canonical `data/now.json`, one shared `updated` date, Project Registry-derived active cards and the single generated Diplodoc search. English presentation, metadata/hreflang, mobile/accessibility and semantic no-JavaScript fallback are localized without a second current-state registry.
+
+The first exact deployment of PR #150 exposed a verifier false negative: valid relative project links were interpreted without the document `<base>`. PR #151 corrected only the verifier by resolving hrefs through `document.baseURI` and comparing exact canonical EN routes. Final acceptance therefore uses the corrected verifier on the later exact deployed squash SHA.
+
+```text
+PR #150 feature squash:         b0b041968b955ed619cbfe560640dde1244833de
+PR #151 final squash/deployed:  96ea3ec5de18d99a811405b36a5b60066d9c374c
+feature Build:                  #1105 / 31158466856 — SUCCESS
+feature quality artifact:       8986214202
+feature quality digest:         sha256:e89e69f84cdcc00bc6b0656caee9e2282211eb3fba57c1e1b46b64cece1861eb
+correction Build:               #1107 / 31159529244 — SUCCESS
+correction quality artifact:    8986592511
+correction quality digest:      sha256:e519aa06bca1d2a9c1a581c9504daef0b4933f21bfc6596a19299bae137af0bf
+Pages:                          #180 / 31161876484 — SUCCESS
+Pages deployment ID:            5791352097
+Pages artifact:                 8987394027
+Pages artifact digest:          sha256:7c456d8e8f534bed6c2f2c410f615004c7d2dff37b71fe0ea7709cfb7129f999
+Production Live Smoke:          #230 / 31161925498 — SUCCESS
+P3.5B English Now smoke:        PASS
+production artifact:            8987452957
+production digest:              sha256:2fe174a95fca6daa28d261f281576597d6d383d432a7a0cc32f9cdbb231d08b5
+```
+
+### P3.5C — English Publications — NEXT
+
+Localize the Publications presentation over the existing canonical publication registry. Preserve original publication identities and external canonical URLs, one generated site-wide search and the existing Notes-only Atom feed. Do not create a second publication registry, English-only lifecycle state or a second search index.
 
 
 ---

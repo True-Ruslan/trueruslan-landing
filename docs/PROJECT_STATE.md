@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5A English Vlezet flagship.
+> Последнее смысловое обновление: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5B English /now.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -33,12 +33,12 @@ Core content не зависит от runtime API. Diplodoc остаётся е�
 
 Последний принятый user-facing milestone:
 
-**P3.5A — English Vlezet flagship**.
+**P3.5B — English /now**.
 
 Production route:
 
 ```text
-/en/projects/vlezet/
+/en/now/
 ```
 
 Inherited evidence model from P3.4F:
@@ -132,6 +132,33 @@ post-merge CodeQL:              #582 / 31155442796 — SUCCESS
 ```
 
 GitHub Advanced Security TOCTOU finding in Project Evidence file reads was reproduced with a RED contract, fixed by direct reads plus fail-closed `ENOENT` handling, and automatically resolved by the subsequent CodeQL scan. P3.5A is accepted only on the exact deployed squash SHA above.
+
+### P3.5B exact production acceptance
+
+P3.5B publishes `/en/now/` without creating a second current-state source of truth. RU and EN editorial slices share one canonical `data/now.json` and one `updated` date; active project identity, lifecycle labels and links remain derived from Project Registry; one generated Diplodoc search remains the site-wide search owner. Canonical/hreflang, metadata/OpenGraph, mobile/accessibility and semantic no-JavaScript behavior are verified separately.
+
+The first exact deployment of PR #150 was product-correct but exposed a production-verifier false negative caused by comparing a raw relative project href without applying the document base URI. The exact Pages artifact showed `<base href="../../">` plus valid relative links. PR #151 changed only the verifier and its regression contract: raw hrefs are now resolved through `document.baseURI` and compared to exact canonical EN routes.
+
+```text
+PR #150 feature squash:         b0b041968b955ed619cbfe560640dde1244833de
+PR #151 final squash/deployed:  96ea3ec5de18d99a811405b36a5b60066d9c374c
+feature Build:                  #1105 / 31158466856 — SUCCESS
+feature quality artifact:       8986214202
+feature quality digest:         sha256:e89e69f84cdcc00bc6b0656caee9e2282211eb3fba57c1e1b46b64cece1861eb
+correction Build:               #1107 / 31159529244 — SUCCESS
+correction quality artifact:    8986592511
+correction quality digest:      sha256:e519aa06bca1d2a9c1a581c9504daef0b4933f21bfc6596a19299bae137af0bf
+Pages:                          #180 / 31161876484 — SUCCESS
+Pages deployment ID:            5791352097
+Pages artifact:                 8987394027
+Pages artifact digest:          sha256:7c456d8e8f534bed6c2f2c410f615004c7d2dff37b71fe0ea7709cfb7129f999
+Production Live Smoke:          #230 / 31161925498 — SUCCESS
+P3.5B English Now smoke:        PASS
+production artifact:            8987452957
+production digest:              sha256:2fe174a95fca6daa28d261f281576597d6d383d432a7a0cc32f9cdbb231d08b5
+```
+
+P3.5B is accepted only on exact deployed SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`; PR #150 repository/build success and the earlier failed production-verifier run are not treated as equivalent production acceptance.
 
 ---
 
@@ -357,6 +384,6 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**P3.5B — English /now — NEXT**.
+**P3.5C — English Publications — NEXT**.
 
-P3.5A уже закрыл третий flagship: `/en/projects/vlezet/`. Следующий bounded этап переводит `/now` из того же canonical data contract без отдельного English state registry. После него P3.5C отдельно покрывает Publications. Draft или непроверенные external-project claims не продвигаются.
+P3.5B уже публикует `/en/now/` из того же canonical now-data contract без второго English state registry. Следующий bounded этап локализует Publications presentation поверх существующего publication registry и одного generated search. Draft или непроверенные external-project claims не продвигаются.

@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5A English Vlezet flagship.
+> Обновлено: **2026-08-07**, после exact production-acceptance Portfolio 1.0 P3.5B English /now.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -56,6 +56,7 @@
 - P3.4E Passive PDF Completeness Note — PR #134–#139.
 - P3.4F Evidence-driven Project State Note and Pages recovery contract — PR #141–#145.
 - P3.5A English Vlezet flagship — PR #148.
+- P3.5B English /now — PR #150/#151.
 
 ---
 
@@ -269,13 +270,34 @@ production artifact:            8985006008
 production digest:              sha256:a91b35963c685068c6ee79aff269de3baa297d9a6b8fcc321a945e696db84784
 ```
 
-### P3.5B — English /now — NEXT
+### P3.5B — English /now — DONE
 
-Add a controlled English `/now` surface from the same canonical now-data contract. Keep one updated date, one evidence boundary and one build/search architecture; do not create `now-en.json` or a second current-state model.
+Accepted route: `/en/now/`. English editorial presentation derives from the same canonical `data/now.json`, keeps one shared `updated` date, and reuses Project Registry cards, the same generated search, canonical RU/EN pairing, metadata/OpenGraph and semantic no-JavaScript fallback. No `now-en.json` or second current-state model exists.
 
-### P3.5C — English Publications — PLANNED
+The first exact deployment after PR #150 exposed a verifier false negative rather than a product defect: the deployed page used Diplodoc `<base href="../../">` with valid relative project links. PR #151 corrected the production verifier to resolve raw hrefs through `document.baseURI` before exact canonical comparison; no product behavior was weakened or changed.
 
-Translate the Publications presentation as a separate bounded slice while preserving the same publication registry and single generated search.
+```text
+PR #150 feature squash:         b0b041968b955ed619cbfe560640dde1244833de
+PR #151 final squash/deployed:  96ea3ec5de18d99a811405b36a5b60066d9c374c
+feature Build:                  #1105 / 31158466856 — SUCCESS
+feature quality artifact:       8986214202
+feature quality digest:         sha256:e89e69f84cdcc00bc6b0656caee9e2282211eb3fba57c1e1b46b64cece1861eb
+correction Build:               #1107 / 31159529244 — SUCCESS
+correction quality artifact:    8986592511
+correction quality digest:      sha256:e519aa06bca1d2a9c1a581c9504daef0b4933f21bfc6596a19299bae137af0bf
+Pages:                          #180 / 31161876484 — SUCCESS
+Pages deployment ID:            5791352097
+Pages artifact:                 8987394027
+Pages artifact digest:          sha256:7c456d8e8f534bed6c2f2c410f615004c7d2dff37b71fe0ea7709cfb7129f999
+Production Live Smoke:          #230 / 31161925498 — SUCCESS
+P3.5B English Now smoke:        PASS
+production artifact:            8987452957
+production digest:              sha256:2fe174a95fca6daa28d261f281576597d6d383d432a7a0cc32f9cdbb231d08b5
+```
+
+### P3.5C — English Publications — NEXT
+
+Translate the Publications presentation as a separate bounded slice while preserving the same canonical publication registry and single generated search. Do not create a second publication-state registry or a second site-wide search owner.
 
 ## P3.6 — Measurement checkpoint
 
@@ -291,4 +313,4 @@ After sufficient aggregate traffic, compare aggregate traffic and clean-route in
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Continue with **P3.5B — English /now**.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Continue with **P3.5C — English Publications**.
