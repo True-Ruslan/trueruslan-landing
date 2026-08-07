@@ -20,6 +20,8 @@ test('P3.6 measurement runbook preserves aggregate-only and no-conclusion bounda
   assert.match(spec, /insufficient-observation-window/);
   assert.match(spec, /insufficient-aggregate-traffic/);
   assert.match(spec, /ready-for-human-review/);
+  assert.match(spec, /equal duration/i);
+  assert.match(spec, /assessment timestamp.*after the end of the current observation window/i);
   assert.match(spec, /automaticConclusionsAllowed = false/);
   assert.match(spec, /engagementConclusion = null/);
   assert.match(spec, /productImpactConclusion = null/);
