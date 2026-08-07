@@ -1,0 +1,36 @@
+name: Temporary P3.5B integration patch
+
+on:
+  push:
+    branches:
+      - feat/p3-5b-english-now
+    paths:
+      - scripts/_p3-5b-integration-patch.mjs
+      - .github/workflows/_p3-5b-integration-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: feat/p3-5b-english-now
+          fetch-depth: 1
+      - name: Apply deterministic integration patch
+        run: node scripts/_p3-5b-integration-patch.mjs
+      - name: Commit integration and remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add scripts/copy-assets.js data/page-meta.json docs/toc.yaml scripts/i18n-browser-smoke.cjs scripts/search-smoke.cjs scripts/_p3-5b-integration-patch.mjs .github/workflows/_p3-5b-integration-patch.yml
+          git diff --cached --check
+          git commit -m 'feat: wire English now through build and quality gates'
+          git push origin HEAD:feat/p3-5b-english-now
