@@ -17,6 +17,7 @@ const PAIRS = [
   {id: 'resume', ru: '/landing/resume/', en: '/en/resume/'},
   {id: 'projects', ru: '/landing/projects/', en: '/en/projects/'},
   {id: 'now', ru: '/landing/now/', en: '/en/now/'},
+  {id: 'publications', ru: '/landing/publications/', en: '/en/publications/'},
   {id: 'livingworld', ru: '/landing/projects/livingworld/', en: '/en/projects/livingworld/'},
   {id: 'vlezet', ru: '/landing/projects/vlezet/', en: '/en/projects/vlezet/'},
   {id: 'portfolio-platform', ru: '/landing/projects/portfolio-platform/', en: '/en/projects/portfolio-platform/'},

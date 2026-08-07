@@ -13,6 +13,8 @@ const RESUME_PDF_PATH = 'assets/documents/cv.pdf';
 const SEARCH_PATH = '_search/ru/';
 const NOW_PATH = 'landing/now/';
 const NOW_EN_PATH = 'en/now/';
+const PUBLICATIONS_PATH = 'landing/publications/';
+const PUBLICATIONS_EN_PATH = 'en/publications/';
 const PORTFOLIO_PLATFORM_PATH = 'landing/projects/portfolio-platform/';
 const PORTFOLIO_PLATFORM_EN_PATH = 'en/projects/portfolio-platform/';
 const VILLAIGENCE_PATH = 'landing/projects/livingworld/';
@@ -34,6 +36,8 @@ const RESUME_PDF_URL = new URL(RESUME_PDF_PATH, APEX).href;
 const SEARCH_URL = new URL(SEARCH_PATH, APEX).href;
 const NOW_URL = new URL(NOW_PATH, APEX).href;
 const NOW_EN_URL = new URL(NOW_EN_PATH, APEX).href;
+const PUBLICATIONS_URL = new URL(PUBLICATIONS_PATH, APEX).href;
+const PUBLICATIONS_EN_URL = new URL(PUBLICATIONS_EN_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_URL = new URL(PORTFOLIO_PLATFORM_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_EN_URL = new URL(PORTFOLIO_PLATFORM_EN_PATH, APEX).href;
 const VILLAIGENCE_URL = new URL(VILLAIGENCE_PATH, APEX).href;
@@ -57,6 +61,8 @@ module.exports = {
   SEARCH_PATH,
   NOW_PATH,
   NOW_EN_PATH,
+  PUBLICATIONS_PATH,
+  PUBLICATIONS_EN_PATH,
   PORTFOLIO_PLATFORM_PATH,
   PORTFOLIO_PLATFORM_EN_PATH,
   VILLAIGENCE_PATH,
@@ -77,6 +83,8 @@ module.exports = {
   SEARCH_URL,
   NOW_URL,
   NOW_EN_URL,
+  PUBLICATIONS_URL,
+  PUBLICATIONS_EN_URL,
   PORTFOLIO_PLATFORM_URL,
   PORTFOLIO_PLATFORM_EN_URL,
   VILLAIGENCE_URL,

@@ -378,5 +378,15 @@
     "kicker": "ENGINEERING NOTE",
     "tags": ["AI", "PROTOCOLS", "VALIDATION"],
     "accent": "violet"
+  },
+  {
+    "path": "en/publications.html",
+    "card": "publications-en",
+    "title": "Publications — Ruslan Nemykin",
+    "description": "Published work by Ruslan Nemykin: technical articles and externally verifiable publications with canonical source links.",
+    "displayTitle": "PUBLICATIONS",
+    "kicker": "PUBLISHED WORK",
+    "tags": ["ARTICLES", "RESEARCH", "TALKS"],
+    "accent": "cyan"
   }
 ]

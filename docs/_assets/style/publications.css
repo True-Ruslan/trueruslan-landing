@@ -165,8 +165,24 @@
   overflow-wrap: anywhere;
 }
 
-.tr-publication-card__topics {
+.tr-publication-card__topics-block {
   margin-top: 1rem;
+}
+
+.tr-publication-card__topics-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tr-publication-card__topics {
+  margin-top: 0;
 }
 
 .tr-publication-card__topics li {

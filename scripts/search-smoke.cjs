@@ -222,6 +222,21 @@ async function assertEnglishNowSearchCoverage(page) {
   }
 }
 
+async function assertEnglishPublicationsSearchCoverage(page) {
+  const input = page.locator('.tr-search-input').first();
+  const button = page.locator('.tr-search-button').first();
+  const query = 'syntax overhead';
+
+  await input.fill(query);
+  await button.click();
+  await page.waitForFunction(() => [...document.querySelectorAll('a')]
+    .some((link) => (link.getAttribute('href') || '').includes('en/publications/')), null, {timeout: 7000});
+
+  if (await page.locator('a[href*="en/publications/"]').count() < 1) {
+    throw new Error(`English Publications registry-derived search query did not route to /en/publications/: ${query}`);
+  }
+}
+
 async function assertSameOriginBackNavigation(page, baseUrl) {
   const sourcePath = '/landing/projects/';
   const sourceUrl = `${baseUrl}${sourcePath}`;
@@ -289,6 +304,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
       await assertPublicationSearchCoverage(page);
       await assertEnglishVlezetSearchCoverage(page);
       await assertEnglishNowSearchCoverage(page);
+      await assertEnglishPublicationsSearchCoverage(page);
       await assertSameOriginBackNavigation(page, baseUrl);
     }
     diagnostics.assertClean(name);
@@ -305,6 +321,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
       publicationQueries: name === 'desktop' ? 3 : 0,
       englishVlezetQueries: name === 'desktop' ? 1 : 0,
       englishNowQueries: name === 'desktop' ? 1 : 0,
+      englishPublicationsQueries: name === 'desktop' ? 1 : 0,
     };
   } finally {
     await runtime.close();
