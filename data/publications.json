@@ -9,6 +9,10 @@
     "language": "ru",
     "summary": "Практический разбор того, как собрать многостраничный сайт на Diplodoc, организовать Markdown-контент и опубликовать готовый статический артефакт через GitHub Pages.",
     "topics": ["Diplodoc", "GitHub Pages", "Docs as Code"],
+    "en": {
+      "summary": "A practical walkthrough of building a multi-page site with Diplodoc, structuring Markdown content and publishing the resulting static artifact through GitHub Pages.",
+      "topics": ["Diplodoc", "GitHub Pages", "Docs as Code"]
+    },
     "canonicalUrl": "https://habr.com/ru/articles/936508/",
     "links": [],
     "featured": true,
@@ -27,6 +31,10 @@
     "language": "ru",
     "summary": "Системный подход к алгоритмической подготовке на Java: основные паттерны, структуры данных, повторение решений и практические приёмы, которые уменьшают синтаксическую нагрузку.",
     "topics": ["Java", "Алгоритмы", "Собеседования"],
+    "en": {
+      "summary": "A systematic approach to algorithm practice in Java: core patterns, data structures, repeated solution work and practical techniques that reduce syntax overhead.",
+      "topics": ["Java", "Algorithms", "Technical interviews"]
+    },
     "canonicalUrl": "https://habr.com/ru/articles/932998/",
     "links": [],
     "featured": true,
@@ -45,6 +53,10 @@
     "language": "ru",
     "summary": "Разбор экспериментального ленточного конвейера: электропривод и преобразователь частоты, Modbus RTU, микроконтроллерная автоматика, JavaFX-интерфейс и удалённое управление через Telegram-бота.",
     "topics": ["Java", "Modbus RTU", "Промышленная автоматизация"],
+    "en": {
+      "summary": "An experimental conveyor control system covering the electric drive and frequency converter, Modbus RTU, microcontroller automation, a JavaFX interface and remote control through a Telegram bot.",
+      "topics": ["Java", "Modbus RTU", "Industrial automation"]
+    },
     "canonicalUrl": "https://habr.com/ru/articles/887770/",
     "links": [],
     "featured": true,
