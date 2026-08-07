@@ -42,13 +42,13 @@ async function assertSeoPair(page) {
   return {canonical, ru, en, fallback};
 }
 
-async function assertCanonicalPublicationCards(root, {expectedCopies = 1} = {}) {
+async function assertCanonicalPublicationCards(root) {
   const observed = {};
   for (const publication of PUBLICATIONS) {
     assert(publication.en?.summary, `canonical registry misses English presentation for ${publication.id}`);
     const cards = root.locator(`[data-tr-publication-id="${publication.id}"]`);
     const count = await cards.count();
-    assert(count === expectedCopies, `${publication.id} expected ${expectedCopies} card(s), got ${count}`);
+    assert(count === 1, `${publication.id} expected one catalogue card, got ${count}`);
 
     const card = cards.first();
     const title = card.locator('h3 a').first();
@@ -68,6 +68,44 @@ async function assertCanonicalPublicationCards(root, {expectedCopies = 1} = {}) 
   return observed;
 }
 
+async function assertEnglishPresentation(root, label) {
+  const rootText = (await root.textContent()) || '';
+  assert(rootText.includes('Technical articles'), `${label} misses Technical articles section`);
+  assert(!/Технические статьи|Техническая статья|Автор|Темы|Читать на/i.test(rootText), `${label} leaks Russian UI labels`);
+
+  const expected = PUBLICATIONS.length;
+  const metaKinds = root.locator('.tr-publication-card__meta span:first-child');
+  const metaRoles = root.locator('.tr-publication-card__meta span:last-child');
+  const topicLists = root.locator('.tr-publication-card__topics[aria-label="Topics"]');
+  const actions = root.locator('.tr-publication-card__primary');
+  const originalTitles = root.locator('h3 a[lang="ru"]');
+
+  for (const [name, locator] of [
+    ['publication kind metadata', metaKinds],
+    ['publication role metadata', metaRoles],
+    ['Topics semantic labels', topicLists],
+    ['primary publication actions', actions],
+    ['original Russian publication titles', originalTitles],
+  ]) {
+    const count = await locator.count();
+    assert(count === expected, `${label} expected ${expected} ${name}, got ${count}`);
+  }
+
+  for (const text of await metaKinds.allTextContents()) {
+    assert(text.includes('Technical article'), `${label} publication kind source text is not localized: ${text}`);
+  }
+  for (const text of await metaRoles.allTextContents()) {
+    assert(text.trim() === 'Author', `${label} publication role source text is not Author: ${text}`);
+  }
+  for (const text of await actions.allTextContents()) {
+    assert(text.includes('Read on Habr'), `${label} publication action source text is not localized: ${text}`);
+  }
+
+  const augustDate = root.locator('time[datetime="2025-08-23"]');
+  assert(await augustDate.count() === 1, `${label} expected one August 23 publication date`);
+  assert((await augustDate.textContent()).trim() === 'August 23, 2025', `${label} August publication date is not localized`);
+}
+
 async function verifyRendered(page) {
   const response = await page.goto(PUBLICATIONS_EN_URL, {waitUntil: 'networkidle', timeout: 45000});
   assert(response?.ok(), `English Publications returned HTTP ${response?.status() ?? 'none'}`);
@@ -76,14 +114,9 @@ async function verifyRendered(page) {
   assert(heading === 'Publications and talks', `unexpected English Publications H1: ${heading}`);
   const seo = await assertSeoPair(page);
 
-  const bodyText = await page.locator('body').innerText();
-  for (const marker of ['Technical articles', 'Technical article', 'Author', 'Topics', 'Read on Habr', 'August 23, 2025']) {
-    assert(bodyText.includes(marker), `English Publications rendered content misses ${marker}`);
-  }
-  assert(!/Технические статьи|Техническая статья|Автор|Темы|Читать на/.test(bodyText), 'English Publications leaks Russian UI labels');
-
   const catalogue = page.locator('[data-tr-publications-root]').first();
   await catalogue.waitFor({state: 'visible', timeout: 10000});
+  await assertEnglishPresentation(catalogue, 'English Publications rendered catalogue');
   const publications = await assertCanonicalPublicationCards(catalogue);
 
   const html = await page.content();
@@ -105,12 +138,10 @@ async function verifyNoJavaScript(browser) {
     await assertSeoPair(page);
     const fallback = page.locator('[data-tr-publications-noscript="en"]');
     await fallback.waitFor({state: 'visible', timeout: 10000});
-    const text = await fallback.innerText();
-    for (const marker of ['Publications and talks', 'Technical articles', 'Read on Habr']) {
-      assert(text.includes(marker), `English Publications no-JS fallback misses ${marker}`);
-    }
-    assert(!/Технические статьи|Техническая статья|Автор|Темы|Читать на/.test(text), 'English Publications no-JS fallback leaks Russian UI labels');
+    const fallbackHeading = (await fallback.locator('h1').first().textContent()).trim();
+    assert(fallbackHeading === 'Publications and talks', `English Publications no-JS heading drifted: ${fallbackHeading}`);
     const catalogue = fallback.locator('[data-tr-publications-root]');
+    await assertEnglishPresentation(catalogue, 'English Publications no-JS catalogue');
     const publications = await assertCanonicalPublicationCards(catalogue);
     return {status: response.status(), fallbackVisible: true, publications};
   } finally {
