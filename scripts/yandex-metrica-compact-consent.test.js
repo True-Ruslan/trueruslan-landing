@@ -31,10 +31,10 @@ test('consent controller renders a compact neutral cookie prompt with one primar
 
   assert.match(rendered, /Разрешить cookies\?/);
   assert.match(rendered, /Allow cookies\?/);
-  assert.match(rendered, /data-tr-consent="granted"/);
-  assert.match(rendered, /data-tr-consent="denied"/);
+  assert.match(rendered, /allow\.setAttribute\('data-tr-consent','granted'\)/);
+  assert.match(rendered, /close\.setAttribute\('data-tr-consent','denied'\)/);
   assert.match(rendered, /tr-metrica-consent__close/);
-  assert.match(rendered, /aria-label/);
+  assert.match(rendered, /close\.setAttribute\('aria-label',copy\.close\)/);
 
   assert.doesNotMatch(rendered, /Разрешить статистику посещений через Яндекс\.Метрику/);
   assert.doesNotMatch(rendered, /Allow traffic statistics via Yandex Metrica/);
