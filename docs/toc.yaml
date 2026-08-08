@@ -5,10 +5,6 @@ navigation:
     target: _self
   header:
     leftItems:
-      - text: Главная
-        type: link
-        url: index.html
-        target: _self
       - text: Проекты
         type: link
         url: landing/projects.html
@@ -21,14 +17,6 @@ navigation:
         type: link
         url: landing/engineering-map.html
         target: _self
-      - text: Обо мне
-        type: link
-        url: landing/about.html
-        target: _self
-      - text: Опыт
-        type: link
-        url: landing/resume.html
-        target: _self
       - text: Notes
         type: link
         url: landing/notes.html
@@ -37,13 +25,21 @@ navigation:
         type: link
         url: landing/publications.html
         target: _self
-      - text: Источники
-        type: link
-        url: landing/bibliography.html
-        target: _self
       - text: Фото
         type: link
         url: landing/photos.html
+        target: _self
+      - text: Обо мне
+        type: link
+        url: landing/about.html
+        target: _self
+      - text: Опыт
+        type: link
+        url: landing/resume.html
+        target: _self
+      - text: Источники
+        type: link
+        url: landing/bibliography.html
         target: _self
       - text: Контакты
         type: link
