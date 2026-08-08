@@ -92,6 +92,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/v03-browser-smoke.cjs 2>&1 | tee v03-browser-smoke.log
+      - name: Work with me browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/work-with-me-browser-smoke.cjs 2>&1 | tee work-with-me-browser-smoke.log
       - name: Firefox and WebKit compatibility smoke
         shell: bash
         run: |
@@ -162,6 +167,7 @@ jobs:
           cp node-zero-diagram-smoke.log quality-artifacts/node-zero-diagram-smoke.log 2>/dev/null || true
           cp photo-stories-browser-smoke.log quality-artifacts/photo-stories-browser-smoke.log 2>/dev/null || true
           cp v03-browser-smoke.log quality-artifacts/v03-browser-smoke.log 2>/dev/null || true
+          cp work-with-me-browser-smoke.log quality-artifacts/work-with-me-browser-smoke.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke 2>/dev/null || true
           cp villaigence-search-smoke.log quality-artifacts/villaigence-search-smoke.log 2>/dev/null || true
@@ -178,6 +184,8 @@ jobs:
           cp docs-html/landing/resume/index.html quality-artifacts/resume-generated.html 2>/dev/null || true
           cp docs-html/landing/resume.html quality-artifacts/resume-legacy-redirect.html 2>/dev/null || true
           cp docs-html/landing/publications/index.html quality-artifacts/publications-generated.html 2>/dev/null || true
+          cp docs-html/landing/work-with-me/index.html quality-artifacts/work-with-me-ru-generated.html 2>/dev/null || true
+          cp docs-html/en/work-with-me/index.html quality-artifacts/work-with-me-en-generated.html 2>/dev/null || true
           cp docs-html/en/index.html quality-artifacts/en-home-generated.html 2>/dev/null || true
           cp docs-html/en/projects/livingworld/index.html quality-artifacts/en-livingworld-generated.html 2>/dev/null || true
           cp docs-html/landing/now/index.html quality-artifacts/now-generated.html 2>/dev/null || true
@@ -190,6 +198,11 @@ jobs:
           cp docs-html/landing/photos/index.html quality-artifacts/photo-stories-generated.html 2>/dev/null || true
           cp artifacts/browser-summary.json quality-artifacts/browser-summary.json 2>/dev/null || true
           cp artifacts/yandex-metrica-browser-summary.json quality-artifacts/yandex-metrica-browser-summary.json 2>/dev/null || true
+          cp artifacts/work-with-me-summary.json quality-artifacts/work-with-me-summary.json 2>/dev/null || true
+          cp artifacts/work-with-me-ru-desktop.png quality-artifacts/work-with-me-ru-desktop.png 2>/dev/null || true
+          cp artifacts/work-with-me-en-desktop.png quality-artifacts/work-with-me-en-desktop.png 2>/dev/null || true
+          cp artifacts/work-with-me-ru-no-js-mobile.png quality-artifacts/work-with-me-ru-no-js-mobile.png 2>/dev/null || true
+          cp artifacts/work-with-me-en-no-js-mobile.png quality-artifacts/work-with-me-en-no-js-mobile.png 2>/dev/null || true
           cp artifacts/vlezet-desktop.png quality-artifacts/vlezet-desktop.png 2>/dev/null || true
           cp artifacts/vlezet-mobile.png quality-artifacts/vlezet-mobile.png 2>/dev/null || true
           cp artifacts/villaigence-desktop.png quality-artifacts/villaigence-desktop.png 2>/dev/null || true
