@@ -113,6 +113,7 @@ test('normalized case studies expose bounded related material and do not promote
   const livingworldRu = read('docs/landing/projects/livingworld.md');
   const livingworldEn = read('docs/en/projects/livingworld.md');
   const vlezetRu = read('docs/landing/projects/vlezet.md');
+  const vlezetEn = read('docs/en/projects/vlezet.md');
 
   assertIncludesAll(livingworldRu, [
     'server-authoritative-ai-npcs',
@@ -121,6 +122,7 @@ test('normalized case studies expose bounded related material and do not promote
     'probabilistic-proposals-deterministic-authority',
     'restart-persistence-is-a-product-contract',
     '0.2.0+1.21.1',
+    '7 PASS / 0 FAIL',
     'PR #123',
     'PR #125',
     'Draft',
@@ -133,6 +135,10 @@ test('normalized case studies expose bounded related material and do not promote
     '../../landing/notes/probabilistic-proposals-deterministic-authority.md',
     '../../landing/notes/restart-persistence-is-a-product-contract.md',
     '../../landing/projects/livingworld.md',
+    '0.2.0+1.21.1',
+    '7 PASS / 0 FAIL',
+    'PR #123',
+    'PR #125',
   ], 'EN VillAIgence case study');
   assert.doesNotMatch(
     livingworldEn,
@@ -146,10 +152,28 @@ test('normalized case studies expose bounded related material and do not promote
     'M7.8B',
     'Assisted Tracing',
     'PR #52',
+    'PR #42',
+    'PR #44',
+    'PR #45',
   ], 'RU Vlezet case study');
 
+  assertIncludesAll(vlezetEn, [
+    'probabilistic-proposals-deterministic-authority',
+    'green-ci-is-not-product-verification',
+    'M7.8B',
+    'Assisted Tracing',
+    'PR #52',
+    'PR #42',
+    'PR #44',
+    'PR #45',
+    'closed unmerged',
+    'usefulness acceptance',
+  ], 'EN Vlezet case study');
+  assert.doesNotMatch(vlezetEn, /PR #42 remains Draft work awaiting/i);
+  assert.doesNotMatch(vlezetEn, /next acceptance boundary is \*\*M7\.8C/i);
+
   const positivePromotion = /(?:is|является|стал(?:а)?)\s+(?:fully\s+accepted|production-ready)|полностью\s+принят(?:а|о)?/i;
-  for (const source of [livingworldRu, livingworldEn, vlezetRu]) {
+  for (const source of [livingworldRu, livingworldEn, vlezetRu, vlezetEn]) {
     assert.doesNotMatch(source, positivePromotion, 'pending flagship must not be positively promoted');
   }
 });
