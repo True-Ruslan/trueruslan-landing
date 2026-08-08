@@ -31,11 +31,12 @@ const FORBIDDEN_CONTEXTUAL = Object.freeze([
   '/landing/bibliography/',
   '/landing/engineering-map/',
 ]);
+const FORBIDDEN_LEAD_RUNTIME = /(?:hubspot|salesforce|calendly|typeform|tally\.so|forms\.gle|stripe\.com|paypal\.com)/i;
 
 function assertNoSalesRuntime(html, label) {
   if (/<form\b/i.test(html)) throw new Error(`${label}: form is forbidden`);
-  if (/\b(?:CRM|booking|lead database|conversion tracking|public price)\b/i.test(html)) {
-    throw new Error(`${label}: forbidden sales runtime/copy leaked into generated HTML`);
+  if (FORBIDDEN_LEAD_RUNTIME.test(html)) {
+    throw new Error(`${label}: third-party lead/booking/payment runtime leaked into generated HTML`);
   }
   if (/(?:₽\s*\d|\$\s*\d|€\s*\d|\b(?:USD|EUR)\s*\d)/i.test(html)) {
     throw new Error(`${label}: public numeric pricing leaked into generated HTML`);
