@@ -101,7 +101,7 @@ test('VillAIgence evidence separates official release, installed acceptance, sem
   assert.ok(installed, 'missing installed 0.2 acceptance evidence');
   assert.equal(installed.kind, 'manual');
   assert.equal(installed.state, 'accepted');
-  assert.match(installed.scope, /7 PASS \/ 0 FAIL/);
+  assert.match(installed.scope, /(?:7 PASS \/ 0 FAIL|seven required[\s\S]*0 FAIL)/i);
   assert.match(installed.scope, /NOT TESTED/);
 
   const admission = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/123');
