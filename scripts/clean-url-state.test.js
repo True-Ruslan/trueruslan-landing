@@ -41,7 +41,11 @@ test('durable state records repository-native clean URL acceptance', () => {
 
   assert.ok(state.includes('issue #111'), 'state must preserve the Yandex operator boundary');
   assert.ok(state.includes('issue #82'), 'state must preserve the Diplodoc dependency blocker');
-  assert.ok(state.includes('PR #103') && state.includes('PR #104'), 'state must preserve VillAIgence acceptance evidence');
+  assert.ok(state.includes('PR #110'), 'state must preserve accepted VillAIgence orchestration evidence');
+  assert.ok(state.includes('0.2.0+1.21.1'), 'state must preserve the current official VillAIgence release');
+  assert.ok(state.includes('7 PASS / 0 FAIL'), 'state must preserve bounded installed VillAIgence acceptance');
+  assert.ok(state.includes('VAI-M2-INST-005') && state.includes('VAI-CONCUR-004'), 'state must preserve explicit NOT TESTED installed boundaries');
+  assert.ok(state.includes('PR #123') && state.includes('PR #125'), 'state must separate accepted BELIEF admission from pending extraction');
 });
 
 test('durable state preserves P3.1 production acceptance', () => {
@@ -127,7 +131,9 @@ test('durable state preserves P3.3 production acceptance after later slices', ()
 
   assert.ok(state.includes('issue #111'), 'P3.3 state must preserve the search-console boundary');
   assert.ok(state.includes('issue #82'), 'P3.3 state must preserve the dependency blocker');
-  assert.ok(state.includes('PR #103') && state.includes('PR #104') && state.includes('PR #110'));
+  assert.ok(combined.includes('PR #103') && combined.includes('PR #104'), 'historical M11 Phase A/B evidence must remain in durable history');
+  assert.ok(state.includes('PR #110'), 'current state must preserve merged deadline/exactly-once evidence');
+  assert.ok(state.includes('0.2.0+1.21.1') && state.includes('7 PASS / 0 FAIL'), 'current state must preserve the latest bounded VillAIgence release/install evidence');
 });
 
 test('durable state preserves P3.4A production acceptance after later slices', () => {
