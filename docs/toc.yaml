@@ -25,7 +25,7 @@ navigation:
         type: link
         url: landing/about.html
         target: _self
-      - text: Резюме
+      - text: Опыт
         type: link
         url: landing/resume.html
         target: _self
@@ -127,7 +127,7 @@ items:
     href: ./landing/publications.md
   - name: Обо мне
     href: ./landing/about.md
-  - name: Резюме
+  - name: Опыт
     href: ./landing/resume.md
   - name: Источники
     href: ./landing/bibliography.md
@@ -140,7 +140,7 @@ items:
     items:
       - name: About
         href: ./en/about.md
-      - name: Resume
+      - name: Experience
         href: ./en/resume.md
       - name: Now
         href: ./en/now.md
