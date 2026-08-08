@@ -8,18 +8,33 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SMOKE = path.join(ROOT, 'scripts', 'production-flagship-normalization-smoke.cjs');
 const source = fs.readFileSync(SMOKE, 'utf8');
 
-test('deployment flagship smoke derives current release evidence from the canonical registry', () => {
+test('deployment flagship smoke derives current release and strategy evidence from the canonical registry', () => {
   assert.match(source, /data\/project-evidence\.json/);
-  assert.match(source, /Current published candidate/);
   assert.match(
     source,
-    /evidenceVersion\(\s*['"]livingworld['"]\s*,\s*['"]Current published candidate['"]\s*,?\s*\)/,
+    /evidenceVersion\(\s*['"]livingworld['"]\s*,\s*['"]Current official release['"]\s*,?\s*\)/,
   );
+  assert.match(
+    source,
+    /evidenceVersion\(\s*['"]livingworld['"]\s*,\s*['"]Installed 0\.2\.0 result['"]\s*,?\s*\)/,
+  );
+  assert.match(
+    source,
+    /evidenceVersion\(\s*['"]vlezet['"]\s*,\s*['"]Automatic M7\.8C result['"]\s*,?\s*\)/,
+  );
+  assert.match(
+    source,
+    /evidenceVersion\(\s*['"]vlezet['"]\s*,\s*['"]Next acceptance boundary['"]\s*,?\s*\)/,
+  );
+  assert.doesNotMatch(source, /Current published candidate/);
   assert.doesNotMatch(source, /0\.1\.23\+1\.21\.1/);
 });
 
 test('deployment flagship smoke requires the current bounded external evidence markers', () => {
-  for (const marker of ['PR #108', 'PR #110', 'PR #44', 'PR #45']) {
+  for (const marker of ['PR #123', 'PR #125', 'PR #42', 'PR #44', 'PR #45', 'PR #52', 'Assisted Tracing']) {
     assert.ok(source.includes(marker), `missing current production evidence marker: ${marker}`);
   }
+
+  assert.doesNotMatch(source, /product-owner retest/);
+  assert.doesNotMatch(source, /PR #108|PR #110/);
 });
