@@ -19,6 +19,7 @@ resources:
     - _assets/style/command-palette.css
     - _assets/style/engineering-graph.css
     - _assets/style/resume.css
+    - _assets/style/experience-refinement.css
     - _assets/style/photo-stories.css
     - _assets/style/photo-embedded.css
     - _assets/style/header-utilities.css
@@ -29,6 +30,7 @@ resources:
     - _assets/script/engineering-graph.js
     - _assets/script/photo-stories.js
     - _assets/script/header-utilities.js
+    - _assets/script/header-chrome-unifier.js
     - _assets/script/header-list-semantics.js
 
 search:

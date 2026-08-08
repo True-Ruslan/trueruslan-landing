@@ -70,17 +70,22 @@ test('repository now snapshot reflects current bounded external-project evidence
 
   assert.equal(current.updated, '2026-08-08');
   for (const text of [editorialText, englishText]) {
-    assert.match(text, /Vlezet/);
-    assert.match(text, /M7\.8B/);
-    assert.match(text, /Assisted Tracing/i);
-    assert.match(text, /#42/);
-    assert.match(text, /closed unmerged|закрыт.*unmerged|R&D/i);
     assert.match(text, /VillAIgence/);
     assert.match(text, /0\.2\.0\+1\.21\.1/);
     assert.match(text, /7 PASS \/ 0 FAIL/);
     assert.match(text, /BELIEF/i);
     assert.match(text, /#125/);
     assert.match(text, /Draft\/RED|Draft|RED/i);
+
+    assert.match(text, /NotchHub/);
+    assert.match(text, /0\.1\.0/);
+    assert.match(text, /M0/);
+    assert.match(text, /R0\.1/);
+    assert.match(text, /P0\.1/);
+    assert.match(text, /M1/);
+    assert.match(text, /#10/);
+    assert.match(text, /Draft/i);
+    assert.doesNotMatch(text, /Vlezet|M7\.8B|Assisted Tracing/i);
   }
   assert.match(editorialText, /measurement|aggregate/i);
   assert.match(englishText, /measurement|aggregate/i);

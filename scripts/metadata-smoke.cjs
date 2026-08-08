@@ -13,6 +13,8 @@ const pages = [
   {path: '/landing/engineering-map/', title: 'Engineering Map — Руслан Немыкин', card: 'engineering-map'},
   {path: '/landing/resume/', title: 'Резюме — Руслан Немыкин', card: 'resume'},
   {path: '/landing/projects/livingworld/', title: 'VillAIgence — Server-Authoritative AI Society', card: 'livingworld'},
+  {path: '/landing/projects/notchhub/', title: 'NotchHub — Native macOS Productivity Hub', card: 'notchhub'},
+  {path: '/en/projects/notchhub/', title: 'NotchHub — Native macOS Productivity Hub', card: 'notchhub-en'},
   {path: '/landing/projects/node-zero/', title: 'NODE ZERO — Narrative Systems Case Study', card: 'node-zero'},
   {path: '/landing/notes/', title: 'Engineering Notes — Руслан Немыкин', card: 'notes'},
 ];

@@ -19,8 +19,10 @@ const PORTFOLIO_PLATFORM_PATH = 'landing/projects/portfolio-platform/';
 const PORTFOLIO_PLATFORM_EN_PATH = 'en/projects/portfolio-platform/';
 const VILLAIGENCE_PATH = 'landing/projects/livingworld/';
 const VLEZET_PATH = 'landing/projects/vlezet/';
+const NOTCHHUB_PATH = 'landing/projects/notchhub/';
 const VILLAIGENCE_EN_PATH = 'en/projects/livingworld/';
 const VLEZET_EN_PATH = 'en/projects/vlezet/';
+const NOTCHHUB_EN_PATH = 'en/projects/notchhub/';
 
 const NOTE_URL = new URL(NOTE_PATH, APEX).href;
 const WWW_NOTE_URL = new URL(NOTE_PATH, WWW).href;
@@ -42,8 +44,10 @@ const PORTFOLIO_PLATFORM_URL = new URL(PORTFOLIO_PLATFORM_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_EN_URL = new URL(PORTFOLIO_PLATFORM_EN_PATH, APEX).href;
 const VILLAIGENCE_URL = new URL(VILLAIGENCE_PATH, APEX).href;
 const VLEZET_URL = new URL(VLEZET_PATH, APEX).href;
+const NOTCHHUB_URL = new URL(NOTCHHUB_PATH, APEX).href;
 const VILLAIGENCE_EN_URL = new URL(VILLAIGENCE_EN_PATH, APEX).href;
 const VLEZET_EN_URL = new URL(VLEZET_EN_PATH, APEX).href;
+const NOTCHHUB_EN_URL = new URL(NOTCHHUB_EN_PATH, APEX).href;
 
 module.exports = {
   APEX,
@@ -67,8 +71,10 @@ module.exports = {
   PORTFOLIO_PLATFORM_EN_PATH,
   VILLAIGENCE_PATH,
   VLEZET_PATH,
+  NOTCHHUB_PATH,
   VILLAIGENCE_EN_PATH,
   VLEZET_EN_PATH,
+  NOTCHHUB_EN_PATH,
   NOTE_URL,
   WWW_NOTE_URL,
   LEGACY_NOTE_URL,
@@ -89,6 +95,8 @@ module.exports = {
   PORTFOLIO_PLATFORM_EN_URL,
   VILLAIGENCE_URL,
   VLEZET_URL,
+  NOTCHHUB_URL,
   VILLAIGENCE_EN_URL,
   VLEZET_EN_URL,
+  NOTCHHUB_EN_URL,
 };

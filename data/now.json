@@ -1,10 +1,10 @@
 {
   "updated": "2026-08-08",
-  "focus": "Сейчас я сохраняю строгую границу между свежей repository activity и принятым продуктом. VillAIgence выпустил официальный 0.2.0+1.21.1: byte-identical clean-world candidate прошёл обязательные installed Memory 2.0 сценарии 7 PASS / 0 FAIL, а PR #123 добавил controlled BELIEF admission; следующий PR #125 остаётся Draft/RED для bounded PLAYER_TOLD candidate extraction. В Vlezet автоматический M7.8C путь не прошёл product-owner usefulness acceptance: PR #42, #44 и #45 закрыты unmerged как R&D, M7.8B остаётся принятым, а PR #52 открыл design-only pivot к Assisted Tracing.",
+  "focus": "Сейчас я сохраняю строгую границу между свежей repository activity и принятым продуктом. VillAIgence выпустил официальный 0.2.0+1.21.1: byte-identical clean-world candidate прошёл обязательные installed Memory 2.0 сценарии 7 PASS / 0 FAIL, а PR #123 добавил controlled BELIEF admission; следующий PR #125 остаётся Draft/RED для bounded PLAYER_TOLD candidate extraction. В NotchHub принята основа 0.1.0 Personal build с M0, R0.1, P0 и P0.1; M1 Notch Core остаётся в Draft PR #10 и отдельно проходит hardening delayed hover, haptic и deterministic panel transitions.",
   "learning": [
     "Evidence reconciliation: как обновлять публичный snapshot после release, merge, FAIL и strategy pivot, не повышая lifecycle автоматически",
     "Memory 2.0 в VillAIgence: как отделять candidate extraction, BELIEF admission и server-observed FACT authority",
-    "Assisted Tracing в Vlezet: как заменить недостаточно полезную автоматическую реконструкцию на user-directed workflow с bounded local raster assistance и explicit semantic edits"
+    "NotchHub M1: как сделать notch-adjacent interaction детерминированным, event-driven и измеримым по correctness, security и resource evidence"
   ],
   "writing": [
     "Фиксирую практику evidence-driven project state для accepted, failed, pending, Draft и closed-unmerged сигналов",
@@ -12,11 +12,11 @@
     "Продолжаю measurement checkpoint портфолио только после достаточного окна реальных aggregate observations"
   ],
   "en": {
-    "focus": "I am keeping a strict boundary between fresh repository activity and accepted product state. VillAIgence has released the official 0.2.0+1.21.1: the byte-identical clean-world candidate passed the required installed Memory 2.0 scenarios at 7 PASS / 0 FAIL, while PR #123 added controlled BELIEF admission and the next PR #125 remains Draft/RED for bounded PLAYER_TOLD candidate extraction. In Vlezet, the automatic M7.8C direction failed product-owner usefulness acceptance: PRs #42, #44 and #45 were closed unmerged as R&D, M7.8B remains accepted, and PR #52 opened a design-only pivot to Assisted Tracing.",
+    "focus": "I am keeping a strict boundary between fresh repository activity and accepted product state. VillAIgence has released the official 0.2.0+1.21.1: the byte-identical clean-world candidate passed the required installed Memory 2.0 scenarios at 7 PASS / 0 FAIL, while PR #123 added controlled BELIEF admission and the next PR #125 remains Draft/RED for bounded PLAYER_TOLD candidate extraction. NotchHub has an accepted 0.1.0 Personal foundation across M0, R0.1, P0 and P0.1; M1 Notch Core remains in Draft PR #10 while delayed hover, haptic feedback and deterministic panel transitions are hardened separately.",
     "learning": [
       "Evidence reconciliation: updating public state after a release, merge, FAIL and strategy pivot without automatically promoting lifecycle",
       "Memory 2.0 in VillAIgence: separating candidate extraction, BELIEF admission and server-observed FACT authority",
-      "Assisted Tracing in Vlezet: replacing insufficiently useful automatic reconstruction with a user-directed workflow, bounded local raster assistance and explicit semantic edits"
+      "NotchHub M1: making notch-adjacent interaction deterministic, event-driven and measurable across correctness, security and resource evidence"
     ],
     "writing": [
       "Evidence-driven project-state practices for accepted, failed, pending, Draft and closed-unmerged signals",

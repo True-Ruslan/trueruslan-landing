@@ -27,11 +27,23 @@ const validProjects = [
     status: 'pre-production',
     statusLabel: 'ACTIVE DEVELOPMENT',
     summary: 'Local-first apartment planning.',
-    featured: true,
+    featured: false,
     active: true,
     visibility: 'public',
     href: 'landing/projects/vlezet.html',
     tags: ['TypeScript', 'Geometry'],
+  },
+  {
+    slug: 'notchhub',
+    name: 'NotchHub',
+    status: 'pre-production',
+    statusLabel: 'M1 IN DEVELOPMENT',
+    summary: 'Native local-first macOS productivity hub.',
+    featured: true,
+    active: true,
+    visibility: 'public',
+    href: 'landing/projects/notchhub.html',
+    tags: ['Swift 6', 'AppKit'],
   },
   {
     slug: 'portfolio-platform',
@@ -123,6 +135,8 @@ test('homepage primary paths expose experience, projects and engineering materia
   assert.match(ru, /href="landing\/resume\.html"/);
   assert.match(ru, /data-home-path="projects"/);
   assert.match(ru, /href="landing\/projects\.html"/);
+  assert.match(ru, /NotchHub/);
+  assert.doesNotMatch(ru, /Vlezet/);
   assert.match(ru, /data-home-path="materials"/);
   assert.match(ru, /href="landing\/notes\.html"/);
   assert.match(ru, /Публикации/);
@@ -130,6 +144,8 @@ test('homepage primary paths expose experience, projects and engineering materia
   const en = renderHomepagePrimaryPaths('en');
   assert.match(en, /href="en\/resume\.html"/);
   assert.match(en, /href="en\/projects\.html"/);
+  assert.match(en, /NotchHub/);
+  assert.doesNotMatch(en, /Vlezet/);
   assert.match(en, /href="en\/notes\/server-authoritative-ai-npcs\.html"/);
 });
 
@@ -137,11 +153,11 @@ test('homepage flagship selection is explicit, public and stable', () => {
   const flagships = selectHomepageFlagships(validProjects);
   assert.deepEqual(flagships.map(({slug}) => slug), [
     'livingworld',
-    'vlezet',
+    'notchhub',
     'portfolio-platform',
   ]);
   assert.ok(flagships.every(({visibility, active}) => visibility === 'public' && active));
-  assert.ok(flagships.every(({slug}) => slug !== 'node-zero'));
+  assert.ok(flagships.every(({slug}) => slug !== 'node-zero' && slug !== 'vlezet'));
 });
 
 test('homepage evidence signals stay bounded to canonical project and evidence state', () => {
@@ -151,12 +167,12 @@ test('homepage evidence signals stay bounded to canonical project and evidence s
   assert.match(html, /Принятый installed результат/);
   assert.match(html, /7 PASS \/ 0 FAIL/);
   assert.match(html, /ACCEPTANCE IN PROGRESS/);
-  assert.match(html, /data-home-evidence="vlezet"/);
-  assert.match(html, /M7\.8B/);
-  assert.match(html, /ACTIVE DEVELOPMENT/);
+  assert.match(html, /data-home-evidence="notchhub"/);
+  assert.match(html, /0\.1\.0 Personal build/);
+  assert.match(html, /M1 IN DEVELOPMENT/);
   assert.match(html, /data-home-evidence="portfolio-platform"/);
   assert.match(html, /PRODUCTION/);
-  assert.doesNotMatch(html, /NODE ZERO|M7\.8C accepted|full acceptance|VAI-M2-INST-005[^<]*PASS|VAI-CONCUR-004[^<]*PASS/i);
+  assert.doesNotMatch(html, /data-home-evidence="vlezet"|NODE ZERO|M7\.8C accepted|full acceptance|VAI-M2-INST-005[^<]*PASS|VAI-CONCUR-004[^<]*PASS/i);
 });
 
 test('renderStandaloneHome injects evidence-first paths and public flagships without Diplodoc runtime bundles', () => {
@@ -177,9 +193,9 @@ test('renderStandaloneHome injects evidence-first paths and public flagships wit
   assert.match(html, /data-home-evidence="livingworld"/);
   assert.match(html, /7 PASS \/ 0 FAIL/);
   assert.match(html, /data-home-flagship="livingworld"/);
-  assert.match(html, /data-home-flagship="vlezet"/);
+  assert.match(html, /data-home-flagship="notchhub"/);
   assert.match(html, /data-home-flagship="portfolio-platform"/);
-  assert.doesNotMatch(html, /NODE ZERO|Old project/);
+  assert.doesNotMatch(html, /data-home-flagship="vlezet"|NODE ZERO|Old project/);
   assert.match(html, /Избранные публикации/);
   assert.match(html, /Diplodoc и GitHub Pages/);
   assert.match(html, /data-tr-publication-id="diplodoc-github-pages"/);
@@ -188,7 +204,7 @@ test('renderStandaloneHome injects evidence-first paths and public flagships wit
   assert.doesNotMatch(html, /_bundle\//);
 });
 
-test('renderStandaloneHome supports English evidence paths and bounded Russian fallbacks', () => {
+test('renderStandaloneHome supports English evidence paths and bounded localized flagships', () => {
   const template = `<!doctype html><html lang="en"><head>
     <link rel="canonical" href="{{SITE_URL}}/en/">
   </head><body><h1>Ruslan Nemykin</h1>{{HOME_PRIMARY_PATHS}}{{HOME_EVIDENCE_SIGNALS}}<section>{{HOME_FLAGSHIPS}}</section>{{FEATURED_PUBLICATIONS}}</body></html>`;
@@ -197,8 +213,12 @@ test('renderStandaloneHome supports English evidence paths and bounded Russian f
     locale: 'en',
     evidence: validEvidence,
     publications: validPublications,
-    hrefTransform: (href, project) => project.slug === 'livingworld' ? 'en/projects/livingworld.html' : href,
-    ctaTransform: (project, defaultCta) => project.slug === 'livingworld' ? defaultCta : 'Open case study (RU) →',
+    hrefTransform: (href, project) => {
+      if (project.slug === 'livingworld') return 'en/projects/livingworld.html';
+      if (project.slug === 'notchhub') return 'en/projects/notchhub.html';
+      return href;
+    },
+    ctaTransform: (project, defaultCta) => ['livingworld', 'notchhub'].includes(project.slug) ? defaultCta : 'Open case study (RU) →',
   });
 
   assert.match(html, /data-home-path="resume"/);
@@ -206,10 +226,13 @@ test('renderStandaloneHome supports English evidence paths and bounded Russian f
   assert.match(html, /data-home-evidence="livingworld"/);
   assert.match(html, /Accepted installed result/);
   assert.match(html, /7 PASS \/ 0 FAIL/);
+  assert.match(html, /data-home-evidence="notchhub"/);
+  assert.match(html, /Accepted product boundary/);
   assert.match(html, /data-home-flagship="livingworld"/);
   assert.match(html, /href="en\/projects\/livingworld\.html"/);
-  assert.match(html, /data-home-flagship="vlezet"/);
+  assert.match(html, /data-home-flagship="notchhub"/);
+  assert.match(html, /href="en\/projects\/notchhub\.html"/);
   assert.match(html, /Open case study \(RU\) →/);
-  assert.doesNotMatch(html, /NODE ZERO/);
+  assert.doesNotMatch(html, /data-home-flagship="vlezet"|NODE ZERO/);
   assert.doesNotMatch(html, /Избранные публикации|Diplodoc и GitHub Pages|\{\{FEATURED_PUBLICATIONS\}\}/);
 });

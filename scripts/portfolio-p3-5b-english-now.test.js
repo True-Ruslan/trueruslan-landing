@@ -51,8 +51,12 @@ test('English now renderer localizes presentation and keeps project identity reg
   assert.doesNotMatch(html, /Сейчас в работе|Что изучаю|Что пишу/);
   assert.match(html, /0\.2\.0\+1\.21\.1/);
   assert.match(html, /7 PASS \/ 0 FAIL/);
-  assert.match(html, /Assisted Tracing/i);
-  assert.match(html, /Draft\/RED|Draft|RED/i);
+  assert.match(html, /NotchHub/i);
+  assert.match(html, /0\.1\.0/i);
+  assert.match(html, /M1/i);
+  assert.match(html, /PR #10/i);
+  assert.match(html, /Draft/i);
+  assert.doesNotMatch(html, /Vlezet|Assisted Tracing|M7\.8B/i);
 });
 
 test('English now route is wired into one i18n, metadata and navigation architecture', () => {

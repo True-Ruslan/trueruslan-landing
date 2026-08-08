@@ -164,7 +164,7 @@ async function main() {
       pathname: '/landing/projects/',
       heading: 'Проекты',
       verify: async (page) => {
-        for (const slug of ['livingworld', 'node-zero', 'vlezet', 'portfolio-platform']) {
+        for (const slug of ['livingworld', 'notchhub', 'node-zero', 'portfolio-platform']) {
           const status = page.locator(`[data-project-status="${slug}"]`);
           await status.waitFor({state: 'visible'});
           if ((await status.innerText()).trim() !== expectedProjectStatus(slug)) {

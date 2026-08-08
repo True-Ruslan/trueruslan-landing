@@ -35,7 +35,7 @@ const CORE_SCENARIOS = Object.freeze({
     ],
   }),
   publications: Object.freeze({slug: 'publications', path: '/landing/publications/', heading: 'Публикации и выступления'}),
-  resume: Object.freeze({slug: 'resume', path: '/landing/resume/', heading: 'Резюме'}),
+  resume: Object.freeze({slug: 'resume', path: '/landing/resume/', heading: 'Опыт'}),
 });
 
 module.exports = {

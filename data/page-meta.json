@@ -30,6 +30,16 @@
     "accent": "cyan"
   },
   {
+    "path": "landing/projects/notchhub.html",
+    "card": "notchhub",
+    "title": "NotchHub — Native macOS Productivity Hub",
+    "description": "Case study local-first macOS utility around the MacBook notch: SwiftUI/AppKit boundaries, accepted 0.1.0 personal foundation, security and performance gates, with M1 interaction work still in development.",
+    "displayTitle": "NOTCHHUB",
+    "kicker": "NATIVE MACOS PRODUCTIVITY",
+    "tags": ["SWIFT 6", "SWIFTUI", "APPKIT", "PERFORMANCE"],
+    "accent": "cyan"
+  },
+  {
     "path": "landing/projects/portfolio-platform.html",
     "card": "portfolio-platform",
     "title": "TrueRuslan Landing — Static-First Portfolio Platform",
@@ -347,6 +357,16 @@
     "displayTitle": "VLEZET",
     "kicker": "GEOMETRY AND RECOGNITION",
     "tags": ["TYPESCRIPT", "GEOMETRY", "COMPUTER VISION"],
+    "accent": "cyan"
+  },
+  {
+    "path": "en/projects/notchhub.html",
+    "card": "notchhub-en",
+    "title": "NotchHub — Native macOS Productivity Hub",
+    "description": "English case study of a local-first native macOS utility around the MacBook notch, with an accepted 0.1.0 personal foundation and M1 interaction hardening still in development.",
+    "displayTitle": "NOTCHHUB",
+    "kicker": "NATIVE MACOS PRODUCTIVITY",
+    "tags": ["SWIFT 6", "SWIFTUI", "APPKIT", "PERFORMANCE"],
     "accent": "cyan"
   },
   {

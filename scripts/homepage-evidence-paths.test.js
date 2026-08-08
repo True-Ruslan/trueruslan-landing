@@ -42,7 +42,7 @@ test('production homepage templates reserve evidence-first build surfaces', () =
   }
 });
 
-test('production homepage rendering exposes three public flagships and no private project', () => {
+test('production homepage rendering exposes three public flagships and no private or de-emphasized project', () => {
   const projects = loadProjectRegistry(PROJECTS);
   const evidence = loadProjectEvidence(EVIDENCE, {projects});
   const ru = renderStandaloneHome(
@@ -60,11 +60,12 @@ test('production homepage rendering exposes three public flagships and no privat
       evidence,
       hrefTransform: (href, project) => {
         if (project.slug === 'livingworld') return 'en/projects/livingworld.html';
+        if (project.slug === 'notchhub') return 'en/projects/notchhub.html';
         if (project.slug === 'portfolio-platform') return 'en/projects.html';
         return href;
       },
       ctaTransform: (project, cta) => (
-        ['livingworld', 'portfolio-platform'].includes(project.slug)
+        ['livingworld', 'notchhub', 'portfolio-platform'].includes(project.slug)
           ? cta
           : 'Open case study (RU) →'
       ),
@@ -75,17 +76,20 @@ test('production homepage rendering exposes three public flagships and no privat
     assert.equal(count(html, 'data-home-path='), 3);
     assert.equal(count(html, 'data-home-evidence='), 3);
     assert.equal(count(html, 'data-home-flagship='), 3);
-    assert.doesNotMatch(html, /NODE ZERO|data-home-flagship="node-zero"/);
+    assert.doesNotMatch(html, /NODE ZERO|data-home-flagship="node-zero"|data-home-flagship="vlezet"|data-home-evidence="vlezet"/);
     assert.doesNotMatch(html, /\{\{HOME_/);
+    assert.match(html, /data-home-flagship="notchhub"/);
+    assert.match(html, /data-home-evidence="notchhub"/);
   }
 
   assert.match(ru, /href="landing\/resume\.html"/);
   assert.match(ru, /href="landing\/notes\.html"/);
   assert.match(en, /href="en\/resume\.html"/);
   assert.match(en, /href="en\/notes\/server-authoritative-ai-npcs\.html"/);
+  assert.match(en, /href="en\/projects\/notchhub\.html"/);
   assert.match(ru, /Принятый installed результат/);
   assert.match(ru, /7 PASS \/ 0 FAIL/);
-  assert.match(ru, /M7\.8B/);
+  assert.match(ru, /0\.1\.0 Personal build/);
   assert.match(ru, /Static-first production platform/);
-  assert.doesNotMatch(ru, /VAI-M2-INST-005[^<]*PASS|VAI-CONCUR-004[^<]*PASS/i);
+  assert.doesNotMatch(ru, /M7\.8B|VAI-M2-INST-005[^<]*PASS|VAI-CONCUR-004[^<]*PASS/i);
 });

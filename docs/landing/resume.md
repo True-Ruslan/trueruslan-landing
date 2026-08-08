@@ -1,4 +1,4 @@
-# Резюме
+# Опыт
 
 <div class="tr-resume-hero">
   <p class="tr-resume-eyebrow">Java Backend Engineer</p>
@@ -15,7 +15,7 @@
   <div class="tr-resume-stats">
     <div class="tr-resume-stat"><strong>5+ лет</strong><span>коммерческой разработки</span></div>
     <div class="tr-resume-stat"><strong>Java 11–25</strong><span>enterprise и modern Java stack</span></div>
-    <div class="tr-resume-stat"><strong>Backend · Integrations · Data · AI</strong><span>основные направления работы</span></div>
+    <div class="tr-resume-stat"><strong class="tr-resume-stat__domains">Backend · Integrations<br>Data · AI</strong><span>основные направления работы</span></div>
   </div>
 </div>
 
@@ -105,7 +105,7 @@
 
 Преподаю разработку и тестирование программных модулей. Исследовательская работа связана с методическими основами ознакомления детей старшего дошкольного возраста с элементами программирования. Технические и научные материалы собраны в разделе [Публикации и выступления](publications.md), а собственные инженерные разборы — в [Engineering Notes](notes.md).
 
-## PDF-версия
+## Резюме
 
 Ниже доступна актуальная компактная PDF-версия резюме. Её удобно отправлять отдельно, загружать в рекрутинговые системы или распечатывать.
 

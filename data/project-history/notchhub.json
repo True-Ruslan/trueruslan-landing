@@ -1,0 +1,37 @@
+[
+  {
+    "date": "2026-08",
+    "title": "M0 engineering foundation accepted",
+    "description": "The native Swift 6 shell, public notch geometry, deterministic pointer policy, AppKit-owned panel sizing, App Sandbox, Hardened Runtime and real-hardware notch/hover acceptance formed the first accepted product foundation.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/notch-hub/pull/1"
+  },
+  {
+    "date": "2026-08",
+    "title": "0.1.0 Personal Release accepted",
+    "description": "The immutable 0.1.0 Personal build was published for personal use with ad-hoc signing, App Sandbox, Hardened Runtime, checksum and provenance verification. It is intentionally not notarized.",
+    "state": "past",
+    "version": "0.1.0",
+    "evidence": "https://github.com/True-Ruslan/notch-hub/releases/tag/v0.1.0"
+  },
+  {
+    "date": "2026-08",
+    "title": "Performance and public-source foundations accepted",
+    "description": "P0 established target-Mac CPU/RSS/thread baselines, deterministic size budgets and event-driven resource policy. P0.1 then completed public-repository hardening without broadening runtime permissions or release authority.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/notch-hub/pull/9"
+  },
+  {
+    "date": "2026-08",
+    "title": "M1 Notch Core hardening — Draft PR #10",
+    "description": "Delayed hover, exactly-once public AppKit haptic feedback, pointer-monitor lifecycle, notch-adjacent chrome and deterministic panel transitions are under active development. M1 is not accepted: the Draft remains gated by deterministic tests, exact-head CI, performance/security/size checks and target-Mac interaction evidence.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/notch-hub/pull/10"
+  },
+  {
+    "date": "NEXT",
+    "title": "Complete M1 interaction acceptance before feature modules",
+    "description": "Close transition, reversal, Reduce Motion, multi-display and real-hardware interaction gates without weakening the security or performance baseline, then proceed to Shelf and the later productivity modules.",
+    "state": "next"
+  }
+]

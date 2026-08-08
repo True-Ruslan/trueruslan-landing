@@ -226,6 +226,7 @@ function loadPhotoRegistries(photoAlbumsPath, photoArchivePath, docsDir) {
 function englishProjectHref(href) {
   if (href === 'landing/projects/livingworld.html') return 'en/projects/livingworld.html';
   if (href === 'landing/projects/vlezet.html') return 'en/projects/vlezet.html';
+  if (href === 'landing/projects/notchhub.html') return 'en/projects/notchhub.html';
   if (href === 'landing/projects/portfolio-platform.html') return 'en/projects/portfolio-platform.html';
   if (href === 'landing/projects.html') return 'en/projects.html';
   return href;
@@ -329,6 +330,7 @@ export function postprocessOutput({
           'en/projects.html',
           'en/projects/livingworld.html',
           'en/projects/vlezet.html',
+          'en/projects/notchhub.html',
           'en/projects/portfolio-platform.html',
         ],
       }
