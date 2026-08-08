@@ -15,22 +15,9 @@ Primary identity remains **Ruslan Nemykin — Backend Engineer**. Engineering is
 
 ## Work with me UX
 
-Canonical routes:
+Canonical routes: `/landing/work-with-me/` and `/en/work-with-me/`. RU/EN ship together.
 
-- `/landing/work-with-me/`
-- `/en/work-with-me/`
-
-RU/EN ship together. The page is a calm qualification surface with:
-
-1. concise hero + live availability + one Describe-the-task CTA;
-2. Engineering situations: backend/integrations, architecture/audit, difficult engineering problems, modernization, AI-enabled features;
-3. startup/individual projects with scoping-first boundaries;
-4. Teaching & Mentoring: individual sessions, tutoring/mentoring, consultations, course/material design, workshops/corporate education;
-5. smaller Expert contribution for technical writing/docs/review;
-6. process `Context → Scope → Estimate → Implementation → Handover`, with engineering principle `Architecture → Implementation → Verification → Delivery → Handover`;
-7. good-fit guidance;
-8. open door for nonstandard relevant work;
-9. direct Telegram/email handoff and calm self-employed/receipt note.
+The page is a calm qualification surface with hero + live availability + one Describe-the-task CTA; Engineering situations; startup/individual projects; Teaching & Mentoring; smaller Expert contribution; `Context → Scope → Estimate → Implementation → Handover`; good-fit guidance; open door; direct Telegram/email handoff and calm self-employed/receipt note.
 
 No Hire-me pressure, discounts, countdowns, public prices, forms or unsupported speed/quality claims.
 
@@ -50,24 +37,13 @@ pricing:                  estimate-only
 legal format:             self-employed-receipt-supported
 ```
 
-Allowed availability states: `available`, `limited`, `consulting-only`, `unavailable`.
-
-Availability is manual public truth: no date-, analytics-, traffic- or repository-driven automatic mutation and no fake scarcity. `unavailable` keeps the route discoverable with honest paused copy.
-
-Long-form copy remains Markdown; JSON does not become a prose CMS.
+Allowed availability states: `available`, `limited`, `consulting-only`, `unavailable`. Availability is manual public truth; no automatic mutation/fake scarcity. Long-form editorial copy remains Markdown.
 
 ## Bounded commercial surfaces
 
-Allowed surfaces:
+Allowed: homepage, Work with me, Contacts, explicit curated case studies/Notes/Publications. No automatic CTA on About, Experience, Photos, Sources, Engineering Map or keyword-matched arbitrary content.
 
-- homepage;
-- Work with me;
-- Contacts;
-- explicit curated case studies/Notes/Publications.
-
-No automatic CTA on About, Experience, Photos, Sources, Engineering Map or arbitrary keyword matches.
-
-Homepage keeps exactly the three primary Experience / Projects / Materials paths. Work with me is a restrained bridge after sufficient project/evidence proof, not primary path #4.
+Homepage keeps exactly Experience / Projects / Materials as its three primary paths. Collaboration is a restrained bridge after proof.
 
 Initial RU contextual mappings:
 
@@ -78,53 +54,39 @@ landing/notes/deployment-success-is-not-production-verification.html engineering
 landing/notes/server-authoritative-ai-npcs.html                  ai-integration
 ```
 
-Allowed categories: `engineering`, `ai-integration`, `education`, `expert-content`. EN contextual CTA is derived only from an existing exact RU/EN pair; no keyword inference or new EN content solely for CTA symmetry.
+Allowed categories: `engineering`, `ai-integration`, `education`, `expert-content`. EN contextual CTA is derived only from an existing exact i18n pair; no heuristics or new EN content solely for CTA symmetry.
 
-## Contacts and pricing
+## Contacts / pricing / navigation
 
-Contacts remains general-purpose and keeps external profiles. Direct Telegram/email is projected from the same canonical model. A short task-qualification hint links to Work with me; no duplicated catalogue.
+Contacts stays general-purpose with external profiles; direct contacts come from the same canonical model, plus a short task-qualification hint and Work with me link. No duplicate service catalogue.
 
-V1 has no public price list. Flow: task description → clarify scope/result → propose timing/cost where appropriate. Public mentoring prices/packages remain future evidence-driven decisions.
+V1 has no public price list. Task description → scope/result clarification → timing/cost proposal where appropriate.
 
-## Navigation / SEO
+Work with me is a normal primary-nav item, not a sales button. Targeted header-density rebalancing is allowed; broad navigation redesign is not.
 
-Work with me is a normal primary-navigation item, not a visual sales button. Header density is an explicit desktop/mobile constraint; targeted primary/secondary rebalancing is allowed, broad redesign is not.
+## Marketing / SEO / privacy
 
-One indexable Work with me route per locale, not a service-page farm. Require clean canonical, RU/EN hreflang, OpenGraph, sitemap, generated search, internal links from approved surfaces and semantic no-JS content.
+Commercial copy follows **client situation → expected result → working boundary → relevant proof**. Technologies support rather than replace the proposition. No best/guaranteed/cheap-sales/fake-proof patterns.
 
-RU title: `Работа со мной — Backend-разработка, консультации и наставничество | Руслан Немыкин`.
+One indexable route per locale; require clean canonical, hreflang, OpenGraph, sitemap, generated search, approved internal links and semantic no-JS content. `Person` remains primary; no fictional Organization/reviews/ratings.
 
-EN title: `Work with me — Backend engineering, consulting and mentoring | Ruslan Nemykin`.
-
-`Person` remains primary structured entity. No fictional Organization, reviews or ratings.
-
-## Privacy / measurement
-
-No form means no lead backend, CAPTCHA, lead database or form provider. No new third-party runtime dependency. Existing consent-gated analytics boundaries remain unchanged: no session replay, custom events, user parameters or conversion fingerprinting.
-
-Success optimizes for qualified conversations, not raw CTR. No client identities/correspondence/commercial details enter public repository telemetry. P3.6 remains an independent measurement checkpoint and is not satisfied by this feature.
-
-## Marketing/copy policy
-
-Message architecture: **client situation → expected result → working boundary → relevant proof**. Technologies support the proposition rather than replace it.
-
-Never invent or use unsupported best/guaranteed/fast-and-high-quality/any-complexity claims, discounts/countdowns, fake scarcity, social proof, client counters, testimonials, clients or outcome metrics.
+No form means no lead backend/CAPTCHA/database/provider. No new third-party runtime dependency. Existing consent analytics remains: no session replay, custom events, user parameters or conversion fingerprinting. Optimize for qualified conversations, not CTR. P3.6 remains independent.
 
 ## Quality / acceptance
 
-Implementation is RED-first. Fail closed on unknown state/category, malformed contacts, unsafe target path, missing/duplicate required placeholder or missing approved generated target.
+RED-first; fail closed on unknown state/category, malformed contacts, unsafe target, missing/duplicate placeholder or missing approved generated target.
 
-Require RU/EN parity, no-JS direct flow, generated search, keyboard/focus, Axe serious/critical gate, mobile overflow, Chromium/Firefox/WebKit and intentional visual inspection without threshold weakening.
+Require RU/EN parity, no-JS direct flow, search, keyboard/focus, Axe serious/critical gate, mobile overflow, Chromium/Firefox/WebKit and inspected visuals without threshold weakening.
 
-Exact-head CI is necessary but not production acceptance. Final acceptance is verified feature head → squash → exact Pages deployment identity → deployment-triggered Production Live on that SHA → dedicated private-practice production assertions → durable acceptance evidence. Any production defect gets preserved evidence + RED reproduction + bounded hotfix, never verifier weakening.
+Exact-head CI is necessary but not production acceptance. Final acceptance is verified head → squash → exact Pages deployment identity → deployment-triggered Production Live on that SHA → dedicated private-practice assertions → durable evidence. Production failure triggers preserved evidence + RED reproduction + bounded hotfix, never verifier weakening.
 
 ## V1 non-goals
 
-No forms, CRM, booking/calendar, payments, public price list, service packages, service-page SEO farm, conversion events/lead scoring, session replay/fingerprinting, AI seller, automatic availability/order decisions or invented testimonials/ratings.
+No forms, CRM, booking/calendar, payments, public price list/packages, service-page SEO farm, conversion events/lead scoring, session replay/fingerprinting, AI seller, automatic availability/order decisions or invented testimonials/ratings.
 
 ## Acceptance criteria
 
-The feature is complete only when collaboration is clear without making the site sales-led; Engineering remains primary; Teaching/Mentoring is credible secondary; startup/open-door remains; mutable truth has one owner; no public price/form exists; self-employed support is calm; CTA is bounded; RU/EN/no-JS/privacy boundaries hold; all automated/visual/a11y gates pass; exact deployed production passes; durable docs record evidence without promoting P3.6.
+V1 is complete only when collaboration is clear without making the site sales-led; Engineering remains primary; Teaching/Mentoring is credible secondary; startup/open-door remains; mutable truth has one owner; no public price/form exists; self-employed support is calm; CTA is bounded; RU/EN/no-JS/privacy boundaries hold; all automated/visual/a11y gates pass; exact production passes; durable docs record evidence without promoting P3.6.
 
 ## Implementation boundary
 
