@@ -6,33 +6,33 @@
   "baselines": {
     "home-desktop.png": {
       "width": 1440,
-      "height": 4182,
-      "rgbDeflateBase64": "eNqNkVtPwzAMhR/pmpvtJM16v2bwgAT//9fhlMIYK2XSp+gkPk6OHF2Opo3QXUw969BJWwnjTwIYqbzWJUBrcfQUvY0WJ4FBUCnYRmWO4WRcJiCTlEnMlVWq0IZbGoSO4V6+h8JARY9FT82zn9+oGJKuFje9bqUw2O7Fx/eTQPYbKjWeGaBGaK+JdVAQAJvPksIA1MqvnE+5eRA2Z7lZ0/7B6rknde2xa06BV4xvTGg37SoI3bVUtHDuji8/eE6Q+5dvs3KLcjGtdpY0aX9RPm11Iibt46rnLb+b2anSOkkar9qyXtZt0tJOP/LrBzC/5rOOpcbQY73cHKbhjHx479dpjD1WN34oWiwnauLudxzzAYHPMeE="
+      "height": 3988,
+      "rgbDeflateBase64": "eNqdkN1OwzAMhW9H82fHTdPfNG1aEOMC8Ty8BA+PxAU3eO0YHZo0bdKn6Bz7RHGsqwG6GcKjaZL2QVItjHsQwEjltK4QOsLB2cnRzEKgl1QxwpYCikzTGmYySVIVfAVMixAYMN0uMztpp/cPPi+QmeWiFZIYFmyx6NEFyDvbzjbuWTO2HKjfH1uux/YpH17Wd7UtNXoFnigaaFYNtrEUl1a5tAYD9WnUm+Ah5+e3q6x/Oc7zi0K/tf+4b55bUW5W+aQPJGnHz69vtipPipLK5z9N6ZinJGmU4ZURGJfYqGglHcKL5cx2RVc5hbcbMHkNZcBqPCu6Fn3k4qV8g1WPdTorFi2WEevpjuX8AOiWOTA="
     },
     "home-mobile.png": {
       "width": 390,
-      "height": 6714,
-      "rgbDeflateBase64": "eNqV0b9Lw0AUB/DRNppcci+5XNJcflapNulQO4nOUh3VQamDe8VFnEQoOEtBcXF1Fxzc3F0EBxfxjxBUKij+uF5iXaSk8OHxuPs+7rjDTuXz6xucKrAqOLHBYp3VDKdGUqXE8erUTkwrMWlMzBlMfEw8LeNqBsdUg2HiYupjKwI2id0K+NN6GOtRgsDe2T9SwO50z3XbR9hCmCqcZi4srgLxVlptDZiKHUWzJxAZk5CsEq75eMCaDd7Mnmykzb8G+ZwKEipISqGYA49JSBG3Dadq3JCGlqI0OSpxnxG89N6L4yp3e3e/3tp6eu7xnteLy6vj07PXt490d0CGSIayqILOhTKEjfllXrkJCIRQCBS93JeNhCLfH/mNBdkUDlI8vNfprm1ut3cP+Xp9bmmQv755EPmAb/3lh7wGWMgoqaarUU81PY36Kg2y/8oL5X15sPrHgfUDJxxc4A=="
+      "height": 6726,
+      "rgbDeflateBase64": "eNqd0r9LxDAUB/DR87ymeUmuTdM0vV6r54/egf+Hm7j4hzjd4iAupwjK4SAI+h/o7B/gIoKD/4HgIDgIDi6+tB20w9kTPoRX8sj7tg3VqxCtQ7gmzFBEOde5CC0vGiFfj0Kz6amhb+W+3Gh12B+cX4+EK8IDlwWESQLSxbUoHOq5oCjTjPc4T4DFFDShErqmECEqkK50NfUMBDGoPqiU6WWIVsAMFtouHtXc4hKdC6aVYUrK2P+ydf8+Y7fVdudycXmNqR6fnnHd3tmdHJ+9vL5Njk7LtB+fX7X8Dk/rRL/CrQ5PUFFYDs/qzfynpOgvm21NRLa3f0J4Nj6YYgP1B45Ix4dT3Dq/ur25e6imsKQ061vhPemG1DcgY/B7IBMqk+KtSWNu0/+Csyz1Dct3Ta4="
     },
     "projects-desktop.png": {
       "width": 1440,
-      "height": 3635,
-      "rgbDeflateBase64": "eNrj5BbgBKMv339zwti0Qy52sUBEjEpDE0s4+9rNu0Dnvf3wpa6xDci9cfseebZzcPHTwY8Q9OL1eykZBb+AUCBbQEici0cQIu7m6Xvh8nXKzQ8OjQKGCRBdvXFnw+btH7/8mDF7PjEageqdXDz3HTwKZD94/OLpi7dU8S990g/xiE9aAo58+hYgc4EIrgwAcH9ZqA=="
+      "height": 3455,
+      "rgbDeflateBase64": "eNrj5BbgBKMv339zwtj4EfEqSUJenfOA5KoHTyDcdx+/FhSXAxl8UopABBG8c/8xUJxsKzi4BGjh8lFEBoKkog+fvz97+RYu8vrdJ4Iand28VdV1gSqB6j9++bF63aZrN+9iKuOTlsCD4MoAufFShQ=="
     },
     "projects-mobile.png": {
       "width": 390,
-      "height": 5362,
-      "rgbDeflateBase64": "eNr78v33jdv3Dhw+wckt8OX7byCJHzk4uUOUTZo6S0BIHFkKKJ6Slo1f+7uPX4Hk63efkAU5uPiNjM3ZOXg5OPkIOmAUDWkUFZsEYSiratPCfD5pCZIQACjdP9g="
+      "height": 4982,
+      "rgbDeflateBase64": "eNr78v33l++/ObkFgAjOwIPcPH2B5LSZc7du3wMXtLVzJqgRP+Lg4gciIOPugyePn73Oyi3cf+gYkHv1xh0guWDRMiAZnF/FJ6WIjCBu/oLkBX0tl7vX/gkLKgJRf+eKW5d/Axlodh0/de7S1ZsgA0OjLl+7BWQ8e/kWbhSQsXDxcrI90tkzAat434SpFAYRfRAPnzDQC40tHcRruXH7nqOzB01dpW9kDiQhkbV0+WogCXFhdW1TbEIqRM3BIyeBJJ+0BH7k07cAgiBcALn7ejM="
     },
     "resume-desktop.png": {
       "width": 1440,
-      "height": 3995,
-      "rgbDeflateBase64": "eNrj5BbgBCMOLn48iBOmDI4ExGQFRIFIml9YEoJERBTExdUlJbTExTUwtYgq6fKLyfGJyvAKSfIKiPPwiyAjTPWLlqzAtJQYJGZoCyEhiDxDMJHPyQ9k6FLXMgKSdZ3TxSTl+2evik7KnbF0M1XcwycogQdhqv/y/fekqbOACMJWUdPBb76gqAyPgCguhBlf3PzCGrgB/dXzSSnOWbRcWE4NyCi6/hVIIiO4MgB6Rkob"
+      "height": 4008,
+      "rgbDeflateBase64": "eNrj5BbgBCMOLn48iBOmbNXNaxCGgIgMEPGLSPELS0KQsIiCmJi6hISmuLg6shYIElXS5ReX4xOV4RWS5BUQ5+EXQUaY6iHo+q17WMUxEY+4HI+oDIghKiOiZwUkIYhI7bRAc1bu6J62BMjILKwVk5SPTMwWlZAFClLFcD5BCTwIU/2X779JMh8YIzwCojiQGGZ8cfMLa+AG9FfPJ6WIB8GVAQBw0UG6"
     },
     "resume-mobile.png": {
       "width": 390,
-      "height": 6192,
-      "rgbDeflateBase64": "eNrj4OLnIAXxC0viQFICwtJAJCgiIygiKygsA0QCwjIiCpp8ojIwJM0nIs0LRMJSICQkySskwSsoDkQ8AmI8/GL8IlKc3AKkIh5RGThC5gLZIroWcDYy8g2JC45K4eQWdPcNB3Kr2yYBybT8qtK6biCjb9ZKUytnMlxCNhIWkwaSLt4hEK6gsGRqXiWEPWneWks7N4g7yUB8ghKkoi/ff+OS2rFrP5oIxJbUfTeBZNH1r0Ay89gjPO7h5hMWFJUhEgEVk6qeT0qRJAQAjQ1Irw=="
+      "height": 6214,
+      "rgbDeflateBase64": "eNrj4OLnIAXxC0tiIgFhKTCSFhSWERKRBSJBYQiSEZHX4BOVASERaV4RaT4w4hWW4hWSBCFBCV5BcSDiERDj4RcFGsXJLUAS4gLqFZUBIiAbwkBDpBqIFW3etgvCMDSxBJJ3HzyBcL98/x0Tn3Lxyg2q2EI8SsuvmrNyB5DhFRQNJMUk5e1c/IAMRTUdTT0ziBQE8QlK0BRBY4FfRNnBu+j6V4Iu5+YTFhSVIRIBFZOqnk9KkSQEAMRVRN8="
     },
     "engineering-map-desktop.png": {
       "width": 1440,
