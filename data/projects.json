@@ -5,7 +5,7 @@
     "status": "pre-production",
     "statusLabel": "ACTIVE DEVELOPMENT",
     "summary": "Precise local-first apartment planning with authoritative millimetre geometry, explainable furniture fit and reviewable CV/LLM recognition.",
-    "featured": true,
+    "featured": false,
     "active": true,
     "visibility": "public",
     "href": "landing/projects/vlezet.html",
@@ -31,6 +31,22 @@
     },
     "timeline": "livingworld",
     "noteSlugs": ["server-authoritative-ai-npcs"]
+  },
+  {
+    "slug": "notchhub",
+    "name": "NotchHub",
+    "status": "pre-production",
+    "statusLabel": "M1 IN DEVELOPMENT",
+    "summary": "Native local-first macOS productivity hub around the MacBook notch, with an accepted 0.1.0 Personal foundation and interaction hardening currently in progress.",
+    "featured": true,
+    "active": true,
+    "visibility": "public",
+    "href": "landing/projects/notchhub.html",
+    "tags": ["Swift 6", "SwiftUI", "AppKit", "macOS", "Performance"],
+    "links": {
+      "github": "https://github.com/True-Ruslan/notch-hub"
+    },
+    "timeline": "notchhub"
   },
   {
     "slug": "node-zero",
