@@ -1,8 +1,9 @@
 # Work with me / Private practice — design specification
 
 Date: 2026-08-08
-Status: APPROVED DESIGN / PRE-IMPLEMENTATION
+Status: APPROVED DESIGN / IMPLEMENTATION PLANNED
 Repository: `True-Ruslan/trueruslan-landing`
+Implementation plan: `docs/superpowers/plans/2026-08-09-work-with-me-private-practice.md`
 
 ## 1. Goal
 
@@ -239,7 +240,7 @@ This statement belongs near process/contact details, not in the hero.
 
 Availability is public truth and must have one canonical owner.
 
-Allowed states:
+Suggested states:
 
 - `available`
 - `limited`
@@ -265,25 +266,13 @@ Editorial principle:
 
 Do not hard-code “only one project forever” as a permanent brand promise.
 
-### 6.1 Initial V1 launch truth
-
-The initial public state for V1 is explicitly fixed as:
-
-```text
-engineering: limited
-education: limited
-updated: 2026-08-08
-```
-
-`limited` means the site may invite a conversation about bounded external work while making no claim of full-time or unlimited capacity. This launch state is intentionally conservative and can later be changed only through the canonical collaboration record and normal review.
-
 ## 7. Canonical collaboration model
 
-Add one canonical data record:
+Add one canonical data record, expected path:
 
 `data/collaboration.json`
 
-The semantic model is:
+The exact schema is an implementation detail, but the semantic model should be close to:
 
 ```text
 availability
@@ -313,16 +302,9 @@ Canonical data owns volatile/reused public facts:
 - availability;
 - enabled practice categories;
 - priority/order where relevant;
-- direct contact endpoints;
+- direct contact endpoints if the implementation chooses to centralize them here;
 - self-employed capability;
 - pricing policy state (`estimate-only` in V1).
-
-V1 contact truth must resolve to the already published direct endpoints:
-
-```text
-telegram: https://t.me/TrueRuslan
-email: ruslan.nemikin@gmail.com
-```
 
 Markdown owns editorial explanation:
 
@@ -403,7 +385,7 @@ If unavailable, the section remains present with honest copy such as “new proj
 
 Contextual commercial bridges must be explicit, not inferred from keywords.
 
-Allowed semantic mappings:
+Suggested semantic mappings:
 
 - `engineering`
 - `ai-integration`
@@ -413,28 +395,6 @@ Allowed semantic mappings:
 A page may opt into one mapping. If there is no explicit mapping, there is no contextual commercial CTA.
 
 This prevents accidental advertising in editorial content and keeps the commercial layer reviewable.
-
-### 11.1 Initial curated V1 mapping set
-
-V1 starts deliberately small. The initial explicitly opted-in editorial surfaces are:
-
-```text
-docs/landing/projects/portfolio-platform.md
-  → engineering
-
-docs/landing/projects/notchhub.md
-  → engineering
-
-docs/landing/notes/deployment-success-is-not-production-verification.md
-  → engineering
-
-docs/landing/notes/server-authoritative-ai-npcs.md
-  → ai-integration
-```
-
-No other Project, Note or Publication gets a contextual commercial CTA in V1 unless it is added through a reviewed spec/implementation change. In particular, Teaching/Education does not get an arbitrary contextual CTA merely to balance category counts; its V1 discovery paths are Work with me, navigation, homepage bridge and Contacts.
-
-The English side may use only existing English counterparts of an approved mapped source. Missing EN counterpart means no invented EN content solely for CTA symmetry.
 
 ## 12. Contacts integration
 
@@ -572,259 +532,159 @@ Existing analytics privacy boundaries remain unchanged:
 
 Do not add lead-conversion events in V1.
 
-## 18. Measurement model
+## 18. Measurement
 
-The feature is not optimized around raw click-through rate.
+The feature optimizes for **qualified conversation**, not click volume.
 
-Primary business concept is **qualified conversation**.
+Website-level aggregate observations may include page traffic and search visibility within the existing privacy contract. Business outcomes are evaluated separately and must not put client identities, correspondence or commercial details into public repository telemetry.
 
-Separate two evidence layers.
+V1 does not invent a conversion baseline or promise a target number of leads/orders.
 
-### 18.1 Site aggregates
+P3.6 measurement remains an independent evidence checkpoint; this feature does not satisfy or close it.
 
-Within current privacy/analytics boundaries, observe only supported aggregate signals such as:
+## 19. Testing and fail-closed behavior
 
-- Work with me page traffic;
-- search visibility/indexing;
-- aggregate entry-page behavior available through accepted measurement tooling.
+Implementation is RED-first.
 
-### 18.2 Business outcomes
+Required model/contract coverage:
 
-Outside public repository telemetry, manually observe:
-
-- number of incoming conversations;
-- whether they are relevant;
-- broad category: engineering / education / other;
-- whether collaboration happens;
-- approximate acquisition source if naturally known.
-
-Do not store client names, private correspondence or commercial detail in public repository measurement artifacts.
-
-V1 has no fabricated KPI like “five clients in one month”. The first purpose is to establish real demand and learn which incoming requests appear.
-
-## 19. Technical architecture constraints
-
-The feature must preserve existing TrueLanding principles:
-
-- static-first;
-- build-time intelligence;
-- progressive enhancement;
-- core flow with no runtime API;
-- one canonical source of mutable public truth;
-- Diplodoc as the single site-wide full-text search owner;
-- repository-native clean directory URLs;
-- compatibility `.html` only;
-- evidence layers remain separate;
-- no quality-gate weakening.
-
-The expected data flow is:
-
-**canonical collaboration facts**
-→ **RU/EN Work with me rendering**
-→ **bounded homepage/contextual projections**
-→ **direct Telegram/email handoff**.
-
-No projection becomes a second source of collaboration truth.
-
-## 20. Validation and fail-closed behavior
-
-The implementation should fail closed on invalid commercial state.
-
-At minimum:
-
-- unknown availability state → validation/test failure;
-- missing RU/EN route pair → failure;
-- invalid or absent required contact endpoint → failure;
-- unknown contextual CTA category → failure;
-- automatic CTA on a forbidden surface → regression failure;
-- public pricing accidentally introduced in V1 commercial generated surfaces → regression failure;
-- availability inferred from analytics/date/activity → prohibited;
-- analytics failure must not change page availability or commercial truth.
-
-## 21. TDD strategy
-
-Implementation begins RED-first.
-
-Expected test layers:
-
-### 21.1 Canonical model contracts
-
-- schema validation;
 - allowed availability states;
-- separate engineering/education availability;
-- contact validation;
-- pricing policy is estimate-only/no-public-price;
-- legal/self-employed capability representation;
-- engagement category validation;
-- contextual CTA category validation.
+- independent engineering/education availability;
+- valid direct contacts;
+- exact V1 pricing policy;
+- self-employed capability;
+- safe/known engagement categories;
+- explicit contextual CTA categories and surface mapping;
+- no automatic availability mutation;
+- no public V1 price;
+- no form/runtime lead dependency.
 
-### 21.2 Rendering contracts
+Required build failures:
 
-- RU/EN Work with me rendering;
-- availability projection;
-- contact projection;
-- homepage bridge;
-- Contacts integration;
-- explicit contextual CTA rendering only.
+- unknown availability state;
+- malformed contact endpoint;
+- unknown contextual CTA category;
+- unsafe contextual path;
+- missing/duplicate required collaboration placeholder;
+- approved contextual target missing from generated output.
 
-### 21.3 RU/EN parity
+## 20. RU/EN parity
 
-- both routes exist;
-- same functional structure;
-- same canonical availability truth;
-- same contact endpoints;
-- canonical/hreflang symmetry;
-- English editorial adaptation remains semantically equivalent.
+Both Work with me routes must exist in the same release and share:
 
-### 21.4 Commercial surface guard
+- canonical availability truth;
+- enabled practice lines;
+- direct contact endpoints;
+- legal/pricing policy meaning;
+- functional page structure;
+- canonical/hreflang symmetry.
 
-Assert that commercial bridge output only exists on approved surfaces.
+Editorial copy should be idiomatic rather than literal.
 
-### 21.5 Copy integrity
+## 21. Browser, accessibility and visual quality
 
-Use bounded regression checks for controlled commercial copy to prevent accidental introduction of the prohibited cheap-sales patterns or public prices. This is not a general NLP scanner.
+Required checks:
 
-### 21.6 Accessibility
+- semantic heading hierarchy;
+- textual availability state, not color-only meaning;
+- direct links usable without JavaScript;
+- keyboard/focus quality;
+- serious/critical Axe gate;
+- mobile overflow;
+- Chromium, Firefox and WebKit coverage;
+- RU/EN no-JS behavior;
+- generated-search discoverability;
+- intentional visual screenshot review.
 
-Verify:
+Header density is an explicit UX constraint. `Работа со мной / Work with me` must be primary-navigation discoverable without creating desktop/mobile overflow. Targeted primary/secondary rebalancing is allowed; broad navigation redesign is not.
 
-- heading hierarchy;
-- availability not communicated by color alone;
-- accessible CTA names;
-- Telegram/email without JavaScript;
-- keyboard behavior;
-- focus states;
-- contrast;
-- semantic DOM;
-- reduced-motion behavior if any new motion exists.
-
-### 21.7 Browser/mobile/visual
-
-Required visual acceptance includes:
-
-- Work with me desktop/mobile;
-- header density desktop/mobile;
-- homepage bridge;
-- Contacts integration;
-- no accidental layout regression on core identity surfaces.
-
-Do not weaken existing visual thresholds merely to make intentional changes pass; inspect and update baselines only for approved changes.
-
-### 21.8 SEO/search
-
-Verify:
-
-- canonical;
-- hreflang;
-- sitemap;
-- OpenGraph;
-- generated search;
-- clean URLs;
-- legacy compatibility;
-- semantic no-JS content;
-- internal discoverability.
+Visual regression thresholds must not be relaxed to accept the feature.
 
 ## 22. Production acceptance
 
-Exact-head CI is not production acceptance.
+Exact-head CI is necessary but not sufficient.
 
-After merge:
+Production acceptance requires:
 
-1. GitHub Pages must deploy the exact merged SHA successfully.
-2. Deployment identity must be resolved.
-3. Production Live verification must target that exact deployment.
-4. Production smoke must verify at least:
-   - RU Work with me;
-   - EN Work with me;
-   - canonical availability;
-   - direct contacts;
-   - primary navigation access;
-   - homepage bridge;
-   - canonical/hreflang;
-   - semantic no-JS content;
-   - absence of a form/lead runtime dependency;
-   - existing analytics privacy boundary.
-5. Only then may the feature be recorded as `PRODUCTION ACCEPTED`.
+1. verified exact feature PR head;
+2. squash merge;
+3. successful GitHub Pages deployment of the exact squash SHA;
+4. Pages deployment identity resolution;
+5. deployment-triggered Production Live smoke against that exact SHA;
+6. dedicated private-practice production assertions;
+7. durable acceptance evidence recorded only afterward.
 
-Durable docs must record exact accepted SHA/deployment evidence and must not close unrelated measurement milestones.
+If the first deployment exposes a real defect, preserve the failed evidence, add a RED reproduction, fix through a bounded hotfix PR, and repeat exact deployment verification. Do not weaken the smoke.
 
-## 23. Implementation slice
+## 23. V1 non-goals
 
-Prefer one bounded feature PR, implemented through internal RED→GREEN stages:
+Explicitly out of scope:
 
-1. canonical collaboration model + tests;
-2. RU/EN Work with me;
-3. navigation + Contacts;
-4. homepage bridge;
-5. contextual CTA infrastructure + the exact initial curated mapping set from §11.1;
-6. SEO/search/accessibility/browser/visual verification;
-7. exact production acceptance;
-8. durable PROJECT_STATE / ROADMAP / CHANGELOG acceptance update.
-
-A separately discovered infrastructure defect may use a dedicated hotfix PR rather than being hidden inside feature work.
-
-## 24. Explicit non-goals for V1
-
-Do not implement:
-
-- contact forms;
+- contact/lead forms;
 - CRM;
-- booking/calendar UI;
+- online booking/calendar slots;
 - payments;
-- public pricing;
+- public price list;
 - Basic/Pro/Premium packages;
-- generic client testimonials;
-- dozens of SEO service pages;
-- site-wide advertising banners;
-- conversion events;
-- session replay;
-- lead scoring;
-- AI sales chat;
-- automatic availability state changes;
-- automatic acceptance/rejection of work;
-- a fictional agency/organization identity.
+- service-page SEO farm;
+- conversion events or lead scoring;
+- session replay/fingerprinting;
+- AI sales assistant;
+- automatic availability changes;
+- automatic order acceptance/rejection;
+- invented testimonials/clients/ratings.
+
+## 24. Launch facts fixed by design review
+
+Initial canonical launch truth:
+
+```text
+engineering availability: limited
+education availability:   limited
+updated:                  2026-08-08
+pricing:                  estimate-only
+legal format:             self-employed / receipt supported
+Telegram:                 https://t.me/TrueRuslan
+email:                    ruslan.nemikin@gmail.com
+```
+
+Initial curated RU contextual CTA set:
+
+```text
+landing/projects/portfolio-platform.html                         engineering
+landing/projects/notchhub.html                                  engineering
+landing/notes/deployment-success-is-not-production-verification.html engineering
+landing/notes/server-authoritative-ai-npcs.html                  ai-integration
+```
+
+English contextual CTA is derived only from existing RU/EN pairs for those exact RU sources.
 
 ## 25. Acceptance criteria
 
-The feature is complete only when all of the following are true:
+V1 is complete only when all are true:
 
-1. A visitor can quickly understand that external collaboration is possible.
-2. Backend Engineering remains the primary professional identity.
-3. Teaching/Mentoring is a credible full secondary practice.
-4. Startup/individual and unusual relevant work remains welcome without becoming the primary positioning.
-5. The site does not feel like a generic freelancer services catalogue.
-6. Availability is honest and owned by one canonical source.
-7. No public price list exists in V1.
-8. Contact handoff is direct through Telegram/email.
-9. Official self-employed collaboration capability is stated calmly.
-10. Commercial CTA appears only in approved contexts.
-11. RU/EN are functionally equivalent.
-12. Core flow remains static-first and usable without JavaScript.
-13. No new privacy/runtime dependency is introduced for lead capture.
-14. Existing quality gates remain green without weakening.
-15. Visual/mobile/accessibility changes are explicitly accepted.
-16. Exact deployed production verification is green.
-17. Durable docs record the accepted production result separately from later measurement.
+1. collaboration is obvious without making the site sales-led;
+2. Engineering remains primary;
+3. Teaching/Mentoring is a credible full secondary practice;
+4. startup and unusual relevant requests remain welcome;
+5. no freelancer-catalogue feel;
+6. one canonical availability/contact/policy truth;
+7. no public pricing;
+8. direct Telegram/email handoff;
+9. self-employed/receipt capability stated calmly;
+10. CTA only on approved surfaces;
+11. RU/EN functional parity;
+12. static/no-JS core flow;
+13. no new privacy/runtime dependency;
+14. full automated quality gates pass;
+15. intentional visual/mobile/a11y result is accepted;
+16. exact deployed production verification passes;
+17. durable docs record accepted evidence without promoting P3.6.
 
-## 26. Future decisions intentionally deferred until evidence exists
+## 26. Implementation boundary
 
-After real inbound data exists, reconsider independently:
+The approved execution sequence is defined in:
 
-- public fixed price for consultation/mentoring;
-- productized service pages;
-- stronger or weaker CTA prominence;
-- platform-specific profiles and offers;
-- scheduling tools;
-- contact form;
-- service structured data;
-- additional measurement within privacy constraints.
+`docs/superpowers/plans/2026-08-09-work-with-me-private-practice.md`
 
-None of these should be implemented speculatively in V1.
-
-## 27. Final product formula
-
-**TrueLanding remains a personal engineering brand.**
-
-Projects, Experience, Notes and Publications create trust by showing real work and reasoning. Work with me adds a bounded private engineering and educational practice that converts already-earned trust into a clear way to collaborate.
-
-**Evidence → trust → relevance → collaboration → direct conversation.**
+Implementation must start from `master` after this planning slice is integrated and must preserve RED→GREEN and exact-deployment evidence separation.
