@@ -1,4 +1,4 @@
-# Resume
+# Experience
 
 <div class="tr-resume-hero">
   <p class="tr-resume-eyebrow">Java Backend Engineer</p>
@@ -14,7 +14,7 @@
   <div class="tr-resume-stats">
     <div class="tr-resume-stat"><strong>5+ years</strong><span>commercial software development</span></div>
     <div class="tr-resume-stat"><strong>Java 11–25</strong><span>enterprise and modern Java stack</span></div>
-    <div class="tr-resume-stat"><strong>Backend · Integrations · Data · AI</strong><span>primary engineering areas</span></div>
+    <div class="tr-resume-stat"><strong class="tr-resume-stat__domains">Backend · Integrations<br>Data · AI</strong><span>primary engineering areas</span></div>
   </div>
 </div>
 
@@ -104,7 +104,7 @@ Alongside commercial engineering, I develop product-oriented personal projects, 
 
 I teach software module development and testing. My postgraduate research concerns methodological foundations for introducing older preschool children to elements of programming. External technical and academic work is collected under [Publications](../landing/publications.html), while original engineering analysis is available in the site's Engineering Notes.
 
-## PDF version
+## Resume
 
 A current compact PDF resume is available below for applications, direct sharing and printing.
 
