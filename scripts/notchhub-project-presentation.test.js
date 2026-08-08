@@ -94,3 +94,26 @@ test('NotchHub has localized routing and canonical timeline while Vlezet remains
   assert.match(toc, /NotchHub[^\n]*\n\s+href: \.\/en\/projects\/notchhub\.md/);
   assert.match(toc, /Vlezet[^\n]*\n\s+href: \.\/landing\/projects\/vlezet\.md/);
 });
+
+test('NotchHub participates in the complete RU EN metadata and generated-project post-processing contract', () => {
+  const pageMeta = json('data/page-meta.json');
+  const ruMeta = pageMeta.find((entry) => entry.path === 'landing/projects/notchhub.html');
+  const enMeta = pageMeta.find((entry) => entry.path === 'en/projects/notchhub.html');
+
+  assert.ok(ruMeta, 'missing RU NotchHub page metadata');
+  assert.ok(enMeta, 'missing EN NotchHub page metadata');
+  assert.equal(ruMeta.card, 'notchhub');
+  assert.equal(enMeta.card, 'notchhub-en');
+  assert.match(ruMeta.title, /NotchHub/);
+  assert.match(enMeta.title, /NotchHub/);
+
+  const postprocessor = read('scripts/copy-assets.js');
+  assert.match(
+    postprocessor,
+    /if \(href === 'landing\/projects\/notchhub\.html'\) return 'en\/projects\/notchhub\.html';/,
+  );
+  assert.match(
+    postprocessor,
+    /targets:\s*\[[\s\S]*?'en\/projects\/notchhub\.html'[\s\S]*?\]/,
+  );
+});
