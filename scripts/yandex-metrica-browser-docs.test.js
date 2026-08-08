@@ -36,7 +36,9 @@ test('P3.6C runbook records the explicit-consent privacy contract', () => {
     /no.*user parameters/is,
     /no.*ecommerce/is,
     /no.*noscript/is,
-    /withdraw|отозвать/i,
+    /one-shot|one time/i,
+    /no.*automatic.*dismiss|no.*timeout/is,
+    /no.*reopen control|reopen control.*not/is,
   ]) assert.match(spec, contract);
   assert.doesNotMatch(spec, /anonymous traffic|анонимн(?:ая|ую) статистик/i);
 });
