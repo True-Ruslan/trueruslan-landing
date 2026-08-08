@@ -13,7 +13,7 @@ function encodeState(state) {
 function fixture(locale = 'ru') {
   const title = locale === 'ru' ? 'Работа со мной' : 'Work with me';
   const html = `<p>Intro</p><section data-tr-collaboration-rendered="availability"><time datetime="2026-08-08">2026-08-08</time></section><h2>Engineering</h2><h2>Teaching & Mentoring</h2><p>Context → Scope → Estimate → Implementation → Handover</p><section data-tr-collaboration-rendered="handoff"><a href="https://t.me/TrueRuslan">Telegram</a><a href="mailto:ruslan.nemikin@gmail.com">Email</a></section>`;
-  const state = {data: {html}, title};
+  const state = {data: {html, title}};
   return `<!doctype html><html><body><div id="root"></div><noscript data-tr-collaboration-noscript="availability-${locale}">old availability</noscript><noscript data-tr-collaboration-noscript="handoff-${locale}">old handoff</noscript><script id="diplodoc-state">${encodeState(state)}</script></body></html>`;
 }
 
