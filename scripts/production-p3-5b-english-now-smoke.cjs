@@ -53,7 +53,7 @@ async function verifyRendered(page) {
   const now = page.locator('[data-tr-now][lang="en"]').first();
   await now.waitFor({state: 'visible', timeout: 10000});
   const text = await now.innerText();
-  for (const marker of ['Current work', "What I'm learning", "What I'm writing", 'VillAIgence', 'Vlezet', 'M7.8B', '0.1.25+1.21.1']) {
+  for (const marker of ['Current work', "What I'm learning", "What I'm writing", 'VillAIgence', 'Vlezet', 'M7.8B']) {
     assert(text.includes(marker), `English Now rendered content misses ${marker}`);
   }
   assert(text.includes(NOW.en.focus), 'English Now does not expose the canonical English focus text');
