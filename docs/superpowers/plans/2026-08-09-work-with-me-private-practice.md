@@ -35,13 +35,13 @@
 - [ ] EN only where existing pair has exact mapped RU path; no heuristics.
 - [ ] GREEN focused + full unit suite.
 
-## Task 2 — RU/EN Work with me + projection
+## Task 2 — RU/EN Work with me + build-time projection
 
 **Create:** RU/EN Markdown, `collaboration.css`. **Modify:** `.yfm`, collaboration module/tests, copy-assets/tests.
 
 - [ ] RED localized availability/contact/no-form tests.
 - [ ] RU/EN pages implement approved Engineering, Startup, Teaching/Mentoring, Expert contribution, process, fit guidance, open door and direct handoff.
-- [ ] Mutable truth only in build-time placeholders.
+- [ ] Mutable truth only through build-time placeholders.
 - [ ] Implement `renderAvailability`, `renderDirectContact`, `applyCollaborationPages`; unavailable stays visible.
 - [ ] Scoped CSS; no color-only meaning/new animation.
 - [ ] Missing/duplicate placeholders fail build.
@@ -61,7 +61,7 @@
 
 - [ ] RED source/copy anti-sales/public-price guard.
 - [ ] Preserve general Contacts/external profiles; replace hardcoded direct contacts with canonical projection.
-- [ ] Add short task-qualification hint + Work with me link; no service catalogue duplication.
+- [ ] Add short task-qualification hint + Work with me link; no service-catalogue duplication.
 - [ ] Fail on missing/duplicate Contacts placeholder.
 
 ## Task 5 — Homepage collaboration bridge
@@ -93,7 +93,7 @@
 
 - [ ] Run visual regression before rebasing.
 - [ ] Inspect intentional brand/marketing surfaces.
-- [ ] Update only approved baselines; thresholds remain `sampleSize=16`, mean delta `5`, dimension ratio `0.03`.
+- [ ] Update only approved baselines; thresholds remain sampleSize=16, mean delta=5, dimension ratio=0.03.
 - [ ] No unrelated baseline rebasing.
 
 ## Task 9 — Production gate
@@ -106,17 +106,17 @@
 ## Task 10 — Feature PR
 
 - [ ] After planning PR integration, branch `feat/work-with-me-private-practice` from current master.
-- [ ] Execute Tasks 1–9 RED→GREEN; full unit/build/integrity/browser verification.
+- [ ] Execute Tasks 1–9 RED→GREEN and full unit/build/integrity/browser verification.
 - [ ] Review non-goals.
-- [ ] Open bounded feature PR; exact-head evidence is pre-production only.
-- [ ] Require Build, CodeQL JS/TS, Dependency Review/current gates and zero review threads.
+- [ ] Open bounded feature PR; exact-head evidence remains pre-production.
+- [ ] Require Build, CodeQL JS/TS, Dependency Review/current gates and zero unresolved review threads.
 - [ ] Inspect CI visuals; squash only verified exact head.
 
 ## Task 11 — Exact production acceptance
 
 - [ ] Exact feature squash SHA must receive successful Pages deployment identity.
 - [ ] Deployment-triggered Production Live must originate from that exact Pages head SHA.
-- [ ] Inspect private-practice summary + all existing gates.
+- [ ] Inspect dedicated summary + all existing gates.
 - [ ] On failure: preserve evidence, RED reproduce, bounded hotfix, no verifier weakening, repeat exact deployment.
 - [ ] Record accepted SHA, Pages run/deployment/artifact+digest, Production Live run/artifact+digest, observedAt.
 
@@ -124,7 +124,7 @@
 
 **Create:** `scripts/private-practice-acceptance.test.js`. **Modify:** PROJECT_STATE, ROADMAP, CHANGELOG.
 
-- [ ] Only after Task 11, RED exact-evidence test.
+- [ ] Only after production, RED exact-evidence test.
 - [ ] Explicitly prove P3.6 remains NEXT/WAITING.
 - [ ] Record production-accepted private engineering/education practice + exact evidence.
 - [ ] Keep future prices/forms/productized pages evidence-driven.
