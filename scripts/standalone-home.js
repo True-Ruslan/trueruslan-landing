@@ -21,7 +21,7 @@ const DEFAULT_PROJECT_EVIDENCE_PATH = path.join(ROOT, 'data', 'project-evidence.
 
 const HOMEPAGE_FLAGSHIP_SLUGS = Object.freeze([
   'livingworld',
-  'vlezet',
+  'notchhub',
   'portfolio-platform',
 ]);
 
@@ -44,7 +44,7 @@ const HOME_COPY = Object.freeze({
         href: 'landing/projects.html',
         title: 'Инженерные проекты',
         description: 'Архитектура, ограничения, принятые границы и проверяемые результаты собственных систем.',
-        detail: 'VillAIgence · Vlezet · Portfolio',
+        detail: 'VillAIgence · NotchHub · Portfolio',
         cta: 'Изучить проекты →',
       }),
       Object.freeze({
@@ -63,7 +63,7 @@ const HOME_COPY = Object.freeze({
     registrySource: 'Статус из реестра проектов',
     facts: Object.freeze({
       livingworld: Object.freeze({label: 'Принятый installed результат', version: 'Installed 0.2.0 result'}),
-      vlezet: Object.freeze({label: 'Принятый срез распознавания', version: 'Accepted recognition slice'}),
+      notchhub: Object.freeze({label: 'Принятая продуктовая граница', fallback: '0.1.0 Personal build · M0 / R0.1 / P0 / P0.1 accepted'}),
       'portfolio-platform': Object.freeze({label: 'Публичный контур', fallback: 'Static-first production platform'}),
     }),
     flagshipCta: 'Открыть case study →',
@@ -87,7 +87,7 @@ const HOME_COPY = Object.freeze({
         href: 'en/projects.html',
         title: 'Engineering projects',
         description: 'Architecture, constraints, accepted boundaries and reviewable evidence from long-running systems.',
-        detail: 'VillAIgence · Vlezet · Portfolio',
+        detail: 'VillAIgence · NotchHub · Portfolio',
         cta: 'Explore projects →',
       }),
       Object.freeze({
@@ -106,7 +106,7 @@ const HOME_COPY = Object.freeze({
     registrySource: 'Status from the project registry',
     facts: Object.freeze({
       livingworld: Object.freeze({label: 'Accepted installed result', version: 'Installed 0.2.0 result'}),
-      vlezet: Object.freeze({label: 'Accepted recognition slice', version: 'Accepted recognition slice'}),
+      notchhub: Object.freeze({label: 'Accepted product boundary', fallback: '0.1.0 Personal build · M0 / R0.1 / P0 / P0.1 accepted'}),
       'portfolio-platform': Object.freeze({label: 'Public boundary', fallback: 'Static-first production platform'}),
     }),
     flagshipCta: 'Open case study →',
