@@ -17,298 +17,123 @@ The feature is not a general lead-generation platform. It is a static-first, evi
 
 ## 2. Product positioning
 
-Primary identity remains:
+Primary identity remains **Ruslan Nemykin — Backend Engineer**.
 
-**Ruslan Nemykin — Backend Engineer.**
-
-Commercial positioning:
-
-**Backend Engineer with a private engineering and educational practice who can be engaged for bounded work with a clear outcome.**
+Commercial positioning: **Backend Engineer with a private engineering and educational practice who can be engaged for bounded work with a clear outcome.**
 
 The site must not lead with freelancing, generic services, availability hype, or sales language. Existing evidence remains the persuasion layer; the commercial surface only explains how a visitor can engage the same demonstrated expertise.
 
-### 2.1 Audience priority
-
-The audience hierarchy is intentional.
+### Audience priority
 
 1. **Primary — professional engineering work.** Product teams, companies, technical leaders and founders with a reasonably concrete engineering problem or deliverable.
 2. **Secondary — startups and individual clients.** MVPs, small services, automations, bots, prototypes and bounded parts of a product are welcome when scope can be clarified before implementation.
 3. **Open door — adjacent or unusual work.** The listed formats are examples, not a closed catalogue. Relevant requests around development, technology, education or technical content may still be discussed.
 
-The site must never say or imply “I take any work” or “I build anything”. The open-door copy should preserve specialization while allowing useful unexpected requests.
+Never imply “I take any work” or “I build anything”. Preserve specialization while allowing useful unexpected requests.
 
 ## 3. Practice structure
 
-### 3.1 Engineering — primary commercial stream
+### Engineering — primary
 
-The main commercial section is organized around client situations, not a technology inventory.
-
-Expected categories:
+Organize around client situations, not a technology inventory:
 
 - backend modules, services and APIs;
 - external integrations;
-- architecture and backend audit;
-- code review where the outcome is a concrete engineering assessment;
-- modernization and bounded refactoring;
-- difficult production defects;
-- performance and reliability analysis;
-- AI/LLM/RAG/agent/MCP integration with explicit engineering boundaries.
+- architecture/backend audit;
+- bounded engineering code review;
+- modernization/refactoring;
+- difficult defects;
+- performance/reliability analysis;
+- AI/LLM/RAG/agent/MCP integration with explicit system boundaries.
 
-Copy should answer “what situation can I bring here?” before “which technologies are used?”. Java, Spring Boot, Kafka, PostgreSQL and similar technologies remain supporting evidence.
+### Startup & individual projects — secondary
 
-### 3.2 Startup & individual projects — secondary engineering stream
+New ideas, small MVPs, bot backends, automations and prototypes are acceptable after defining the intended outcome and a bounded first slice. Avoid undefined whole-startup commitments and open-ended outsourcing.
 
-A visitor may bring a new product idea, a small MVP, a backend for a bot, an automation, a prototype or another compact project.
+### Teaching & Mentoring — full secondary professional line
 
-The page must explicitly set the working model:
+Supported formats include individual Java/Spring/backend sessions, mentoring/tutoring, junior→middle development guidance, educational code review, interview preparation, project-based learning, technical consultations, learning-path design, course/module design, workshops/corporate training, labs/exercises/tests and educational/technical materials.
 
-- clarify the intended outcome first;
-- define a bounded first slice;
-- avoid undefined “build my whole startup” commitments;
-- prefer fixed deliverables over open-ended outsourcing.
+Prefer mentoring/teaching/tutoring/course language over making `репетитор` the top-level personal-site identity.
 
-### 3.3 Teaching & Mentoring — secondary professional line
+### Expert contribution — bounded adjacent capability
 
-This is a full professional capability, not a footnote, but it remains visually and semantically secondary to Engineering.
+Technical articles, documentation, technical/material review, educational/methodological content and other work where engineering expertise + clear writing is the primary value. It must not become a third equal pillar.
 
-Supported formats may include:
-
-- individual Java/Spring/backend sessions;
-- mentoring and tutoring;
-- junior-to-middle development guidance;
-- educational code review;
-- interview preparation;
-- project-based learning;
-- one-off technical consultations;
-- learning-path design;
-- course or module design;
-- lectures, workshops and small corporate training;
-- labs, exercises, tests and assessment materials;
-- methodological and technical educational content.
-
-The personal-site wording should prefer **mentoring, individual sessions, teaching, tutoring, courses and educational content** over making “репетитор” the top-level identity. Platform-specific profiles may later use “репетитор” where search intent requires it.
-
-### 3.4 Expert contribution — bounded adjacent capability
-
-A smaller section may offer:
-
-- technical articles;
-- technical documentation;
-- expert review of technical material;
-- educational or methodological content;
-- other work where engineering expertise and clear technical writing are the primary value.
-
-This must not become a third equal commercial pillar.
-
-## 4. Core UX route
-
-Canonical routes:
+## 4. Core routes
 
 - RU: `/landing/work-with-me/`
 - EN: `/en/work-with-me/`
 
-Legacy `.html` paths remain compatibility entrypoints only, consistent with repository-native clean URL policy.
+Legacy `.html` remains compatibility-only. RU/EN ship together with functional parity and natural editorial localization.
 
-RU and EN ship together. Functional parity is required; editorial copy may be adapted naturally rather than translated literally.
+## 5. Work with me UX
 
-## 5. Work with me page structure
+The page is a calm qualification surface, not a sales landing. It must let a visitor answer: is my task a fit, how does Ruslan work, how do I start?
 
-The page is a calm qualification surface, not a sales landing page.
+Required sections:
 
-The visitor should be able to answer:
+1. Hero: title, concise positioning, live availability, one `Описать задачу`/EN equivalent CTA.
+2. Engineering situations: Backend & integrations; Architecture & audit; Complex engineering problem; Modernization; AI-enabled features.
+3. Startup & individual projects.
+4. Teaching & Mentoring.
+5. Expert contribution.
+6. How I work: **Context → Scope → Estimate → Implementation → Handover**; engineering principle **Architecture → Implementation → Verification → Delivery → Handover**.
+7. Good-fit guidance: clear outcome, bounded scope, verifiable result, handover boundary.
+8. Open door: “не нашли формат — всё равно напишите”, without implying generalist outsourcing.
+9. Direct handoff through Telegram/email, including what context to send and a calm self-employed/receipt note.
 
-1. Is my task a reasonable fit?
-2. How does Ruslan work?
-3. How do I start a conversation?
+Forbidden in hero: Hire-me visual pressure, discounts, countdowns/urgency, public prices, lead forms, unsupported speed/quality promises.
 
-### 5.1 Hero
+## 6. Availability
 
-Purpose: declare collaboration availability without changing the site identity.
+Allowed states: `available`, `limited`, `consulting-only`, `unavailable`. Engineering and education may differ.
 
-Required elements:
+Availability is manual public truth: no date-, analytics-, traffic- or repository-driven automatic mutation; no fake scarcity; unknown state fails validation. `unavailable` changes copy but never hides the page.
 
-- title `Работа со мной` / `Work with me`;
-- one concise positioning paragraph;
-- live availability state;
-- one primary CTA: `Описать задачу` / equivalent English copy.
+Initial launch truth: `engineering: limited`, `education: limited`, `updated: 2026-08-08`.
 
-Forbidden in hero:
+## 7. Canonical collaboration truth
 
-- `Hire me`-style visual emphasis;
-- discount/sales copy;
-- countdowns or urgency;
-- public price;
-- giant lead form;
-- promises such as “fast and high quality”.
+Create `data/collaboration.json` as the only owner of mutable/reused facts:
 
-Suggested semantic direction:
+- availability;
+- enabled practice categories;
+- direct contacts;
+- self-employed capability;
+- pricing policy (`estimate-only` in V1);
+- explicit contextual-surface allowlist.
 
-> Иногда беру внешние инженерные и образовательные задачи. Лучше всего подходят проекты и консультации с понятной целью, ограниченным scope и результатом, который можно проверить и передать.
+Long-form explanations/examples remain Markdown. Do not create a JSON CMS or duplicate mutable truth.
 
-Final editorial wording may improve rhythm but must preserve this meaning.
-
-### 5.2 Engineering situations
-
-The most prominent section. Use 4–6 recognizable situations such as:
-
-- Backend & integrations
-- Architecture & audit
-- Complex engineering problem
-- Modernization
-- AI-enabled features
-
-Each item should describe a client problem and intended result. Do not turn this into a technology badge wall.
-
-### 5.3 Startup & individual projects
-
-A smaller section explains that new ideas, MVPs, bots, services, automations and prototypes are welcome, while scope is clarified before work begins.
-
-### 5.4 Teaching & Mentoring
-
-A full section with several formats:
-
-- individual work;
-- mentoring/tutoring;
-- technical consultation;
-- courses and educational content;
-- workshops/corporate education.
-
-### 5.5 Expert contribution
-
-Small supporting section for technical articles, documentation, educational materials and review.
-
-### 5.6 How I work
-
-Use a simple five-step flow:
-
-**Context → Scope → Estimate → Implementation → Handover**
-
-For engineering work, the deeper principle may be expressed as:
-
-**Architecture → Implementation → Verification → Delivery → Handover**
-
-The page should explain that the client first describes the current state and desired outcome; boundaries, timing and cost are then agreed before implementation.
-
-### 5.7 Good-fit guidance
-
-Explain what tends to work well:
-
-- clear expected outcome;
-- bounded scope;
-- verifiable result;
-- reasonable handover boundary.
-
-Use soft examples rather than exclusionary language. Example semantics:
-
-- a specific integration — strong fit;
-- audit of an existing system — strong fit;
-- small MVP — potentially a fit after scoping;
-- indefinite “be our developer for everything” — usually not the intended format.
-
-### 5.8 Open door
-
-Required concept:
-
-> Не нашли свой формат? Всё равно напишите. Здесь перечислены задачи, с которыми я работаю чаще всего, но возможное сотрудничество ими не ограничивается. Если задача связана с разработкой, технологиями, обучением или техническим контентом — её можно описать, и я скажу, смогу ли быть полезен.
-
-English copy should preserve the same openness without implying generalist outsourcing.
-
-### 5.9 Direct contact handoff
-
-V1 uses direct contact only:
-
-- Telegram;
-- email.
-
-No site form.
-
-The page should briefly tell the visitor what information is useful in the first message:
-
-- what exists now;
-- desired outcome;
-- important technical/context constraints;
-- desired timing;
-- relevant links/materials if available.
-
-Operational note:
-
-> Сотрудничество можно оформить официально. Для оплачиваемых задач могу работать как самозанятый и предоставлять чек.
-
-This statement belongs near process/contact details, not in the hero.
-
-## 6. Availability model
-
-Availability is public truth and must have one canonical owner.
-
-Allowed states:
-
-- `available`
-- `limited`
-- `consulting-only`
-- `unavailable`
-
-Engineering and education/mentoring availability may differ.
-
-Requirements:
-
-- no automatic date-driven state changes;
-- no analytics-driven state changes;
-- no fake scarcity;
-- no automatic inference from repository activity;
-- unknown state is a validation failure;
-- `unavailable` must not hide the page; it changes the message honestly.
-
-Initial accepted launch truth is `engineering: limited`, `education: limited`, updated `2026-08-08`.
-
-## 7. Canonical collaboration model
-
-Add one canonical data record: `data/collaboration.json`.
-
-Canonical data owns volatile/reused public facts: availability, enabled categories, direct contacts, self-employed capability and pricing-policy state. Markdown owns long-form human editorial explanation. Do not build a JSON CMS and do not duplicate mutable truth.
-
-V1 direct contact truth:
+V1 direct-contact/policy truth:
 
 - Telegram: `https://t.me/TrueRuslan`
 - email: `ruslan.nemikin@gmail.com`
 - pricing: `estimate-only`
 - legal format: `self-employed-receipt-supported`
 
-## 8. Navigation policy
+## 8. Navigation
 
-`Работа со мной` / `Work with me` must be directly accessible from primary navigation and must look like a normal navigation item, not a highlighted sales button.
+`Работа со мной / Work with me` is directly available in primary navigation as a normal item, not a highlighted sales button. Header density is a UX requirement. Targeted primary/secondary rebalancing is allowed; broad navigation redesign is not.
 
-Current navigation is already dense. Targeted primary/secondary rebalancing is allowed to preserve desktop/mobile quality; broad navigation redesign is not.
+## 9. Bounded commercial surfaces
 
-## 9. Bounded commercial surface policy
+Allowed: homepage, Work with me, Contacts, explicitly selected case studies, explicitly selected Notes/Publications.
 
-Allowed surfaces:
+No automatic CTA on About, Experience, Photos, Sources, Engineering Map or keyword-matched arbitrary content.
 
-- homepage;
-- Work with me;
-- Contacts;
-- explicitly selected relevant case studies;
-- explicitly selected relevant Engineering Notes/Publications.
-
-No automatic commercial CTA on About, Experience, Photos, Sources, Engineering Map or arbitrary keyword-matched content.
-
-Principle: **value/proof first → collaboration bridge second**.
-
-No site-wide promotional banner.
+Principle: **value/proof first → collaboration bridge second**. No site-wide promotional banner.
 
 ## 10. Homepage bridge
 
-Work with me is not a fourth primary card beside Experience / Projects / Materials. Add one restrained collaboration section after enough proof has been shown. It may project one short collaboration statement, current availability and one link. `unavailable` keeps the bridge discoverable with honest paused copy.
+Do not turn Work with me into primary path #4. Preserve Experience / Projects / Materials. Add one restrained collaboration bridge only after enough project/evidence proof; project current availability and one link. Keep it present with honest paused copy when unavailable.
 
 ## 11. Contextual CTA model
 
-Allowed categories:
+Allowed semantic categories: `engineering`, `ai-integration`, `education`, `expert-content`.
 
-- `engineering`
-- `ai-integration`
-- `education`
-- `expert-content`
-
-Initial curated RU surfaces:
+Initial RU mappings:
 
 ```text
 landing/projects/portfolio-platform.html                         engineering
@@ -317,68 +142,72 @@ landing/notes/deployment-success-is-not-production-verification.html engineering
 landing/notes/server-authoritative-ai-npcs.html                  ai-integration
 ```
 
-English contextual CTA is derived only when an existing i18n pair has exactly the approved RU source. No keyword inference and no new EN content solely to host a CTA.
+English contextual CTA is derived only when an existing i18n pair has exactly the approved RU source. No keyword inference and no new EN content solely for CTA symmetry.
 
-## 12. Contacts integration
+## 12. Contacts
 
-Contacts remains a general page. Preserve external profiles and general-purpose contact framing. Add a Work with me link, a short task-qualification hint and canonical direct contacts. No form and no duplicated service catalogue.
+Contacts remains general-purpose. Preserve external profiles and overall contact framing. Add a Work with me link, task-qualification hint and canonical direct contacts. No form and no duplicated service catalogue.
 
-## 13. Marketing and copy contract
+## 13. Marketing/copy contract
 
-Commercial copy follows **client situation → expected result → working boundary → relevant proof**. Technology names are supporting evidence.
+Message architecture: **client situation → expected result → working boundary → relevant proof**. Technology names are supporting evidence.
 
-Preferred concepts include “могу помочь”, “иногда беру”, “лучше всего подходят”, “предпочитаю”, “уточняю границы”, “согласуем результат”, “скажу, смогу ли быть полезен”.
+Preferred language: “могу помочь”, “иногда беру”, “лучше всего подходят”, “предпочитаю”, “уточняю границы”, “согласуем результат”, “скажу, смогу ли быть полезен”.
 
-Forbidden unsupported patterns include best/guaranteed/fast-and-high-quality/any-complexity claims, generic price filler, discounts, countdowns, fake scarcity, social proof, client counters, testimonials, clients or revenue/performance improvements.
+Forbidden unsupported patterns: best/guaranteed/fast-and-high-quality/any-complexity claims, cheap generic filler, discounts, countdowns, fake scarcity/social proof/client counters/testimonials/clients/outcome metrics.
 
-## 14. Pricing policy
+## 14. Pricing
 
-V1 has no public price list. The visitor describes the task; scope/result are clarified; timing/cost estimate is proposed where appropriate. Fixed mentoring prices or packages are future evidence-driven decisions, not V1.
+No public V1 price list. Visitor describes task → scope/result clarified → timing/cost estimate proposed where appropriate. Public mentoring/session prices/packages are future evidence-driven decisions.
 
-## 15. SEO design
+## 15. SEO
 
-One new indexable route per locale, not a service-page farm. Required: clean canonical, RU/EN hreflang, OpenGraph, sitemap, generated search, internal links from approved surfaces, semantic no-JS content. Existing case studies/Notes remain independent search entrypoints, not doorway pages.
+One indexable Work with me route per locale, not a service-page farm. Require clean canonical, hreflang, OpenGraph, sitemap, generated search, internal links from allowed surfaces and semantic no-JS content. Existing case studies/Notes remain independent entrypoints.
 
-RU title direction: `Работа со мной — Backend-разработка, консультации и наставничество | Руслан Немыкин`.
+RU title: `Работа со мной — Backend-разработка, консультации и наставничество | Руслан Немыкин`.
 
-EN title direction: `Work with me — Backend engineering, consulting and mentoring | Ruslan Nemykin`.
+EN title: `Work with me — Backend engineering, consulting and mentoring | Ruslan Nemykin`.
 
 ## 16. Structured data
 
-`Person` remains the primary real-world entity. Do not create a fictional Organization, AggregateRating or fake Review. Additional service schema is optional only if it accurately models published content; V1 may ship without it.
+`Person` remains primary. No fictional Organization, AggregateRating or Review. Optional service schema may be omitted unless final published content can be modeled accurately.
 
-## 17. Privacy and runtime boundaries
+## 17. Privacy/runtime
 
-No form means no lead backend, CAPTCHA, lead database or form provider. No new third-party runtime dependency is required. Existing consent-gated analytics boundaries remain unchanged: no session replay, custom events, user parameters or conversion fingerprinting.
+No form → no lead backend/CAPTCHA/lead database/form provider. No new third-party runtime dependency. Existing consent analytics boundaries stay unchanged: no session replay, custom events, user parameters or conversion fingerprinting.
 
 ## 18. Measurement
 
-Optimize for qualified conversations, not CTR. Aggregate site observations and real business outcomes remain separate. No client identities/correspondence/commercial details enter public repository telemetry. No invented conversion baseline. P3.6 remains independent.
+Optimize for qualified conversations, not clicks. Site aggregates and real business outcomes remain separate; no client identities/correspondence/commercial details enter public telemetry. No invented conversion baseline. P3.6 remains independent.
 
-## 19. Testing and fail-closed behavior
+## 19. Testing/fail-closed behavior
 
-RED-first coverage must include availability, contacts, pricing/legal policy, categories, explicit surface mapping, no automatic availability mutation, no public price and no lead runtime. Build fails for unknown state, malformed contact, unknown category, unsafe path, missing/duplicate required placeholder or missing approved generated target.
+RED-first coverage includes availability, independent Engineering/Education states, contacts, pricing/legal policy, categories, explicit contextual mapping, no automatic availability mutation, no public price and no lead runtime.
+
+Build failures include unknown state, malformed contacts, unknown category, unsafe path, missing/duplicate required collaboration placeholder, or missing approved generated target.
 
 ## 20. RU/EN parity
 
-Both routes ship together and share canonical availability, enabled practice lines, direct contacts, legal/pricing meaning, functional page structure and canonical/hreflang symmetry. Editorial copy is idiomatic, not literal.
+Both routes share canonical availability, practice lines, contacts, legal/pricing meaning, functional structure and canonical/hreflang symmetry. Copy remains idiomatic rather than literal.
 
-## 21. Browser, accessibility and visual quality
+## 21. Browser/accessibility/visual
 
-Verify heading semantics, textual availability, no-JS direct links, keyboard/focus, serious/critical Axe gate, mobile overflow, Chromium/Firefox/WebKit, RU/EN no-JS, generated-search discoverability and intentional screenshot review. Visual thresholds must not be relaxed.
+Verify semantic headings, textual availability, no-JS direct links, keyboard/focus, serious/critical Axe gate, mobile overflow, Chromium/Firefox/WebKit, RU/EN no-JS, generated search and intentional screenshot review. Do not relax visual thresholds.
 
 ## 22. Production acceptance
 
-Exact-head CI is necessary but insufficient. Acceptance requires verified feature head → squash merge → exact Pages deployment → deployment identity → deployment-triggered Production Live on that SHA → dedicated private-practice assertions → durable acceptance evidence afterward. Production failures trigger RED reproduction + bounded hotfix; never verifier weakening.
+Exact-head CI is necessary but not sufficient. Acceptance requires verified feature head → squash merge → exact Pages deployment → deployment identity → deployment-triggered Production Live for that SHA → dedicated private-practice assertions → durable acceptance record afterward.
+
+Production failure preserves evidence and triggers RED reproduction + bounded hotfix. Never weaken the verifier to obtain green.
 
 ## 23. V1 non-goals
 
-No forms, CRM, booking/calendar, payments, public price list, service packages, service-page SEO farm, conversion events, lead scoring, session replay/fingerprinting, AI seller, automatic availability changes, automatic order decisions or invented testimonials/ratings.
+No form, CRM, booking/calendar, payments, public price list, service packages, service-page SEO farm, conversion events, lead scoring, session replay/fingerprinting, AI seller, automatic availability/order decisions, invented testimonials/clients/ratings.
 
 ## 24. Acceptance criteria
 
-V1 is complete only when collaboration is clear but the brand stays engineering-led; Engineering is primary; Teaching/Mentoring is credible secondary; startup/open-door remains; canonical truth is singular; no public pricing/form exists; self-employed support is stated calmly; CTA is bounded; RU/EN parity/no-JS/privacy boundaries hold; all automated/visual/a11y gates pass; exact deployed production passes; durable docs record evidence without promoting P3.6.
+V1 is complete only when collaboration is clear without making the site sales-led; Engineering remains primary; Teaching/Mentoring is a credible secondary practice; startup/open-door remains; mutable truth has one owner; no public pricing/form exists; self-employed support is stated calmly; CTA is bounded; RU/EN parity/no-JS/privacy boundaries hold; automated/visual/a11y gates pass; exact production passes; durable docs record evidence without promoting P3.6.
 
 ## 25. Implementation boundary
 
-Execution is fixed in `docs/superpowers/plans/2026-08-09-work-with-me-private-practice.md`. Implementation starts from `master` after this planning slice is integrated and preserves RED→GREEN and repository/artifact/deployment/acceptance separation.
+Execution is fully specified in `docs/superpowers/plans/2026-08-09-work-with-me-private-practice.md` and starts from `master` only after this planning slice is integrated.
