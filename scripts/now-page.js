@@ -82,8 +82,8 @@ export function renderNowContent(nowData, projects, {
   validateNowData(nowData);
   const copy = localeCopy(locale);
   const editorial = editorialSlice(nowData, locale);
-  const activeProjects = getActiveProjects(projects);
-  const projectCards = renderProjectCards(activeProjects, {
+  const spotlightProjects = getActiveProjects(projects).filter((project) => project.featured === true);
+  const projectCards = renderProjectCards(spotlightProjects, {
     locale,
     hrefTransform,
     ...(ctaTransform ? {ctaTransform} : {}),
