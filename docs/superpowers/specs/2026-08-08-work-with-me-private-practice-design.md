@@ -239,7 +239,7 @@ This statement belongs near process/contact details, not in the hero.
 
 Availability is public truth and must have one canonical owner.
 
-Suggested states:
+Allowed states:
 
 - `available`
 - `limited`
@@ -265,13 +265,25 @@ Editorial principle:
 
 Do not hard-code “only one project forever” as a permanent brand promise.
 
+### 6.1 Initial V1 launch truth
+
+The initial public state for V1 is explicitly fixed as:
+
+```text
+engineering: limited
+education: limited
+updated: 2026-08-08
+```
+
+`limited` means the site may invite a conversation about bounded external work while making no claim of full-time or unlimited capacity. This launch state is intentionally conservative and can later be changed only through the canonical collaboration record and normal review.
+
 ## 7. Canonical collaboration model
 
-Add one canonical data record, expected path:
+Add one canonical data record:
 
 `data/collaboration.json`
 
-The exact schema is an implementation detail, but the semantic model should be close to:
+The semantic model is:
 
 ```text
 availability
@@ -301,9 +313,16 @@ Canonical data owns volatile/reused public facts:
 - availability;
 - enabled practice categories;
 - priority/order where relevant;
-- direct contact endpoints if the implementation chooses to centralize them here;
+- direct contact endpoints;
 - self-employed capability;
 - pricing policy state (`estimate-only` in V1).
+
+V1 contact truth must resolve to the already published direct endpoints:
+
+```text
+telegram: https://t.me/TrueRuslan
+email: ruslan.nemikin@gmail.com
+```
 
 Markdown owns editorial explanation:
 
@@ -384,7 +403,7 @@ If unavailable, the section remains present with honest copy such as “new proj
 
 Contextual commercial bridges must be explicit, not inferred from keywords.
 
-Suggested semantic mappings:
+Allowed semantic mappings:
 
 - `engineering`
 - `ai-integration`
@@ -394,6 +413,28 @@ Suggested semantic mappings:
 A page may opt into one mapping. If there is no explicit mapping, there is no contextual commercial CTA.
 
 This prevents accidental advertising in editorial content and keeps the commercial layer reviewable.
+
+### 11.1 Initial curated V1 mapping set
+
+V1 starts deliberately small. The initial explicitly opted-in editorial surfaces are:
+
+```text
+docs/landing/projects/portfolio-platform.md
+  → engineering
+
+docs/landing/projects/notchhub.md
+  → engineering
+
+docs/landing/notes/deployment-success-is-not-production-verification.md
+  → engineering
+
+docs/landing/notes/server-authoritative-ai-npcs.md
+  → ai-integration
+```
+
+No other Project, Note or Publication gets a contextual commercial CTA in V1 unless it is added through a reviewed spec/implementation change. In particular, Teaching/Education does not get an arbitrary contextual CTA merely to balance category counts; its V1 discovery paths are Work with me, navigation, homepage bridge and Contacts.
+
+The English side may use only existing English counterparts of an approved mapped source. Missing EN counterpart means no invented EN content solely for CTA symmetry.
 
 ## 12. Contacts integration
 
@@ -715,7 +756,7 @@ Prefer one bounded feature PR, implemented through internal RED→GREEN stages:
 2. RU/EN Work with me;
 3. navigation + Contacts;
 4. homepage bridge;
-5. contextual CTA infrastructure + a small curated initial mapping set;
+5. contextual CTA infrastructure + the exact initial curated mapping set from §11.1;
 6. SEO/search/accessibility/browser/visual verification;
 7. exact production acceptance;
 8. durable PROJECT_STATE / ROADMAP / CHANGELOG acceptance update.
