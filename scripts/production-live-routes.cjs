@@ -15,6 +15,9 @@ const NOW_PATH = 'landing/now/';
 const NOW_EN_PATH = 'en/now/';
 const PUBLICATIONS_PATH = 'landing/publications/';
 const PUBLICATIONS_EN_PATH = 'en/publications/';
+const WORK_WITH_ME_PATH = 'landing/work-with-me/';
+const WORK_WITH_ME_EN_PATH = 'en/work-with-me/';
+const CONTACTS_PATH = 'landing/contacts/';
 const PORTFOLIO_PLATFORM_PATH = 'landing/projects/portfolio-platform/';
 const PORTFOLIO_PLATFORM_EN_PATH = 'en/projects/portfolio-platform/';
 const VILLAIGENCE_PATH = 'landing/projects/livingworld/';
@@ -40,6 +43,9 @@ const NOW_URL = new URL(NOW_PATH, APEX).href;
 const NOW_EN_URL = new URL(NOW_EN_PATH, APEX).href;
 const PUBLICATIONS_URL = new URL(PUBLICATIONS_PATH, APEX).href;
 const PUBLICATIONS_EN_URL = new URL(PUBLICATIONS_EN_PATH, APEX).href;
+const WORK_WITH_ME_URL = new URL(WORK_WITH_ME_PATH, APEX).href;
+const WORK_WITH_ME_EN_URL = new URL(WORK_WITH_ME_EN_PATH, APEX).href;
+const CONTACTS_URL = new URL(CONTACTS_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_URL = new URL(PORTFOLIO_PLATFORM_PATH, APEX).href;
 const PORTFOLIO_PLATFORM_EN_URL = new URL(PORTFOLIO_PLATFORM_EN_PATH, APEX).href;
 const VILLAIGENCE_URL = new URL(VILLAIGENCE_PATH, APEX).href;
@@ -67,6 +73,9 @@ module.exports = {
   NOW_EN_PATH,
   PUBLICATIONS_PATH,
   PUBLICATIONS_EN_PATH,
+  WORK_WITH_ME_PATH,
+  WORK_WITH_ME_EN_PATH,
+  CONTACTS_PATH,
   PORTFOLIO_PLATFORM_PATH,
   PORTFOLIO_PLATFORM_EN_PATH,
   VILLAIGENCE_PATH,
@@ -91,6 +100,9 @@ module.exports = {
   NOW_EN_URL,
   PUBLICATIONS_URL,
   PUBLICATIONS_EN_URL,
+  WORK_WITH_ME_URL,
+  WORK_WITH_ME_EN_URL,
+  CONTACTS_URL,
   PORTFOLIO_PLATFORM_URL,
   PORTFOLIO_PLATFORM_EN_URL,
   VILLAIGENCE_URL,
