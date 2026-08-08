@@ -9,7 +9,6 @@
 **Tech Stack:** Node.js 24, ESM, `node:test`, Diplodoc/YFM, parse5, static HTML/CSS, Playwright, Axe, Lighthouse, GitHub Actions, GitHub Pages.
 
 ## Global constraints
-
 - Backend Engineer remains the primary identity.
 - Engineering primary; Teaching & Mentoring full secondary; startup/individual secondary; open door for relevant adjacent requests.
 - Canonical contacts: `https://t.me/TrueRuslan`, `ruslan.nemikin@gmail.com`.
@@ -19,118 +18,79 @@
 - Self-employed/receipt support can be stated calmly.
 - No form, CRM, booking, payments, lead database, conversion events, replay/fingerprinting or AI seller.
 - Static-first/no-JS core; one canonical truth; Diplodoc sole search; clean directory canonical URLs.
-- RU/EN ship together.
-- CTA only on homepage, Work with me, Contacts and explicit contextual allowlist.
-- No unsupported cheap-sales claims/fake proof.
-- No gate weakening; P3.6 stays independent.
+- RU/EN ship together; CTA stays bounded; no unsupported cheap-sales claims; no gate weakening; P3.6 stays independent.
 
 ## Task 1 — Canonical collaboration model
-
 **Create:** `data/collaboration.json`, `scripts/collaboration.js`, `scripts/collaboration.test.js`.
-- [ ] RED exact launch truth, state/category enums, safe paths, contacts, estimate-only/legal policy, duplicate/unknown rejection.
-- [ ] Implement `loadCollaboration`, `validateCollaboration`, `resolveContextualTargets`.
-- [ ] States: `available|limited|consulting-only|unavailable`; categories: `engineering|ai-integration|education|expert-content`.
-- [ ] Exact RU mappings: Portfolio Platform/NotchHub/Deployment Verification Note → engineering; Server-authoritative AI NPC Note → ai-integration.
-- [ ] EN only where existing pair has exact mapped RU path; no heuristics.
+- [ ] RED exact launch truth, enums, safe paths, contacts, estimate-only/legal policy, duplicate/unknown rejection.
+- [ ] Implement loader/validator/contextual resolver; exact four RU mappings; EN only exact existing i18n counterparts.
 - [ ] GREEN focused + full unit suite.
 
 ## Task 2 — RU/EN Work with me + build-time projection
-
-**Create:** RU/EN Markdown, `collaboration.css`. **Modify:** `.yfm`, collaboration module/tests, copy-assets/tests.
-- [ ] RED localized availability/contact/no-form tests.
-- [ ] RU/EN pages implement approved Engineering, Startup, Teaching/Mentoring, Expert contribution, process, fit guidance, open door and direct handoff.
+**Create:** RU/EN Markdown, `collaboration.css`; modify `.yfm`, collaboration module/tests, copy-assets/tests.
+- [ ] RED localized availability/contact/no-form contracts.
+- [ ] Implement approved Engineering, Startup, Teaching/Mentoring, Expert contribution, process, fit, open-door, direct-handoff content.
 - [ ] Mutable truth only through build-time placeholders.
-- [ ] Implement `renderAvailability`, `renderDirectContact`, `applyCollaborationPages`; unavailable stays visible.
-- [ ] Scoped CSS; no color-only meaning/new animation.
-- [ ] Missing/duplicate placeholders fail build.
-- [ ] Load registry once in copy-assets; isolated integration test.
-- [ ] GREEN unit/build/site-integrity.
+- [ ] Scoped CSS; unavailable stays discoverable; placeholders fail closed.
+- [ ] One canonical model load in build; GREEN unit/build/integrity.
 
 ## Task 3 — Navigation, i18n, metadata
-
 - [ ] RED pair/nav/meta.
-- [ ] RU primary nav: Проекты, Опыт, Работа со мной, Notes, Публикации, Обо мне, Контакты; keep Now/Map/Photos/Sources in content graph.
-- [ ] EN: Projects, Experience, Work with me, Now, Publications, About, Notes (RU); no EN Contacts invention.
-- [ ] Add `work-with-me` pair, controlled count 13.
-- [ ] Approved RU/EN titles + OG metadata.
-- [ ] GREEN tests/build/integrity/metadata smoke.
+- [ ] RU primary: Проекты, Опыт, Работа со мной, Notes, Публикации, Обо мне, Контакты; secondary content remains reachable.
+- [ ] EN: Projects, Experience, Work with me, Now, Publications, About, Notes (RU); no invented EN Contacts.
+- [ ] Add 13th i18n pair + approved RU/EN metadata/OG; GREEN metadata/build tests.
 
 ## Task 4 — Contacts canonical handoff
-
-- [ ] RED source/copy anti-sales/public-price guard.
-- [ ] Preserve general Contacts/external profiles; replace hardcoded direct contacts with canonical projection.
-- [ ] Add short task-qualification hint + Work with me link; no service-catalogue duplication.
-- [ ] Fail on missing/duplicate Contacts placeholder.
+- [ ] RED anti-sales/public-price/source guard.
+- [ ] Preserve general Contacts/external profiles; canonical direct-contact projection + task qualification hint; no service-catalog duplication.
+- [ ] Fail closed on placeholder drift.
 
 ## Task 5 — Homepage collaboration bridge
-
 - [ ] RED canonical status/href/no-form/no-price/unavailable behavior.
-- [ ] Implement `renderHomepageCollaborationBridge`.
-- [ ] Place after Flagship projects before Current focus.
-- [ ] Preserve exactly 3 Experience/Projects/Materials primary paths.
-- [ ] Same canonical model for RU/EN.
+- [ ] Bridge after Flagship proof, before Current focus; exactly three primary paths remain.
+- [ ] Shared canonical model RU/EN.
 
 ## Task 6 — Explicit contextual CTA
-
-- [ ] RED exact four RU targets, existing EN counterparts, forbidden About/Experience.
-- [ ] No invented EN Deployment Note.
-- [ ] Implement category renderer + parse5 append at end of stable content.
-- [ ] Missing approved target/container fails; relative href computed by path.
-- [ ] Prove no automatic CTA on About/Experience/Photos/Sources/Engineering Map.
+- [ ] RED exact approved RU/EN target set + forbidden surfaces.
+- [ ] No invented EN deployment Note.
+- [ ] parse5 append at end of stable content; missing target/container fails; relative href by path; no keyword inference.
 
 ## Task 7 — Browser/no-JS/search/a11y/cross-browser
-
-- [ ] Add Work with me core scenario.
-- [ ] Chromium desktop/mobile; Firefox/WebKit; mobile overflow; i18n/no-JS parity.
-- [ ] Search RU phrase → RU route; EN `bounded engineering work with a clear outcome` → EN route.
-- [ ] Dedicated browser smoke: canonical truth, no form, direct no-JS links, homepage order + 3 paths, Contacts, exact CTA set, Axe, overflow, diagnostics.
-- [ ] Capture RU/EN desktop/mobile + homepage + Contacts screenshots.
-- [ ] Add Build step and evidence artifacts.
+- [ ] Add Work with me core scenario, Chromium desktop/mobile, Firefox/WebKit, overflow, i18n/no-JS.
+- [ ] RU/EN generated-search route coverage.
+- [ ] Dedicated smoke: canonical truth, no form, direct links, homepage order + 3 paths, Contacts, exact CTA set, Axe/overflow/diagnostics.
+- [ ] Capture RU/EN/home/Contacts screenshots; add Build evidence step.
 
 ## Task 8 — Visual acceptance
-
-- [ ] Run visual regression before rebasing.
-- [ ] Inspect intentional brand/marketing surfaces.
-- [ ] Update only approved baselines; thresholds remain sampleSize=16, mean delta=5, dimension ratio=0.03.
-- [ ] No unrelated baseline rebasing.
+- [ ] Run before rebaseline; inspect all intentional marketing/brand surfaces.
+- [ ] Update only approved baselines; keep sampleSize=16, mean delta=5, dimension ratio=0.03; no unrelated rebasing.
 
 ## Task 9 — Production gate
-
-- [ ] RED clean RU/EN production routes + workflow step + expected deployed SHA.
-- [ ] Production smoke verifies RU/EN canonical/hreflang/status/contacts, no form/price, no-JS, homepage proof ordering + 3 paths, nav, Contacts, exact CTA set, forbidden surfaces and no third-party lead runtime.
-- [ ] Write `private-practice-production-summary.json` + screenshot.
-- [ ] Deployment-only Production Live step uses resolved Pages SHA; permissions remain read-only.
+- [ ] RED clean RU/EN production routes + workflow contract.
+- [ ] Deployment smoke validates exact canonical truth, no form/price, no-JS, home/nav/Contacts/contextual boundaries and no lead-runtime dependency.
+- [ ] Emit `private-practice-production-summary.json`; run only against resolved exact deployed SHA; preserve read-only permissions.
 
 ## Task 10 — Feature PR
-
 - [ ] After planning PR integration, branch `feat/work-with-me-private-practice` from current master.
-- [ ] Execute Tasks 1–9 RED→GREEN and full unit/build/integrity/browser verification.
-- [ ] Review non-goals.
+- [ ] Execute Tasks 1–9 RED→GREEN; full unit/build/integrity/browser verification.
 - [ ] Open bounded feature PR; exact-head evidence remains pre-production.
-- [ ] Require Build, CodeQL JS/TS, Dependency Review/current gates and zero unresolved review threads.
-- [ ] Inspect CI visuals; squash only verified exact head.
+- [ ] Require Build, CodeQL, Dependency Review/current gates, zero threads, inspected CI visuals; squash only verified head.
 
 ## Task 11 — Exact production acceptance
-
-- [ ] Exact feature squash SHA must receive successful Pages deployment identity.
-- [ ] Deployment-triggered Production Live must originate from that exact Pages head SHA.
-- [ ] Inspect dedicated summary + all existing gates.
-- [ ] On failure: preserve evidence, RED reproduce, bounded hotfix, no verifier weakening, repeat exact deployment.
-- [ ] Record accepted SHA, Pages run/deployment/artifact+digest, Production Live run/artifact+digest, observedAt.
+- [ ] Exact squash SHA → successful Pages deployment identity → deployment-triggered Production Live from that exact head.
+- [ ] Inspect dedicated + existing gates.
+- [ ] Failure: preserve evidence, RED reproduce, bounded hotfix, no verifier weakening, repeat exact deployment.
+- [ ] Record SHA/run/deployment/artifact/digest/observedAt tuple.
 
 ## Task 12 — Durable acceptance
-
-**Create:** `scripts/private-practice-acceptance.test.js`. **Modify:** PROJECT_STATE, ROADMAP, CHANGELOG.
+**Create:** `scripts/private-practice-acceptance.test.js`; modify PROJECT_STATE, ROADMAP, CHANGELOG.
 - [ ] Only after production, RED exact-evidence test.
-- [ ] Explicitly prove P3.6 remains NEXT/WAITING.
-- [ ] Record production-accepted private engineering/education practice + exact evidence.
-- [ ] Keep future prices/forms/productized pages evidence-driven.
-- [ ] Separate docs-only acceptance PR; docs deployment never replaces feature acceptance evidence.
+- [ ] Prove P3.6 remains NEXT/WAITING.
+- [ ] Record production acceptance + exact evidence; keep future commercial evolution evidence-driven.
+- [ ] Separate docs-only acceptance PR; its deployment does not replace feature evidence.
 
 ## Execution handoff
-
 Implementation starts from current `master` after this planning slice is integrated. First product change is Task 1 RED. Tasks 1–9 form one bounded feature slice; Tasks 10–12 preserve repository → artifact → deployment → live acceptance separation.
 
 ## Self-review
-
-No unresolved product choice/TBD remains. Every approved positioning, canonical-truth, bounded-surface, privacy, RU/EN, SEO/search, no-JS, browser/a11y/visual and exact-production requirement maps to a task. CRM/forms/payments/booking/public pricing/service-page farm/conversion tracking are explicit non-goals.
+No unresolved product choice/TBD remains. Every approved positioning, canonical-truth, bounded-surface, privacy, RU/EN, SEO/search, no-JS, browser/a11y/visual and exact-production requirement maps to a task. CRM/forms/payments/booking/public pricing/service-page farm/conversion tracking remain explicit non-goals.
