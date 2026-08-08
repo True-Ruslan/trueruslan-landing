@@ -164,7 +164,7 @@ function readRequiredUtf8File(filePath, message) {
 }
 
 function placeholderPattern(kind, context = null, flags = 'i') {
-  const contextPart = context ? `=["']${context}["']` : '(?:=["'][^"']+["'])?';
+  const contextPart = context ? `=["']${context}["']` : "(?:=[\"'][^\"']+[\"'])?";
   return new RegExp(`<div[^>]*data-tr-collaboration-${kind}${contextPart}[^>]*>\\s*</div>`, flags);
 }
 
