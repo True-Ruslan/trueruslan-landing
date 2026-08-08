@@ -27,15 +27,18 @@ test('homepage puts the terminal slot between the lead and primary paths in both
     const paths = hero.indexOf('{{HOME_PRIMARY_PATHS}}');
 
     assert.ok(lead !== -1 && terminal > lead && paths > terminal, `${relativePath}: expected lead -> terminal -> primary paths`);
+    assert.ok(template.indexOf('_assets/style/home-refinement.css') > template.indexOf('_assets/style/home.css'), `${relativePath}: refinement CSS must load after home.css`);
+    assert.ok(template.indexOf('_assets/script/home-terminal-placement.js') > template.indexOf('_assets/script/custom.js'), `${relativePath}: terminal placement must run after terminal creation runtime`);
   }
 });
 
-test('terminal enhancement mounts into the explicit homepage slot without name-dependent heading lookup', () => {
-  const source = read('docs/_assets/script/custom.js');
-  const mount = sliceBetween(source, 'function mountTerminal(document, page) {', '\n  function setupReveal');
+test('terminal placement uses the explicit homepage slot without name-dependent heading lookup or polling', () => {
+  const source = read('docs/_assets/script/home-terminal-placement.js');
 
-  assert.match(mount, /querySelector\('\[data-tr-terminal-slot\]'\)/);
-  assert.doesNotMatch(mount, /Руслан Немыкин|querySelectorAll\('h1, h2'\)/);
+  assert.match(source, /querySelector\('\[data-tr-terminal-slot\]'\)/);
+  assert.match(source, /MutationObserver/);
+  assert.match(source, /observer\.disconnect\(\)/);
+  assert.doesNotMatch(source, /Руслан Немыкин|querySelectorAll\('h1, h2'\)|setInterval|setTimeout/);
 });
 
 test('primary path copy presents experience without resume or PDF emphasis', () => {
@@ -62,12 +65,14 @@ test('visible navigation is Experience-first while the stable resume route is pr
 
   assert.match(toc, /- text: Опыт\s+type: link\s+url: landing\/resume\.html/);
   assert.match(toc, /- name: Опыт\s+href: \.\/landing\/resume\.md/);
+  assert.match(toc, /- name: Experience\s+href: \.\/en\/resume\.md/);
 });
 
 test('experience page demotes the PDF to a Resume section and gives the domains metric intentional typography', () => {
   const ru = read('docs/landing/resume.md');
   const en = read('docs/en/resume.md');
-  const css = read('docs/_assets/style/resume.css');
+  const css = read('docs/_assets/style/experience-refinement.css');
+  const config = read('docs/.yfm');
 
   assert.match(ru, /^# Опыт$/m);
   assert.match(ru, /^## Резюме$/m);
@@ -76,12 +81,14 @@ test('experience page demotes the PDF to a Resume section and gives the domains 
   assert.match(en, /^## Resume$/m);
 
   assert.match(ru, /class="tr-resume-stat__domains"/);
+  assert.match(en, /class="tr-resume-stat__domains"/);
   assert.match(css, /\.tr-resume-stat__domains\s*\{/);
   assert.match(css, /line-height:/);
+  assert.ok(config.indexOf('_assets/style/experience-refinement.css') > config.indexOf('_assets/style/resume.css'));
 });
 
 test('homepage owns a single compact top-spacing rhythm instead of stacked shell and hero gaps', () => {
-  const css = read('docs/_assets/style/home.css');
+  const css = read('docs/_assets/style/home-refinement.css');
   const shell = sliceBetween(css, '.tr-home-shell {', '\n}');
   const hero = sliceBetween(css, '.tr-home-hero {', '\n}');
 
