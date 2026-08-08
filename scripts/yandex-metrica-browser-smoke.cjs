@@ -52,16 +52,41 @@ async function installYandexInterception(context, intercepted) {
 }
 
 async function state(page) {
-  return page.evaluate(({counterId, consentKey}) => ({
-    choice: localStorage.getItem(consentKey),
-    disabled: window[`disableYaCounter${counterId}`],
-    providerScripts: Array.from(document.querySelectorAll('script[data-tr-metrica-provider="yandex-metrica"]')).map((node) => node.src),
-    promptVisible: Boolean(document.querySelector('[data-tr-metrica-consent-dialog]:not([hidden])')),
-    settingsVisible: Boolean(document.querySelector('[data-tr-metrica-settings]:not([hidden])')),
-    ymCalls: typeof window.ym === 'function' && Array.isArray(window.ym.a)
-      ? window.ym.a.map((args) => Array.from(args))
-      : [],
-  }), {counterId: FAKE_COUNTER_ID, consentKey: CONSENT_KEY});
+  return page.evaluate(({counterId, consentKey}) => {
+    const prompt = document.querySelector('[data-tr-metrica-consent-dialog]');
+    const grant = document.querySelector('button[data-tr-consent="granted"]');
+    const deny = document.querySelector('button[data-tr-consent="denied"]');
+    const rect = prompt?.getBoundingClientRect();
+    const visual = (node) => {
+      if (!node) return null;
+      const style = getComputedStyle(node);
+      return {
+        backgroundColor: style.backgroundColor,
+        borderColor: style.borderColor,
+        color: style.color,
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        opacity: style.opacity,
+      };
+    };
+    return {
+      choice: localStorage.getItem(consentKey),
+      disabled: window[`disableYaCounter${counterId}`],
+      providerScripts: Array.from(document.querySelectorAll('script[data-tr-metrica-provider="yandex-metrica"]')).map((node) => node.src),
+      promptVisible: Boolean(prompt && !prompt.hidden),
+      settingsVisible: Boolean(document.querySelector('[data-tr-metrica-settings]:not([hidden])')),
+      promptText: prompt?.innerText ?? '',
+      grantText: grant?.textContent ?? '',
+      denyText: deny?.textContent ?? '',
+      grantVisual: visual(grant),
+      denyVisual: visual(deny),
+      promptWidth: rect ? Math.round(rect.width) : 0,
+      promptHeight: rect ? Math.round(rect.height) : 0,
+      ymCalls: typeof window.ym === 'function' && Array.isArray(window.ym.a)
+        ? window.ym.a.map((args) => Array.from(args))
+        : [],
+    };
+  }, {counterId: FAKE_COUNTER_ID, consentKey: CONSENT_KEY});
 }
 
 async function assertNoMetricaCookies(context, label) {
@@ -86,11 +111,19 @@ async function assertLifecycle(browser, baseUrl) {
     const response = await page.goto(`${baseUrl}/`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`Metrica consent route HTTP ${response?.status() ?? 'none'}`);
 
-    // before consent: the controller may exist, but provider network/script/cookies must not.
     let current = await state(page);
     if (intercepted.length !== 0) throw new Error(`before consent: expected zero Yandex requests, got ${intercepted.length}`);
     if (current.choice !== null || current.disabled !== true || !current.promptVisible || current.providerScripts.length !== 0) {
       throw new Error(`before consent: unexpected state ${JSON.stringify(current)}`);
+    }
+    if (!current.promptText.includes('Cookies для статистики?') || current.grantText !== 'Разрешить' || current.denyText !== 'Не разрешать') {
+      throw new Error(`before consent: compact RU copy is wrong ${JSON.stringify(current)}`);
+    }
+    if (JSON.stringify(current.grantVisual) !== JSON.stringify(current.denyVisual)) {
+      throw new Error(`before consent: grant and refusal must have equivalent visual weight ${JSON.stringify(current)}`);
+    }
+    if (current.promptWidth > 520 || current.promptHeight > 64) {
+      throw new Error(`before consent: prompt is not compact enough ${JSON.stringify({width: current.promptWidth, height: current.promptHeight})}`);
     }
     await assertNoMetricaCookies(context, 'before consent');
     await assertNoHorizontalOverflow(page, 'metrica-consent:initial-mobile');
@@ -134,8 +167,6 @@ async function assertLifecycle(browser, baseUrl) {
       throw new Error(`after grant: init options escaped privacy contract ${JSON.stringify(options)}`);
     }
 
-    // Withdrawal after an initialized provider must force a reload. Yandex documents
-    // disableYaCounter as a pre-initialization opt-out, so the new document must start denied.
     const requestsAtWithdrawal = intercepted.length;
     await page.locator('[data-tr-metrica-settings]').click();
     await Promise.all([
@@ -155,10 +186,12 @@ async function assertLifecycle(browser, baseUrl) {
       beforeConsentRequests: 0,
       afterDenialRequests: 0,
       grantRequests: 1,
+      equivalentChoices: true,
       withdrawalForcesReload: true,
       withdrawalAddsRequests: 0,
       boundedInit: true,
       persistedPreference: 'denied',
+      compactPrompt: true,
     };
   } finally {
     await runtime.close();
@@ -171,11 +204,17 @@ async function assertEnglishCopy(browser, baseUrl) {
   try {
     const response = await page.goto(`${baseUrl}/en/`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`Metrica EN route HTTP ${response?.status() ?? 'none'}`);
-    const text = await page.locator('[data-tr-metrica-consent-dialog]').innerText();
-    if (!/Analytics/.test(text) || !/Allow/.test(text) || !/Decline/.test(text)) {
-      throw new Error(`English Metrica consent copy is incomplete: ${text}`);
+    const current = await state(page);
+    if (!current.promptText.includes('Analytics cookies?') || current.grantText !== 'Allow' || current.denyText !== 'Refuse') {
+      throw new Error(`English compact consent copy is wrong: ${JSON.stringify(current)}`);
     }
-    return {localized: true};
+    if (/Yandex/.test(current.promptText)) {
+      throw new Error(`English visible consent copy exposes provider detail: ${current.promptText}`);
+    }
+    if (JSON.stringify(current.grantVisual) !== JSON.stringify(current.denyVisual)) {
+      throw new Error(`English grant and refusal must have equivalent visual weight ${JSON.stringify(current)}`);
+    }
+    return {localized: true, purposeSpecific: true, equivalentChoices: true};
   } finally {
     await runtime.close();
   }

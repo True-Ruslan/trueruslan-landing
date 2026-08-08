@@ -5,10 +5,18 @@ import {injectConsentGatedMetricaIntoHtml, loadMetricaBrowserPolicy} from './yan
 
 const html = '<!doctype html><html><head></head><body><main>content</main></body></html>';
 
-test('consent copy describes provider cookies without promising anonymity', () => {
-  const enabled = injectConsentGatedMetricaIntoHtml(html, loadMetricaBrowserPolicy(), '987654321');
+test('consent copy names the analytics purpose without exposing provider detail or weakening consent', () => {
+  const policy = loadMetricaBrowserPolicy();
+  const enabled = injectConsentGatedMetricaIntoHtml(html, policy, '987654321');
+
+  assert.equal(policy.activation, 'explicit-consent-required');
+  assert.equal(policy.providerCookies, 'after-consent-only');
+  assert.match(enabled, /Cookies для статистики\?/);
+  assert.match(enabled, /Analytics cookies\?/);
+  assert.match(enabled, /Не разрешать/);
+  assert.match(enabled, /Refuse/);
   assert.doesNotMatch(enabled, /anonymous|анонимн/i);
-  assert.match(enabled, /traffic statistics/i);
-  assert.match(enabled, /статистик[ау] посещений/i);
-  assert.match(enabled, /cookies/i);
+  assert.doesNotMatch(enabled, /Yandex Metrica|Яндекс\.Метрик/i);
+  assert.match(enabled, /if\(choice==='granted'\)\{hidePrompt\(\);loadMetrica\(\);return\}/);
+  assert.match(enabled, /if\(choice==='denied'\)\{hidePrompt\(\);return\}/);
 });
