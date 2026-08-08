@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -7,9 +8,26 @@ import {
   loadCollaboration,
 } from './collaboration.js';
 import {loadI18nManifest} from './i18n.js';
+import {
+  injectWorkWithMeNoJavaScriptFallback,
+  workWithMeNoJavaScriptTargets,
+} from './work-with-me-noscript.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
+
+function applyWorkWithMeNoJavaScriptFallbacks(outputDir) {
+  const updated = [];
+  for (const target of workWithMeNoJavaScriptTargets()) {
+    const filePath = path.join(outputDir, ...target.path.split('/'));
+    if (!fs.existsSync(filePath)) throw new Error(`generated Work with me page not found: ${target.path}`);
+    const current = fs.readFileSync(filePath, 'utf8');
+    const next = injectWorkWithMeNoJavaScriptFallback(current, {locale: target.locale});
+    fs.writeFileSync(filePath, next, 'utf8');
+    updated.push(target.path);
+  }
+  return updated;
+}
 
 export function postprocessCollaboration({
   outputDir = path.join(ROOT, 'docs-html'),
@@ -17,8 +35,9 @@ export function postprocessCollaboration({
   i18nPairs = loadI18nManifest(),
 } = {}) {
   const pages = applyCollaborationPages(outputDir, collaboration);
+  const noJavaScriptPages = applyWorkWithMeNoJavaScriptFallbacks(outputDir);
   const contextualCtas = applyContextualCollaborationCtas(outputDir, collaboration, i18nPairs);
-  return {pages, contextualCtas};
+  return {pages, noJavaScriptPages, contextualCtas};
 }
 
 function isCli() {
@@ -28,5 +47,6 @@ function isCli() {
 if (isCli()) {
   const result = postprocessCollaboration();
   console.log(`Collaboration pages: ${result.pages.length}`);
+  console.log(`Work with me semantic no-JS pages: ${result.noJavaScriptPages.length}`);
   console.log(`Contextual collaboration CTA targets: ${result.contextualCtas.length}`);
 }
