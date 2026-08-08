@@ -27,7 +27,6 @@
 ## Task 1 — Canonical collaboration model
 
 **Create:** `data/collaboration.json`, `scripts/collaboration.js`, `scripts/collaboration.test.js`.
-
 - [ ] RED exact launch truth, state/category enums, safe paths, contacts, estimate-only/legal policy, duplicate/unknown rejection.
 - [ ] Implement `loadCollaboration`, `validateCollaboration`, `resolveContextualTargets`.
 - [ ] States: `available|limited|consulting-only|unavailable`; categories: `engineering|ai-integration|education|expert-content`.
@@ -38,7 +37,6 @@
 ## Task 2 — RU/EN Work with me + build-time projection
 
 **Create:** RU/EN Markdown, `collaboration.css`. **Modify:** `.yfm`, collaboration module/tests, copy-assets/tests.
-
 - [ ] RED localized availability/contact/no-form tests.
 - [ ] RU/EN pages implement approved Engineering, Startup, Teaching/Mentoring, Expert contribution, process, fit guidance, open door and direct handoff.
 - [ ] Mutable truth only through build-time placeholders.
@@ -123,7 +121,6 @@
 ## Task 12 — Durable acceptance
 
 **Create:** `scripts/private-practice-acceptance.test.js`. **Modify:** PROJECT_STATE, ROADMAP, CHANGELOG.
-
 - [ ] Only after production, RED exact-evidence test.
 - [ ] Explicitly prove P3.6 remains NEXT/WAITING.
 - [ ] Record production-accepted private engineering/education practice + exact evidence.
