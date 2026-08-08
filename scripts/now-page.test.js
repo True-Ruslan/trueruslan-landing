@@ -68,20 +68,22 @@ test('repository now snapshot reflects current bounded external-project evidence
   const editorialText = [current.focus, ...current.learning, ...current.writing].join('\n');
   const englishText = [current.en.focus, ...current.en.learning, ...current.en.writing].join('\n');
 
-  assert.equal(current.updated, '2026-08-05');
+  assert.equal(current.updated, '2026-08-08');
   for (const text of [editorialText, englishText]) {
     assert.match(text, /Vlezet/);
     assert.match(text, /M7\.8B/);
-    assert.match(text, /M7\.9/);
-    assert.match(text, /M7\.8C\.1/);
+    assert.match(text, /Assisted Tracing/i);
+    assert.match(text, /#42/);
+    assert.match(text, /closed unmerged|закрыт.*unmerged|R&D/i);
     assert.match(text, /VillAIgence/);
-    assert.match(text, /0\.1\.25\+1\.21\.1/);
-    assert.match(text, /production-JAR/);
-    assert.match(text, /cumulative/i);
-    assert.match(text, /pending|Draft/i);
+    assert.match(text, /0\.2\.0\+1\.21\.1/);
+    assert.match(text, /7 PASS \/ 0 FAIL/);
+    assert.match(text, /BELIEF/i);
+    assert.match(text, /#125/);
+    assert.match(text, /Draft\/RED|Draft|RED/i);
   }
-  assert.match(editorialText, /Engineering Note/);
-  assert.match(englishText, /Engineering Note/);
+  assert.match(editorialText, /measurement|aggregate/i);
+  assert.match(englishText, /measurement|aggregate/i);
   assert.doesNotMatch(editorialText, /LivingWorld/);
   assert.doesNotMatch(englishText, /LivingWorld/);
 });
