@@ -9,6 +9,15 @@ on:
         description: Maximum age of lastVerified before a maintenance finding
         required: false
         default: '30'
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/content-freshness.yml'
+      - 'data/projects.json'
+      - 'data/project-evidence.json'
+      - 'data/project-history/**'
+      - 'scripts/content-freshness*.js'
   pull_request:
     paths:
       - '.github/workflows/content-freshness.yml'
