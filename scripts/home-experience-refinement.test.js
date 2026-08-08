@@ -18,6 +18,16 @@ function sliceBetween(source, startMarker, endMarker) {
   return source.slice(start, end);
 }
 
+function experienceCardBody(rendered) {
+  const marker = 'data-home-path="resume"';
+  const markerIndex = rendered.indexOf(marker);
+  assert.notEqual(markerIndex, -1, 'missing experience card');
+  const bodyStart = rendered.indexOf('>', markerIndex) + 1;
+  const bodyEnd = rendered.indexOf('</a>', bodyStart);
+  assert.ok(bodyStart > 0 && bodyEnd > bodyStart, 'invalid experience card markup');
+  return rendered.slice(bodyStart, bodyEnd);
+}
+
 test('homepage puts the terminal slot between the lead and primary paths in both locales', () => {
   for (const relativePath of ['templates/index.html', 'templates/index.en.html']) {
     const template = read(relativePath);
@@ -43,14 +53,16 @@ test('terminal placement uses the explicit homepage slot without name-dependent 
 
 test('primary path copy presents experience without resume or PDF emphasis', () => {
   const ru = renderHomepagePrimaryPaths('ru');
-  assert.match(ru, />Опыт</);
-  assert.match(ru, /Посмотреть опыт →/);
-  assert.doesNotMatch(ru, /резюме|PDF/i);
+  const ruVisible = experienceCardBody(ru);
+  assert.match(ruVisible, />Опыт</);
+  assert.match(ruVisible, /Посмотреть опыт →/);
+  assert.doesNotMatch(ruVisible, /резюме|PDF/i);
 
   const en = renderHomepagePrimaryPaths('en');
-  assert.match(en, />Experience</);
-  assert.match(en, /Explore experience →/);
-  assert.doesNotMatch(en, /resume|PDF/i);
+  const enVisible = experienceCardBody(en);
+  assert.match(enVisible, />Experience</);
+  assert.match(enVisible, /Explore experience →/);
+  assert.doesNotMatch(enVisible, /resume|PDF/i);
 });
 
 test('visible navigation is Experience-first while the stable resume route is preserved', () => {
