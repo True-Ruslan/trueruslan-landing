@@ -32,76 +32,87 @@ function currentTimelineEntry(entries, slug) {
   return current[0];
 }
 
-test('repository public truth records current external activity without broadening accepted boundaries', () => {
+test('freshness reconciliation records current external truth without promoting acceptance boundaries', () => {
   const projects = readJson('data/projects.json');
   const evidence = readJson('data/project-evidence.json');
   const vlezetHistory = readJson('data/project-history/vlezet.json');
   const livingworldHistory = readJson('data/project-history/livingworld.json');
-  const now = readJson('data/now.json');
 
   const vlezetProject = findProject(projects, 'vlezet');
   const livingworldProject = findProject(projects, 'livingworld');
+  const portfolioProject = findProject(projects, 'portfolio-platform');
   const vlezetEvidence = findEvidence(evidence, 'vlezet');
   const livingworldEvidence = findEvidence(evidence, 'livingworld');
+  const portfolioEvidence = findEvidence(evidence, 'portfolio-platform');
 
-  const vlezetM78b = vlezetEvidence.signals.find((signal) => signal.label.includes('M7.8B'));
-  assert.ok(vlezetM78b, 'Vlezet M7.8B evidence must exist');
-  assert.equal(vlezetM78b.state, 'merged');
-  assert.match(vlezetM78b.scope, /0\.837989/);
-  assert.match(vlezetM78b.scope, /openings?.*(deferred|отлож)/i);
   assert.equal(vlezetProject.status, 'pre-production');
-  assert.match(currentTimelineEntry(vlezetHistory, 'vlezet').title, /M7\.8C|M7\.9|Draft/i);
+  assert.equal(vlezetProject.statusLabel, 'ACTIVE DEVELOPMENT');
+  assert.equal(vlezetEvidence.lastVerified, '2026-08-08');
+  assert.ok(
+    vlezetEvidence.versions.some(({label, value}) => label === 'Accepted recognition slice' && value === 'M7.8B'),
+    'Vlezet must preserve M7.8B as the accepted recognition slice',
+  );
+  assert.ok(
+    vlezetEvidence.versions.some(({label, value}) => label === 'Next acceptance boundary' && /Assisted Tracing/i.test(value)),
+    'Vlezet must record Assisted Tracing as the next bounded acceptance direction',
+  );
 
-  for (const pr of [42, 44, 45]) {
-    const signal = vlezetEvidence.signals.find(({url}) => url === `https://github.com/True-Ruslan/vlezet/pull/${pr}`);
-    assert.ok(signal, `Vlezet PR #${pr} pending evidence must exist`);
-    assert.equal(signal.state, 'pending');
-    assert.match(signal.scope, /Draft|not an acceptance|does not promote|merge-blocking/i);
+  const vlezet42 = vlezetEvidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/42');
+  const vlezet44 = vlezetEvidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/44');
+  const vlezet45 = vlezetEvidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/45');
+  const vlezet52 = vlezetEvidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/52');
+  assert.equal(vlezet42?.state, 'failed');
+  assert.match(vlezet42?.scope ?? '', /closed unmerged|product-owner.*FAIL|usefulness acceptance/i);
+  for (const signal of [vlezet44, vlezet45]) {
+    assert.equal(signal?.state, 'unavailable');
+    assert.match(signal?.scope ?? '', /closed unmerged|R&D evidence|not accepted/i);
   }
+  assert.equal(vlezet52?.state, 'pending');
+  assert.match(vlezet52?.scope ?? '', /Assisted Tracing|design gate|no product code|M7\.8B/i);
+  assert.match(currentTimelineEntry(vlezetHistory, 'vlezet').title, /Assisted Tracing/i);
 
   assert.equal(livingworldProject.status, 'release-candidate');
   assert.equal(livingworldProject.statusLabel, 'ACCEPTANCE IN PROGRESS');
+  assert.equal(livingworldEvidence.lastVerified, '2026-08-08');
   assert.ok(
-    livingworldEvidence.versions.some((version) => version.value.includes('0.1.25+1.21.1')),
-    'VillAIgence current published candidate must be recorded',
+    livingworldEvidence.versions.some(({label, value}) => label === 'Current official release' && value === '0.2.0+1.21.1'),
+    'VillAIgence 0.2.0 release must be recorded',
   );
-  for (const pr of [103, 104, 105, 107, 108, 109, 110]) {
-    assert.ok(
-      livingworldEvidence.signals.some(({url}) => url === `https://github.com/True-Ruslan/villAIgence/pull/${pr}`),
-      `VillAIgence PR #${pr} evidence must exist`,
-    );
-  }
-  const phaseC = livingworldEvidence.signals.find((signal) => signal.label.includes('PR #110'));
-  assert.equal(phaseC.state, 'pending');
-  assert.match(phaseC.scope, /b3172080d89052a5b361d203dbdac152752d7d0d/);
-  assert.match(phaseC.scope, /no production implementation|not an accepted capability/i);
-  assert.match(currentTimelineEntry(livingworldHistory, 'livingworld').title, /M11 Phase C/i);
+  assert.ok(
+    livingworldEvidence.versions.some(({label, value}) => label === 'Installed 0.2.0 result' && /7 PASS \/ 0 FAIL/.test(value)),
+    'VillAIgence clean-world installed result must be recorded',
+  );
+  assert.ok(
+    livingworldEvidence.versions.some(({label, value}) => label === 'Deferred installed boundaries' && /VAI-M2-INST-005.*VAI-CONCUR-004/.test(value)),
+    'untested VillAIgence boundaries must remain explicit',
+  );
 
-  const vlezetPage = readText('docs/landing/projects/vlezet.md');
-  assert.match(vlezetPage, /M0–M7\.8B/);
-  assert.match(vlezetPage, /PR #42/);
-  assert.match(vlezetPage, /PR #44/);
-  assert.match(vlezetPage, /PR #45/);
-  assert.match(vlezetPage, /product-owner retest/i);
-  assert.match(vlezetPage, /не счита(ется|ются).*принят|not an acceptance/i);
+  const release020 = livingworldEvidence.signals.find(({label}) => label.includes('0.2.0+1.21.1'));
+  assert.equal(release020?.state, 'published');
+  assert.match(release020?.scope ?? '', /7 PASS \/ 0 FAIL|byte-identical|NOT TESTED/i);
+  const beliefAdmission = livingworldEvidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/123');
+  assert.equal(beliefAdmission?.state, 'merged');
+  assert.match(beliefAdmission?.scope ?? '', /BELIEF|FACT|SYSTEM_OBSERVED|admission/i);
+  const beliefExtraction = livingworldEvidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/125');
+  assert.equal(beliefExtraction?.state, 'pending');
+  assert.match(beliefExtraction?.scope ?? '', /Draft|RED|candidate extraction|not accepted/i);
+  assert.match(currentTimelineEntry(livingworldHistory, 'livingworld').title, /BELIEF candidate extraction/i);
 
-  const livingworldPage = readText('docs/landing/projects/livingworld.md');
-  assert.match(livingworldPage, /0\.1\.25\+1\.21\.1/);
-  assert.match(livingworldPage, /PR #108[\s\S]{0,900}(Chat|STT|TTS)/i);
-  assert.match(livingworldPage, /b3172080d89052a5b361d203dbdac152752d7d0d/);
-  assert.match(livingworldPage, /production-JAR.*startup.*restart/is);
-  assert.match(livingworldPage, /cumulative.*(pending|не заверш)/is);
-
-  assert.equal(now.updated, '2026-08-05');
-  assert.match(now.focus, /0\.1\.25|M7\.9|M7\.8C\.1/);
-  assert.match(now.focus, /не.*acceptance|не.*принят|pending|Draft/i);
+  assert.equal(portfolioProject.status, 'production');
+  assert.equal(portfolioEvidence.lastVerified, '2026-08-08');
+  assert.ok(
+    portfolioEvidence.versions.some(({label, value}) => label === 'Analytics' && /Cloudflare.*Yandex Metrica/i.test(value)),
+    'portfolio analytics boundary must include consent-gated Yandex Metrica',
+  );
+  const p36c = portfolioEvidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/pull/158');
+  assert.equal(p36c?.state, 'merged');
+  assert.match(p36c?.scope ?? '', /consent|zero Yandex requests|P3\.6.*open/i);
 
   const projectState = readText('docs/PROJECT_STATE.md');
   const roadmap = readText('docs/ROADMAP.md');
   const changelog = readText('docs/CHANGELOG.md');
-  assert.match(projectState, /M7\.8B.*(accepted|принят)/is);
-  assert.match(projectState, /P3\.4/);
-  assert.match(roadmap, /P3\.4A/);
-  assert.match(roadmap, /exact.*artifact.*installed acceptance/is);
-  assert.match(changelog, /P3\.3/);
+  assert.match(projectState, /P3\.6C.*PRODUCTION ACCEPTED/is);
+  assert.match(projectState, /P3\.6.*NEXT \/ WAITING/is);
+  assert.match(roadmap, /P3\.6.*Measurement checkpoint.*NEXT \/ WAITING/is);
+  assert.match(changelog, /P3\.6C.*PRODUCTION ACCEPTED/is);
 });

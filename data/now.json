@@ -1,27 +1,27 @@
 {
-  "updated": "2026-08-05",
-  "focus": "Сейчас я сохраняю строгую границу между опубликованным evidence и принятым продуктом. VillAIgence опубликовал exact production-gated candidate 0.1.25+1.21.1 и получил детерминированные literal-loopback проверки production Chat, STT и TTS клиентов, но cumulative real-provider, Voice Chat, multiplayer и gameplay acceptance остаётся pending. В Vlezet M7.8B остаётся последним принятым recognition slice: PR #42 ждёт product-owner retest, а PR #44 и PR #45 являются только stacked Draft-разработкой M7.9 и M7.8C.1.",
+  "updated": "2026-08-08",
+  "focus": "Сейчас я сохраняю строгую границу между свежей repository activity и принятым продуктом. VillAIgence выпустил официальный 0.2.0+1.21.1: byte-identical clean-world candidate прошёл обязательные installed Memory 2.0 сценарии 7 PASS / 0 FAIL, а PR #123 добавил controlled BELIEF admission; следующий PR #125 остаётся Draft/RED для bounded PLAYER_TOLD candidate extraction. В Vlezet автоматический M7.8C путь не прошёл product-owner usefulness acceptance: PR #42, #44 и #45 закрыты unmerged как R&D, M7.8B остаётся принятым, а PR #52 открыл design-only pivot к Assisted Tracing.",
   "learning": [
-    "Evidence layering в VillAIgence: как разделять exact release publication, production-JAR startup/restart, deterministic provider-client acceptance и cumulative installed product acceptance",
-    "Hybrid recognition в Vlezet: как позволить AI предлагать missing openings, сохраняя локальную геометрию immutable, deterministic revalidation, explicit Apply и owner acceptance",
-    "Content Freshness как maintenance guard: как обнаруживать repository drift и обновлять публичный snapshot вручную, не позволяя automation автоматически повышать lifecycle или trust state"
+    "Evidence reconciliation: как обновлять публичный snapshot после release, merge, FAIL и strategy pivot, не повышая lifecycle автоматически",
+    "Memory 2.0 в VillAIgence: как отделять candidate extraction, BELIEF admission и server-observed FACT authority",
+    "Assisted Tracing в Vlezet: как заменить недостаточно полезную автоматическую реконструкцию на user-directed workflow с bounded local raster assistance и explicit semantic edits"
   ],
   "writing": [
-    "Готовлю Engineering Note о том, почему успешный deployment не равен production verification",
-    "Собираю материал о source tests → exact artifact → installed startup/restart → provider boundary → cumulative acceptance",
-    "Фиксирую практику evidence-driven project state для accepted, failed, pending и Draft сигналов"
+    "Фиксирую практику evidence-driven project state для accepted, failed, pending, Draft и closed-unmerged сигналов",
+    "Собираю материал о границе между автоматизированным доказательством, exact release identity и installed product acceptance",
+    "Продолжаю measurement checkpoint портфолио только после достаточного окна реальных aggregate observations"
   ],
   "en": {
-    "focus": "I am keeping a strict boundary between published evidence and accepted product state. VillAIgence has published the exact production-gated candidate 0.1.25+1.21.1 and has deterministic literal-loopback checks for the production Chat, STT and TTS clients, while cumulative real-provider, Voice Chat, multiplayer and gameplay acceptance remains pending. In Vlezet, M7.8B remains the latest accepted recognition slice: PR #42 is waiting for a product-owner retest, while PR #44 and PR #45 are stacked Draft work for M7.9 and M7.8C.1 only.",
+    "focus": "I am keeping a strict boundary between fresh repository activity and accepted product state. VillAIgence has released the official 0.2.0+1.21.1: the byte-identical clean-world candidate passed the required installed Memory 2.0 scenarios at 7 PASS / 0 FAIL, while PR #123 added controlled BELIEF admission and the next PR #125 remains Draft/RED for bounded PLAYER_TOLD candidate extraction. In Vlezet, the automatic M7.8C direction failed product-owner usefulness acceptance: PRs #42, #44 and #45 were closed unmerged as R&D, M7.8B remains accepted, and PR #52 opened a design-only pivot to Assisted Tracing.",
     "learning": [
-      "Evidence layering in VillAIgence: separating exact release publication, production-JAR startup/restart, deterministic provider-client acceptance and cumulative installed-product acceptance",
-      "Hybrid recognition in Vlezet: allowing AI to propose missing openings while keeping local geometry immutable, deterministic revalidation, explicit Apply and owner acceptance",
-      "Content Freshness as a maintenance guard: detecting repository drift and updating the public snapshot manually without allowing automation to promote lifecycle or trust state"
+      "Evidence reconciliation: updating public state after a release, merge, FAIL and strategy pivot without automatically promoting lifecycle",
+      "Memory 2.0 in VillAIgence: separating candidate extraction, BELIEF admission and server-observed FACT authority",
+      "Assisted Tracing in Vlezet: replacing insufficiently useful automatic reconstruction with a user-directed workflow, bounded local raster assistance and explicit semantic edits"
     ],
     "writing": [
-      "An Engineering Note on why a successful deployment is not the same as production verification",
-      "A practical chain from source tests to exact artifact, installed startup/restart, provider boundary and cumulative acceptance",
-      "Evidence-driven project-state practices for accepted, failed, pending and Draft signals"
+      "Evidence-driven project-state practices for accepted, failed, pending, Draft and closed-unmerged signals",
+      "The boundary between automated proof, exact release identity and installed product acceptance",
+      "Continuing the portfolio measurement checkpoint only after a sufficient window of real aggregate observations"
     ]
   }
 }

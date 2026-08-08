@@ -40,7 +40,9 @@ Recognition Draft, planning Preview, UI-фильтры, подсветка и ev
 
 ### AI proposal не равен authoritative geometry
 
-Принятый M7.8B ограничивал cloud review точными local IDs. Более поздний Draft PR #45 исследует missing-opening recovery, но только как отдельные proposals. Каждый proposal обязан пройти deterministic host, raster, topology и overlap validation, остаться reviewable и попасть в документ только через explicit Apply.
+Принятый M7.8B ограничивал cloud review точными local IDs. Закрытый unmerged PR #45 исследовал missing-opening recovery только как отдельные proposals с deterministic host/raster/topology/overlap validation. Этот путь сохранён как R&D evidence, но не принят в продукт и не даёт AI geometry authority.
+
+Текущий pivot в PR #52 идёт в противоположную сторону: **Assisted Tracing** начинается с явного действия пользователя. Reference image может помогать уточнить только текущий ephemeral preview, когда локальное evidence однозначно; при неоднозначности помощник обязан abstain. В design gate нет AI/network dependency и ещё нет product code.
 
 ### 3D остаётся проекцией
 
@@ -65,16 +67,13 @@ Three.js-визуализация read-only. У неё нет собственн
 - versioned recognition benchmark;
 - M7.8B region-first wall extraction, bounded topology и verification-only AI.
 
-M7.8B принят с известными ограничениями. На representative source система вернула 27 local wall candidates, 19 AI-confirmed и 8 pending review. Принятые Source geometry F1 и Source topology F1 составили `0.837989`. Openings были намеренно отложены.
+M7.8B принят с известными ограничениями. На representative source система вернула 27 local wall candidates, 19 AI-confirmed и 8 pending review. Принятые Source geometry F1 и Source topology F1 составили `0.837989`.
 
-Текущая acceptance boundary — **M7.8C Opening Classification and Host-Wall Validation**. PR #42 открыт как Draft на observed head `c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a`. CI #3138, Recognition Benchmark #316 и M7 Browser Audit #769 проходят, но тот же representative real-plan product-owner retest остаётся обязательным.
+После этого автоматический M7.8C путь был доведён до сильных deterministic gates, но **не прошёл product-owner usefulness acceptance** на исходном плане квартиры. 8 августа PR #42 был закрыт unmerged после representative retest. Связанные stacked PR #44 (real-fixture benchmark) и PR #45 (hybrid proposal recovery) также закрыты unmerged и сохранены только как R&D evidence.
 
-Параллельная разработка ведётся только как stacked Draft evidence:
+Это важная отрицательная проверка: зелёные benchmark/CI не превратили систему в достаточно полезный продукт. Результат не отменяет принятого M7.8B, но закрывает автоматический путь как текущую acceptance boundary.
 
-- PR #44 на observed head `cd29740cf240d591785fc6607147d2bf07ece0b6` создаёт M7.9 real-fixture benchmark. Standard CI проходит, но real wall geometry F1 `0.827338` и real opening F1 `0.627451` остаются ниже immutable merge threshold `0.85`;
-- PR #45 на observed head `2c4d0f44e56753b9c44dd6c30a720d1a97f50c2e` исследует M7.8C.1 hybrid AI proposal recovery поверх PR #44. AI может вернуть отдельное предложение, но не получает права создавать authoritative geometry без deterministic validation, review и Apply.
-
-PR #42, PR #44 и PR #45 не считаются принятыми или смерженными. Они не повышают lifecycle и не заменяют acceptance M7.8B.
+Следующая bounded direction — **Assisted Tracing**. Draft PR #52 является design-only gate из свежего `main`: пользователь сам выбирает тип объекта и указывает предполагаемую геометрию, а локальный анализ reference image может только безопасно уточнить ephemeral preview. На этом этапе product code ещё не принят.
 
 Публичный lifecycle остаётся **pre-production — ACTIVE DEVELOPMENT**.
 
@@ -95,21 +94,27 @@ Fit определяют containment, collision, door zones и реальные 
 
 ### Recognition Draft — отдельная стадия доверия
 
-Распознавание разделено на этапы:
+Исторический автоматический recognition path был разделён на этапы загрузки, калибровки, local candidates, optional AI proposals, deterministic validation, review и explicit Apply. Эта архитектура сохранила authority, но representative product review показал, что безопасная автоматизация сама по себе ещё не делает реконструкцию достаточно полезной.
 
-1. пользователь загружает JPG, PNG или PDF;
-2. изображение калибруется по реальному размеру;
-3. local CV создаёт bounded candidates;
-4. optional AI возвращает verification или отдельные proposals в пределах разрешённого Draft-контракта;
-5. каждый proposal повторно проверяется deterministic domain rules;
-6. пользователь сравнивает Draft с источником;
-7. только Apply переводит принятые candidates в ordinary document entities.
+### Assisted Tracing ставит намерение пользователя перед распознаванием
 
-### Сначала benchmark, потом tuning
+PR #52 меняет порядок authority:
+
+1. пользователь выбирает объект — стена, дверь или окно;
+2. пользователь проводит приблизительный segment/placement по reference plan;
+3. локальный bounded helper анализирует только небольшой raster region вокруг текущего preview;
+4. если evidence однозначно, preview может быть уточнён;
+5. если evidence неоднозначно, helper ничего не выдумывает;
+6. commit создаёт обычную semantic geometry command;
+7. Undo/Redo работает тем же domain path, что и для ручного редактирования.
+
+Так reference image помогает точности, но не становится вторым владельцем документа.
+
+### Сначала benchmark, потом tuning — и benchmark не заменяет usefulness
 
 M7.8A добавил versioned public-safe corpus, Core и Source execution, TP/FP/FN overlays и метрики для геометрии стен, топологии, проёмов, комнат, площадей, confidence и reconciliation.
 
-PR #44 расширяет эту идею до repository-owned analogues реальных планов, но не меняет threshold ради зелёного CI. Wall и opening F1 ниже `0.85` остаются явным merge blocker, а incorrect-high-confidence, unknown-host и stale-decision counters должны оставаться нулевыми.
+Закрытый PR #44 расширил эту идею до repository-owned analogues реальных планов и сохранил immutable safety thresholds. Это полезный R&D результат, но product-owner retest показал отдельную истину: высокая автоматизированная измеримость и даже зелёные технические gates не доказывают, что automatic reconstruction полезна на исходной пользовательской задаче.
 
 ### Region-first extraction вместо line-first шума
 
@@ -117,9 +122,9 @@ M7.8B перевёл локальное распознавание к region-fir
 
 Candidate overload завершается fail-closed: перегруженный Draft не сохраняется, не отправляется в AI и не получает право на Apply.
 
-### Hybrid AI восстанавливает только ограниченные proposals
+### Hybrid AI recovery сохранён как R&D, а не как следующий продуктовый путь
 
-PR #45 разделяет local geometry и AI recovery. Missing doors/windows могут появиться только как proposal records с host evidence. Local walls остаются immutable, AI не перемещает и не удаляет их, а thin-wall recovery вынесен в отдельный будущий stage.
+PR #45 показал, как missing doors/windows можно было бы моделировать как proposal records с host evidence и без права менять local walls. После failed usefulness acceptance автоматического направления этот PR закрыт unmerged. Его safety-решения остаются инженерным материалом, но следующий продуктовый slice не зависит от cloud recovery.
 
 ## Реальные ошибки, которые изменили архитектуру
 
@@ -145,7 +150,11 @@ Response healing и JSON Schema исправляют protocol defects. Они н
 
 ### Проём нельзя принимать без стены-хозяина
 
-Gap в линии может быть дверью, окном, текстом или артефактом edge detection. M7.8B намеренно оставил openings равными нулю вместо уверенного проёма без verified host wall. M7.8C и hybrid proposals строятся вокруг mandatory host-wall validation.
+Gap в линии может быть дверью, окном, текстом или артефактом edge detection. M7.8B намеренно оставил openings равными нулю вместо уверенного проёма без verified host wall. Закрытые PR #42/#45 исследовали эту границу, но не получили product acceptance.
+
+### Зелёный automatic pipeline всё равно может быть недостаточно полезен
+
+Representative retest 8 августа стал отдельным product gate. Automatic M7.8C сохранял deterministic safety, но результат всё ещё требовал слишком много исправлений и не прошёл usefulness acceptance. Поэтому стратегия сменилась не на снижение thresholds, а на Assisted Tracing, где пользователь задаёт intent и rough geometry напрямую.
 
 <!-- case-study:alternatives -->
 ## Рассмотренные и отвергнутые альтернативы
@@ -160,7 +169,7 @@ Gap в линии может быть дверью, окном, текстом �
 
 ### Cloud-модель как второй владелец геометрии
 
-Отвергнута. Даже когда AI разрешено предложить missing opening, proposal остаётся отдельным evidence object и проходит ту же deterministic validation. Модель не получает права молча двигать стены, менять thickness, re-host openings или применять результат.
+Отвергнута. Даже в закрытом hybrid R&D proposal оставался отдельным evidence object и проходил deterministic validation. Модель не получала права молча двигать стены, менять thickness, re-host openings или применять результат.
 
 ### Line-first Hough как основной владелец результата
 
@@ -168,7 +177,11 @@ Gap в линии может быть дверью, окном, текстом �
 
 ### Снижение benchmark threshold ради merge
 
-Отвергнуто. PR #44 сохраняет immutable `0.85` real wall/opening gates и нулевые safety counters. Красный measured result полезнее зелёного пайплайна, который перестал защищать продукт.
+Отвергнуто. Красный measured result полезнее зелёного пайплайна, который перестал защищать продукт. Позднее product-owner FAIL дополнительно показал, что даже прохождение технических thresholds не должно заменять usefulness acceptance.
+
+### Продолжать наращивать automatic recognition после failed owner retest
+
+Отвергнуто как текущая стратегия. PR #42/#44/#45 закрыты unmerged. Вместо ещё одного слоя heuristics/cloud recovery принят design pivot к Assisted Tracing, где система помогает пользователю проводить точную геометрию, а не пытается восстановить весь план за него.
 
 ### Отдельная authoritative 3D-модель
 
@@ -184,41 +197,39 @@ Evidence разделяет:
 - accepted product workflow и deterministic geometry contracts;
 - M7.8A reproducible benchmark authority;
 - M7.8B product-owner acceptance с точными метриками и ограничениями;
-- M7.8C PR #42 как pending Draft с зелёными automated gates и обязательным owner retest;
-- PR #44 как stacked Draft с измеримыми real-fixture blockers;
-- PR #45 как stacked Draft hybrid proposal architecture без AI geometry authority.
+- PR #42 как **failed product usefulness gate** и closed-unmerged automatic path;
+- PR #44 и PR #45 как closed-unmerged R&D evidence;
+- PR #52 как pending **Assisted Tracing design gate** без принятого product code.
 
-Статус `verified` относится только к перечисленным scopes. Он не означает, что Vlezet распознаёт произвольный архитектурный план без ручной проверки или что любой Draft slice принят.
+Статус `verified` относится к точности этого snapshot и перечисленным scopes. Он не означает, что Vlezet распознаёт произвольный архитектурный план автоматически или что PR #52 уже принят как реализованная capability.
 
 <!-- case-study:limitations -->
 ## Известные ограничения
 
-- некоторые внешние или основные стены всё ещё могут быть пропущены либо фрагментированы;
-- на текущем real-plan retest одна толстая несущая стена представлялась двумя параллельными axes;
-- видимые окна могли отсутствовать в Draft;
-- короткие линии сантехники или service block могли попадать в structural candidates;
 - accepted M7.8B Source topology F1 `0.837989` ниже финальной цели M7.8 `0.90`;
-- PR #42 automated metrics не заменяют owner acceptance на том же реальном плане;
-- PR #44 real wall/opening F1 остаются ниже immutable `0.85` merge threshold;
-- PR #45 Stage 1 proposal recovery ещё не имеет самостоятельной product acceptance;
+- automatic M7.8C path не прошёл representative product-owner usefulness acceptance и больше не является текущей merge/acceptance boundary;
+- PR #44 и PR #45 закрыты unmerged, поэтому их R&D результаты не должны описываться как shipped behavior;
+- Assisted Tracing в PR #52 пока design-only: product code, exact-head browser proof и owner acceptance ещё впереди;
+- bounded snap/refinement должен abstain при неоднозначном raster evidence, иначе helper снова начнёт выдумывать геометрию;
 - perspective-photo recognition не решён;
 - room-face derivation, OCR labels, area constraints и confidence calibration остаются дальнейшими slices.
 
 <!-- case-study:next -->
 ## Следующий принятый шаг
 
-Следующий gate — повторный product-owner retest exact head PR #42 на том же реальном плане.
+Сначала необходимо завершить **design review PR #52 — Assisted Tracing**.
 
-Проверка должна подтвердить:
+Design gate должен сохранить:
 
-1. одна centre axis вместо двойной thick-wall geometry;
-2. окна в корректных exterior-wall gaps и с известным host wall;
-3. отсутствие сантехнических symbol contours среди active walls;
-4. неизменность geometry count и coordinates после AI verification;
-5. incremental Apply без duplicates;
-6. независимый Undo/Redo для нескольких Apply batches.
+1. `VlezetDocument` как единственную geometry authority;
+2. явный выбор пользователем типа объекта и rough placement;
+3. только локальный bounded raster analysis вокруг текущего preview;
+4. fail-closed abstention при неоднозначном evidence;
+5. отсутствие обязательного AI/network path;
+6. commit через существующие semantic commands и полноценный Undo/Redo;
+7. M7.8B как последний принятый recognition milestone до нового product-owner acceptance.
 
-Только после явной acceptance либо конкретного defect report можно исправить ограниченный scope, повторить exact-head automation и рассматривать squash merge M7.8C. Stacked PR #44 и PR #45 должны затем пройти собственные immutable metrics, safety counters и product-owner gates; их наличие не позволяет обойти acceptance PR #42.
+После design approval следующий implementation PR должен пройти TDD RED→GREEN, unit/property tests для transform/raster/snap boundaries, Chromium/WebKit interaction evidence и небольшой повторный owner retest на исходном плане. Только после этого Assisted Tracing можно считать принятым slice.
 
 <!-- case-study:related -->
 ## Связанные материалы
@@ -233,7 +244,9 @@ Evidence разделяет:
 
 Я бы раньше записал `VlezetDocument` и миллиметры как формальный authority contract. После этого многие решения становятся проще: Canvas — проекция, комнаты — derivation, 3D — read-only, Preview — ephemeral, Apply — semantic command.
 
-Recognition benchmark стоило построить до первого quality tuning. Но M7.8B и последующие Draft-эксперименты добавили ещё одно правило: public benchmark, representative product-owner source и immutable safety gates должны оставаться разными обязательными доказательствами.
+Recognition benchmark стоило построить до первого quality tuning. Но M7.8B и последующие эксперименты добавили ещё одно правило: public benchmark, representative product-owner source и immutable safety gates должны оставаться разными обязательными доказательствами.
+
+Failed automatic M7.8C usefulness gate добавил важное продолжение: если модель решения остаётся неудобной для пользователя, нельзя бесконечно лечить её новыми heuristics только ради метрик. Иногда правильный следующий шаг — изменить interaction model и отдать intent пользователю, сохранив автоматике лишь bounded assistance.
 
 Также следовало сразу разделить пять проверок:
 
@@ -243,4 +256,4 @@ Recognition benchmark стоило построить до первого qualit
 4. candidate прошёл deterministic domain validation;
 5. геометрия похожа на источник и принята человеком.
 
-Uncertainty нужно проектировать как часть продукта. Пользователю полезнее увидеть среднюю уверенность, неизвестную стену-хозяина и возможность исправить Draft, чем получить чистую картинку, которая молча врёт о квартире.
+Uncertainty нужно проектировать как часть продукта. Пользователю полезнее увидеть среднюю уверенность, неизвестную стену-хозяина и возможность исправить preview, чем получить чистую картинку, которая молча врёт о квартире.

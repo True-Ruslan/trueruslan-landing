@@ -49,42 +49,38 @@ text command → validated message ────┘
 
 ### Память не должна быть бесконечным transcript
 
-VillAIgence разделяет:
+После clean cutover `memory2.json` является persistent dialogue-memory source. Memory 2.0 разделяет episodic DIALOGUE/OBSERVATION/ACTION/RELATIONSHIP_CHANGE, typed semantic `FACT`/`BELIEF`, relationships, voice identity и Operator Lore.
 
-- `memory.json` — bounded legacy dialogue history;
-- `memory2.json` — episodic `DIALOGUE`, `OBSERVATION`, `ACTION` и `RELATIONSHIP_CHANGE`;
-- `semantic-memory.json` — typed `FACT` и `BELIEF`;
-- `relationships.json` — player ↔ NPC relationship state;
-- `voices.json` — устойчивая voice identity;
-- `operator-lore.json` — явно заданный оператором background context.
-
-`FACT` требует server-owned evidence и provenance `SYSTEM_OBSERVED`. Сообщение игрока, реплика другого NPC или вывод модели могут стать `BELIEF`, но confidence не повышает их до факта.
+`FACT` требует server-owned evidence с provenance `SYSTEM_OBSERVED`. `PLAYER_TOLD`, `NPC_TOLD` и `INFERRED` остаются BELIEF. Confidence, формулировка модели или повторение утверждения не получают права автоматически повышать belief до authoritative fact.
 
 ### Provider и release pipeline — отдельные границы
 
 Authenticated redirects, небезопасные endpoint, loopback/SSRF-пути, malformed JSON, oversized bodies и unbounded waits должны завершаться bounded failure.
 
-Зелёный source CI не доказывает, что remapped JAR запускается на настоящем сервере. Source tests, GameTests, package inspection, exact release identity, production-JAR startup, restart, deterministic provider clients и cumulative acceptance отвечают на разные вопросы.
+Зелёный source CI не доказывает, что remapped JAR запускается на настоящем сервере. Source tests, GameTests, package inspection, exact release identity, production-JAR startup/restart, installed clean-world acceptance и дальнейшие semantic-memory slices отвечают на разные вопросы.
 
 <!-- case-study:current-state -->
 ## Текущая lifecycle- и acceptance-граница
 
-Текущий опубликованный candidate — **`0.1.25+1.21.1`**. Его evidence состоит из нескольких независимых слоёв.
+Текущий официальный release — **`0.2.0+1.21.1`**.
 
-Подтверждено отдельно и ограниченно:
+Его delivery boundary подтверждён несколькими независимыми слоями:
 
-- PR #103: каталог из 28 risk-based сценариев и семь isolated real-server Fabric GameTests;
-- PR #104: exact remapped production JAR установлен вне Loom/dev classpath, два JVM-запуска достигли ready marker, controlled shutdown и restart сохранили шесть canonical stores;
-- PR #105: inventory сохраняется при tombstone capture до передачи ownership могиле; focused installed resurrection canary остаётся отдельной ручной проверкой;
-- PR #107: exact production-gated release `0.1.25+1.21.1` опубликован только после проверки identity, package, startup, shutdown, restart и byte-identical JAR;
-- PR #108: production Chat, STT и TTS HTTP clients прошли deterministic literal-loopback acceptance без внешней сети и реальных провайдеров;
-- PR #109: configuration-cache и release-request gates исправлены без изменения runtime behavior.
+- PR #103 и последующие M11 automation slices сформировали risk-based catalogue, real Fabric GameTests и exact production-JAR gates;
+- PR #104 доказал production-JAR startup/restart вне Loom/dev classpath;
+- PR #110 смержен после exact-head проверки одного monotonic STT → Chat retries → optional TTS deadline и exactly-once dialogue/relationship effects;
+- PR #119 перевёл persistent dialogue на Memory 2.0-only clean cutover;
+- PR #120 подготовил и опубликовал exact `0.2.0+1.21.1` release boundary;
+- установленный byte-identical candidate с SHA-256 `56293f86634b50b2def044429aac6f2cf0d197eb16ac1e60224708f7b3333aee` прошёл обязательные clean-world Memory 2.0 сценарии **7 PASS / 0 FAIL**;
+- `VAI-M2-INST-005` остаётся **NOT TESTED / AUTOMATED EVIDENCE ONLY**;
+- `VAI-CONCUR-004` остаётся **NOT TESTED / DEFERRED**;
+- PR #123 смержен с provenance-safe BELIEF admission: `PLAYER_TOLD`, `NPC_TOLD`, `INFERRED` не получают FACT authority, а `SYSTEM_OBSERVED` остаётся отдельной server-owned границей.
 
-Эти результаты доказывают exact release, production-JAR startup/restart и ограниченный deterministic provider-client boundary. Они **не завершают cumulative real-provider, Voice Chat, multiplayer, focused gameplay и product-owner acceptance**.
+Эти результаты позволяют считать `0.2.0` официальным релизом с принятым bounded installed Memory 2.0 result. Они **не** означают, что все отложенные installed сценарии автоматически стали PASS или что любой следующий Memory 2.0 slice уже принят.
 
-Текущий публичный lifecycle остаётся **release candidate — ACCEPTANCE IN PROGRESS**.
+Публичный lifecycle поэтому пока остаётся **release candidate — ACCEPTANCE IN PROGRESS**.
 
-Активная разработка отделена от принятого состояния. Draft PR #110 на observed head `b3172080d89052a5b361d203dbdac152752d7d0d` определяет RED-контракт для одного общего STT → Chat retries → TTS deadline, exactly-once dialogue/relationship commits и сохранения успешного Chat commit при TTS deadline. Это не принятая capability: production implementation и installed acceptance ещё не доказаны, cumulative acceptance остаётся pending.
+Активная разработка сейчас отделена от принятого `0.2.0`. Draft PR #125 — TDD slice для bounded `PLAYER_TOLD` BELIEF candidate extraction внутри существующего structured Chat response. Его текущая boundary — **Draft/RED**: production extraction behaviour ещё не является accepted product truth. Модель может предложить только bounded statement strings; сервер фиксирует provenance, owner NPC, player identity и source MemoryEvent. Второй provider request и AI→FACT path запрещены.
 
 <!-- case-study:decisions -->
 ## Архитектура и ключевые решения
@@ -99,7 +95,7 @@ Authenticated redirects, небезопасные endpoint, loopback/SSRF-пут
 4. собирает immutable bounded context;
 5. передаёт провайдеру только подготовленное представление;
 6. после ответа повторно проверяет session, NPC и world state;
-7. отдельно валидирует proposed actions и relationship deltas.
+7. отдельно валидирует proposed actions, relationship deltas и semantic-memory admission.
 
 Старый ответ может быть технически корректным, но уже не иметь права на применение. Cancellation и supersession являются нормальным control flow.
 
@@ -107,7 +103,9 @@ Authenticated redirects, небезопасные endpoint, loopback/SSRF-пут
 
 Episodic memory отвечает на вопрос «что произошло», semantic memory — «что NPC считает знанием», а authoritative world state — «что действительно верно сейчас».
 
-У каждой записи есть owner NPC, provenance, deterministic identity и bounded retention. Consolidation объединяет источники, но не стирает source-event IDs. Forgetting определяется детерминированной storage policy внутри конкретного NPC, а не решением LLM.
+У каждой записи есть owner NPC, provenance, deterministic identity и bounded retention. Consolidation объединяет источники, но не стирает source-event IDs. Forgetting определяется storage policy внутри конкретного NPC, а не решением LLM.
+
+PR #123 добавил отдельную admission boundary: наличие candidate ещё не означает запись BELIEF, а BELIEF никогда не становится FACT только из-за confidence. Это позволяет развивать extraction в PR #125 без передачи модели authority над truth classification.
 
 ### Operator Lore — отдельный background layer
 
@@ -127,7 +125,11 @@ operator UI
 
 STT, Chat и TTS имеют независимые failure boundaries. Retry не должен повторно записывать память, действие или изменение отношений. Диагностика не содержит ключи, prompts, transcripts или hidden reasoning.
 
-PR #108 закрепил эту границу на реальных production HTTP clients: Chat retries используют один monotonic request budget, STT проверяет WAV multipart, а TTS — sample-for-sample PCM. Это protocol/client evidence, а не доказательство полного voice turn.
+PR #110 завершил общий orchestration contract: один monotonic deadline проходит через STT, Chat retries и optional TTS; successful Chat side effects сохраняются exactly once даже если TTS исчерпал остаток общего budget.
+
+### Clean cutover вместо вечной dual-persistence migration
+
+До `0.2.0` persistent dialogue имел legacy `memory.json` и Memory 2.0 параллельно. Для pre-1.0 проекта был выбран clean cutover: `memory2.json` стал единственным persistent dialogue-memory source, а clean-world installed acceptance проверил новую модель на exact bytes без попытки автоматически угадывать старые transcript semantics.
 
 ### Selective MCA synchronization вместо большого upstream merge
 
@@ -135,11 +137,11 @@ PR #108 закрепил эту границу на реальных production 
 
 ### Release identity является частью продукта
 
-Версия в имени файла недостаточна. Candidate должен иметь согласованную Fabric metadata, manifest identity, remapped package structure и checksum. PR #107 дополнительно связал immutable tag/release с exact accepted production JAR вместо публикации по одному зелёному source build.
+Версия в имени файла недостаточна. Candidate должен иметь согласованную Fabric metadata, manifest identity, remapped package structure и checksum. `0.2.0` дополнительно связан с byte-identical installed candidate, поэтому документационные корректировки acceptance oracle не требуют повторного ручного теста тех же runtime bytes.
 
 ### Acceptance каталог строится от рисков
 
-GameTest evidence остаётся development integration proof; production-JAR gate — installed automated proof; literal-loopback provider checks — production-client protocol proof. Ни один слой не заменяет cumulative operator acceptance.
+GameTest evidence остаётся development integration proof; production-JAR gate — installed automated proof; release package identity — distribution proof; clean-world 7 PASS / 0 FAIL — bounded operator acceptance. `VAI-M2-INST-005` и `VAI-CONCUR-004` сознательно остаются NOT TESTED, а не превращаются в PASS из соседнего evidence.
 
 ## Реальные отказы, которые изменили архитектуру
 
@@ -157,15 +159,19 @@ Candidate `0.1.21+1.21.1` упал при startup: tombstone Mixin не разр
 
 ### Loot и capture paths могли потерять persistent inventory
 
-Заполненная могила при Silk Touch исчезала без item drop, а NPC мог выбросить inventory до tombstone serialization. PR #105 перенёс capture до destructive death drop path, но focused installed canary с известными stacks остаётся обязательным.
+Заполненная могила при Silk Touch исчезала без item drop, а NPC мог выбросить inventory до tombstone serialization. PR #105 перенёс capture до destructive death drop path; позднейшие automated/install boundaries сохраняют эту ошибку как отдельный regression class.
 
 ### Green dialogue path не отменяет задержку
 
-Один Chat request в `0.1.20` занял примерно 272 секунды. Success code без user-visible deadline не является полным success contract. Поэтому PR #110 требует один monotonic budget на всю voice orchestration, а не новый timeout для каждого этапа.
+Один Chat request в `0.1.20` занял примерно 272 секунды. Success code без user-visible deadline не является полным success contract. PR #110 сделал общий monotonic budget реальной merged capability вместо прежнего RED-плана.
+
+### STT normalization не является автоматически memory failure
+
+В clean-world `0.2.0` физически произнесённый seed `silver-fox-482` был распознан как `SilverFox482`. Memory 2.0 сохранила и после restart воспроизвела именно принятый STT transcript. Acceptance oracle был исправлен: persistence проверяется от accepted STT boundary, а punctuation/case normalization остаётся отдельным STT-quality observation.
 
 ### Safe rollback — самостоятельный результат
 
-После startup failure `0.1.21` сервер вернули на `0.1.20`. Все шесть persistent hashes совпали, сервер снова достиг `STARTED`, TCP 25565, UDP 24454, Voice Chat и monitor восстановились.
+После startup failure `0.1.21` сервер вернули на `0.1.20`. Persistent hashes совпали, сервер снова достиг STARTED, TCP/UDP surfaces и monitoring восстановились. Rollback/recovery остаются частью release engineering evidence.
 
 <!-- case-study:alternatives -->
 ## Рассмотренные и отвергнутые альтернативы
@@ -180,7 +186,15 @@ Candidate `0.1.21+1.21.1` упал при startup: tombstone Mixin не разр
 
 ### LLM как источник фактов или прямых действий
 
-Отвергнуто. Модель может предложить ответ, command или delta; сервер повторно валидирует current state и исполняет только разрешённый эффект.
+Отвергнуто. Модель может предложить ответ, bounded candidate, command или delta; сервер повторно валидирует current state и исполняет/сохраняет только разрешённый эффект.
+
+### Confidence как FACT promotion
+
+Отвергнуто. Даже высокая model confidence не меняет provenance. PR #123 сохраняет `PLAYER_TOLD`, `NPC_TOLD` и `INFERRED` в BELIEF-классе; authoritative FACT требует server-owned `SYSTEM_OBSERVED` evidence.
+
+### Второй provider request ради semantic extraction
+
+Отвергнут для текущего PR #125. Candidate extraction должна использовать тот же bounded structured Chat response. Это уменьшает latency/cost и исключает новую независимую truth surface.
 
 ### Большой MCA merge и широкие production-sensitive Mixins
 
@@ -196,7 +210,7 @@ Candidate `0.1.21+1.21.1` упал при startup: tombstone Mixin не разр
 
 ### Свежий timeout budget на каждый provider stage
 
-Отвергнут. Последовательные STT, Chat retries и TTS не должны суммировать независимые максимумы и растягивать один пользовательский turn.
+Отвергнут. Последовательные STT, Chat retries и TTS используют один monotonic user-turn budget.
 
 <!-- case-study:evidence -->
 ## Что подтверждено
@@ -207,43 +221,43 @@ Evidence intentionally разделяет:
 
 - исторический `0.1.20` partial PASS;
 - `0.1.21` startup failure и safe rollback;
-- corrective PRs #99–#102;
-- PR #103 GameTests;
-- PR #104 production-JAR startup/restart;
-- PR #105 tombstone inventory ownership correction;
-- PR #107 published exact release `0.1.25+1.21.1`;
-- PR #108 deterministic Chat/STT/TTS production-client acceptance;
-- PR #109 build/release gate hardening;
-- PR #110 как pending Draft/RED work.
+- corrective PRs и M11 GameTests/production-JAR gates;
+- PR #110 как merged shared-deadline/exactly-once automation;
+- официальный release `0.2.0+1.21.1`;
+- byte-identical clean-world installed result **7 PASS / 0 FAIL**;
+- `VAI-M2-INST-005` и `VAI-CONCUR-004` как explicit NOT TESTED boundaries;
+- PR #123 как accepted controlled BELIEF admission;
+- PR #125 как pending Draft/RED candidate-extraction work.
 
-Статус `verified` относится только к перечисленным scopes. Он не означает, что cumulative acceptance завершена или что проект production-ready.
+Статус `verified` относится только к перечисленным scopes и актуальности snapshot. Он не означает, что PR #125 уже принят или что deferred installed cases можно считать пройденными.
 
 <!-- case-study:limitations -->
 ## Известные ограничения
 
-- cumulative real-provider Text/STT/Chat/TTS и Voice Chat acceptance остаётся pending;
-- literal-loopback acceptance не проверяет внешний provider, physical microphone и реальный playback;
-- общий monotonic orchestration deadline пока существует только как RED-контракт PR #110;
-- logical two-client Operator Lore conflict ещё не подтверждён отдельным live test;
-- focused installed water-navigation, filled-grave и inventory resurrection canaries остаются обязательными;
-- финальный product-owner acceptance и promotion не выполнены;
+- `VAI-M2-INST-005` остаётся NOT TESTED / AUTOMATED EVIDENCE ONLY;
+- `VAI-CONCUR-004` остаётся NOT TESTED / DEFERRED до доступности двух реальных графических клиентов;
+- physical microphone/provider/Voice Chat quality остаётся отдельным observational layer от deterministic loopback contracts;
+- PR #125 находится в Draft/RED и ещё не является accepted extraction capability;
+- semantic BELIEF admission не разрешает AI→FACT path и не доказывает качество будущего extraction;
+- final promotion beyond `release-candidate` не выводится автоматически из факта публикации `0.2.0`;
 - Fabric остаётся primary package, а NeoForge — compatibility build с отдельными границами проверки.
 
 <!-- case-study:next -->
 ## Следующий принятый шаг
 
-Сначала необходимо реализовать M11 Phase C и сделать green exact-head контракт единого STT → Chat retries → TTS deadline, сохранив exactly-once dialogue и relationship commits.
+Следующий bounded slice — **PR #125: PLAYER_TOLD BELIEF candidate extraction**.
 
-После этого один exact published candidate должен пройти cumulative acceptance:
+Он должен пройти RED→GREEN без расширения authority:
 
-1. real Text/STT/Chat/TTS и Voice Chat;
-2. global deadline и graceful TTS degradation;
-3. logical two-client lore conflict;
-4. focused water, filled-grave и inventory canaries;
-5. controlled restart и persistent continuity;
-6. product-owner acceptance.
+1. parse bounded candidate statements из существующего structured Chat response;
+2. не делать второй provider request;
+3. фиксировать `PLAYER_TOLD` provenance, owner NPC, current player UUID и persisted source event только на сервере;
+4. fail-soft обрабатывать empty/malformed candidate payload без потери основного dialogue result;
+5. не допускать AI→FACT или прямой parser→store обход admission policy;
+6. доказать exactly-once persistence при retries/replay;
+7. сохранить current observed FACT authoritative над conflicting BELIEF.
 
-До завершения этой последовательности lifecycle остаётся `release-candidate` / `ACCEPTANCE IN PROGRESS`.
+После этого roadmap переходит к trustworthy causal relationship memory и long-horizon recall. До отдельного evidence promotion lifecycle остаётся `release-candidate` / `ACCEPTANCE IN PROGRESS`.
 
 <!-- case-study:related -->
 ## Связанные материалы
@@ -270,4 +284,6 @@ mutable server state
 
 Episodic и semantic memory стоило разделить с первой версии, а Operator Lore — сразу определить как background context, а не знание мира.
 
-Release gate также следовало установить до первого публичного candidate. Source tests, integration tests, package inspection, exact release, startup, restart, deterministic provider clients, live canaries и manual acceptance отвечают на разные вопросы. Их явное разделение превращает failed gate в полезное evidence, а не в исключение, скрытое за общим зелёным статусом.
+Release gate также следовало установить до первого публичного candidate. Source tests, integration tests, package inspection, exact release, startup, restart, deterministic provider clients, installed canaries и manual acceptance отвечают на разные вопросы. Их явное разделение превращает failed gate в полезное evidence, а не в исключение, скрытое за общим зелёным статусом.
+
+После `0.2.0` к этой карте добавилась ещё одна важная граница: **candidate extraction → admission → semantic storage → authority** должны оставаться раздельными. Это позволяет давать NPC более богатую долговременную память, не превращая LLM в скрытый источник истины.

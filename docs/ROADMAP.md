@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-08**, после exact-production acceptance P3.6C consent-gated Yandex Metrica browser collection; P3.6 measurement ожидает внешние aggregate observations.
+> Обновлено: **2026-08-08**, после controlled reconciliation свежего external-project evidence поверх принятого P3.6C; P3.6 measurement ожидает внешние aggregate observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -91,9 +91,9 @@ Accepted routes:
 /en/projects/livingworld/
 ```
 
-Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`; M7.8B accepted, while M7.8C PR #42 and stacked PR #44/#45 remain Draft/pending product-owner gates.
+Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`. M7.8B remains the accepted recognition slice. The later automatic M7.8C path failed representative product-owner usefulness acceptance on 2026-08-08: PR #42 is closed unmerged, stacked PR #44/#45 are closed unmerged R&D evidence, and PR #52 is the new **Draft design-only Assisted Tracing gate** with no accepted product code yet.
 
-VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`. PR #103/#104/#105/#108/#110/#112 provide bounded automation. PR #114 remains Draft and cumulative installed acceptance remains separate.
+VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`. The current official release is `0.2.0+1.21.1`; the byte-identical clean-world candidate passed the required installed Memory 2.0 suite **7 PASS / 0 FAIL**, while `VAI-M2-INST-005` remains NOT TESTED / automated evidence only and `VAI-CONCUR-004` remains NOT TESTED / DEFERRED. PR #110 and PR #123 are merged bounded evidence; PR #125 is the current Draft/RED PLAYER_TOLD BELIEF candidate-extraction slice and is not accepted product truth.
 
 ## P3.4 — Grounded Engineering Notes — DONE
 
@@ -125,7 +125,7 @@ Canonical route:
 /landing/notes/hybrid-cv-ai-recognition-boundaries/
 ```
 
-Accepted outcome: `VlezetDocument` remains authoritative; local CV and provider output remain proposals; `localDraftFingerprint`, current-state revalidation and explicit Apply preserve deterministic authority. M7.8B remains separate from Draft M7.8C PR #42 and PR #44/#45.
+Accepted outcome: `VlezetDocument` remains authoritative; local CV and provider output remain proposals; `localDraftFingerprint`, current-state revalidation and explicit Apply preserve deterministic authority. Historical P3.4C acceptance remains tied to M7.8B; later PR #42/#44/#45 were closed unmerged after the automatic path failed product usefulness acceptance, and current PR #52 is a separate design-only Assisted Tracing boundary.
 
 Exact production evidence:
 
@@ -149,10 +149,12 @@ Accepted outcome:
 - literal-loopback provider-client proof does not imply real-provider acceptance;
 - `VAI-CONCUR-003` logical-client automation remains separate from `VAI-CONCUR-004` real installed two-client canary;
 - PR #110 and PR #112 are bounded automation evidence;
-- PR #114 remains Draft;
-- physical microphone, Simple Voice Chat UDP/Opus, inventory/grave/resurrection canary and cumulative product-owner acceptance remain installed gates;
+- historical Phase-E/Draft evidence remains distinct from later installed acceptance;
+- physical microphone, Simple Voice Chat UDP/Opus, inventory/grave/resurrection canaries and product-owner acceptance remain separate installed gates;
 - rollback and recovery remain part of acceptance;
 - green GameTests do not prove installed gameplay correctness.
+
+Later VillAIgence `0.2.0+1.21.1` clean-world acceptance proves only its documented required installed set at **7 PASS / 0 FAIL**. `VAI-M2-INST-005` and `VAI-CONCUR-004` remain explicitly NOT TESTED and are not promoted from adjacent automation.
 
 Exact production evidence:
 
@@ -377,9 +379,11 @@ After sufficient aggregate traffic, run the manual checkpoint with real `operato
 # Operational checkpoints
 
 - issue #111 — authenticated Yandex Webmaster actions and crawler observation;
-- issue #78 — default-branch Content Freshness owner refresh;
+- issue #78 — 2026-08-08 reconciliation обновляет canonical evidence; default-branch Content Freshness refresh после merge должен подтвердить отсутствие оставшихся findings;
 - issue #82 — review on or after **2026-08-17**; no `npm audit fix --force`, local shim or unreviewed fork.
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Confirm P3.6B real Reports API connection run `31201235872`. Confirm P3.6C production acceptance for SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, Pages run `31227641778`, deployment `5803497490`, Production Live run `31227681975` and production evidence digest `sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a`. Continue with **P3.6 — Measurement checkpoint — NEXT / WAITING** only when real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Confirm P3.6B real Reports API connection run `31201235872`. Confirm P3.6C production acceptance for SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, Pages run `31227641778`, deployment `5803497490`, Production Live run `31227681975` and production evidence digest `sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a`.
+
+Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Continue with **P3.6 — Measurement checkpoint — NEXT / WAITING** only when real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.

@@ -62,7 +62,7 @@ const HOME_COPY = Object.freeze({
     verifiedAt: 'Проверено',
     registrySource: 'Статус из реестра проектов',
     facts: Object.freeze({
-      livingworld: Object.freeze({label: 'Автоматизированная установленная граница', version: 'Automated installed boundary'}),
+      livingworld: Object.freeze({label: 'Принятый installed результат', version: 'Installed 0.2.0 result'}),
       vlezet: Object.freeze({label: 'Принятый срез распознавания', version: 'Accepted recognition slice'}),
       'portfolio-platform': Object.freeze({label: 'Публичный контур', fallback: 'Static-first production platform'}),
     }),
@@ -105,7 +105,7 @@ const HOME_COPY = Object.freeze({
     verifiedAt: 'Verified',
     registrySource: 'Status from the project registry',
     facts: Object.freeze({
-      livingworld: Object.freeze({label: 'Automated installed boundary', version: 'Automated installed boundary'}),
+      livingworld: Object.freeze({label: 'Accepted installed result', version: 'Installed 0.2.0 result'}),
       vlezet: Object.freeze({label: 'Accepted recognition slice', version: 'Accepted recognition slice'}),
       'portfolio-platform': Object.freeze({label: 'Public boundary', fallback: 'Static-first production platform'}),
     }),

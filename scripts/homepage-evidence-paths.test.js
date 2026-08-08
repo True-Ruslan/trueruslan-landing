@@ -83,7 +83,9 @@ test('production homepage rendering exposes three public flagships and no privat
   assert.match(ru, /href="landing\/notes\.html"/);
   assert.match(en, /href="en\/resume\.html"/);
   assert.match(en, /href="en\/notes\/server-authoritative-ai-npcs\.html"/);
-  assert.match(ru, /production-JAR startup \+ restart PASS/);
+  assert.match(ru, /Принятый installed результат/);
+  assert.match(ru, /7 PASS \/ 0 FAIL/);
   assert.match(ru, /M7\.8B/);
   assert.match(ru, /Static-first production platform/);
+  assert.doesNotMatch(ru, /VAI-M2-INST-005[^<]*PASS|VAI-CONCUR-004[^<]*PASS/i);
 });

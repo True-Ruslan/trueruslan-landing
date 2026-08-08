@@ -75,20 +75,22 @@ const validEvidence = [
   {
     project: 'livingworld',
     status: 'verified',
-    lastVerified: '2026-08-03',
+    lastVerified: '2026-08-08',
     versions: [
-      {label: 'Automated installed boundary', value: 'production-JAR startup + restart PASS'},
-      {label: 'Cumulative manual acceptance', value: 'pending'},
+      {label: 'Current official release', value: '0.2.0+1.21.1'},
+      {label: 'Installed 0.2.0 result', value: '7 PASS / 0 FAIL'},
+      {label: 'Deferred installed boundaries', value: 'VAI-M2-INST-005 NOT TESTED; VAI-CONCUR-004 NOT TESTED / DEFERRED'},
     ],
     signals: [],
   },
   {
     project: 'vlezet',
     status: 'verified',
-    lastVerified: '2026-08-04',
+    lastVerified: '2026-08-08',
     versions: [
       {label: 'Accepted recognition slice', value: 'M7.8B'},
-      {label: 'Next recognition slice', value: 'M7.8C'},
+      {label: 'Automatic M7.8C result', value: 'product-owner usefulness FAIL / closed unmerged'},
+      {label: 'Next acceptance boundary', value: 'Assisted Tracing design gate and product-owner acceptance'},
     ],
     signals: [],
   },
@@ -146,14 +148,15 @@ test('homepage evidence signals stay bounded to canonical project and evidence s
   const html = renderHomepageEvidenceSignals(validProjects, validEvidence, {locale: 'ru'});
 
   assert.match(html, /data-home-evidence="livingworld"/);
-  assert.match(html, /production-JAR startup \+ restart PASS/);
+  assert.match(html, /Принятый installed результат/);
+  assert.match(html, /7 PASS \/ 0 FAIL/);
   assert.match(html, /ACCEPTANCE IN PROGRESS/);
   assert.match(html, /data-home-evidence="vlezet"/);
   assert.match(html, /M7\.8B/);
   assert.match(html, /ACTIVE DEVELOPMENT/);
   assert.match(html, /data-home-evidence="portfolio-platform"/);
   assert.match(html, /PRODUCTION/);
-  assert.doesNotMatch(html, /NODE ZERO|M7\.8C accepted|full acceptance/i);
+  assert.doesNotMatch(html, /NODE ZERO|M7\.8C accepted|full acceptance|VAI-M2-INST-005[^<]*PASS|VAI-CONCUR-004[^<]*PASS/i);
 });
 
 test('renderStandaloneHome injects evidence-first paths and public flagships without Diplodoc runtime bundles', () => {
@@ -172,6 +175,7 @@ test('renderStandaloneHome injects evidence-first paths and public flagships wit
   assert.match(html, /https:\/\/example\.test\/assets\/images\/avatar\.png/);
   assert.match(html, /data-home-path="resume"/);
   assert.match(html, /data-home-evidence="livingworld"/);
+  assert.match(html, /7 PASS \/ 0 FAIL/);
   assert.match(html, /data-home-flagship="livingworld"/);
   assert.match(html, /data-home-flagship="vlezet"/);
   assert.match(html, /data-home-flagship="portfolio-platform"/);
@@ -199,6 +203,9 @@ test('renderStandaloneHome supports English evidence paths and bounded Russian f
 
   assert.match(html, /data-home-path="resume"/);
   assert.match(html, /href="en\/resume\.html"/);
+  assert.match(html, /data-home-evidence="livingworld"/);
+  assert.match(html, /Accepted installed result/);
+  assert.match(html, /7 PASS \/ 0 FAIL/);
   assert.match(html, /data-home-flagship="livingworld"/);
   assert.match(html, /href="en\/projects\/livingworld\.html"/);
   assert.match(html, /data-home-flagship="vlezet"/);
