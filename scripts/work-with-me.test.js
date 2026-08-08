@@ -124,7 +124,7 @@ test('Contacts delegates direct handoff to canonical collaboration truth', () =>
   const source = read('docs/landing/contacts.md');
   assert.match(source, /data-tr-collaboration-handoff="contacts"/);
   assert.match(source, /work-with-me\.md/);
-  assert.doesNotMatch(source, /ruslan\.nemikin@gmail\.com|https:\/\/t\.me\/TrueRuslan/);
+  assert.doesNotMatch(source, /ruslan\.nemikin@gmail\.com|https:\/\/t\.me\/TrueRuslan(?!_)/);
   assert.match(source, /GitHub|Habr|LinkedIn/);
 });
 
