@@ -76,7 +76,7 @@ test('NotchHub case studies expose accepted 0.1.0 foundation separately from pen
   }
 });
 
-test('NotchHub has localized routing and project history while Vlezet remains directly reachable', () => {
+test('NotchHub has localized routing and canonical timeline while Vlezet remains directly reachable', () => {
   const i18n = json('data/i18n.json');
   assert.deepEqual(i18n.find((entry) => entry.id === 'notchhub'), {
     id: 'notchhub',
@@ -85,9 +85,9 @@ test('NotchHub has localized routing and project history while Vlezet remains di
   });
 
   const history = json('data/project-history/notchhub.json');
-  assert.equal(history.project, 'notchhub');
-  assert.ok(history.events.some((event) => event.id === 'personal-release-0-1-0'));
-  assert.ok(history.events.some((event) => event.id === 'm1-in-progress'));
+  assert.ok(Array.isArray(history));
+  assert.ok(history.some((event) => event.state === 'past' && /0\.1\.0|Personal Release/i.test(`${event.title} ${event.description}`)));
+  assert.ok(history.some((event) => event.state === 'current' && /M1|PR #10/i.test(`${event.title} ${event.description}`)));
 
   const toc = read('docs/toc.yaml');
   assert.match(toc, /NotchHub[^\n]*\n\s+href: \.\/landing\/projects\/notchhub\.md/);
