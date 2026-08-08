@@ -157,9 +157,9 @@ Only after that boundary is accepted should the roadmap move into trustworthy ca
 
 - [Designing a server-authoritative AI NPC pipeline →](../notes/server-authoritative-ai-npcs.md)
 - [Why successful LLM output still may violate the contract →](../notes/llm-output-is-a-protocol-boundary.md)
-- [From source tests to installed acceptance →](../notes/source-tests-to-installed-acceptance.md)
-- [Probabilistic proposals and deterministic authority →](../notes/probabilistic-proposals-deterministic-authority.md)
-- [Restart persistence as a product contract →](../notes/restart-persistence-is-a-product-contract.md)
+- [From source tests to installed acceptance →](../../landing/notes/source-tests-to-installed-acceptance.md)
+- [Probabilistic proposals and deterministic authority →](../../landing/notes/probabilistic-proposals-deterministic-authority.md)
+- [Restart persistence as a product contract →](../../landing/notes/restart-persistence-is-a-product-contract.md)
 - [Russian canonical evidence and timeline →](../../landing/projects/livingworld.md)
 - [GitHub repository ↗](https://github.com/True-Ruslan/villAIgence)
 
