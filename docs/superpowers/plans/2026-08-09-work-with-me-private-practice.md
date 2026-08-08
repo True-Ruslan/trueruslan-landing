@@ -42,16 +42,11 @@
 
 **Files:** `data/collaboration.json`, `scripts/collaboration.js`, `scripts/collaboration.test.js`.
 
-**Interfaces:**
-- `loadCollaboration(filePath?) -> CollaborationModel`
-- `validateCollaboration(raw) -> CollaborationModel`
-- `resolveContextualTargets(model, i18nPairs) -> Array<{path, locale, category}>`
-- `AVAILABILITY_STATES = ['available','limited','consulting-only','unavailable']`
-- `CONTEXTUAL_CATEGORIES = ['engineering','ai-integration','education','expert-content']`
+**Interfaces:** `loadCollaboration(filePath?)`, `validateCollaboration(raw)`, `resolveContextualTargets(model, i18nPairs)`; state enum `available|limited|consulting-only|unavailable`; category enum `engineering|ai-integration|education|expert-content`.
 
 - [ ] Write failing tests for launch truth, exact contacts, `estimate-only`, self-employed receipt capability, safe states/paths/categories and duplicate rejection.
 - [ ] Run RED: `node --test scripts/collaboration.test.js`.
-- [ ] Create the exact V1 registry:
+- [ ] Create exact registry:
 
 ```json
 {
@@ -68,180 +63,146 @@
 }
 ```
 
-- [ ] Implement strict validation: known keys only, `YYYY-MM-DD`, `https://t.me/...`, valid email, exact policy enums, safe normalized `.html` paths, unique contextual paths/categories.
-- [ ] Add EN derivation only when `pair.ru === approved.path`; no slug/keyword inference.
-- [ ] Run GREEN: `node --test scripts/collaboration.test.js && npm test`.
+- [ ] Implement strict known-key/date/Telegram/email/policy/path/category validation.
+- [ ] Derive EN target only when `pair.ru === approved.path`; no heuristic inference.
+- [ ] GREEN: `node --test scripts/collaboration.test.js && npm test`.
 - [ ] Commit `feat: add canonical collaboration model`.
 
----
+## Task 2: RU/EN Work with me + build-time projection
 
-## Task 2: RU/EN Work with me pages and build-time truth projection
+**Files:** create `docs/landing/work-with-me.md`, `docs/en/work-with-me.md`, `docs/_assets/style/collaboration.css`; modify `.yfm`, collaboration module/tests, copy-assets/tests.
 
-**Files:** create `docs/landing/work-with-me.md`, `docs/en/work-with-me.md`, `docs/_assets/style/collaboration.css`; modify `docs/.yfm`, `scripts/collaboration.js`, `scripts/collaboration.test.js`, `scripts/copy-assets.js`, `scripts/copy-assets.test.js`.
-
-**Interfaces:** `renderAvailability`, `renderDirectContact`, `applyCollaborationPages`.
-
-- [ ] Write RED renderer tests for textual RU/EN states, data attributes, canonical Telegram/mailto, self-employed note and absence of form controls.
-- [ ] Create RU page with approved sections: Engineering; Startup/individual; Teaching & Mentoring; Expert contribution; process; fit guidance; open door; Describe the task.
-- [ ] Keep mutable truth only in `<div data-tr-collaboration-availability></div>` and `<div data-tr-collaboration-contact="work-with-me"></div>`.
-- [ ] Create natural EN equivalent. Stable search phrases: `bounded engineering work with a clear outcome`, `Architecture → Implementation → Verification → Delivery → Handover`, `The formats above are examples, not a closed catalogue.`
-- [ ] Implement renderers; `unavailable` changes copy but never hides the route.
-- [ ] Add scoped `.tr-collaboration-*` CSS with existing tokens, no color-only status and no new animation; load through `.yfm`.
-- [ ] Fail if required generated placeholders are missing or duplicated.
-- [ ] Load collaboration once in `copy-assets.js` and reuse the same validated object.
-- [ ] Add isolated postprocess fixture in `copy-assets.test.js`.
-- [ ] Verify: `node --test scripts/collaboration.test.js scripts/copy-assets.test.js && npm test && npm run build:docs && npm run check:site`.
+- [ ] RED renderer tests: textual RU/EN status/data attributes, canonical Telegram/mailto, self-employed note, no form controls.
+- [ ] RU editorial sections: Engineering; Startup/individual; Teaching & Mentoring; Expert contribution; process; fit guidance; open door; Describe the task.
+- [ ] Mutable placeholders only: `<div data-tr-collaboration-availability></div>` and `<div data-tr-collaboration-contact="work-with-me"></div>`.
+- [ ] Natural EN equivalent with stable phrases `bounded engineering work with a clear outcome`, `Architecture → Implementation → Verification → Delivery → Handover`, `The formats above are examples, not a closed catalogue.`
+- [ ] Implement localized `renderAvailability`, `renderDirectContact`, `applyCollaborationPages`; `unavailable` stays visible.
+- [ ] Scoped `.tr-collaboration-*` CSS only; existing tokens; no color-only meaning/new animation.
+- [ ] Missing/duplicate required placeholder fails build.
+- [ ] Load canonical model once in `copy-assets.js`; add isolated postprocess fixture.
+- [ ] Verify focused tests + `npm test && npm run build:docs && npm run check:site`.
 - [ ] Commit `feat: add work with me pages`.
 
----
+## Task 3: Navigation, i18n, metadata
 
-## Task 3: Navigation, i18n and metadata
+**Files:** toc, both homepage templates, i18n registry/test, page-meta, metadata smoke, header contract test.
 
-**Files:** `docs/toc.yaml`, `templates/index.html`, `templates/index.en.html`, `data/i18n.json`, `scripts/i18n.test.js`, `data/page-meta.json`, `scripts/metadata-smoke.cjs`, `scripts/header-chrome-unifier.test.js`.
-
-- [ ] RED: require Work with me pair and navigation order.
-- [ ] RU primary header becomes exactly: `Проекты`, `Опыт`, `Работа со мной`, `Notes`, `Публикации`, `Обо мне`, `Контакты`.
-- [ ] `Сейчас`, Map, Фото and Источники remain in the content/ToC graph; only primary-header density changes.
-- [ ] EN standalone header becomes: `Projects`, `Experience`, `Work with me`, `Now`, `Publications`, `About`, `Notes (RU)`.
-- [ ] Add `{"id":"work-with-me","ru":"landing/work-with-me.html","en":"en/work-with-me.html"}` and update controlled i18n count 12 → 13.
-- [ ] Add RU metadata title `Работа со мной — Backend-разработка, консультации и наставничество | Руслан Немыкин`, EN title `Work with me — Backend engineering, consulting and mentoring | Ruslan Nemykin`, cards `work-with-me`/`work-with-me-en`.
+- [ ] RED require pair and navigation order.
+- [ ] RU primary header: `Проекты`, `Опыт`, `Работа со мной`, `Notes`, `Публикации`, `Обо мне`, `Контакты`; keep Сейчас/Map/Фото/Источники in content graph.
+- [ ] EN header: `Projects`, `Experience`, `Work with me`, `Now`, `Publications`, `About`, `Notes (RU)`; no invented EN Contacts.
+- [ ] Add i18n pair `work-with-me`; controlled pair count 12 → 13.
+- [ ] Add explicit RU/EN metadata cards/titles from the approved design.
 - [ ] Verify unit/build/site integrity/metadata smoke.
 - [ ] Commit `feat: expose work with me navigation and metadata`.
 
----
-
 ## Task 4: Contacts uses canonical direct-contact truth
 
-**Files:** `docs/landing/contacts.md`, `scripts/collaboration.js`, `scripts/collaboration.test.js`; create `scripts/private-practice-contract.test.js`.
+**Files:** Contacts, collaboration module/tests, new `scripts/private-practice-contract.test.js`.
 
-- [ ] RED source/copy guard requires Work with me link and `data-tr-collaboration-contact="contacts"`; scan controlled commercial copy for prohibited cheap-sales phrases and public currency/price patterns.
-- [ ] Preserve general Contacts purpose/external profiles; replace hard-coded Telegram/email with canonical placeholder.
-- [ ] Add a short `Если пишете по задаче` section explaining what context to send; do not duplicate service catalogue.
-- [ ] Build injects canonical direct contacts; missing/duplicate placeholder fails.
-- [ ] Verify full tests/build/site integrity.
+- [ ] RED copy/source guard for Work with me link, contacts placeholder, prohibited sales phrases and public price patterns.
+- [ ] Preserve general Contacts/external profiles; replace direct Telegram/email with `<div data-tr-collaboration-contact="contacts"></div>`.
+- [ ] Add concise `Если пишете по задаче` qualification hint; no service-catalog duplication.
+- [ ] Inject from the same model; missing/duplicate placeholder fails.
+- [ ] Verify tests/build/site integrity.
 - [ ] Commit `feat: connect contacts to collaboration model`.
-
----
 
 ## Task 5: Evidence-led homepage bridge
 
-**Files:** both homepage templates, `scripts/standalone-home.js`, its test, `scripts/copy-assets.js`, collaboration CSS.
+**Files:** homepage templates, standalone-home module/test, copy-assets, collaboration CSS.
 
-**Interface:** `renderHomepageCollaborationBridge(model, {locale})`; placeholder `{{HOME_COLLABORATION_BRIDGE}}`.
-
-- [ ] RED tests require canonical availability, Work with me href, no form/price and honest `unavailable` copy.
-- [ ] Render one restrained collaboration surface from the canonical model.
-- [ ] Place it after Flagship projects and before Current focus.
-- [ ] Preserve exactly three primary Experience/Projects/Materials paths; collaboration is never card #4.
-- [ ] Reuse the one loaded canonical model for RU/EN.
+- [ ] RED require canonical availability, Work with me href, no form/price, honest unavailable copy.
+- [ ] Implement `renderHomepageCollaborationBridge`.
+- [ ] Place `{{HOME_COLLABORATION_BRIDGE}}` after Flagship projects, before Current focus.
+- [ ] Preserve exactly three primary Experience/Projects/Materials paths.
+- [ ] Reuse one loaded model for RU/EN.
 - [ ] Verify tests/build/site integrity.
 - [ ] Commit `feat: add evidence-led collaboration bridge`.
 
----
+## Task 6: Explicit contextual CTA + surface guard
 
-## Task 6: Explicit contextual CTA and surface guard
+**Files:** collaboration module/tests, private-practice contract, copy-assets.
 
-**Files:** `scripts/collaboration.js`, its tests, private-practice contract test, `scripts/copy-assets.js`.
-
-**Interfaces:** `renderContextualCollaborationCta`, `applyContextualCollaboration`.
-
-- [ ] RED with temp HTML for exact four RU approved pages, existing EN counterparts, forbidden About/Experience.
-- [ ] Require EN targets only for Portfolio Platform, NotchHub and server-authoritative AI NPCs; the deployment Note has no EN pair and gets no invented translation.
-- [ ] Implement all four allowed category renderers, but map only Engineering/AI in V1.
-- [ ] Append with parse5 at the end of stable generated document content; approved missing target/container fails.
-- [ ] Compute relative Work with me href by path, never guessed `../` depth.
-- [ ] Build and assert exact contextual target list; no About/Experience/Photos/Sources/Engineering Map automatic bridge.
+- [ ] RED exact four RU targets, existing EN counterparts, forbidden About/Experience.
+- [ ] EN only for Portfolio Platform, NotchHub, server-authoritative AI NPCs; no invented EN deployment Note.
+- [ ] Implement `renderContextualCollaborationCta` and `applyContextualCollaboration`; all enum renderers exist but V1 maps only Engineering/AI.
+- [ ] Append via parse5 at the end of generated document content; missing approved target/container fails.
+- [ ] Compute relative href by path; no keyword/depth guessing.
+- [ ] Assert exact generated target set and absence on About/Experience/Photos/Sources/Engineering Map.
 - [ ] Commit `feat: add bounded contextual collaboration bridges`.
 
----
+## Task 7: Browser/no-JS/search/a11y/cross-browser
 
-## Task 7: Search, browser, no-JS, accessibility and cross-browser proof
+**Files:** new collaboration browser smoke; quality scenarios; browser/cross-browser/layout/i18n/search smokes; Build workflow.
 
-**Files:** create `scripts/collaboration-browser-smoke.cjs`; modify quality scenarios, browser-quality, cross-browser, layout-overflow, i18n-browser, search smoke and Build workflow.
-
-- [ ] Add `CORE_SCENARIOS.workWithMe` for `/landing/work-with-me/`.
-- [ ] Cover Work with me in Chromium desktop/mobile, Firefox, WebKit and mobile overflow; remove no existing scenario.
-- [ ] Add `work-with-me` to i18n browser pairs and no-JS parity.
-- [ ] Search: RU `ограниченным scope и результатом` → RU route; EN `bounded engineering work with a clear outcome` → EN route.
-- [ ] Dedicated collaboration smoke verifies RU/EN structure, same canonical truth, no form, no-JS contacts, homepage bridge after proof with primary-path count 3, Contacts handoff, exact contextual allowlist/forbidden surfaces, Axe, overflow and diagnostics.
-- [ ] Capture RU/EN Work with me desktop/mobile, homepage collaboration and Contacts mobile screenshots.
-- [ ] Add Build step `Work with me browser smoke` and preserve artifacts.
-- [ ] Run local browser matrix with CI-pinned versions.
+- [ ] Add `CORE_SCENARIOS.workWithMe`.
+- [ ] Add RU Work with me to Chromium desktop/mobile; RU+EN to Firefox/WebKit and overflow.
+- [ ] Add i18n pair/no-JS parity.
+- [ ] Search RU `ограниченным scope и результатом` → RU; EN `bounded engineering work with a clear outcome` → EN.
+- [ ] Dedicated smoke verifies canonical truth, no form, no-JS, homepage order + primary path count 3, Contacts, exact CTA set/forbidden surfaces, Axe, overflow and diagnostics.
+- [ ] Capture RU/EN desktop/mobile, homepage collaboration and Contacts mobile screenshots.
+- [ ] Add Build step/artifact preservation; run pinned browser matrix.
 - [ ] Commit `test: verify private practice across browsers`.
-
----
 
 ## Task 8: Visual acceptance
 
 **File:** `tests/visual-baselines.json`.
 
-- [ ] Run visual regression before rebasing.
-- [ ] Inspect every intentional screenshot for Engineering-primary hierarchy, Teaching-secondary visibility, non-salesy CTA, textual availability and header density.
-- [ ] Update only intentional baselines. Keep exactly `sampleSize=16`, `maxMeanChannelDelta=5`, `maxDimensionDeltaRatio=0.03`.
-- [ ] Do not rebase unrelated Engineering Map/Search/project baselines.
-- [ ] Re-run visual regression to PASS.
+- [ ] Run screenshots/visual regression before rebasing.
+- [ ] Inspect intentional marketing/brand surfaces manually.
+- [ ] Update only intentional baselines; keep exactly `sampleSize=16`, `maxMeanChannelDelta=5`, `maxDimensionDeltaRatio=0.03`.
+- [ ] No unrelated baseline rebasing.
+- [ ] Re-run visual gate to PASS.
 - [ ] Commit `test: accept private practice visual surfaces`.
-
----
 
 ## Task 9: Exact-deployment production gate
 
-**Files:** production routes/test, new `scripts/production-private-practice-smoke.cjs`, new workflow contract test, production-live workflow/test.
+**Files:** production routes/test; new private-practice production smoke/workflow contract; production workflow/test.
 
-- [ ] RED: require `https://trueruslan.ru/landing/work-with-me/` and `/en/work-with-me/`, deployment-only step and `EXPECTED_DEPLOYED_SHA`.
-- [ ] Add clean route constants; no `.html` canonical.
-- [ ] Production smoke reads `data/collaboration.json` and verifies RU/EN 200, H1, canonical/hreflang, exact states/contacts, no form/price, no-JS, homepage bridge after proof and three primary paths, primary navigation, Contacts, exact contextual set, forbidden About/Experience, no third-party lead runtime, clean diagnostics.
-- [ ] Write `production-artifacts/private-practice-production-summary.json` with expected SHA and screenshot evidence.
-- [ ] Wire `Run deployed private practice smoke` only for non-PR events, passing resolved deployed SHA.
-- [ ] Preserve read-only permissions/evidence upload contract.
-- [ ] Run full unit suite.
+- [ ] RED clean RU/EN route constants + deployment-only workflow step + `EXPECTED_DEPLOYED_SHA`.
+- [ ] Production smoke reads canonical model and verifies RU/EN 200/H1/canonical/hreflang/states/contacts, no form/price, no-JS, homepage proof ordering + three paths, nav, Contacts, exact contextual set, forbidden About/Experience, no third-party lead runtime, clean diagnostics.
+- [ ] Write `production-artifacts/private-practice-production-summary.json` with expected SHA + screenshot.
+- [ ] Wire `Run deployed private practice smoke` for non-PR execution with resolved deployed SHA.
+- [ ] Preserve read-only permissions/evidence upload.
+- [ ] GREEN full unit suite.
 - [ ] Commit `test: add private practice production gate`.
 
----
+## Task 10: Feature PR + exact-head verification
 
-## Task 10: Feature PR and exact-head verification
-
-- [ ] After planning PR merge, start `feat/work-with-me-private-practice` from current `master`.
-- [ ] Execute Tasks 1–9 RED→GREEN; run `npm test && npm run build:docs && npm run check:site` plus browser matrix.
-- [ ] Review diff against non-goals: no form, public prices, conversion events, extra targets, EN Contacts, P3.6 promotion or unrelated redesign.
-- [ ] Open `feat: add evidence-led private practice`; state explicitly that source/build/browser proof is not production acceptance.
-- [ ] Require exact-head Build, CodeQL JS/TS, Dependency Review and current required checks; zero unresolved review threads.
+- [ ] After planning PR merge, start `feat/work-with-me-private-practice` from current master.
+- [ ] Execute Tasks 1–9 RED→GREEN; run full unit/build/integrity/browser matrix.
+- [ ] Review non-goals: no form/public prices/conversion events/extra targets/EN Contacts/P3.6 promotion/unrelated redesign.
+- [ ] Open `feat: add evidence-led private practice`; say source/build/browser proof is not production acceptance.
+- [ ] Require exact-head Build, CodeQL JS/TS, Dependency Review/current required checks and zero unresolved review threads.
 - [ ] Inspect CI screenshots/artifacts.
-- [ ] Squash merge only the verified exact head and record the squash SHA without calling it production accepted yet.
-
----
+- [ ] Squash verified exact head; record SHA without declaring production acceptance.
 
 ## Task 11: Exact production acceptance
 
-- [ ] Require Pages success for the exact feature squash SHA and record deployment identity/artifacts.
-- [ ] Require deployment-triggered Production Live whose source Pages head SHA is the exact feature squash SHA.
-- [ ] Inspect the private-practice production summary and all existing production gates.
-- [ ] If production fails: preserve evidence, RED-reproduce, separate hotfix PR, no verifier weakening, repeat exact deployment acceptance.
-- [ ] Record accepted tuple: product SHA, Pages run, deployment ID, Pages artifact+digest, Production Live run, production artifact+digest, `observedAt`.
-
----
+- [ ] Require Pages success for exact feature squash SHA and deployment/artifact identity.
+- [ ] Require deployment-triggered Production Live whose source Pages head SHA matches exactly.
+- [ ] Inspect dedicated summary + all existing gates.
+- [ ] On failure: preserve evidence, RED-reproduce, separate hotfix PR, no verifier weakening, repeat exact deployment acceptance.
+- [ ] Record accepted SHA, Pages run/deployment/artifact+digest, Production Live run/artifact+digest, observedAt.
 
 ## Task 12: Durable acceptance ledger
 
-**Files:** create `scripts/private-practice-acceptance.test.js`; modify PROJECT_STATE, ROADMAP, CHANGELOG.
+**Files:** new `scripts/private-practice-acceptance.test.js`; PROJECT_STATE, ROADMAP, CHANGELOG.
 
-- [ ] After Task 11 only, write RED durable-state assertions using the exact observed IDs.
-- [ ] Prove P3.6 remains `NEXT / WAITING FOR EXTERNAL EVIDENCE` and never becomes DONE from this feature.
-- [ ] Record `Private engineering & educational practice — PRODUCTION ACCEPTED` plus exact evidence in PROJECT_STATE.
-- [ ] Record V1 accepted in ROADMAP while keeping future prices/forms/productized pages evidence-driven.
-- [ ] Record planning/feature/hotfix if any/RED→GREEN/exact production evidence in CHANGELOG.
-- [ ] Run `node --test scripts/private-practice-acceptance.test.js && npm test` to GREEN.
-- [ ] Use a separate docs-only acceptance PR; its later deployment does not replace the accepted product deployment evidence.
-
----
+- [ ] After production only, RED test exact observed IDs.
+- [ ] Assert P3.6 stays `NEXT / WAITING FOR EXTERNAL EVIDENCE`, never DONE from this work.
+- [ ] Record `Private engineering & educational practice — PRODUCTION ACCEPTED` and exact evidence.
+- [ ] Keep future prices/forms/productized pages evidence-driven.
+- [ ] Record planning/feature/hotfix if any/RED→GREEN/production history.
+- [ ] GREEN acceptance test + full suite.
+- [ ] Separate docs-only acceptance PR; its deployment does not replace feature deployment evidence.
 
 ## Execution Handoff
 
-Implementation begins from `master` only after this planning PR is integrated. The first product change is Task 1 RED. Tasks 1–9 stay one bounded feature slice; Tasks 10–12 preserve the existing repository → artifact → deployment → live acceptance evidence separation.
+Implementation starts from `master` after this planning PR is integrated. First product change is Task 1 RED. Tasks 1–9 are one bounded feature slice; Tasks 10–12 preserve repository → artifact → deployment → live acceptance separation.
 
 ## Plan Self-Review
 
-- **Coverage:** all approved positioning, UX, canonical truth, navigation, bounded surfaces, privacy, RU/EN, SEO/search, no-JS, browser/a11y/visual and exact-production requirements map to explicit tasks.
-- **Placeholder scan:** no TBD/TODO or unresolved design choice remains.
-- **Interface consistency:** one loader, one model, one i18n pair, one homepage placeholder, one contextual enum, one production summary.
-- **Scope:** CRM, payments, booking, form providers, price catalogue, service-page farm and conversion tracking remain explicit non-goals.
+- **Coverage:** every approved positioning, UX, canonical-truth, navigation, bounded-surface, privacy, RU/EN, SEO/search, no-JS, browser/a11y/visual and exact-production requirement maps to an explicit task.
+- **Placeholder scan:** no TBD/TODO or unresolved product choice remains.
+- **Interface consistency:** one canonical loader/model, one i18n pair, one homepage placeholder, one contextual enum, one production summary.
+- **Scope:** CRM, payments, booking, forms, public pricing, service-page farm and conversion tracking remain explicit non-goals.
