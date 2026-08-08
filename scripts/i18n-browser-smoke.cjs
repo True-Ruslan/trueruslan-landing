@@ -257,6 +257,7 @@ async function assertQuality(browser, baseUrl) {
   const scenarios = [
     {name: 'home-desktop', route: '/en/', viewport: VIEWPORTS.desktop},
     {name: 'livingworld-mobile', route: '/en/projects/livingworld/', viewport: VIEWPORTS.mobile},
+    {name: 'vlezet-mobile', route: '/en/projects/vlezet/', viewport: VIEWPORTS.mobile},
     {name: 'notchhub-mobile', route: '/en/projects/notchhub/', viewport: VIEWPORTS.mobile},
     {name: 'now-mobile', route: '/en/now/', viewport: VIEWPORTS.mobile},
   ];
