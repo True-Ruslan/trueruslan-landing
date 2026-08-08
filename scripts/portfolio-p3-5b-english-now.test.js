@@ -49,7 +49,10 @@ test('English now renderer localizes presentation and keeps project identity reg
   assert.match(html, /VillAIgence/);
   assert.match(html, /href="en\/projects\/livingworld\.html"/);
   assert.doesNotMatch(html, /Сейчас в работе|Что изучаю|Что пишу/);
-  assert.equal(html.includes(current.en.focus), true);
+  assert.match(html, /0\.2\.0\+1\.21\.1/);
+  assert.match(html, /7 PASS \/ 0 FAIL/);
+  assert.match(html, /Assisted Tracing/i);
+  assert.match(html, /Draft\/RED|Draft|RED/i);
 });
 
 test('English now route is wired into one i18n, metadata and navigation architecture', () => {
