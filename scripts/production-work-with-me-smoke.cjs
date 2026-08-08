@@ -14,6 +14,7 @@ const {chromium} = requireQualityTool('playwright', 'Work with me production smo
 const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
 const ARTIFACTS_DIR = path.resolve('production-artifacts');
 const CANONICAL = JSON.parse(fs.readFileSync(path.resolve('data/collaboration.json'), 'utf8'));
+const FORBIDDEN_LEAD_RUNTIME = /(?:hubspot|salesforce|calendly|typeform|tally\.so|forms\.gle|stripe\.com|paypal\.com)/i;
 
 const CONTEXTUAL_ALLOWED = [
   'landing/projects/portfolio-platform/',
@@ -43,7 +44,7 @@ function writeJson(name, value) {
 
 function assertNoSalesRuntime(html, label) {
   assert(!/<form\b/i.test(html), `${label}: form leaked into production`);
-  assert(!/\b(?:CRM|booking|lead database|conversion tracking|public price)\b/i.test(html), `${label}: forbidden sales runtime/copy leaked into production`);
+  assert(!FORBIDDEN_LEAD_RUNTIME.test(html), `${label}: third-party lead/booking/payment runtime leaked into production`);
   assert(!/(?:₽\s*\d|\$\s*\d|€\s*\d|\b(?:USD|EUR)\s*\d)/i.test(html), `${label}: public numeric pricing leaked into production`);
 }
 
