@@ -129,8 +129,16 @@ test('normalized case studies expose bounded related material and do not promote
   assertIncludesAll(livingworldEn, [
     'server-authoritative-ai-npcs',
     'llm-output-is-a-protocol-boundary',
+    '../../landing/notes/source-tests-to-installed-acceptance.md',
+    '../../landing/notes/probabilistic-proposals-deterministic-authority.md',
+    '../../landing/notes/restart-persistence-is-a-product-contract.md',
     '../../landing/projects/livingworld.md',
   ], 'EN VillAIgence case study');
+  assert.doesNotMatch(
+    livingworldEn,
+    /\]\(\.\.\/notes\/(?:source-tests-to-installed-acceptance|probabilistic-proposals-deterministic-authority|restart-persistence-is-a-product-contract)\.md\)/,
+    'RU-only VillAIgence notes must not be linked as nonexistent English pages',
+  );
 
   assertIncludesAll(vlezetRu, [
     'probabilistic-proposals-deterministic-authority',
