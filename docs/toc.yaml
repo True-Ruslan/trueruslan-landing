@@ -72,8 +72,6 @@ items:
         href: ./landing/projects/notchhub.md
       - name: TrueRuslan Landing — Platform
         href: ./landing/projects/portfolio-platform.md
-      - name: Vlezet — Apartment Planner
-        href: ./landing/projects/vlezet.md
       - name: NODE ZERO — Techno-horror
         href: ./landing/projects/node-zero.md
       - name: TaskHub — Backend + AI
@@ -82,6 +80,8 @@ items:
         href: ./landing/projects/minichess.md
       - name: Godot Horror Template
         href: ./landing/projects/godot-horror-template.md
+      - name: Vlezet — Apartment Planner
+        href: ./landing/projects/vlezet.md
   - name: Сейчас
     href: ./landing/now.md
   - name: Engineering Map
@@ -150,9 +150,9 @@ items:
         href: ./en/projects/notchhub.md
       - name: TrueRuslan Landing
         href: ./en/projects/portfolio-platform.md
-      - name: Vlezet
-        href: ./en/projects/vlezet.md
       - name: Server-authoritative AI NPCs
         href: ./en/notes/server-authoritative-ai-npcs.md
       - name: LLM protocol boundary
         href: ./en/notes/llm-output-is-a-protocol-boundary.md
+      - name: Vlezet
+        href: ./en/projects/vlezet.md
