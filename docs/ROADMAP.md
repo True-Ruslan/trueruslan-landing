@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-08**, после controlled reconciliation свежего external-project evidence поверх принятого P3.6C; P3.6 measurement ожидает внешние aggregate observations.
+> Обновлено: **2026-08-08**, после exact-production acceptance homepage/Experience/NotchHub presentation refinement; P3.6 measurement ожидает внешние aggregate observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -61,6 +61,7 @@
 - P3.6A Measurement readiness — PR #155.
 - P3.6B Yandex Metrica Reports API connection — PR #157.
 - P3.6C consent-gated Yandex Metrica browser collection — PR #158 / PRODUCTION ACCEPTED.
+- Homepage/Experience/NotchHub presentation refinement — PR #167/#168 / PRODUCTION ACCEPTED.
 
 ---
 
@@ -259,7 +260,6 @@ production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a091
 
 The failed timeout and same-run retry experiments remain part of the operational evidence: PR #143 and PR #144 were superseded by the one-deploy-per-run, fresh-`run_attempt` recovery contract in PR #145.
 
-
 ## P3.5 — Selective English expansion — IN PROGRESS
 
 ### P3.5A — English Vlezet flagship — DONE
@@ -370,6 +370,33 @@ production digest:                   sha256:1688d968db168f8342b9fca95b3550cbd7b4
 
 The owner confirmed the counter-side privacy settings before acceptance. P3.6C is accepted only on exact deployed SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`. This does **not** close P3.6 measurement.
 
+### Homepage/Experience/NotchHub presentation refinement — PRODUCTION ACCEPTED
+
+Accepted presentation outcome for issue #166:
+
+- compact RU/EN homepage rhythm with the terminal before primary paths;
+- visible `Опыт` / `Experience` path while `/landing/resume/` remains stable and PDF remains a bounded distribution artifact;
+- one header/navigation utility contract across standalone and generated pages;
+- NotchHub becomes the featured/current RU/EN flagship while accepted `0.1.0` evidence remains separate from M1 Draft PR #10;
+- Vlezet remains active, public, searchable, directly reachable and evidence-backed but `featured=false`;
+- prominent `/now` cards use `active && featured`, so lifecycle truth is not repurposed as presentation priority.
+
+The first feature deployment exposed the Vlezet `/en/now/` spotlight leak; PR #168 corrected that real production defect with RED-first coverage before final acceptance.
+
+```text
+feature PR:                     #167 — MERGED
+hotfix PR:                      #168 — MERGED
+final accepted source SHA:      4395128144c069663e67c660e5b549cfca851ae8
+Pages:                          #196 / 31260596290 — SUCCESS
+Pages deployment ID:            5809298234
+Production Live Smoke:          #331 / 31260625145 — SUCCESS
+P3.5B English Now smoke:        PASS
+production artifact:            9022691131
+production digest:              sha256:14de956b15e6c3c4c1c2cf0256e5652e229a7c7d5b4d0be81e6e802feaf52bef
+```
+
+This presentation refinement is accepted independently of the numbered P3.6 measurement checkpoint.
+
 ## P3.6 — Measurement checkpoint — NEXT / WAITING
 
 After sufficient aggregate traffic, run the manual checkpoint with real `operator-observed` Cloudflare Web Analytics, Google Search Console and Yandex Webmaster aggregates. P3.6 remains an observation checkpoint, not permission to infer engagement or product impact from an insufficient sample or from synthetic pipeline proof.
@@ -384,6 +411,6 @@ After sufficient aggregate traffic, run the manual checkpoint with real `operato
 
 ## New-session rule
 
-Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Confirm P3.6B real Reports API connection run `31201235872`. Confirm P3.6C production acceptance for SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, Pages run `31227641778`, deployment `5803497490`, Production Live run `31227681975` and production evidence digest `sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a`.
+Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Confirm P3.6B real Reports API connection run `31201235872`. Confirm P3.6C production acceptance for SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, Pages run `31227641778`, deployment `5803497490`, Production Live run `31227681975` and production evidence digest `sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a`. Confirm the accepted presentation refinement for SHA `4395128144c069663e67c660e5b549cfca851ae8`, Pages run `31260596290`, deployment `5809298234` and deployment-triggered Production Live run `31260625145`.
 
 Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Continue with **P3.6 — Measurement checkpoint — NEXT / WAITING** only when real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
