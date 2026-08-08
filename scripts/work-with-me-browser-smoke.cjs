@@ -70,8 +70,8 @@ async function assertWorkPage(browser, baseUrl, locale, {javaScriptEnabled, view
     assertNoSalesRuntime(html, `${locale} Work with me`);
 
     if (!javaScriptEnabled) {
-      const fallback = page.locator(`[data-tr-collaboration-noscript^="availability-${locale}"], [data-tr-collaboration-noscript^="handoff-${locale}"]`);
-      if (await fallback.count() < 1) throw new Error(`${locale}: semantic no-JS collaboration fallback is missing`);
+      const fallback = page.locator(`[data-tr-work-with-me-fallback="${locale}"] [data-tr-work-with-me-semantic="true"]`);
+      if (await fallback.count() !== 1) throw new Error(`${locale}: full semantic no-JS Work with me fallback is missing or duplicated`);
     }
 
     await assertNoHorizontalOverflow(page, `${locale} Work with me`);
