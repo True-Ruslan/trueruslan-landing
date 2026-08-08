@@ -22,7 +22,9 @@ With a configured counter, generated HTML contains a first-party consent control
 
 The only first-party preference is `tr_privacy_consent_v1 = granted | denied`. It stores the analytics choice, not a visitor identity. Before consent and after denial the controller sets `window['disableYaCounter' + counterId] = true` and does not load the provider tag.
 
-The settings control lets the visitor withdraw / отозвать consent. An initial denial before the provider is loaded immediately stores `denied`, keeps the disable flag active and leaves the provider unloaded. If the visitor withdraws consent **after Metrica has already been initialized in the current document**, the controller first stores `denied` and sets the disable flag, then reloads the page. The new document reads the denied preference and sets `disableYaCounter... = true` before any Metrica initialization, so the provider tag is not loaded again. This avoids relying on an undocumented assumption that changing the flag after `init` tears down an already initialized library. Provider cookies that already exist after a prior opt-in **may persist until provider/browser expiry**; P3.6C does not claim they are deleted immediately.
+The consent UI is deliberately **one-shot**. In a fresh browser context the compact prompt remains visible until the visitor explicitly chooses Allow / Разрешить or Refuse / Не разрешать. There is **no automatic dismiss timer**, inactivity fallback, implicit consent, close-only path, or persistent reopen control. After a stored choice the prompt is removed and the site exposes no in-page control for changing that preference. Clearing the site's browser storage is outside the consent UI and returns the next visit to the fresh-choice state.
+
+An explicit denial stores `denied`, keeps the disable flag active and leaves the provider unloaded. An explicit grant stores `granted` and then performs the bounded provider initialization. Provider cookies that already exist after an opt-in **may persist until provider/browser expiry**; P3.6C does not claim they are deleted by the site.
 
 ## Bounded initialization
 
@@ -41,13 +43,13 @@ ym(counterId, 'init', {
 
 P3.6C permits **no custom events**, **no user parameters**, **no ecommerce**, and **no noscript tracking**. It also forbids Webvisor/session replay, Click Map, automatic outbound-link tracking, accurate-bounce events, hash tracking and page-title transmission.
 
-The consent text describes traffic statistics and provider cookies. It does not promise anonymous collection.
+The compact consent text names the statistics/analytics purpose without exposing provider implementation detail. It does not promise anonymous collection.
 
 ## Verification
 
-PR builds intentionally receive no counter ID. A fake-counter browser smoke injects the controller into a temporary artifact and proves: zero Yandex requests before consent; zero after denial; one attempted tag load after opt-in; the exact bounded `init` object; withdrawal after active initialization forces a reload; the reloaded denied-state document makes zero new Yandex requests and contains no provider script; and RU/EN copy is correct. Fake provider traffic is intercepted locally.
+PR builds intentionally receive no counter ID. A fake-counter browser smoke injects the controller into a temporary artifact and proves: zero Yandex requests before consent; the prompt remains visible for more than seven seconds without a choice; zero provider activity after denial; persisted denied state remains disabled after reload; a separate fresh grant context performs exactly one attempted tag load; the exact bounded `init` object is preserved; stored grant reloads without recreating consent UI; no reopen control exists; and RU/EN copy is correct. Fake provider traffic is intercepted locally.
 
-The Pages workflow verifies the final artifact before upload and rejects missing or duplicate controllers, wrong counter binding, static Yandex scripts, noscript tracking, or broader options. The verification report omits the counter ID.
+The Pages workflow verifies the final artifact before upload and rejects missing or duplicate controllers, wrong counter binding, static Yandex scripts, noscript tracking, broader options, an automatic consent timeout, or a reopen/settings control. The verification report omits the counter ID.
 
 Analytics failure never controls rendering, navigation, search, evidence labels or product truth.
 
@@ -70,7 +72,7 @@ The existing OAuth permission remains `metrika:read`. OAuth is not part of brows
 
 ## Acceptance boundary
 
-P3.6C requires exact-head CI, consent lifecycle browser smoke, security/dependency gates, zero unresolved review findings, exact Pages deployment, final artifact verification with the real counter variable, and a Production Live Smoke proving zero Yandex provider requests on a fresh page before consent. Production acceptance automation must not click Allow on the real site.
+P3.6C requires exact-head CI, consent lifecycle browser smoke, security/dependency gates, zero unresolved review findings, exact Pages deployment, final artifact verification with the real counter variable, and a Production Live Smoke proving zero Yandex provider requests on a fresh page before consent. The current one-shot UI additionally requires no automatic timeout and no persistent reopen/settings control in the deployed controller. Production acceptance automation must not click Allow on the real site.
 
 ## Exact production acceptance evidence
 
@@ -90,4 +92,4 @@ production digest:                   sha256:1688d968db168f8342b9fca95b3550cbd7b4
 
 Pages #187 injected the consent controller into 90 final HTML pages and the production artifact verifier returned `ok: true` for representative RU/EN routes. Deployment-triggered Production Live #288 checked out exact SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, resolved the matching successful Pages deployment on its first attempt, and passed `production-yandex-metrica-consent-smoke.cjs` with **zero Yandex requests before consent**. The production acceptance automation did not grant consent.
 
-P3.6C is **PRODUCTION ACCEPTED** only for this exact evidence chain. Even after P3.6C acceptance, **P3.6 MEASUREMENT remains NOT ACCEPTED** until its real equal-duration observation windows, minimum duration, traffic-sufficiency assessment and human review are complete.
+P3.6C is **PRODUCTION ACCEPTED** only for this exact evidence chain. Later UI refinements must preserve the same provider/privacy boundary and pass a fresh exact deployment chain before being treated as production-accepted refinements. Even after P3.6C acceptance, **P3.6 MEASUREMENT remains NOT ACCEPTED** until its real equal-duration observation windows, minimum duration, traffic-sufficiency assessment and human review are complete.
