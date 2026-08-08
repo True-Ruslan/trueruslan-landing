@@ -154,32 +154,46 @@ async function assertEnglishVlezetNoJsEvidence(page) {
   );
   await fallback.waitFor({state: 'visible', timeout: 5000});
   const text = (await fallback.innerText()).trim();
-  for (const marker of [
+  const markers = [
     'VERIFIED',
     'Verifiable project state',
     'AUTOMATED EVIDENCE',
     'Last verified:',
     'M7.8B',
-    'M7.8C product-owner retest',
-    'PR #42',
-  ]) {
+    'Automatic M7.8C recognition PR #42',
+    'product-owner usefulness FAIL',
+    'closed unmerged',
+    'Assisted Tracing design gate PR #52',
+    'no product code yet',
+  ];
+  for (const marker of markers) {
     if (!text.includes(marker)) throw new Error(`vlezet: English no-JS evidence misses ${marker}`);
   }
   if (/[А-Яа-яЁё]/.test(text)) throw new Error('vlezet: English no-JS evidence contains Russian presentation copy');
-  return {localizedEvidence: true, markerCount: 7};
+  return {localizedEvidence: true, markerCount: markers.length};
 }
 
 async function assertEnglishNowNoJs(page) {
   const fallback = page.locator('[data-tr-now-noscript="en"] [data-tr-now][lang="en"]');
   await fallback.waitFor({state: 'visible', timeout: 5000});
   const text = (await fallback.innerText()).trim();
-  for (const marker of ['Current work', "What I'm learning", "What I'm writing", 'VillAIgence', 'M7.8B']) {
+  const markers = [
+    'Current work',
+    "What I'm learning",
+    "What I'm writing",
+    'VillAIgence',
+    '0.2.0+1.21.1',
+    '7 PASS / 0 FAIL',
+    'M7.8B',
+    'Assisted Tracing',
+  ];
+  for (const marker of markers) {
     if (!text.includes(marker)) throw new Error(`now: English no-JS fallback misses ${marker}`);
   }
   if (/Сейчас в работе|Что изучаю|Что пишу/.test(text)) {
     throw new Error('now: English no-JS fallback contains Russian presentation copy');
   }
-  return {localizedNow: true, markerCount: 5};
+  return {localizedNow: true, markerCount: markers.length};
 }
 
 async function assertNoJsMetadata(browser, baseUrl) {
