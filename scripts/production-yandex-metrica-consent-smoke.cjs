@@ -100,8 +100,8 @@ async function main() {
 
   try {
     browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
-    summary.routes.push(await verifyFreshRoute(browser, '/', /Аналитика[\s\S]*Разрешить[\s\S]*Отказаться/i));
-    summary.routes.push(await verifyFreshRoute(browser, '/en/', /Analytics[\s\S]*Allow[\s\S]*Decline/i));
+    summary.routes.push(await verifyFreshRoute(browser, '/', /Cookies для статистики\?[\s\S]*Не разрешать[\s\S]*Разрешить/i));
+    summary.routes.push(await verifyFreshRoute(browser, '/en/', /Analytics cookies\?[\s\S]*Refuse[\s\S]*Allow/i));
     writeSummary(summary);
     console.log(`Production Yandex Metrica pre-consent smoke passed for deployed SHA ${EXPECTED_DEPLOYED_SHA}: zero Yandex requests before consent.`);
   } catch (error) {
