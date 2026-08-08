@@ -48,6 +48,41 @@ test('renderNowContent preserves the stable route under the public VillAIgence i
   assert.match(html, /Сейчас в работе/);
 });
 
+test('renderNowContent uses featured semantics for the prominent current-work grid without changing lifecycle truth', () => {
+  const projectSet = [
+    {
+      slug: 'vlezet',
+      name: 'Vlezet',
+      status: 'pre-production',
+      statusLabel: 'ACTIVE DEVELOPMENT',
+      summary: 'Active project intentionally removed from the current spotlight.',
+      featured: false,
+      active: true,
+      visibility: 'public',
+      href: 'landing/projects/vlezet.html',
+      tags: ['TypeScript', 'Geometry'],
+    },
+    {
+      slug: 'notchhub',
+      name: 'NotchHub',
+      status: 'pre-production',
+      statusLabel: 'M1 IN DEVELOPMENT',
+      summary: 'Current featured native macOS work.',
+      featured: true,
+      active: true,
+      visibility: 'public',
+      href: 'landing/projects/notchhub.html',
+      tags: ['Swift 6', 'SwiftUI'],
+    },
+  ];
+
+  const html = renderNowContent(nowData, projectSet);
+  assert.match(html, /data-project="notchhub"/);
+  assert.doesNotMatch(html, /data-project="vlezet"/);
+  assert.equal(projectSet[0].active, true);
+  assert.equal(projectSet[0].featured, false);
+});
+
 test('renderNowContent localizes presentation and project links without duplicating project data', () => {
   const html = renderNowContent(nowData, projects, {
     locale: 'en',
