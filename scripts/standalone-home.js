@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-import {renderHomepageCollaborationBridge} from './collaboration.js';
+import {loadCollaboration, renderHomepageCollaborationBridge} from './collaboration.js';
 import {renderFeaturedPublications} from './publication-renderer.js';
 import {loadProjectEvidence} from './project-evidence.js';
 import {
@@ -284,11 +284,14 @@ export function writeStandaloneHome({
       ? loadProjectEvidence(DEFAULT_PROJECT_EVIDENCE_PATH, {projects})
       : []
   );
+  const resolvedCollaboration = collaboration ?? (
+    template.includes('{{HOME_COLLABORATION_BRIDGE}}') ? loadCollaboration() : null
+  );
   const html = renderStandaloneHome(template, siteUrl, projects, {
     locale,
     evidence: resolvedEvidence,
     publications,
-    collaboration,
+    collaboration: resolvedCollaboration,
     hrefTransform,
     ctaTransform,
   });
