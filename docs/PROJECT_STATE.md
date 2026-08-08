@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-08**, после exact-production acceptance P3.6C consent-gated Yandex Metrica browser collection; P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-08**, после controlled reconciliation свежего external-project evidence поверх принятого P3.6C; P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -19,7 +19,7 @@ Repository readiness, generated artifact, deployed production, search-engine obs
 
 `True-Ruslan/trueruslan-landing` — static-first инженерное портфолио и knowledge platform Руслана Немыкина.
 
-Платформа объединяет RU/EN homepage, web-CV и PDF, evidence-backed flagship case studies, `/now`, Engineering Notes + Atom feed, Publications, Engineering Map, generated search, Photo Stories, Sources Knowledge Base, Project Evidence, Content Freshness, Cloudflare Web Analytics, GitHub Pages и exact-deployment browser verification.
+Платформа объединяет RU/EN homepage, web-CV и PDF, evidence-backed flagship case studies, `/now`, Engineering Notes + Atom feed, Publications, Engineering Map, generated search, Photo Stories, Sources Knowledge Base, Project Evidence, Content Freshness, Cloudflare Web Analytics, consent-gated Yandex Metrica, GitHub Pages и exact-deployment browser verification.
 
 Архитектурная граница:
 
@@ -252,41 +252,54 @@ P3.6C is accepted only for the exact deployed SHA and evidence above. P3.6 remai
 
 ## 3. External project evidence boundaries
 
+Content Freshness observation от **2026-08-08** был вручную reconciled с текущими репозиториями. Новые release/PR/activity signals обновляют evidence snapshot, но сами по себе не повышают lifecycle и не заменяют product-owner/installed acceptance.
+
 ### Vlezet
 
-Accepted baseline:
+Accepted baseline остаётся:
 
 - M7.8B;
 - PR #41 merge `08800dd66fa298ff31d1a7e6b33e91964cdb8d16`;
 - local CV Draft и AI proposal не получают geometry authority;
-- no mutation before explicit Apply.
+- no mutation before explicit Apply;
+- public lifecycle: `pre-production` / `ACTIVE DEVELOPMENT`.
 
-Still pending:
+Текущий reconciliation:
 
-- M7.8C PR #42 — Draft, нужен representative product-owner retest;
-- PR #44 — Draft real-fixture benchmark foundation;
-- PR #45 — Draft hybrid proposal recovery.
+- PR #42 — **CLOSED UNMERGED / product-owner usefulness FAIL** после representative retest 2026-08-08; automatic M7.8C не принят;
+- PR #44 — **CLOSED UNMERGED**, deterministic real-fixture benchmark сохранён только как R&D evidence;
+- PR #45 — **CLOSED UNMERGED**, hybrid proposal recovery сохранён только как R&D evidence и не даёт AI geometry authority;
+- PR #52 — **OPEN DRAFT / design-only Assisted Tracing gate**, product code ещё не принят.
 
-P3.4C — Hybrid CV + AI recognition boundaries сохраняет `VlezetDocument`, `localDraftFingerprint`, current-state revalidation и explicit Apply. M7.8B accepted остаётся отдельным от PR #42, PR #44 и PR #45.
+Следующая bounded direction — Assisted Tracing: пользователь явно выбирает/рисует rough geometry, локальный raster helper может уточнить только текущий ephemeral preview при однозначном evidence, неоднозначность обязана abstain, обязательного AI/network path нет. M7.8B остаётся последним accepted recognition slice до отдельного TDD/browser/product-owner acceptance.
 
 ### VillAIgence
 
 ```text
-current published candidate:    0.1.25+1.21.1
-release commit:                 588cc676d356271c4cf74eb21131f6d071476e48
-current accepted branch head:   67e0644b355708c06747e3ec4659a337bc4189b3
-M11 Phase A:                    PR #103 — GameTests and package gates
-M11 Phase B:                    PR #104 — exact production-JAR startup/restart
-inventory ownership:            PR #105 — focused GameTests
-provider boundary:              PR #108 — deterministic provider-client proof
-voice deadline/exactly-once:    PR #110 — bounded automation
-logical-client concurrency:     PR #112 — VAI-CONCUR-003
-M11 Phase E automation:         PR #114 — Draft
+current official release:       0.2.0+1.21.1
+release commit:                 e426f588efefa6aa48a6e536c4a998421bbda241
+installed candidate SHA-256:    56293f86634b50b2def044429aac6f2cf0d197eb16ac1e60224708f7b3333aee
+required installed result:      7 PASS / 0 FAIL
+VAI-M2-INST-005:                NOT TESTED / automated evidence only
+VAI-CONCUR-004:                 NOT TESTED / DEFERRED
+voice deadline/exactly-once:    PR #110 — MERGED
+controlled BELIEF admission:    PR #123 — MERGED
+PLAYER_TOLD extraction:         PR #125 — OPEN DRAFT / RED
 lifecycle:                      release-candidate
 public label:                   ACCEPTANCE IN PROGRESS
 ```
 
-PR #114 remains Draft. Physical Voice Chat, real-provider checks, `VAI-CONCUR-004`, inventory/grave/resurrection canary и cumulative installed product-owner acceptance не выводятся из зелёных GameTests.
+Official release и bounded installed 7 PASS / 0 FAIL не превращают deferred categories в PASS и не повышают lifecycle автоматически. PR #123 закрепил provenance-safe BELIEF admission: `PLAYER_TOLD`/`NPC_TOLD`/`INFERRED` остаются BELIEF, `SYSTEM_OBSERVED` не входит через BELIEF API, FACT authority остаётся server-owned. PR #125 — отдельный Draft/RED extraction slice без второго provider request и без AI→FACT path; он не является accepted product truth.
+
+### Portfolio Platform
+
+Canonical Project Evidence обновлён до принятого P3.6C production boundary:
+
+- exact deployed SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`;
+- Pages #187 / run `31227641778` / deployment `5803497490`;
+- Production Live #288 / run `31227681975`;
+- production pre-consent smoke: zero Yandex requests before consent;
+- P3.6 measurement по-прежнему **OPEN / WAITING FOR EXTERNAL EVIDENCE**.
 
 ---
 
@@ -345,7 +358,7 @@ production artifact:            8930571510
 production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13
 ```
 
-Routes: `/landing/projects/livingworld/`, `/landing/projects/vlezet/`, `/en/projects/livingworld/`. PR #110 remains part of the VillAIgence evidence ledger; M7.8B and M7.8C remain distinct.
+Routes: `/landing/projects/livingworld/`, `/landing/projects/vlezet/`, `/en/projects/livingworld/`. Historical P3.3 acceptance keeps M7.8B and later recognition work as separate evidence layers; current reconciliation records PR #42/#44/#45 as closed-unmerged and PR #52 as the pending Assisted Tracing design gate.
 
 ### P3.4 — Grounded Engineering Notes — DONE
 
@@ -408,7 +421,7 @@ production artifact:            8940409941
 production digest:              sha256:9cb66c8e3b2b432c9bbdd160542f3b5566e1e3e21f3be07711f16d5f95fae700
 ```
 
-Accepted M7.8B remains separate from Draft M7.8C and PR #42/#44/#45; product-owner retest remains required.
+Accepted M7.8B remains separate from later unaccepted recognition R&D. The representative retest later rejected automatic M7.8C usefulness; PR #42/#44/#45 are closed unmerged, while PR #52 is a new pending design-only Assisted Tracing boundary. This later reconciliation does not rewrite P3.4C's historical production acceptance.
 
 #### P3.4D — GameTests versus installed gameplay acceptance — DONE
 
@@ -429,7 +442,7 @@ production artifact:            8945575207
 production digest:              sha256:0f1d56a3735f366512e627f7669ae017ed932bf7a2a4ee19ad0fc4ed0c5b347f
 ```
 
-Source/unit contracts, remapped package, GameTests, exact production-JAR, literal-loopback, `VAI-CONCUR-003`, `VAI-CONCUR-004`, PR #110, PR #112, Draft PR #114, inventory/grave/resurrection canary, product-owner acceptance, rollback и recovery остаются отдельными evidence layers.
+Source/unit contracts, remapped package, GameTests, exact production-JAR, literal-loopback, `VAI-CONCUR-003`, `VAI-CONCUR-004`, PR #110, PR #112, historical Phase-E/Draft evidence, installed canaries, product-owner acceptance, rollback и recovery остаются отдельными evidence layers. Later `0.2.0` installed acceptance does not retroactively convert deferred `VAI-CONCUR-004` or other untested categories into PASS.
 
 #### P3.4E — Passive PDF validation versus semantic completeness — DONE
 
@@ -459,7 +472,7 @@ production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a091
 ## 5. Operational boundaries
 
 - `issue #111` — authenticated Yandex/search-engine observation;
-- `issue #78` — default-branch Content Freshness owner refresh;
+- `issue #78` — 2026-08-08 external-project evidence reconciliation выполнен в canonical data; default-branch Content Freshness refresh должен подтвердить отсутствие оставшихся findings после merge;
 - `issue #82` — Diplodoc/markdown-it blocker; review on or after **2026-08-17**;
 - no `npm audit fix --force`, local shim or unreviewed fork;
 - no legacy cleanup before observed crawler replacement.
