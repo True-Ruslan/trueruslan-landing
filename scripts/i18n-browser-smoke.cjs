@@ -20,6 +20,7 @@ const PAIRS = [
   {id: 'publications', ru: '/landing/publications/', en: '/en/publications/'},
   {id: 'livingworld', ru: '/landing/projects/livingworld/', en: '/en/projects/livingworld/'},
   {id: 'vlezet', ru: '/landing/projects/vlezet/', en: '/en/projects/vlezet/'},
+  {id: 'notchhub', ru: '/landing/projects/notchhub/', en: '/en/projects/notchhub/'},
   {id: 'portfolio-platform', ru: '/landing/projects/portfolio-platform/', en: '/en/projects/portfolio-platform/'},
   {id: 'note-ai-npcs', ru: '/landing/notes/server-authoritative-ai-npcs/', en: '/en/notes/server-authoritative-ai-npcs/'},
   {id: 'note-llm-protocol-boundary', ru: '/landing/notes/llm-output-is-a-protocol-boundary/', en: '/en/notes/llm-output-is-a-protocol-boundary/'},
@@ -184,8 +185,10 @@ async function assertEnglishNowNoJs(page) {
     'VillAIgence',
     '0.2.0+1.21.1',
     '7 PASS / 0 FAIL',
-    'M7.8B',
-    'Assisted Tracing',
+    'NotchHub',
+    '0.1.0 Personal',
+    'M1 Notch Core',
+    'Draft PR #10',
   ];
   for (const marker of markers) {
     if (!text.includes(marker)) throw new Error(`now: English no-JS fallback misses ${marker}`);
@@ -254,7 +257,7 @@ async function assertQuality(browser, baseUrl) {
   const scenarios = [
     {name: 'home-desktop', route: '/en/', viewport: VIEWPORTS.desktop},
     {name: 'livingworld-mobile', route: '/en/projects/livingworld/', viewport: VIEWPORTS.mobile},
-    {name: 'vlezet-mobile', route: '/en/projects/vlezet/', viewport: VIEWPORTS.mobile},
+    {name: 'notchhub-mobile', route: '/en/projects/notchhub/', viewport: VIEWPORTS.mobile},
     {name: 'now-mobile', route: '/en/now/', viewport: VIEWPORTS.mobile},
   ];
   const results = {};
