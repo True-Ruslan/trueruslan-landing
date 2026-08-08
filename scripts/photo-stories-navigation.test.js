@@ -11,14 +11,19 @@ const home = fs.readFileSync(path.join(root, 'templates', 'index.html'), 'utf8')
 const toc = fs.readFileSync(path.join(root, 'docs', 'toc.yaml'), 'utf8');
 const yfm = fs.readFileSync(path.join(root, 'docs', '.yfm'), 'utf8');
 
-test('standalone homepage points photo navigation directly to the canonical Diplodoc page', () => {
-  assert.match(home, /href="landing\/photos\.html"[^>]*>Фото/);
+test('standalone homepage keeps the canonical photo route reachable outside primary navigation', () => {
   assert.match(home, /href="landing\/photos\.html"[^>]*>[\s\S]*?<h3>Фотографии<\/h3>/);
+  assert.doesNotMatch(home, /<nav class="tr-site-nav"[\s\S]*?href="landing\/photos\.html"[^>]*>Фото/);
   assert.doesNotMatch(home, /href="photos\/"[^>]*>Фото/);
 });
 
-test('Diplodoc header and sidebar use one canonical photo route', () => {
-  assert.match(toc, /- text: Фото[\s\S]*?url: landing\/photos\.html/);
+test('Diplodoc sidebar keeps the canonical photo route while the bounded header omits it', () => {
+  const headerStart = toc.indexOf('    leftItems:');
+  const headerEnd = toc.indexOf('    rightItems:', headerStart);
+  assert.ok(headerStart !== -1 && headerEnd > headerStart);
+  const header = toc.slice(headerStart, headerEnd);
+
+  assert.doesNotMatch(header, /- text: Фото/);
   assert.match(toc, /- name: Фото[\s\S]*?href: \.\/landing\/photos\.md/);
   assert.doesNotMatch(toc, /url: photos\//);
 });
