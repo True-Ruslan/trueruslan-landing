@@ -299,6 +299,10 @@
 
 ---
 
+## Execution Handoff
+
+Implementation must begin from `master` after this planning PR is merged, not from the planning branch. The first product commit is Task 1 RED; do not collapse RED and GREEN evidence into one unobservable step. Work through Tasks 1–9 on one bounded feature branch, then Tasks 10–12 preserve the repository/build/deployment/acceptance evidence separation already used by TrueLanding.
+
 ## Plan Self-Review
 
 **Spec coverage:** Positioning/audiences → Tasks 2/4/5; canonical availability/direct contacts/pricing/legal truth → Tasks 1/2; navigation/SEO/RU-EN → Task 3; bounded commercial surfaces → Tasks 5/6; privacy/no-JS → Tasks 2/7/9; browser/a11y/visual → Tasks 7/8; exact production → Tasks 9–11; durable evidence without P3.6 promotion → Task 12.
