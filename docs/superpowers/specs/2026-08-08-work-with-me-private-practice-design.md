@@ -7,25 +7,23 @@ Implementation plan: `docs/superpowers/plans/2026-08-09-work-with-me-private-pra
 
 ## Product contract
 
-TrueLanding remains first and foremost the personal engineering brand and evidence-backed portfolio of Ruslan Nemykin. The new capability creates a natural path from demonstrated expertise to bounded collaboration:
+TrueLanding remains an evidence-backed personal engineering brand first. The collaboration capability creates this path:
 
 **experience / projects / notes / publications → trust → relevance → Work with me → direct conversation → qualification → fixed scope**.
 
-Primary identity remains **Ruslan Nemykin — Backend Engineer**. Engineering is the primary commercial stream; Teaching & Mentoring is a full but secondary professional line; startup/individual projects are secondary; unusual relevant development/technology/education/technical-content requests remain welcome through an open-door message without implying generalist outsourcing.
+Primary identity: **Ruslan Nemykin — Backend Engineer**. Engineering is primary. Teaching & Mentoring is a full but secondary professional line. Startup/individual projects are secondary. Relevant adjacent development/technology/education/technical-content requests keep an open door without implying “I do anything”.
 
 ## Work with me UX
 
-Canonical routes: `/landing/work-with-me/` and `/en/work-with-me/`. RU/EN ship together.
+Canonical routes: `/landing/work-with-me/` and `/en/work-with-me/`; RU/EN ship together.
 
-The page is a calm qualification surface with hero + live availability + one Describe-the-task CTA; Engineering situations; startup/individual projects; Teaching & Mentoring; smaller Expert contribution; `Context → Scope → Estimate → Implementation → Handover`; good-fit guidance; open door; direct Telegram/email handoff and calm self-employed/receipt note.
+The page includes a calm hero + live availability + one Describe-the-task CTA; Engineering situations; Startup/individual projects; Teaching & Mentoring; a smaller Expert contribution section; `Context → Scope → Estimate → Implementation → Handover`; fit guidance; open door; direct Telegram/email handoff and self-employed/receipt note.
 
 No Hire-me pressure, discounts, countdowns, public prices, forms or unsupported speed/quality claims.
 
-## Canonical collaboration truth
+## Canonical truth
 
-`data/collaboration.json` is the only owner of mutable/reused collaboration facts.
-
-Initial launch truth:
+`data/collaboration.json` owns mutable/reused facts.
 
 ```text
 engineering availability: limited
@@ -37,11 +35,11 @@ pricing:                  estimate-only
 legal format:             self-employed-receipt-supported
 ```
 
-Allowed availability states: `available`, `limited`, `consulting-only`, `unavailable`. Availability is manual public truth; no automatic mutation/fake scarcity. Long-form editorial copy remains Markdown.
+Allowed availability: `available`, `limited`, `consulting-only`, `unavailable`. It is manual public truth: no automatic mutation/fake scarcity. Long-form copy stays Markdown.
 
-## Bounded commercial surfaces
+## Bounded surfaces
 
-Allowed: homepage, Work with me, Contacts, explicit curated case studies/Notes/Publications. No automatic CTA on About, Experience, Photos, Sources, Engineering Map or keyword-matched arbitrary content.
+Allowed: homepage, Work with me, Contacts and explicit curated case studies/Notes/Publications. No automatic CTA on About, Experience, Photos, Sources, Engineering Map or keyword matches.
 
 Homepage keeps exactly Experience / Projects / Materials as its three primary paths. Collaboration is a restrained bridge after proof.
 
@@ -54,31 +52,31 @@ landing/notes/deployment-success-is-not-production-verification.html engineering
 landing/notes/server-authoritative-ai-npcs.html                  ai-integration
 ```
 
-Allowed categories: `engineering`, `ai-integration`, `education`, `expert-content`. EN contextual CTA is derived only from an existing exact i18n pair; no heuristics or new EN content solely for CTA symmetry.
+Categories: `engineering`, `ai-integration`, `education`, `expert-content`. EN CTA only from an existing exact i18n pair; no heuristics/new content solely for CTA symmetry.
 
-## Contacts / pricing / navigation
+## Contacts, pricing and navigation
 
-Contacts stays general-purpose with external profiles; direct contacts come from the same canonical model, plus a short task-qualification hint and Work with me link. No duplicate service catalogue.
+Contacts remains general-purpose, preserves external profiles and obtains direct contacts from the same canonical model. Add only a concise qualification hint and Work with me link.
 
-V1 has no public price list. Task description → scope/result clarification → timing/cost proposal where appropriate.
+V1 has no public price list. Flow is task description → scope/result clarification → timing/cost proposal where appropriate.
 
 Work with me is a normal primary-nav item, not a sales button. Targeted header-density rebalancing is allowed; broad navigation redesign is not.
 
-## Marketing / SEO / privacy
+## Marketing, SEO, privacy
 
-Commercial copy follows **client situation → expected result → working boundary → relevant proof**. Technologies support rather than replace the proposition. No best/guaranteed/cheap-sales/fake-proof patterns.
+Copy follows **client situation → expected result → working boundary → relevant proof**. No unsupported “best”, guarantees, cheap-sales language, fake scarcity/social proof/testimonials/client/outcome claims.
 
-One indexable route per locale; require clean canonical, hreflang, OpenGraph, sitemap, generated search, approved internal links and semantic no-JS content. `Person` remains primary; no fictional Organization/reviews/ratings.
+One indexable route per locale, with clean canonical, hreflang, OpenGraph, sitemap, generated search, approved internal links and semantic no-JS content. `Person` remains primary; no fictional Organization/reviews/ratings.
 
-No form means no lead backend/CAPTCHA/database/provider. No new third-party runtime dependency. Existing consent analytics remains: no session replay, custom events, user parameters or conversion fingerprinting. Optimize for qualified conversations, not CTR. P3.6 remains independent.
+No form means no lead backend/CAPTCHA/database/provider. No new third-party runtime dependency. Existing analytics boundaries remain: no session replay, custom events, user parameters or conversion fingerprinting. Optimize for qualified conversations rather than CTR. P3.6 remains independent.
 
 ## Quality / acceptance
 
-RED-first; fail closed on unknown state/category, malformed contacts, unsafe target, missing/duplicate placeholder or missing approved generated target.
+RED-first and fail-closed on unknown state/category, malformed contacts, unsafe target, missing/duplicate placeholder or missing approved generated target.
 
 Require RU/EN parity, no-JS direct flow, search, keyboard/focus, Axe serious/critical gate, mobile overflow, Chromium/Firefox/WebKit and inspected visuals without threshold weakening.
 
-Exact-head CI is necessary but not production acceptance. Final acceptance is verified head → squash → exact Pages deployment identity → deployment-triggered Production Live on that SHA → dedicated private-practice assertions → durable evidence. Production failure triggers preserved evidence + RED reproduction + bounded hotfix, never verifier weakening.
+Exact-head CI is not production acceptance. Final acceptance is verified head → squash → exact Pages deployment identity → deployment-triggered Production Live on that SHA → dedicated private-practice assertions → durable evidence. Production failure gets preserved evidence + RED reproduction + bounded hotfix; never verifier weakening.
 
 ## V1 non-goals
 
@@ -86,8 +84,8 @@ No forms, CRM, booking/calendar, payments, public price list/packages, service-p
 
 ## Acceptance criteria
 
-V1 is complete only when collaboration is clear without making the site sales-led; Engineering remains primary; Teaching/Mentoring is credible secondary; startup/open-door remains; mutable truth has one owner; no public price/form exists; self-employed support is calm; CTA is bounded; RU/EN/no-JS/privacy boundaries hold; all automated/visual/a11y gates pass; exact production passes; durable docs record evidence without promoting P3.6.
+Collaboration must be clear without making the site sales-led; Engineering remains primary; Teaching/Mentoring is credible secondary; startup/open-door remains; mutable truth has one owner; no public price/form; self-employed support is calm; CTA bounded; RU/EN/no-JS/privacy boundaries hold; automated/visual/a11y gates pass; exact production passes; durable docs do not promote P3.6.
 
 ## Implementation boundary
 
-The approved executable sequence is `docs/superpowers/plans/2026-08-09-work-with-me-private-practice.md`. Implementation starts from current `master` after this planning slice is integrated.
+Execution is specified in `docs/superpowers/plans/2026-08-09-work-with-me-private-practice.md`. Implementation starts from current `master` only after this planning slice is integrated.
