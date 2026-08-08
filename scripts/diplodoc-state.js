@@ -21,6 +21,22 @@ function encodeDiplodocState(state) {
   return JSON.stringify(state).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
 
+export function readGeneratedContentState(documentHtml, label = 'generated content') {
+  const parsed = parse(documentHtml);
+  const stateScript = findNode(parsed, (node) => node.nodeName === 'script' && getAttribute(node, 'id') === 'diplodoc-state');
+  const textNode = stateScript?.childNodes?.find((node) => node.nodeName === '#text');
+  if (!textNode?.value) return null;
+
+  let state;
+  try {
+    state = decodeDiplodocState(textNode.value.trim());
+  } catch (error) {
+    throw new Error(`${label} contains invalid Diplodoc state: ${error.message}`);
+  }
+  if (typeof state?.data?.html !== 'string') return null;
+  return {state, html: state.data.html};
+}
+
 export function transformGeneratedContent(documentHtml, transform, label = 'generated content') {
   const direct = transform(documentHtml, {source: 'document'});
   if (typeof direct !== 'string') throw new Error(`${label} transform must return a string.`);
