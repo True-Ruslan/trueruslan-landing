@@ -15,37 +15,43 @@
   {
     "date": "2026-08",
     "title": "Installed failures became release gates",
-    "description": "0.1.20 ended as a partial PASS with water, grave, identity and latency defects. 0.1.21 then failed at startup on a production-unsafe tombstone Mixin; safe rollback preserved all six persistent hashes and restored service.",
+    "description": "0.1.20 ended as a partial PASS with water, grave, identity and latency defects. 0.1.21 then failed at startup on a production-unsafe tombstone Mixin; safe rollback preserved persistent data and restored service.",
     "state": "past",
     "evidence": "https://github.com/True-Ruslan/villAIgence/pull/102"
   },
   {
     "date": "2026-08",
-    "title": "M11 risk-based production-JAR acceptance",
-    "description": "PRs #103 and #104 added a 28-scenario risk catalogue, real Fabric GameTests and an isolated exact production-JAR gate. The candidate reached ready state twice, stopped cleanly and preserved six canonical stores across restart; cumulative manual provider and gameplay acceptance remains separate.",
+    "title": "M11 automated production acceptance completed",
+    "description": "PRs #103–#112 established the risk catalogue, real Fabric GameTests, exact production-JAR startup/restart, tombstone inventory ownership, deterministic provider clients, one shared voice-turn deadline and bounded concurrency automation. Installed/manual evidence remains a separate layer.",
     "state": "past",
-    "version": "0.1.23+1.21.1",
-    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/104"
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/112"
   },
   {
     "date": "2026-08",
-    "title": "0.1.25 exact release and deterministic provider acceptance",
-    "description": "PR #105 corrected tombstone inventory ownership, PR #107 published the exact production-gated 0.1.25 candidate, PR #108 exercised production Chat, STT and TTS clients against deterministic literal-loopback servers, and PR #109 hardened configuration-cache and release-request gates. These automated scopes do not replace physical Voice Chat, real-provider, focused gameplay or cumulative product-owner acceptance.",
+    "title": "0.2.0 Memory 2.0 clean cutover released and installed",
+    "description": "The official 0.2.0+1.21.1 release moved persistent dialogue to Memory 2.0-only storage. The byte-identical installed candidate completed the required clean-world suite at 7 PASS / 0 FAIL; VAI-M2-INST-005 remains NOT TESTED / automated evidence only and VAI-CONCUR-004 remains NOT TESTED / DEFERRED.",
     "state": "past",
-    "version": "0.1.25+1.21.1",
-    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/108"
+    "version": "0.2.0+1.21.1",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/120"
   },
   {
     "date": "2026-08",
-    "title": "M11 Phase C shared orchestration deadline — Draft/RED",
-    "description": "PR #110 at observed head b3172080d89052a5b361d203dbdac152752d7d0d defines the failing contract for one monotonic STT → Chat retries → TTS deadline and exactly-once dialogue and relationship commits. The production orchestration contract is not accepted yet, so this remains active Draft evidence rather than a released capability.",
+    "title": "Controlled Semantic Memory BELIEF admission accepted",
+    "description": "PR #123 added a provenance-safe BELIEF admission contract: PLAYER_TOLD, NPC_TOLD and INFERRED remain non-authoritative beliefs tied to persisted source evidence; SYSTEM_OBSERVED cannot enter through the BELIEF API and FACT remains server-observed only.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/123"
+  },
+  {
+    "date": "2026-08",
+    "title": "Bounded PLAYER_TOLD BELIEF candidate extraction — Draft/RED",
+    "description": "PR #125 is the current TDD slice. It proposes bounded PLAYER_TOLD statement candidates inside the existing structured chat response without a second provider request. The server still owns provenance, NPC/player/source identity and admission; the current Draft/RED state is development evidence and not accepted product truth.",
     "state": "current",
-    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/110"
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/125"
   },
   {
     "date": "NEXT",
-    "title": "Implement Phase C, then run cumulative acceptance",
-    "description": "Make the shared deadline contract green on one exact artifact, then run real Text/STT/Chat/TTS and Voice Chat, logical two-client lore conflict, focused water and filled-grave canaries, restart and product-owner acceptance before promotion beyond release-candidate status.",
+    "title": "Make bounded BELIEF extraction green without weakening authority",
+    "description": "Complete the PR #125 RED→GREEN contract for successful, empty, malformed and retry cases; prove fail-soft provider behavior and exactly-once semantic persistence; preserve current observed FACT over conflicting BELIEF. Only after that move to trustworthy causal relationship reasons and longer-horizon memory work.",
     "state": "next"
   }
 ]
