@@ -66,12 +66,14 @@ items:
   - name: Проекты
     href: ./landing/projects.md
     items:
-      - name: Vlezet — Apartment Planner
-        href: ./landing/projects/vlezet.md
       - name: VillAIgence — AI Society
         href: ./landing/projects/livingworld.md
+      - name: NotchHub — macOS Productivity
+        href: ./landing/projects/notchhub.md
       - name: TrueRuslan Landing — Platform
         href: ./landing/projects/portfolio-platform.md
+      - name: Vlezet — Apartment Planner
+        href: ./landing/projects/vlezet.md
       - name: NODE ZERO — Techno-horror
         href: ./landing/projects/node-zero.md
       - name: TaskHub — Backend + AI
@@ -144,10 +146,12 @@ items:
         href: ./en/publications.md
       - name: VillAIgence
         href: ./en/projects/livingworld.md
-      - name: Vlezet
-        href: ./en/projects/vlezet.md
+      - name: NotchHub
+        href: ./en/projects/notchhub.md
       - name: TrueRuslan Landing
         href: ./en/projects/portfolio-platform.md
+      - name: Vlezet
+        href: ./en/projects/vlezet.md
       - name: Server-authoritative AI NPCs
         href: ./en/notes/server-authoritative-ai-npcs.md
       - name: LLM protocol boundary
