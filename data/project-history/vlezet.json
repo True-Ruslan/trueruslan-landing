@@ -9,21 +9,28 @@
   {
     "date": "2026-08",
     "title": "M7.8B source normalization and wall topology accepted",
-    "description": "Region-first structural extraction, bounded Canny/Hough fallback, fail-closed overload protection and verification-only AI were product-owner accepted with known precision limitations. Source geometry and topology F1 reached 0.837989; openings remained intentionally deferred.",
+    "description": "Region-first structural extraction, bounded Canny/Hough fallback, fail-closed overload protection and verification-only AI were product-owner accepted with known precision limitations. Source geometry and topology F1 reached 0.837989; M7.8B remains the latest accepted recognition slice.",
     "state": "past",
     "evidence": "https://github.com/True-Ruslan/vlezet/pull/41"
   },
   {
     "date": "2026-08",
-    "title": "M7.8C acceptance boundary and stacked recognition Drafts",
-    "description": "PR #42 keeps opening classification and host-wall validation pending the same representative real-plan product-owner retest. PR #44 adds a stacked real-fixture benchmark whose wall and opening F1 remain below immutable 0.85 gates, while PR #45 explores hybrid AI recovery only as deterministically validated proposals. All three remain Draft development evidence and do not promote accepted M7.8B.",
-    "state": "current",
+    "title": "Automatic M7.8C path failed product usefulness acceptance",
+    "description": "The 2026-08-08 product-owner retest on the original apartment plan rejected the automatic M7.8C direction despite green deterministic gates. PR #42, stacked benchmark PR #44 and hybrid proposal PR #45 were closed unmerged and retained only as R&D evidence; accepted M7.8B was not promoted or invalidated.",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/vlezet/pull/42"
   },
   {
+    "date": "2026-08",
+    "title": "Assisted Tracing design gate",
+    "description": "Draft PR #52 pivots the next recognition slice to Assisted Tracing from fresh main. The user explicitly chooses or draws the object; bounded local raster evidence may refine only the current ephemeral preview when unambiguous, ambiguous evidence abstains, and no AI/network dependency or product-code implementation is accepted at this design gate.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/52"
+  },
+  {
     "date": "NEXT",
-    "title": "Accept or correct M7.8C before later recognition slices",
-    "description": "Complete the exact PR #42 product-owner retest first. Only after explicit acceptance or a bounded defect correction may stacked real-fixture and hybrid-proposal work proceed toward its own immutable gates; room faces and semantic reconciliation remain later milestones.",
+    "title": "Approve the Assisted Tracing design, then implement it with TDD",
+    "description": "Review PR #52 as a design-only boundary. After approval, create the detailed implementation plan and deliver the Assisted Tracing slice through RED→GREEN raster/transform/history contracts, Chromium/WebKit evidence and a small final product-owner retest on the original plan before any acceptance or lifecycle promotion.",
     "state": "next"
   }
 ]
