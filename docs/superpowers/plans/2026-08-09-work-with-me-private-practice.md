@@ -74,7 +74,7 @@
 - [ ] **Step 4: Implement strict fail-closed validation.** Reject unknown top-level/nested fields, malformed `YYYY-MM-DD`, non-`https://t.me/...` Telegram URL, malformed email, any pricing value except `estimate-only`, any legal format except `self-employed-receipt-supported`, unsafe/duplicate contextual paths and unknown categories.
 - [ ] **Step 5: Implement exact EN derivation.** `resolveContextualTargets()` always returns approved RU targets and adds `pair.en` only where `pair.ru === approved.path`; no keyword/slug inference.
 - [ ] **Step 6: Run GREEN.** `node --test scripts/collaboration.test.js && npm test`.
-- [ ] **Step 7: Commit.** `git commit -am "feat: add canonical collaboration model"` after staging the new files.
+- [ ] **Step 7: Commit.** Stage the three files and commit `feat: add canonical collaboration model`.
 
 ---
 
@@ -260,8 +260,6 @@
 ---
 
 ## Task 10: Feature PR and exact-head verification
-
-**Files:** no new product files beyond Tasks 1–9.
 
 - [ ] **Step 1: Start implementation from current master after planning PR merge** on `feat/work-with-me-private-practice`.
 - [ ] **Step 2: Run complete local verification.** `npm test && npm run build:docs && npm run check:site`, then the browser matrix where available.
