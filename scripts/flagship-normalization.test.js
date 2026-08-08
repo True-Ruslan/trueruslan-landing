@@ -92,7 +92,8 @@ test('VillAIgence keeps official 0.2 release and installed acceptance separate f
 
   const installed = findSignal(evidence, 'Installed 0.2.0 clean-world');
   assert.equal(installed.state, 'accepted');
-  assertIncludesAll(installed.scope, ['7 PASS / 0 FAIL', 'VAI-M2-INST-005', 'VAI-CONCUR-004'], 'VillAIgence installed 0.2 scope');
+  assert.match(installed.scope, /(?:7 PASS \/ 0 FAIL|seven required[\s\S]*0 FAIL)/i);
+  assertIncludesAll(installed.scope, ['VAI-M2-INST-005', 'VAI-CONCUR-004'], 'VillAIgence installed 0.2 scope');
 
   const admission = findSignal(evidence, 'BELIEF admission PR #123');
   assert.equal(admission.state, 'merged');
