@@ -15,7 +15,7 @@ A first planner prototype is comparatively easy: draw a rectangle, place a sofa 
 
 A real apartment breaks that model. A wall has a centre axis and thickness. An opening has width, a position on a specific host wall and an opening direction. A room exists because walls form a closed topology, not because the interface painted a polygon. Furniture can appear to fit while blocking a door or leaving an unusable passage.
 
-Importing a photograph or PDF adds uncertainty: rotation, margins, perspective, labels, dimension lines, plumbing, furniture and door arcs. Even syntactically valid LLM output does not prove that reconstructed geometry matches the source plan.
+Importing a photograph or PDF adds uncertainty: rotation, margins, perspective, labels, dimension lines, plumbing, furniture and door arcs. Even syntactically valid model output does not prove that reconstructed geometry matches the source plan.
 
 > Recognition may propose geometry. It becomes authoritative only after review, deterministic validation and explicit Apply into the shared document.
 
@@ -34,11 +34,13 @@ Recognition Drafts, planning Previews, UI filters, highlights and evidence remai
 
 ### Existing geometry cannot be replaced silently
 
-Local computer vision and cloud review cannot clear an apartment that the user has already drawn. Candidates may be accepted, rejected or corrected, but document mutation occurs only through an explicit Apply operation.
+Local computer vision and any optional model-assisted step cannot clear an apartment that the user has already drawn. Candidates may be accepted, rejected or corrected, but document mutation occurs only through an explicit Apply operation.
 
-### An AI proposal is not authoritative geometry
+### Recognition quality must be useful, not merely measurable
 
-Accepted M7.8B restricted cloud verification to exact local candidate identities. Later Draft work explores recovery of missing openings only as separate proposals. Each proposal must retain host evidence, pass deterministic raster, topology and overlap checks, remain reviewable, and enter the document only through explicit Apply. The model receives no AI geometry authority.
+M7.8B proved that bounded local extraction, deterministic topology and verification-only AI can be measured honestly. The next automatic path attempted to classify openings and validate host walls, but the representative product-owner retest showed that green deterministic gates did not make the result useful enough for the real plan.
+
+That failure changed the strategy. The project no longer treats increasingly complex automatic reconstruction as the default next step. The next bounded direction is **Assisted Tracing**: the user explicitly points to or draws intended geometry, while local raster analysis may refine only the current ephemeral preview when evidence is unambiguous.
 
 ### 3D remains a projection
 
@@ -56,20 +58,22 @@ The accepted product includes:
 - semantic Undo and Redo;
 - local projects, autosave, backup, import, export and PNG output;
 - reference-plan import, calibration and tracing;
-- editable local and OpenRouter candidates with explicit Apply;
+- editable local candidates with explicit Apply;
 - a deterministic read-only 3D projection;
 - bounded planning alternatives with Preview and revalidated atomic Apply;
 - a responsive editor shell, inspectors, onboarding and furniture-fit workflow;
 - a versioned recognition benchmark;
 - M7.8B region-first wall extraction, bounded topology and verification-only AI.
 
-M7.8B was accepted with known limitations. On its representative source it produced 27 local wall candidates: 19 were AI-confirmed and 8 remained pending review. Accepted Source geometry F1 and Source topology F1 were both `0.837989`. Openings were intentionally deferred instead of being guessed without host-wall evidence.
+M7.8B was accepted with known limitations. On its representative source it produced 27 local wall candidates: 19 were AI-confirmed and 8 remained pending review. Accepted Source geometry F1 and Source topology F1 were both `0.837989`.
 
-The next acceptance boundary is **M7.8C Opening Classification and Host-Wall Validation**. PR #42 remains Draft work awaiting the same representative real-plan product-owner retest.
+The later automatic M7.8C direction is now explicitly recorded as **product-owner usefulness FAIL / closed unmerged**. PR #42 was closed unmerged after the 2026-08-08 representative retest showed that the automatic opening / host-wall path was still not useful enough despite green deterministic gates.
 
-PR #44 extends measurement with a real-fixture benchmark whose wall and opening gates retain an immutable `0.85` threshold. PR #45 explores bounded hybrid proposal recovery on top of that benchmark. Both remain stacked Draft evidence.
+PR #44 and PR #45 were also **closed unmerged** with that strategy pivot. Their benchmark and proposal-safety work remains useful R&D evidence, but neither slice was accepted into the product boundary.
 
-PR #42, PR #44 and PR #45 do not raise the lifecycle or replace the accepted M7.8B boundary. Exact observed heads, run identities, metrics and observation dates belong to the canonical Project Evidence block below rather than to this narrative. Repository activity after the recorded observation date is not an acceptance claim.
+The current pending design boundary is **Assisted Tracing design gate and product-owner acceptance** in Draft PR #52. PR #52 starts from fresh main and intentionally contains no accepted product implementation yet. It defines a user-directed interaction model, local-only optional raster assistance, abstention on ambiguous evidence, and no mandatory AI or network path.
+
+PR #42, PR #44 and PR #45 therefore remain historical failed / unavailable R&D evidence; PR #52 is pending design evidence. None of them changes the accepted M7.8B boundary by repository activity alone.
 
 The public lifecycle remains **pre-production — ACTIVE DEVELOPMENT**.
 
@@ -94,17 +98,17 @@ Recognition follows an explicit pipeline:
 
 1. the user uploads JPG, PNG or PDF;
 2. the image is calibrated to a real dimension;
-3. local computer vision creates bounded candidates;
-4. optional AI returns verification or separate proposals within the permitted Draft contract;
-5. every proposal is checked again by deterministic domain rules;
+3. local analysis creates bounded candidates or reference evidence;
+4. any optional assistance remains a proposal, never an authority;
+5. deterministic domain rules validate the proposal again;
 6. the user compares the Draft with the source;
-7. only Apply converts selected candidates into ordinary document entities.
+7. only Apply converts selected geometry into ordinary document entities.
 
 ### Benchmark before tuning
 
 M7.8A introduced a versioned public-safe corpus, Core and Source execution, TP/FP/FN overlays, and metrics for wall geometry, topology, openings, rooms, areas, confidence and reconciliation.
 
-The real-fixture work preserves the same principle: a threshold is not lowered to obtain green CI. Incorrect-high-confidence, unknown-host and stale-decision counters must remain zero.
+The automatic-recognition experiments confirmed another rule: a threshold is not lowered to obtain green CI, but a green benchmark is also not sufficient if the product-owner usefulness acceptance fails on the representative plan.
 
 ### Region-first extraction instead of line-first noise
 
@@ -112,17 +116,24 @@ M7.8B moved local recognition toward region-first processing of thick architectu
 
 Candidate overload fails closed: an overloaded Draft is not persisted, not sent to AI and not eligible for Apply.
 
-### Hybrid AI can recover only bounded proposals
+### Assisted Tracing replaces automatic completion as the next default direction
 
-Hybrid work separates local geometry from AI recovery. Missing doors or windows may appear only as proposal records with host evidence. Local walls remain immutable; AI cannot move or delete them. Thin-wall recovery is a separate stage.
+The new direction moves the uncertainty boundary closer to the user action. Instead of asking an automatic pipeline to infer the entire plan, the user identifies the intended wall or opening and local analysis may refine only the current preview.
+
+The planned authority rules are deliberately narrow:
+
+- the user owns the semantic intent;
+- local analysis may suggest a bounded snap or refinement;
+- ambiguous evidence abstains rather than guessing;
+- the preview is ephemeral until explicit Apply;
+- no AI/network dependency is required for the core flow;
+- normal domain validation, Undo and Redo remain authoritative after Apply.
 
 ### Failures that changed the architecture
 
 The magnifier and calibration initially used the whole Canvas instead of the rendered image rectangle. Reversing calibration endpoints could rotate a plan. An early real-plan pass produced hundreds of symbol and furniture lines instead of an architectural shell. Valid provider JSON also proved capable of describing spatially wrong geometry.
 
-These failures established durable rules: one coordinate transform, undirected calibration axes, region-first structural masks, candidate budgets, immutable local identities and deterministic sanitation before any product mutation.
-
-An opening cannot be accepted without a host wall. A gap may be a door, window, label or edge-detection artefact. Returning no opening is safer than returning a confident but ungrounded one.
+The later M7.8C retest added a product-level lesson: deterministic gates can protect invariants without proving that an automatic reconstruction is useful enough. That is why the failed automatic path was closed instead of being promoted or endlessly tuned on top of main.
 
 <!-- case-study:alternatives -->
 ## Alternatives considered and rejected
@@ -137,11 +148,11 @@ Rejected. A Recognition Draft cannot clear or replace the existing `VlezetDocume
 
 ### A cloud model as a second geometry owner
 
-Rejected. Even when AI may propose a missing opening, the proposal remains a separate evidence object and passes the same deterministic validation. The model cannot silently move walls, change thickness, re-host openings or apply a result.
+Rejected. AI may not silently move walls, change thickness, re-host openings or apply a result. The accepted M7.8B verification-only model preserved local identity, and the Assisted Tracing direction removes any mandatory AI/network path from the next product slice.
 
-### Line-first Hough as the primary owner
+### Continuing automatic reconstruction until every visible opening is inferred
 
-Rejected. It mixes walls with furniture, plumbing, labels and dimension lines. Region-first structural extraction better matches architectural geometry, while Hough remains supplemental evidence.
+Rejected as the immediate product direction after the representative usefulness acceptance failed. The project keeps the benchmark and safety work as R&D evidence, but does not treat more automation as progress by itself.
 
 ### Lowering benchmark thresholds for merge
 
@@ -156,46 +167,47 @@ Rejected. A second geometry store would drift. The 3D view remains a read-only p
 
 <div data-tr-project-evidence="vlezet"></div>
 
-The registry-backed evidence separates:
+The registry-backed evidence now separates:
 
 - accepted product workflow and deterministic geometry contracts;
 - M7.8A reproducible benchmark authority;
 - M7.8B product-owner acceptance with exact metrics and limitations;
-- PR #42 as pending Draft work with a mandatory owner retest;
-- PR #44 as stacked Draft measurement with explicit merge blockers;
-- PR #45 as stacked Draft proposal architecture without AI geometry authority.
+- PR #42 as **failed** automatic M7.8C evidence after the product-owner usefulness acceptance failed and the PR was closed unmerged;
+- PR #44 and PR #45 as **closed unmerged** R&D evidence, not accepted product state;
+- PR #52 as the pending Draft **Assisted Tracing** design gate with no accepted product code yet.
 
-A `verified` state applies only to the stated scopes and observation date. It does not mean that Vlezet can reconstruct an arbitrary architectural plan without manual review, and it does not promote any Draft slice.
+A `verified` state applies only to the stated scopes and observation date. It does not mean that Vlezet can reconstruct an arbitrary architectural plan without manual review, and it does not promote failed, unavailable or pending slices.
 
 <!-- case-study:limitations -->
 ## Known limitations
 
-- some exterior or primary walls may still be missed or fragmented;
+- some exterior or primary walls may still be missed or fragmented by automatic recognition;
 - a thick load-bearing wall may still appear as parallel axes on an unseen plan;
-- visible windows may be absent from a Draft;
+- visible windows may be absent from an automatic Draft;
 - short plumbing or service-block lines may enter structural candidates;
 - accepted M7.8B Source topology F1 `0.837989` remains below the final M7.8 target of `0.90`;
 - automated metrics do not replace owner acceptance on the same real plan;
-- real wall and opening metrics remain protected by the immutable `0.85` merge threshold;
-- hybrid proposal recovery has no independent product acceptance;
+- the automatic M7.8C path failed representative usefulness acceptance and is not on main;
+- Assisted Tracing is still a Draft design boundary, not an accepted capability;
 - perspective-photo recognition is unresolved;
 - room-face derivation, OCR labels, area constraints and confidence calibration remain later slices.
 
 <!-- case-study:next -->
 ## Next accepted step
 
-The next gate is a product-owner retest of the exact current PR #42 head against the same representative real plan.
+The next bounded step is **Assisted Tracing** implementation only after PR #52's design gate is accepted.
 
-The retest must confirm:
+The first implementation should remain deliberately narrow:
 
-1. one centre axis instead of duplicated thick-wall geometry;
-2. windows located in valid exterior-wall gaps with a known host wall;
-3. no plumbing-symbol contours among active walls;
-4. unchanged geometry counts and coordinates after AI verification;
-5. incremental Apply without duplicates;
-6. independent Undo and Redo for multiple Apply batches.
+1. the user selects or draws the intended geometry explicitly;
+2. local reference-image analysis may refine only the current preview when evidence is unambiguous;
+3. ambiguous evidence returns no refinement;
+4. preview state never mutates `VlezetDocument` implicitly;
+5. explicit Apply creates the normal semantic command;
+6. Undo and Redo remain independent and deterministic;
+7. browser and product-owner acceptance must prove that the workflow is faster and clearer than manual tracing without reintroducing automatic geometry authority.
 
-Only an explicit acceptance result or a concrete defect report can justify the next bounded correction, exact-head automation rerun and possible squash merge of M7.8C. Stacked PR #44 and PR #45 must satisfy their own immutable metrics, safety counters and product-owner gates; their existence cannot bypass PR #42 acceptance.
+PR #52 is therefore a design gate, not a merge claim. The accepted recognition slice remains M7.8B until a later implementation has its own RED→GREEN evidence, browser verification and product-owner acceptance.
 
 <!-- case-study:related -->
 ## Related material
@@ -210,14 +222,16 @@ Only an explicit acceptance result or a concrete defect report can justify the n
 
 I would define `VlezetDocument` and millimetres as the formal authority contract earlier. Many later decisions then become straightforward: Canvas is a projection, rooms are derived, 3D is read-only, Preview is ephemeral and Apply is a semantic command.
 
-The recognition benchmark should also have existed before the first quality tuning. M7.8B and the later Draft experiments added another rule: a public benchmark, a representative product-owner source and immutable safety gates must remain separate mandatory evidence.
+The recognition benchmark should also have existed before the first quality tuning. M7.8B and the later automatic experiments added a stronger rule: benchmark quality, deterministic safety and representative product-owner usefulness are separate mandatory evidence layers.
+
+The 2026-08-08 strategy pivot is useful precisely because a failed acceptance was preserved instead of being hidden. PR #42, PR #44 and PR #45 are not wasted work: they record what the automatic approach could and could not prove. Closing them unmerged prevents that evidence from silently becoming product truth.
 
 I would also separate five checks from the beginning:
 
-1. the provider returned a response;
-2. the response passed protocol validation;
+1. the algorithm or provider returned a response;
+2. the response passed protocol and structural validation;
 3. the proposal references permitted local evidence;
 4. the candidate passed deterministic domain validation;
-5. the geometry resembles the source and was accepted by a person.
+5. the workflow is useful on the representative real plan and was accepted by a person.
 
-Uncertainty must be designed as part of the product. Showing medium confidence, an unknown host wall and an editable Draft is more useful than a clean image that silently lies about the apartment.
+Uncertainty must be designed as part of the product. A bounded Assisted Tracing preview that can abstain is more valuable than an automatic reconstruction that looks clean while silently lying about the apartment.

@@ -162,13 +162,16 @@ async function verifyCaseStudy(page, {
 async function main() {
   fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
   let browser;
-  const currentVillAIgenceCandidate = evidenceVersion(
-    'livingworld',
-    'Current published candidate',
-  );
+  const currentVillAIgenceRelease = evidenceVersion('livingworld', 'Current official release');
+  const installedVillAIgenceResult = evidenceVersion('livingworld', 'Installed 0.2.0 result');
+  const automaticVlezetResult = evidenceVersion('vlezet', 'Automatic M7.8C result');
+  const nextVlezetBoundary = evidenceVersion('vlezet', 'Next acceptance boundary');
   const summary = {
     expectedDeployedSha: EXPECTED_DEPLOYED_SHA,
-    currentVillAIgenceCandidate,
+    currentVillAIgenceRelease,
+    installedVillAIgenceResult,
+    automaticVlezetResult,
+    nextVlezetBoundary,
     checkedAt: new Date().toISOString(),
     livingworldRu: {},
     vlezetRu: {},
@@ -217,13 +220,20 @@ async function main() {
         'Что бы я сделал иначе',
       ],
       requiredText: [
-        currentVillAIgenceCandidate,
-        'PR #108',
-        'PR #110',
+        currentVillAIgenceRelease,
+        installedVillAIgenceResult,
+        'PR #123',
+        'PR #125',
+        'VAI-M2-INST-005',
+        'VAI-CONCUR-004',
         'Draft',
-        'cumulative acceptance',
       ],
-      evidenceMarkers: [currentVillAIgenceCandidate, 'PR #108', 'PR #110'],
+      evidenceMarkers: [
+        currentVillAIgenceRelease,
+        installedVillAIgenceResult,
+        'PR #123',
+        'PR #125',
+      ],
       relatedHrefFragments: [
         'server-authoritative-ai-npcs',
         'source-tests-to-installed-acceptance',
@@ -252,13 +262,22 @@ async function main() {
       ],
       requiredText: [
         'M7.8B',
-        'M7.8C',
+        automaticVlezetResult,
+        nextVlezetBoundary,
+        'PR #42',
         'PR #44',
         'PR #45',
-        'product-owner retest',
+        'PR #52',
+        'Assisted Tracing',
         'ACTIVE DEVELOPMENT',
       ],
-      evidenceMarkers: ['M7.8C', 'PR #44', 'PR #45'],
+      evidenceMarkers: [
+        'M7.8B',
+        automaticVlezetResult,
+        nextVlezetBoundary,
+        'PR #42',
+        'PR #52',
+      ],
       relatedHrefFragments: [
         'probabilistic-proposals-deterministic-authority',
         'green-ci-is-not-product-verification',
@@ -285,11 +304,13 @@ async function main() {
         'What I would change',
       ],
       requiredText: [
-        currentVillAIgenceCandidate,
-        'PR #108',
-        'PR #110',
+        currentVillAIgenceRelease,
+        installedVillAIgenceResult,
+        'PR #123',
+        'PR #125',
+        'VAI-M2-INST-005',
+        'VAI-CONCUR-004',
         'Draft',
-        'cumulative acceptance',
       ],
       relatedHrefFragments: [
         'server-authoritative-ai-npcs',
@@ -319,14 +340,22 @@ async function main() {
       ],
       requiredText: [
         'M7.8B',
-        'M7.8C',
+        automaticVlezetResult,
+        nextVlezetBoundary,
         'PR #42',
         'PR #44',
         'PR #45',
-        'product-owner retest',
+        'PR #52',
+        'Assisted Tracing',
         'ACTIVE DEVELOPMENT',
       ],
-      evidenceMarkers: ['M7.8C', 'PR #44', 'PR #45'],
+      evidenceMarkers: [
+        'M7.8B',
+        automaticVlezetResult,
+        nextVlezetBoundary,
+        'PR #42',
+        'PR #52',
+      ],
       relatedHrefFragments: [
         'probabilistic-proposals-deterministic-authority',
         'green-ci-is-not-product-verification',

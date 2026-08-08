@@ -31,7 +31,7 @@ const REQUIRED_MARKERS = [
   '<!-- case-study:retrospective -->',
 ];
 
-test('P3.5A publishes a controlled English Vlezet flagship without a second state model', () => {
+test('P3.5A keeps the controlled English Vlezet flagship on the current canonical state model', () => {
   assert.ok(fs.existsSync(englishCaseStudyPath), 'missing English Vlezet case study');
   const page = fs.readFileSync(englishCaseStudyPath, 'utf8');
 
@@ -50,16 +50,20 @@ test('P3.5A publishes a controlled English Vlezet flagship without a second stat
     'PR #42',
     'PR #44',
     'PR #45',
+    'PR #52',
     'Draft',
-    '0.85',
-    'product-owner retest',
+    'product-owner usefulness acceptance',
+    'closed unmerged',
+    'Assisted Tracing',
     'explicit Apply',
-    'AI geometry authority',
-    'Exact observed heads, run identities, metrics and observation dates belong to the canonical Project Evidence block',
+    'AI may not silently move walls',
+    'registry-backed evidence',
   ]) {
     assert.ok(page.includes(marker), `missing English Vlezet evidence boundary: ${marker}`);
   }
 
+  assert.doesNotMatch(page, /PR #42 remains Draft work awaiting/i);
+  assert.doesNotMatch(page, /next acceptance boundary is \*\*M7\.8C/i);
   assert.doesNotMatch(page, /data-tr-project-timeline=/, 'English page must not inject the Russian timeline presentation');
   assert.doesNotMatch(page, /[А-Яа-яЁё]/, 'English Vlezet page contains Cyrillic copy');
   assert.doesNotMatch(page, /\b[0-9a-f]{40}\b/i, 'volatile commit identities must remain registry-owned');
@@ -71,7 +75,7 @@ test('P3.5A publishes a controlled English Vlezet flagship without a second stat
   assert.doesNotMatch(
     page,
     /PR #(42|44|45)\s+(?:is|was|has been)\s+(?:merged|accepted)/i,
-    'Draft work must not be promoted to merged or accepted',
+    'closed-unmerged R&D work must not be promoted to merged or accepted',
   );
 
   assert.deepEqual(
