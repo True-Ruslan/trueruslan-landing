@@ -61,26 +61,35 @@ test('portfolio platform registry owns a dedicated public case-study route and t
   ]);
 });
 
-test('portfolio platform evidence separates CI, Pages deployment and live production proof', () => {
+test('portfolio platform evidence separates current P3.6C deployment proof from open P3.6 measurement', () => {
   const evidence = readJson(files.evidence);
   const snapshot = evidence.find(({project}) => project === 'portfolio-platform');
 
   assert.ok(snapshot, 'portfolio-platform evidence snapshot must exist');
   assert.equal(snapshot.status, 'verified');
-  assert.equal(snapshot.lastVerified, '2026-08-05');
+  assert.equal(snapshot.lastVerified, '2026-08-08');
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Public route model' && value.includes('directory')));
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Hosting' && value === 'GitHub Pages'));
+  assert.ok(snapshot.versions.some(({label, value}) => label === 'Analytics' && /Cloudflare.*Yandex Metrica/i.test(value)));
 
-  const labels = snapshot.signals.map(({label}) => label);
-  assert.ok(labels.some((label) => label.includes('PR #114')));
-  assert.ok(labels.some((label) => label.includes('Build #836')));
-  assert.ok(labels.some((label) => /Pages.*#147|#147.*Pages/.test(label)));
-  assert.ok(labels.some((label) => label.includes('Production Live Smoke #58')));
+  const p36c = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/pull/158');
+  assert.ok(p36c, 'missing P3.6C implementation evidence');
+  assert.equal(p36c.state, 'merged');
+  assert.match(p36c.scope, /explicit-consent|consent/i);
+  assert.match(p36c.scope, /zero Yandex requests before consent/i);
+  assert.match(p36c.scope, /P3\.6 measurement remains open/i);
 
-  const live = snapshot.signals.find(({label}) => label.includes('Production Live Smoke #58'));
+  const pages = snapshot.signals.find(({label}) => label.includes('P3.6C GitHub Pages deployment #187'));
+  assert.ok(pages, 'missing current Pages deployment evidence');
+  assert.equal(pages.state, 'published');
+  assert.match(pages.scope, /9bccf042fa6f9ce3ab289c7d023077c137ab238c/);
+  assert.match(pages.scope, /5803497490/);
+
+  const live = snapshot.signals.find(({label}) => label.includes('P3.6C Production Live Smoke #288'));
+  assert.ok(live, 'missing current Production Live evidence');
   assert.equal(live.state, 'passed');
-  assert.match(live.scope, /deployed/i);
-  assert.match(live.scope, /does not prove audience growth|не подтверждает рост аудитории/i);
+  assert.match(live.scope, /exact successful Pages deployment/i);
+  assert.match(live.scope, /zero Yandex provider requests before consent/i);
 });
 
 test('RU and EN case studies follow the evidence-first flagship contract', () => {
