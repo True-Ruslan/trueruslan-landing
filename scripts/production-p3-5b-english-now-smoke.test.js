@@ -9,17 +9,18 @@ const source = fs.readFileSync(path.join(__dirname, 'production-p3-5b-english-no
 
 test('P3.5B production smoke resolves project hrefs through document.baseURI before exact route comparison', () => {
   assert.match(source, /new URL\([^\n]*document\.baseURI\)\.href/);
-  assert.match(source, /VLEZET_EN_URL/);
+  assert.match(source, /NOTCHHUB_EN_URL/);
   assert.match(source, /VILLAIGENCE_EN_URL/);
-  assert.match(source, /normalizeUrl\([^\n]*VLEZET_EN_URL/);
+  assert.match(source, /normalizeUrl\([^\n]*NOTCHHUB_EN_URL/);
   assert.match(source, /normalizeUrl\([^\n]*VILLAIGENCE_EN_URL/);
   assert.doesNotMatch(source, /getAttribute\('href'\)\)\);\s*assert\(links\.some\(\(href\) => href\?\.includes\('\/en\/projects\//s);
 });
 
-test('P3.5B production smoke verifies current Now content from the canonical registry instead of a historical release literal', () => {
+test('P3.5B production smoke verifies current Now content from the canonical registry instead of historical literals', () => {
   assert.match(source, /data\/now\.json/);
   assert.match(source, /text\.includes\(NOW\.en\.focus\)/);
   assert.doesNotMatch(source, /0\.1\.25\+1\.21\.1/);
+  assert.doesNotMatch(source, /M7\.8B/);
 });
 
 test('P3.5B production smoke preserves rendered, no-JS, localized-route and search acceptance', () => {
@@ -28,10 +29,11 @@ test('P3.5B production smoke preserves rendered, no-JS, localized-route and sear
     "What I'm learning",
     "What I'm writing",
     'VillAIgence',
-    'Vlezet',
-    'M7.8B',
+    'NotchHub',
+    '0.1.0',
+    'Draft PR #10',
     'verifyNoJavaScript',
-    'VLEZET_EN_URL',
+    'NOTCHHUB_EN_URL',
     'VILLAIGENCE_EN_URL',
     'generated search does not expose English Now route',
     'data-tr-now-noscript',
