@@ -1,8 +1,39 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-08**, после exact-production acceptance P3.6C consent-gated Yandex Metrica browser collection; P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-08**, после exact-production acceptance homepage/Experience/NotchHub presentation refinement; P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-08 — Homepage density, Experience, unified header and NotchHub — PRODUCTION ACCEPTED
+
+Issue #166 was implemented through PR #167 as a bounded presentation slice: compact RU/EN homepage rhythm, terminal before primary paths, `Опыт` / `Experience` as the visible navigation label with stable `/landing/resume/`, dedicated Experience metric typography, one standalone/generated header contract, NotchHub as the featured current RU/EN flagship, and Vlezet editorial de-emphasis without changing its active lifecycle, direct route, history or evidence.
+
+The first merged feature SHA was not promoted to accepted despite green source/build gates. Pages #195 deployed it successfully, but deployment-triggered Production Live #329 found a real product mismatch: **Vlezet still appeared in the English `Current work` grid** because `/now` selected every `active` project even though Vlezet had `featured=false`.
+
+```text
+feature PR #167 merged SHA:      2ccb495872b94027980ecaaab1ee7bbc0f3a8ba8
+Pages:                           #195 / 31259962668 — SUCCESS
+Pages deployment ID:             5809180757
+Production Live Smoke:           #329 / 31259991547 — FAILURE
+failed gate:                     P3.5B English Now — Vlezet leaked into Current work
+```
+
+PR #168 fixed the presentation/lifecycle boundary with TDD. RED head `722925563c4b91d3cb7060704b596d08b7686f3c` produced exactly one expected regression failure. GREEN head `b51c922a56efa517bd6418e4cdbc114698e9ebf4` changed prominent `/now` selection to `active && featured`, so Vlezet remains `active=true` while no longer appearing in the spotlight. Full Build #1381, CodeQL #900 and Dependency Review #809 passed before squash merge.
+
+Final exact-production acceptance:
+
+```text
+hotfix PR:                       #168 — MERGED
+final accepted source SHA:       4395128144c069663e67c660e5b549cfca851ae8
+Pages:                           #196 / 31260596290 — SUCCESS
+Pages deployment ID:             5809298234
+Production Live Smoke:           #331 / 31260625145 — SUCCESS
+P3.5B English Now smoke:         PASS
+production artifact:             9022691131
+production digest:               sha256:14de956b15e6c3c4c1c2cf0256e5652e229a7c7d5b4d0be81e6e802feaf52bef
+```
+
+All deployment-triggered production gates passed on the exact accepted SHA. P3.6 measurement remains open: this presentation acceptance does not provide or infer the required real equal-duration aggregate observations, traffic sufficiency or human review.
 
 ## 2026-08-08 — P3.6C Yandex Metrica browser collection — PRODUCTION ACCEPTED
 

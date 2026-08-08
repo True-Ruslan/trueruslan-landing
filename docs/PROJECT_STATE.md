@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-08**, после controlled reconciliation свежего external-project evidence поверх принятого P3.6C; P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-08**, после exact-production acceptance homepage/Experience/NotchHub presentation refinement поверх принятого P3.6C; P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -245,6 +245,26 @@ production digest:                   sha256:1688d968db168f8342b9fca95b3550cbd7b4
 ```
 
 P3.6C is accepted only for the exact deployed SHA and evidence above. P3.6 remains open: production collection acceptance is not equivalent to real equal-duration aggregate observations, sufficient traffic or human review.
+
+### Portfolio presentation refinement — PRODUCTION ACCEPTED
+
+Issue #166 refined the accepted portfolio presentation without changing the evidence model or closing P3.6. PR #167 compacted the RU/EN homepage rhythm, moved the terminal before the primary paths, made `Опыт` / `Experience` the visible navigation label while preserving `/landing/resume/`, normalized standalone and generated header chrome, improved Experience metric typography, and introduced NotchHub as the current featured RU/EN case study. NotchHub keeps accepted `0.1.0`/M0/R0.1/P0/P0.1 evidence separate from M1 Draft PR #10. Vlezet remains `active=true`, directly reachable and evidence-backed, but `featured=false`.
+
+The first merged feature SHA exposed a real production acceptance gap: the prominent English `/en/now/` `Current work` grid still rendered every active project, so de-emphasized Vlezet leaked into the spotlight. PR #168 added RED-first regression coverage and changed only the presentation selection to `active && featured`, preserving Vlezet lifecycle truth.
+
+```text
+feature PR:                     #167 — MERGED
+hotfix PR:                      #168 — MERGED
+final accepted source SHA:      4395128144c069663e67c660e5b549cfca851ae8
+Pages:                          #196 / 31260596290 — SUCCESS
+Pages deployment ID:            5809298234
+Production Live Smoke:          #331 / 31260625145 — SUCCESS
+P3.5B English Now smoke:        PASS
+production artifact:            9022691131
+production digest:              sha256:14de956b15e6c3c4c1c2cf0256e5652e229a7c7d5b4d0be81e6e802feaf52bef
+```
+
+This is the latest accepted user-facing presentation refinement. It does not replace P3.5C as the last numbered user-facing Portfolio 1.0 milestone and does not promote P3.6 measurement.
 
 **P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**
 
