@@ -6,10 +6,10 @@
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#090B10">
   <title>Руслан Немыкин — Backend Engineer</title>
-  <meta name="description" content="Персональный сайт Руслана Немыкина — Java, Spring Boot, распределённые системы, DevOps и AI. Проекты, опыт, резюме и инженерные материалы.">
+  <meta name="description" content="Персональный сайт Руслана Немыкина — Java, Spring Boot, распределённые системы, DevOps и AI. Проекты, опыт и инженерные материалы.">
   <link rel="canonical" href="{{SITE_URL}}/">
   <meta property="og:title" content="Руслан Немыкин — Backend Engineer">
-  <meta property="og:description" content="Java · Distributed Systems · DevOps · AI. Инженерные проекты, опыт, резюме и технические материалы.">
+  <meta property="og:description" content="Java · Distributed Systems · DevOps · AI. Инженерные проекты, опыт и технические материалы.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="{{SITE_URL}}/">
   <meta property="og:image" content="{{SITE_URL}}/assets/images/avatar.png">
@@ -18,11 +18,13 @@
   <link rel="stylesheet" href="_assets/style/accessibility.css">
   <link rel="stylesheet" href="_assets/style/standalone.css">
   <link rel="stylesheet" href="_assets/style/home.css">
+  <link rel="stylesheet" href="_assets/style/home-refinement.css">
   <link rel="stylesheet" href="_assets/style/active-projects.css">
   <link rel="stylesheet" href="_assets/style/journal.css">
   <link rel="stylesheet" href="_assets/style/publications.css">
   <link rel="stylesheet" href="_assets/style/command-palette.css">
   <script src="_assets/script/custom.js" defer></script>
+  <script src="_assets/script/home-terminal-placement.js" defer></script>
   <script src="_assets/script/command-palette.js" defer></script>
 </head>
 <body class="g-root">
@@ -37,7 +39,7 @@
         <a href="landing/publications.html">Публикации</a>
         <a href="landing/photos.html">Фото</a>
         <a href="landing/about.html">Обо мне</a>
-        <a href="landing/resume.html">Резюме</a>
+        <a href="landing/resume.html">Опыт</a>
         <a href="landing/bibliography.html">Источники</a>
         <a href="landing/contacts.html">Контакты</a>
       </nav>
@@ -74,6 +76,7 @@
         <p class="tr-home-eyebrow">Backend Engineer · Java · Distributed Systems · AI</p>
         <h1>Руслан Немыкин</h1>
         <p class="tr-home-lead">Я проектирую и развиваю backend-системы на Java, работаю с интеграциями, данными и надёжностью, а в собственных проектах исследую AI-инженерию, компьютерное зрение и игровые системы. Здесь опыт, проекты и технические выводы связаны с проверяемыми текущими границами, а незавершённая работа не выдаётся за готовый результат.</p>
+        <div class="tr-home-terminal-slot" data-tr-terminal-slot aria-live="off"></div>
 {{HOME_PRIMARY_PATHS}}
 {{HOME_EVIDENCE_SIGNALS}}
       </section>
