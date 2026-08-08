@@ -15,3 +15,27 @@ test('P3.5B production smoke resolves project hrefs through document.baseURI bef
   assert.match(source, /normalizeUrl\([^\n]*VILLAIGENCE_EN_URL/);
   assert.doesNotMatch(source, /getAttribute\('href'\)\)\);\s*assert\(links\.some\(\(href\) => href\?\.includes\('\/en\/projects\//s);
 });
+
+test('P3.5B production smoke verifies current Now content from the canonical registry instead of a historical release literal', () => {
+  assert.match(source, /data\/now\.json/);
+  assert.match(source, /text\.includes\(NOW\.en\.focus\)/);
+  assert.doesNotMatch(source, /0\.1\.25\+1\.21\.1/);
+});
+
+test('P3.5B production smoke preserves rendered, no-JS, localized-route and search acceptance', () => {
+  for (const marker of [
+    'Current work',
+    "What I'm learning",
+    "What I'm writing",
+    'VillAIgence',
+    'Vlezet',
+    'M7.8B',
+    'verifyNoJavaScript',
+    'VLEZET_EN_URL',
+    'VILLAIGENCE_EN_URL',
+    'generated search does not expose English Now route',
+    'data-tr-now-noscript',
+  ]) {
+    assert.ok(source.includes(marker), `missing P3.5B verifier marker: ${marker}`);
+  }
+});
