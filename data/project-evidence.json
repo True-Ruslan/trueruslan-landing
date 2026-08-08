@@ -2,7 +2,7 @@
   {
     "project": "vlezet",
     "status": "verified",
-    "lastVerified": "2026-08-05",
+    "lastVerified": "2026-08-08",
     "versions": [
       {"label": "Web application", "value": "Next.js 16 + React + TypeScript"},
       {"label": "2D projection", "value": "Konva / react-konva"},
@@ -10,8 +10,8 @@
       {"label": "Persistence", "value": "IndexedDB"},
       {"label": "Canonical geometry", "value": "millimetres"},
       {"label": "Accepted recognition slice", "value": "M7.8B"},
-      {"label": "Next acceptance boundary", "value": "M7.8C product-owner retest"},
-      {"label": "Stacked Draft exploration", "value": "M7.9 + M7.8C.1"}
+      {"label": "Automatic M7.8C result", "value": "product-owner usefulness FAIL / closed unmerged"},
+      {"label": "Next acceptance boundary", "value": "Assisted Tracing design gate and product-owner acceptance"}
     ],
     "signals": [
       {
@@ -30,7 +30,7 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/vlezet/pull/40",
         "observedAt": "2026-08-02",
-        "scope": "M7.8A established a versioned public-safe recognition corpus, deterministic geometry/topology/opening/room/area/confidence metrics and real Chromium/OpenCV source execution. It provides a reproducible measurement authority; it does not by itself prove arbitrary real-plan accuracy."
+        "scope": "M7.8A established a versioned public-safe recognition corpus, deterministic geometry/topology/opening/room/area/confidence metrics and real Chromium/OpenCV source execution. It provides reproducible measurement authority; it does not by itself prove arbitrary real-plan accuracy."
       },
       {
         "kind": "pr",
@@ -39,41 +39,50 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/vlezet/pull/41",
         "observedAt": "2026-08-03",
-        "scope": "M7.8B was product-owner accepted with known precision limitations and squash-merged after exact-head Standard CI, Recognition Benchmark and M7 Browser Audit passed. It proves region-first source normalization, bounded wall topology, fail-closed overload protection and verification-only AI. The accepted Source geometry and topology F1 are both 0.837989; the representative source produced 27 local wall candidates, 19 AI-confirmed and 8 pending review. Openings are deferred to M7.8C, and the milestone does not prove accurate arbitrary-plan recognition."
+        "scope": "M7.8B was product-owner accepted with known precision limitations and squash-merged after exact-head Standard CI, Recognition Benchmark and M7 Browser Audit passed. It proves region-first source normalization, bounded wall topology, fail-closed overload protection and verification-only AI. Accepted Source geometry and topology F1 are both 0.837989; the representative source produced 27 local wall candidates, 19 AI-confirmed and 8 pending review. It remains the latest accepted recognition slice."
       },
       {
         "kind": "pr",
         "mode": "automated",
-        "label": "M7.8C Draft opening classification PR #42",
-        "state": "pending",
+        "label": "Automatic M7.8C recognition PR #42",
+        "state": "failed",
         "url": "https://github.com/True-Ruslan/vlezet/pull/42",
-        "observedAt": "2026-08-05",
-        "scope": "PR #42 remains an open Draft at observed head c49921d83e8c2ab7e7729a1cc5fe958930f3ee0a. CI #3138, Recognition Benchmark #316 and M7 Browser Audit #769 pass for that exact head, covering opening classification, host-wall validation and deterministic stabilization. The same real-plan product-owner retest remains mandatory. This pending signal is not an acceptance, does not promote M7.8C, does not replace accepted M7.8B and is not a merge claim."
+        "observedAt": "2026-08-08",
+        "scope": "PR #42 was closed unmerged after the 2026-08-08 product-owner retest failed usefulness acceptance on the original apartment plan despite green deterministic gates. The automatic opening/host-wall path is preserved as R&D evidence only; this failure does not invalidate accepted M7.8B and does not authorize lifecycle promotion."
       },
       {
         "kind": "pr",
         "mode": "automated",
-        "label": "M7.9 real-fixture benchmark Draft PR #44",
-        "state": "pending",
+        "label": "Real-fixture recognition R&D PR #44",
+        "state": "unavailable",
         "url": "https://github.com/True-Ruslan/vlezet/pull/44",
-        "observedAt": "2026-08-05",
-        "scope": "PR #44 is an open stacked Draft at observed head cd29740cf240d591785fc6607147d2bf07ece0b6 and is based on PR #42. Standard CI passes, while the real-fixture recognition gate remains merge-blocking: real wall geometry F1 0.827338 and real opening F1 0.627451 are below the immutable 0.85 thresholds. Incorrect-high-confidence, unknown-host and stale-decision counters remain zero. This is measured development evidence, not an accepted milestone, merge authorization or lifecycle promotion."
+        "observedAt": "2026-08-08",
+        "scope": "PR #44 was closed unmerged with the automatic-recognition strategy pivot. Its deterministic real-fixture benchmark and safety machinery remain useful R&D evidence, but the slice was not product-owner accepted and is not part of main or the accepted M7.8B product boundary."
       },
       {
         "kind": "pr",
         "mode": "automated",
-        "label": "M7.8C.1 hybrid proposal recovery Draft PR #45",
-        "state": "pending",
+        "label": "Hybrid proposal recovery R&D PR #45",
+        "state": "unavailable",
         "url": "https://github.com/True-Ruslan/vlezet/pull/45",
-        "observedAt": "2026-08-05",
-        "scope": "PR #45 is an open Draft at observed head 2c4d0f44e56753b9c44dd6c30a720d1a97f50c2e, stacked on PR #44. It explores AI recovery only as separate proposals that must pass deterministic host, raster, topology and overlap validation before explicit review and Apply. AI has no authoritative geometry authority and cannot silently mutate local walls or openings. The slice remains Draft and is not an acceptance, merge claim or promotion beyond accepted M7.8B."
+        "observedAt": "2026-08-08",
+        "scope": "PR #45 was closed unmerged with the automatic-recognition strategy pivot. Its deterministic proposal-safety work remains R&D evidence only. AI never gained authoritative geometry authority, and the closed slice is not an acceptance or promotion beyond M7.8B."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Assisted Tracing design gate PR #52",
+        "state": "pending",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/52",
+        "observedAt": "2026-08-08",
+        "scope": "PR #52 is an open Draft design gate from fresh main with no product code yet. It records the pivot to Assisted Tracing: the user explicitly chooses or draws geometry, local reference-image analysis may refine only the current ephemeral preview when evidence is unambiguous, ambiguous evidence abstains, and no AI/network dependency is introduced. M7.8B remains the accepted recognition slice until a later implementation receives its own TDD, browser and product-owner acceptance."
       }
     ]
   },
   {
     "project": "livingworld",
     "status": "verified",
-    "lastVerified": "2026-08-05",
+    "lastVerified": "2026-08-08",
     "versions": [
       {"label": "Public name", "value": "VillAIgence"},
       {"label": "Minecraft Java", "value": "1.21.1"},
@@ -81,12 +90,11 @@
       {"label": "Primary package", "value": "Fabric"},
       {"label": "Compatibility build", "value": "NeoForge"},
       {"label": "Persistent context", "value": "Memory 2.0 + Operator Lore"},
-      {"label": "Historical installed checkpoint", "value": "0.1.20 partial PASS"},
-      {"label": "Current published candidate", "value": "0.1.25+1.21.1"},
-      {"label": "Automated installed boundary", "value": "production-JAR startup + restart PASS"},
-      {"label": "Deterministic provider boundary", "value": "literal-loopback Chat + STT + TTS PASS"},
-      {"label": "Cumulative manual acceptance", "value": "pending"},
-      {"label": "Active development slice", "value": "M11 Phase C shared orchestration deadline — Draft/RED"}
+      {"label": "Current official release", "value": "0.2.0+1.21.1"},
+      {"label": "Installed 0.2.0 result", "value": "7 PASS / 0 FAIL"},
+      {"label": "Deferred installed boundaries", "value": "VAI-M2-INST-005 NOT TESTED; VAI-CONCUR-004 NOT TESTED / DEFERRED"},
+      {"label": "Controlled semantic boundary", "value": "BELIEF admission accepted; FACT requires SYSTEM_OBSERVED"},
+      {"label": "Active development slice", "value": "bounded PLAYER_TOLD BELIEF candidate extraction — Draft/RED"}
     ],
     "signals": [
       {
@@ -96,7 +104,7 @@
         "state": "accepted",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/98",
         "observedAt": "2026-08-02",
-        "scope": "Exact 0.1.20+1.21.1 installed acceptance ended as a partial PASS, not a full release acceptance. Text, STT, Chat, TTS, Voice Chat, Operator Lore scopes, restart, rollback-world loading and most synchronized gameplay scenarios passed. Release defects remained: an NPC became trapped in water and drowned; a filled grave broken with Silk Touch disappeared without an item; embedded identity reported a snapshot; and one Chat request took approximately 272 seconds."
+        "scope": "Exact 0.1.20+1.21.1 installed acceptance ended as a partial PASS, not a full release acceptance. Text, STT, Chat, TTS, Voice Chat, Operator Lore scopes, restart, rollback-world loading and most synchronized gameplay scenarios passed. Release defects remained and became later release gates."
       },
       {
         "kind": "manual",
@@ -105,7 +113,7 @@
         "state": "failed",
         "url": "https://github.com/True-Ruslan/villAIgence/blob/1.21.1/docs/livingworld/VALIDATION_0.1.22_TOMBSTONE_STARTUP_FIX.md",
         "observedAt": "2026-08-02",
-        "scope": "Exact 0.1.21+1.21.1 failed during startup before world and gameplay acceptance because MixinTombstoneBlock could not resolve the production getDrops target. The operator rolled back to 0.1.20; six persistent file hashes matched, the server reached STARTED, TCP 25565, UDP 24454, Voice Chat and monitoring recovered. This failure remains historical negative evidence and is not erased by later automated correction."
+        "scope": "Exact 0.1.21+1.21.1 failed during startup before world and gameplay acceptance because the production tombstone target could not be resolved. Safe rollback restored service with persistent hashes preserved. This historical negative evidence remains explicit."
       },
       {
         "kind": "pr",
@@ -123,7 +131,7 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/103",
         "observedAt": "2026-08-03",
-        "scope": "PR #103 introduced a validated 28-scenario acceptance catalogue and seven isolated real-server Fabric GameTests covering MCA navigation wiring, NPC-to-tombstone-to-NPC identity and inventory preservation, real Silk Touch filled-grave drops, an empty-grave negative control and deterministic water-navigation properties. This is development GameTest evidence, not production-JAR startup or cumulative operator acceptance."
+        "scope": "PR #103 introduced the risk-based acceptance catalogue and isolated real-server Fabric GameTests. This is development GameTest evidence, not by itself an installed release or cumulative operator acceptance."
       },
       {
         "kind": "pr",
@@ -132,7 +140,7 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/104",
         "observedAt": "2026-08-03",
-        "scope": "PR #104 installed the exact remapped Fabric candidate into an isolated production server outside the Loom development classpath. The candidate reached the ready marker in two separate JVM runs, stopped cleanly, saved the world and exited with code 0. memory.json, memory2.json, semantic-memory.json, relationships.json, voices.json and operator-lore.json retained identical relative paths and SHA-256 values across restart. Test fixture code was excluded from the distributable JAR. This automated proof does not complete real-provider Text/STT/Chat/TTS, two-client, focused live water/grave or product-owner cumulative acceptance."
+        "scope": "PR #104 installed the exact remapped Fabric candidate into an isolated production server outside the Loom development classpath, reached the ready marker in separate JVM runs and preserved canonical stores across restart. This remains a bounded automated installed proof."
       },
       {
         "kind": "pr",
@@ -141,7 +149,7 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/105",
         "observedAt": "2026-08-05",
-        "scope": "PR #105 corrected the installed inventory-loss defect by serializing a captured NPC while its inventory is intact and preserving the existing drop fallback when no valid tombstone owns the body. Exact-head CI, production startup/restart, GameTests and package gates passed. A focused installed grave resurrection canary with known stacks remains a separate manual acceptance boundary."
+        "scope": "PR #105 corrected the installed inventory-loss defect by serializing a captured NPC while its inventory is intact and preserving the existing drop fallback when no valid tombstone owns the body. Exact-head CI, production startup/restart, GameTests and package gates passed."
       },
       {
         "kind": "release",
@@ -150,7 +158,7 @@
         "state": "published",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/107",
         "observedAt": "2026-08-05",
-        "scope": "PR #107 requested and published immutable release 0.1.25+1.21.1 only after the exact post-merge production gate passed. The gate validates embedded identity, production-JAR startup/shutdown/restart, persistent stores, GameTests, Fabric/NeoForge builds, package smoke and byte-identical accepted/package JARs. Publication does not complete focused installed gameplay, real-provider, multiplayer or cumulative product-owner acceptance."
+        "scope": "PR #107 published immutable 0.1.25+1.21.1 after the exact post-merge production gate. It is retained as historical release evidence and is superseded by the later official 0.2.0 release."
       },
       {
         "kind": "pr",
@@ -159,7 +167,7 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/108",
         "observedAt": "2026-08-05",
-        "scope": "PR #108 exercised production Chat, STT and TTS HTTP clients against deterministic literal-loopback servers without external providers or public network calls. It proved bounded Chat retries sharing one monotonic request budget, exact authorization/model bodies, WAV multipart STT and sample-for-sample TTS PCM. This boundary does not claim physical microphone capture, Voice Chat playback, the complete STT → Chat → TTS orchestration deadline, real-provider quality or cumulative acceptance."
+        "scope": "PR #108 exercised production Chat, STT and TTS HTTP clients against deterministic literal-loopback servers without external providers or public network calls. It proves a bounded protocol/client boundary, not subjective provider quality."
       },
       {
         "kind": "pr",
@@ -168,16 +176,52 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/109",
         "observedAt": "2026-08-05",
-        "scope": "PR #109 repaired configuration-cache-safe refmap verification and scoped release requests to actual NEXT_RELEASE.txt changes. Exact-head CI, supply-chain and release dry-run gates passed. It changes build and release process correctness only; it does not change production Java, persistence, provider, packet or gameplay runtime behavior."
+        "scope": "PR #109 repaired configuration-cache-safe refmap verification and scoped release requests to actual release changes. It changes build/release correctness only and does not change production runtime behavior."
       },
       {
         "kind": "pr",
         "mode": "automated",
         "label": "M11 Phase C shared orchestration deadline PR #110",
-        "state": "pending",
+        "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/110",
         "observedAt": "2026-08-05",
-        "scope": "PR #110 remains an open Draft at observed head b3172080d89052a5b361d203dbdac152752d7d0d. It defines the RED contract for one shared STT → Chat retries → TTS deadline, exactly-once dialogue and relationship commits, and preservation of successful Chat commits when TTS reaches the deadline. This is pending development evidence: it is not an accepted capability and proves no production implementation, installed acceptance or lifecycle promotion; cumulative acceptance remains pending."
+        "scope": "PR #110 was merged after exact-head CI proved one monotonic STT → Chat retries → optional TTS deadline and exactly-once dialogue/relationship effects with production HTTP clients and loopback providers. Physical microphone, real Voice Chat playback and subjective provider quality remain separate installed/manual evidence categories."
+      },
+      {
+        "kind": "release",
+        "mode": "automated",
+        "label": "Official 0.2.0+1.21.1 release and exact candidate",
+        "state": "published",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/120",
+        "observedAt": "2026-08-07",
+        "scope": "Release 0.2.0+1.21.1 is the current official Memory 2.0 release at immutable release commit e426f588efefa6aa48a6e536c4a998421bbda241. The published/final candidate JAR is byte-identical to the installed candidate SHA-256 56293f86634b50b2def044429aac6f2cf0d197eb16ac1e60224708f7b3333aee. Installed clean-world required cases ended 7 PASS / 0 FAIL; VAI-M2-INST-005 remains NOT TESTED / automated evidence only and VAI-CONCUR-004 remains NOT TESTED / DEFERRED."
+      },
+      {
+        "kind": "manual",
+        "mode": "manual",
+        "label": "Installed 0.2.0 clean-world Memory 2.0 acceptance",
+        "state": "accepted",
+        "url": "https://github.com/True-Ruslan/villAIgence/blob/1.21.1/docs/livingworld/VALIDATION_0.2.0_CLEAN_WORLD_INSTALLED.md",
+        "observedAt": "2026-08-07",
+        "scope": "The byte-identical 0.2.0 candidate passed all seven required installed clean-world Memory 2.0 cases with 0 FAIL. The physical STT seed normalization silver-fox-482 → SilverFox482 is recorded as a non-blocking STT-quality observation rather than a persistence failure. VAI-M2-INST-005 and VAI-CONCUR-004 remain explicitly NOT TESTED."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Controlled Semantic Memory BELIEF admission PR #123",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/123",
+        "observedAt": "2026-08-08",
+        "scope": "PR #123 merged a provenance-safe BELIEF admission contract. PLAYER_TOLD/NPC_TOLD/INFERRED remain BELIEF paths tied to persisted source evidence; SYSTEM_OBSERVED cannot enter through the BELIEF API and FACT still requires server-owned SYSTEM_OBSERVED evidence. Candidate extraction is deliberately separate from admission and authority."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "PLAYER_TOLD BELIEF candidate extraction Draft PR #125",
+        "state": "pending",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/125",
+        "observedAt": "2026-08-08",
+        "scope": "PR #125 is an open Draft TDD slice for bounded PLAYER_TOLD BELIEF candidate extraction in the existing structured chat response. Its current development boundary is RED/pending and not accepted product truth. The model may propose bounded statement strings only; the server fixes provenance, owner, player identity and source event, and there is no AI-to-FACT path or second provider request."
       }
     ]
   },
@@ -213,7 +257,7 @@
   {
     "project": "portfolio-platform",
     "status": "verified",
-    "lastVerified": "2026-08-05",
+    "lastVerified": "2026-08-08",
     "versions": [
       {"label": "Delivery model", "value": "static-first + build-time intelligence"},
       {"label": "Knowledge build", "value": "Diplodoc"},
@@ -221,7 +265,7 @@
       {"label": "Canonical domain", "value": "trueruslan.ru"},
       {"label": "Public route model", "value": "repository-native directory URLs"},
       {"label": "Search", "value": "Diplodoc generated local index"},
-      {"label": "Analytics", "value": "optional aggregate Cloudflare Web Analytics"}
+      {"label": "Analytics", "value": "optional aggregate Cloudflare Web Analytics + explicit-consent Yandex Metrica"}
     ],
     "signals": [
       {
@@ -240,7 +284,7 @@
         "state": "green",
         "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/30989449993",
         "observedAt": "2026-08-05",
-        "scope": "Exact head 67d3f6593c45d1239630f71be6a3cb15a33f4519 passed 360 unit contracts, generated-site integrity, browser accessibility, Lighthouse, Firefox/WebKit, search, RU/EN, analytics, metadata, visual regression and custom-domain artifact checks. This proves repository and generated-artifact readiness, not deployment."
+        "scope": "Exact head 67d3f6593c45d1239630f71be6a3cb15a33f4519 passed the then-current complete quality matrix. This proves repository and generated-artifact readiness for that milestone, not deployment."
       },
       {
         "kind": "build",
@@ -249,7 +293,7 @@
         "state": "published",
         "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/30989921979",
         "observedAt": "2026-08-05",
-        "scope": "Pages #147 published accepted squash fe1a796df37313401c07e25c0672dc32db30a1c4 through the configured GitHub Pages pipeline. This proves deployment identity and publication completion, not live browser behavior or search-engine indexing."
+        "scope": "Pages #147 published accepted P3.1 evidence through the configured GitHub Pages pipeline. It remains historical deployment evidence, not the latest production identity."
       },
       {
         "kind": "ci",
@@ -258,7 +302,34 @@
         "state": "passed",
         "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/30989981685",
         "observedAt": "2026-08-05",
-        "scope": "Deployment-driven Production Live Smoke #58 resolved the exact successful Pages build and verified the deployed homepage, canonical clean routes, legacy compatibility, generated search, Atom feed, favicon, analytics boundary and absence of browser/request errors. It does not prove audience growth, engagement or immediate search-index replacement."
+        "scope": "Deployment-driven Production Live Smoke #58 verified the P3.1-era deployed routes and quality boundaries. It remains historical live evidence."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "P3.6C consent-gated Yandex Metrica PR #158",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/158",
+        "observedAt": "2026-08-08",
+        "scope": "PR #158 added explicit-consent Yandex Metrica browser collection without provider script, network request or provider cookie before opt-in. Exact production acceptance on deployed SHA 9bccf042fa6f9ce3ab289c7d023077c137ab238c proved zero Yandex requests before consent. P3.6 measurement remains open until real equal-duration aggregate observation windows, traffic-sufficiency assessment and human review are complete."
+      },
+      {
+        "kind": "build",
+        "mode": "automated",
+        "label": "P3.6C GitHub Pages deployment #187",
+        "state": "published",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31227641778",
+        "observedAt": "2026-08-08",
+        "scope": "Pages #187 deployed exact P3.6C SHA 9bccf042fa6f9ce3ab289c7d023077c137ab238c as deployment 5803497490 with the real repository counter configuration and fail-closed final-artifact verification."
+      },
+      {
+        "kind": "ci",
+        "mode": "automated",
+        "label": "P3.6C Production Live Smoke #288",
+        "state": "passed",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31227681975",
+        "observedAt": "2026-08-08",
+        "scope": "Production Live Smoke #288 resolved the exact successful Pages deployment and verified the real-site pre-consent boundary without granting consent or sending test telemetry. The production Yandex pre-consent smoke passed with zero Yandex provider requests before consent."
       }
     ]
   }
