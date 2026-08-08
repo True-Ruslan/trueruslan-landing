@@ -72,7 +72,7 @@ test('NotchHub case studies expose accepted 0.1.0 foundation separately from pen
     assert.match(source, /M1/i);
     assert.match(source, /not accepted|не принят|не принято/i);
     assert.match(source, /not notarized|не нотарифицирован/i);
-    assert.doesNotMatch(source, /M1[^\n]*(?:ACCEPTED|ПРИНЯТ)/i);
+    assert.doesNotMatch(source, /M1[^\n]{0,80}(?:status|статус)\s*:\s*(?:ACCEPTED|ПРИНЯТ(?:О|А)?)/i);
   }
 });
 
