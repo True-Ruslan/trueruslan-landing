@@ -27,6 +27,9 @@ test('production live smoke uses repository-native clean canonical routes', () =
     'https://trueruslan.ru/landing/notes/hybrid-cv-ai-recognition-boundaries/',
   );
   assert.equal(routes.SEARCH_URL, 'https://trueruslan.ru/_search/ru/');
+  assert.equal(routes.WORK_WITH_ME_URL, 'https://trueruslan.ru/landing/work-with-me/');
+  assert.equal(routes.WORK_WITH_ME_EN_URL, 'https://trueruslan.ru/en/work-with-me/');
+  assert.equal(routes.CONTACTS_URL, 'https://trueruslan.ru/landing/contacts/');
   assert.equal(
     routes.PORTFOLIO_PLATFORM_URL,
     'https://trueruslan.ru/landing/projects/portfolio-platform/',
