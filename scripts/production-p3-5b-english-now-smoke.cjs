@@ -6,7 +6,7 @@ const {
   NOW_URL,
   NOW_EN_URL,
   SEARCH_URL,
-  VLEZET_EN_URL,
+  NOTCHHUB_EN_URL,
   VILLAIGENCE_EN_URL,
 } = require('./production-live-routes.cjs');
 
@@ -53,10 +53,11 @@ async function verifyRendered(page) {
   const now = page.locator('[data-tr-now][lang="en"]').first();
   await now.waitFor({state: 'visible', timeout: 10000});
   const text = await now.innerText();
-  for (const marker of ['Current work', "What I'm learning", "What I'm writing", 'VillAIgence', 'Vlezet', 'M7.8B']) {
+  for (const marker of ['Current work', "What I'm learning", "What I'm writing", 'VillAIgence', 'NotchHub', '0.1.0', 'Draft PR #10']) {
     assert(text.includes(marker), `English Now rendered content misses ${marker}`);
   }
   assert(text.includes(NOW.en.focus), 'English Now does not expose the canonical English focus text');
+  assert(!/Vlezet|M7\.8B|Assisted Tracing/.test(text), 'English Now exposes the de-emphasized Vlezet spotlight');
   assert(!/Сейчас в работе|Что изучаю|Что пишу/.test(text), 'English Now contains Russian presentation headings');
 
   const links = await now.locator('a[data-project]').evaluateAll((nodes) => nodes.map((node) => ({
@@ -64,9 +65,9 @@ async function verifyRendered(page) {
     rawHref: node.getAttribute('href'),
     href: new URL(node.getAttribute('href') || '', document.baseURI).href,
   })));
-  const vlezet = links.find(({project}) => project === 'vlezet');
+  const notchhub = links.find(({project}) => project === 'notchhub');
   const livingworld = links.find(({project}) => project === 'livingworld');
-  assert(vlezet && normalizeUrl(vlezet.href) === normalizeUrl(VLEZET_EN_URL), `English Now Vlezet route drifted: ${JSON.stringify(vlezet)}`);
+  assert(notchhub && normalizeUrl(notchhub.href) === normalizeUrl(NOTCHHUB_EN_URL), `English Now NotchHub route drifted: ${JSON.stringify(notchhub)}`);
   assert(livingworld && normalizeUrl(livingworld.href) === normalizeUrl(VILLAIGENCE_EN_URL), `English Now VillAIgence route drifted: ${JSON.stringify(livingworld)}`);
 
   const html = await page.content();
@@ -85,9 +86,10 @@ async function verifyNoJavaScript(browser) {
     const fallback = page.locator('[data-tr-now-noscript="en"] [data-tr-now][lang="en"]');
     await fallback.waitFor({state: 'visible', timeout: 10000});
     const text = await fallback.innerText();
-    for (const marker of ['Current work', "What I'm learning", "What I'm writing", 'M7.8B']) {
+    for (const marker of ['Current work', "What I'm learning", "What I'm writing", 'NotchHub', '0.1.0', 'Draft PR #10']) {
       assert(text.includes(marker), `English Now no-JS fallback misses ${marker}`);
     }
+    assert(!/Vlezet|M7\.8B|Assisted Tracing/.test(text), 'English Now no-JS fallback exposes the de-emphasized Vlezet spotlight');
     assert(!/Сейчас в работе|Что изучаю|Что пишу/.test(text), 'English Now no-JS fallback contains Russian presentation headings');
     return {status: response.status(), fallbackVisible: true};
   } finally {
