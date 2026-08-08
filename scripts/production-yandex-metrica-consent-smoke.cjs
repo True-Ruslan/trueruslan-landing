@@ -49,13 +49,16 @@ async function verifyFreshRoute(browser, route, expectedCopy) {
     assert(await controller.count() === 1, `${route}: expected exactly one Yandex Metrica consent controller`);
     const counterId = await controller.getAttribute('data-tr-metrica-counter');
     assert(/^[1-9][0-9]*$/.test(counterId || ''), `${route}: missing positive counter binding`);
+    const controllerSource = await controller.textContent();
+    assert(!/setTimeout\s*\(/.test(controllerSource || ''), `${route}: consent controller contains an automatic timeout`);
+    assert(!/tr-metrica-settings|data-tr-metrica-settings/.test(controllerSource || ''), `${route}: consent controller contains a reopen control`);
 
     const state = await page.evaluate(({id, consentKey}) => ({
       consent: localStorage.getItem(consentKey),
       disabled: window[`disableYaCounter${id}`],
       providerScriptCount: document.querySelectorAll('script[data-tr-metrica-provider="yandex-metrica"]').length,
       promptVisible: Boolean(document.querySelector('[data-tr-metrica-consent-dialog]:not([hidden])')),
-      settingsVisible: Boolean(document.querySelector('[data-tr-metrica-settings]:not([hidden])')),
+      reopenControlPresent: Boolean(document.querySelector('[data-tr-metrica-settings]')),
       promptText: document.querySelector('[data-tr-metrica-consent-dialog]')?.textContent || '',
     }), {id: counterId, consentKey: CONSENT_KEY});
 
@@ -64,7 +67,7 @@ async function verifyFreshRoute(browser, route, expectedCopy) {
     assert(state.disabled === true, `${route}: disableYaCounter flag must be true before consent`);
     assert(state.providerScriptCount === 0, `${route}: provider script exists before consent`);
     assert(state.promptVisible === true, `${route}: consent prompt must be visible in a fresh context`);
-    assert(state.settingsVisible === false, `${route}: settings control must stay hidden while initial prompt is visible`);
+    assert(state.reopenControlPresent === false, `${route}: consent reopen control must not exist`);
     assert(expectedCopy.test(state.promptText), `${route}: unexpected localized consent copy`);
 
     const cookies = await context.cookies();
@@ -82,6 +85,8 @@ async function verifyFreshRoute(browser, route, expectedCopy) {
       disableFlagActive: true,
       freshConsentPreference: true,
       localizedCopy: true,
+      automaticDismissAbsent: true,
+      reopenControlAbsent: true,
     };
   } finally {
     await context.close();
@@ -103,7 +108,7 @@ async function main() {
     summary.routes.push(await verifyFreshRoute(browser, '/', /Cookies для статистики\?[\s\S]*Не разрешать[\s\S]*Разрешить/i));
     summary.routes.push(await verifyFreshRoute(browser, '/en/', /Analytics cookies\?[\s\S]*Refuse[\s\S]*Allow/i));
     writeSummary(summary);
-    console.log(`Production Yandex Metrica pre-consent smoke passed for deployed SHA ${EXPECTED_DEPLOYED_SHA}: zero Yandex requests before consent.`);
+    console.log(`Production Yandex Metrica pre-consent smoke passed for deployed SHA ${EXPECTED_DEPLOYED_SHA}: zero Yandex requests before consent, no auto-dismiss, no reopen control.`);
   } catch (error) {
     summary.failure = error.stack || error.message;
     writeSummary(summary);

@@ -38,3 +38,11 @@ test('production Metrica smoke proves controller, disable flag, no provider scri
   assert.match(smoke, /_ym_|yandexuid|ymex|is_gdpr/i);
   assert.match(smoke, /tr_privacy_consent_v1/);
 });
+
+test('production Metrica smoke proves no automatic dismiss and no reopen control', () => {
+  const smoke = readSmoke();
+  assert.match(smoke, /setTimeout\\s\*\\\(/);
+  assert.match(smoke, /automatic timeout/);
+  assert.match(smoke, /reopen control/);
+  assert.match(smoke, /reopenControlPresent/);
+});

@@ -59,3 +59,13 @@ test('explicit refusal and grant are separate choices and only grant can load th
   assert.match(rendered, /if\(choice==='denied'\)\{hidePrompt\(\);return\}/);
   assert.doesNotMatch(rendered, /setTimeout\([^)]*loadMetrica/);
 });
+
+test('consent is one-shot with no reopen control and no automatic dismiss timer', () => {
+  const rendered = injectConsentGatedMetricaIntoHtml(html, policy, counterId);
+
+  assert.doesNotMatch(rendered, /tr-metrica-settings/);
+  assert.doesNotMatch(rendered, /data-tr-metrica-settings/);
+  assert.doesNotMatch(rendered, /settings\.addEventListener/);
+  assert.doesNotMatch(rendered, /settings:'Cookies'/);
+  assert.doesNotMatch(rendered, /setTimeout\s*\(/);
+});

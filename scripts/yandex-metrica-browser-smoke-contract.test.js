@@ -30,7 +30,15 @@ test('browser smoke proves zero provider requests before consent and after denia
   assert.match(smoke, /tr_privacy_consent_v1/);
 });
 
-test('browser smoke proves grant is bounded and withdrawal disables later collection', () => {
+test('browser smoke proves prompt persists past seven seconds and choice cannot be reopened in-site', () => {
+  const smoke = readSmoke();
+  assert.match(smoke, /waitForTimeout\(7500\)/);
+  assert.match(smoke, /prompt persists/i);
+  assert.match(smoke, /reopen control/i);
+  assert.doesNotMatch(smoke, /withdraw/i);
+});
+
+test('browser smoke proves explicit grant remains privacy bounded', () => {
   const smoke = readSmoke();
   for (const contract of [
     /clickmap.*false/i,
@@ -39,6 +47,5 @@ test('browser smoke proves grant is bounded and withdrawal disables later collec
     /webvisor.*false/i,
     /trackHash.*false/i,
     /sendTitle.*false/i,
-    /withdraw/i,
   ]) assert.match(smoke, contract);
 });
