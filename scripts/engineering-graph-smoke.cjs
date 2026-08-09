@@ -16,7 +16,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
   page.on('pageerror', (error) => pageErrors.push(error.message));
 
   try {
-    const response = await page.goto(`${baseUrl}/landing/engineering-map/`, {waitUntil: 'networkidle'});
+    const response = await page.goto(`${baseUrl}/engineering-map/`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`${name}: navigation HTTP ${response?.status() ?? 'none'}`);
     await page.waitForSelector('[data-tr-engineering-graph-enhanced="true"]', {timeout: 5000});
 
