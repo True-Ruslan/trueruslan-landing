@@ -7,9 +7,12 @@ import {fileURLToPath} from 'node:url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (file) => fs.readFileSync(path.join(ROOT, 'scripts', file), 'utf8');
 
-test('portfolio production search accepts only the canonical portfolio-platform result route', () => {
+test('portfolio production search resolves the exact RU canonical pathname instead of trusting result order', () => {
   const source = read('production-portfolio-platform-smoke.cjs');
-  assert.match(source, /a\[href\*=\"projects\/portfolio-platform\/\"\]:not\(\[href\*=\"landing\/projects\/portfolio-platform\/\"\]\)/);
+  assert.match(source, /async function findExactPathResult\(page, expectedUrl\)/);
+  assert.match(source, /new URL\(href, page\.url\(\)\)\.pathname === expectedPath/);
+  assert.match(source, /findExactPathResult\(page, PORTFOLIO_PLATFORM_URL\)/);
+  assert.doesNotMatch(source, /a\[href\*=\"projects\/portfolio-platform\/\"\][^\n]*\.first\(\)/);
   assert.doesNotMatch(source, /a\[href\*=\"landing\/projects\/portfolio-platform\"\]/);
 });
 

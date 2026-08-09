@@ -31,6 +31,26 @@ function writeJson(name, value) {
   fs.writeFileSync(path.join(ARTIFACTS_DIR, name), `${JSON.stringify(value, null, 2)}\n`, 'utf8');
 }
 
+async function findExactPathResult(page, expectedUrl) {
+  const expectedPath = new URL(expectedUrl).pathname;
+  await page.waitForFunction((pathName) => [...document.querySelectorAll('a[href]')]
+    .some((link) => {
+      try {
+        return new URL(link.getAttribute('href'), document.baseURI).pathname === pathName;
+      } catch {
+        return false;
+      }
+    }), expectedPath, {timeout: 15000});
+
+  const candidates = page.locator('a[href*="projects/portfolio-platform/"]:visible');
+  for (let index = 0; index < await candidates.count(); index += 1) {
+    const candidate = candidates.nth(index);
+    const href = await candidate.getAttribute('href');
+    if (href && new URL(href, page.url()).pathname === expectedPath) return candidate;
+  }
+  throw new Error(`search result for exact path ${expectedPath} was not found`);
+}
+
 async function verifyCaseStudy(page, url, {locale, alternateUrl}) {
   const response = await page.goto(url, {waitUntil: 'networkidle', timeout: 45000});
   assert(response?.ok(), `${locale} portfolio platform returned HTTP ${response?.status() ?? 'none'}`);
@@ -142,7 +162,7 @@ async function main() {
     await input.waitFor({state: 'visible', timeout: 10000});
     await input.fill('TrueRuslan Landing static-first');
     await button.click();
-    const result = page.locator('a[href*="projects/portfolio-platform/"]:not([href*="landing/projects/portfolio-platform/"])').first();
+    const result = await findExactPathResult(page, PORTFOLIO_PLATFORM_URL);
     await result.waitFor({state: 'visible', timeout: 15000});
     const resultHref = await result.getAttribute('href');
     assert(resultHref && new URL(resultHref, page.url()).pathname === new URL(PORTFOLIO_PLATFORM_URL).pathname, `search returned wrong portfolio platform route: ${resultHref || 'missing'}`);
