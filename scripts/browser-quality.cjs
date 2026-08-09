@@ -175,8 +175,13 @@ async function checkScenario(browser, baseUrl, scenario, summary) {
       }
     }
 
-    const visualReady = await page.evaluate(() => document.documentElement.classList.contains('tr-visual-ready'));
-    if (!visualReady) {
+    try {
+      await page.waitForFunction(
+        () => document.documentElement.classList.contains('tr-visual-ready'),
+        undefined,
+        {timeout: 2500},
+      );
+    } catch {
       throw new Error(`Custom visual layer did not initialize on ${scenario.path}`);
     }
 
