@@ -29,21 +29,29 @@ function fakeAnchor(href, {target = null, rel = ''} = {}) {
   };
 }
 
-test('runtime policy restores new-tab attributes removed after hydration', () => {
+test('runtime policy keeps relative same-site navigation in the current tab', () => {
   const api = loadApi();
   const search = fakeAnchor('_search/ru/');
-  assert.equal(api.normalizeAnchor(search), true);
-  assert.equal(search.attrs.get('target'), '_blank');
-  assert.equal(search.attrs.get('rel'), 'noopener noreferrer');
-  assert.equal(api.normalizeAnchor(search), false, 'second normalization must be idempotent');
+  assert.equal(api.normalizeAnchor(search), false);
+  assert.equal(search.attrs.has('target'), false);
+  assert.equal(search.attrs.has('rel'), false);
 });
 
-test('runtime policy preserves existing rel tokens and covers language links', () => {
+test('runtime policy strips stale new-tab policy from same-site language links', () => {
   const api = loadApi();
-  const language = fakeAnchor('https://trueruslan.ru/en/', {rel: 'alternate noopener'});
+  const language = fakeAnchor('https://trueruslan.ru/en/', {target: '_blank', rel: 'alternate noopener noreferrer'});
   assert.equal(api.normalizeAnchor(language), true);
-  assert.equal(language.attrs.get('target'), '_blank');
-  assert.equal(language.attrs.get('rel'), 'alternate noopener noreferrer');
+  assert.equal(language.attrs.has('target'), false);
+  assert.equal(language.attrs.get('rel'), 'alternate');
+  assert.equal(api.normalizeAnchor(language), false, 'second normalization must be idempotent');
+});
+
+test('runtime policy adds safe new-tab attributes only to external web links', () => {
+  const api = loadApi();
+  const github = fakeAnchor('https://github.com/True-Ruslan', {rel: 'nofollow'});
+  assert.equal(api.normalizeAnchor(github), true);
+  assert.equal(github.attrs.get('target'), '_blank');
+  assert.equal(github.attrs.get('rel'), 'nofollow noopener noreferrer');
 });
 
 test('runtime policy keeps same-page fragments and protocol actions current-context', () => {
@@ -52,7 +60,7 @@ test('runtime policy keeps same-page fragments and protocol actions current-cont
   assert.equal(api.normalizeAnchor(fragment), true);
   assert.equal(fragment.attrs.has('target'), false);
 
-  for (const href of ['mailto:ruslan@example.com', 'tel:+10000000000']) {
+  for (const href of ['mailto:nemykin@true-ruslan.ru', 'tel:+10000000000']) {
     const anchor = fakeAnchor(href);
     assert.equal(api.normalizeAnchor(anchor), false);
     assert.equal(anchor.attrs.has('target'), false);
