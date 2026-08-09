@@ -13,17 +13,17 @@ const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Minima
 
 const PAIRS = [
   {id: 'home', ru: '/', en: '/en/'},
-  {id: 'about', ru: '/landing/about/', en: '/en/about/'},
-  {id: 'resume', ru: '/landing/resume/', en: '/en/resume/'},
-  {id: 'projects', ru: '/landing/projects/', en: '/en/projects/'},
-  {id: 'now', ru: '/landing/now/', en: '/en/now/'},
-  {id: 'publications', ru: '/landing/publications/', en: '/en/publications/'},
-  {id: 'livingworld', ru: '/landing/projects/livingworld/', en: '/en/projects/livingworld/'},
-  {id: 'vlezet', ru: '/landing/projects/vlezet/', en: '/en/projects/vlezet/'},
-  {id: 'notchhub', ru: '/landing/projects/notchhub/', en: '/en/projects/notchhub/'},
-  {id: 'portfolio-platform', ru: '/landing/projects/portfolio-platform/', en: '/en/projects/portfolio-platform/'},
-  {id: 'note-ai-npcs', ru: '/landing/notes/server-authoritative-ai-npcs/', en: '/en/notes/server-authoritative-ai-npcs/'},
-  {id: 'note-llm-protocol-boundary', ru: '/landing/notes/llm-output-is-a-protocol-boundary/', en: '/en/notes/llm-output-is-a-protocol-boundary/'},
+  {id: 'about', ru: '/about/', en: '/en/about/'},
+  {id: 'resume', ru: '/resume/', en: '/en/resume/'},
+  {id: 'projects', ru: '/projects/', en: '/en/projects/'},
+  {id: 'now', ru: '/now/', en: '/en/now/'},
+  {id: 'publications', ru: '/publications/', en: '/en/publications/'},
+  {id: 'livingworld', ru: '/projects/livingworld/', en: '/en/projects/livingworld/'},
+  {id: 'vlezet', ru: '/projects/vlezet/', en: '/en/projects/vlezet/'},
+  {id: 'notchhub', ru: '/projects/notchhub/', en: '/en/projects/notchhub/'},
+  {id: 'portfolio-platform', ru: '/projects/portfolio-platform/', en: '/en/projects/portfolio-platform/'},
+  {id: 'note-ai-npcs', ru: '/notes/server-authoritative-ai-npcs/', en: '/en/notes/server-authoritative-ai-npcs/'},
+  {id: 'note-llm-protocol-boundary', ru: '/notes/llm-output-is-a-protocol-boundary/', en: '/en/notes/llm-output-is-a-protocol-boundary/'},
 ];
 
 const EXTERNALS = Object.freeze({
