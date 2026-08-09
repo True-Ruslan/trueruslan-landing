@@ -11,8 +11,22 @@ const {chromium} = requireQualityTool('playwright');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright');
 
 const LOCALES = Object.freeze({
-  ru: Object.freeze({route: '/work-with-me/', heading: 'Работа со мной', home: '/', workHref: 'work-with-me/', status: 'ограниченная доступность'}),
-  en: Object.freeze({route: '/en/work-with-me/', heading: 'Work with me', home: '/en/', workHref: 'en/work-with-me/', status: 'limited availability'}),
+  ru: Object.freeze({
+    route: '/work-with-me/',
+    heading: 'Работа со мной',
+    home: '/',
+    workHref: 'work-with-me/',
+    status: 'ограниченная доступность',
+    collaborationText: 'Помогаю с backend-сервисами',
+  }),
+  en: Object.freeze({
+    route: '/en/work-with-me/',
+    heading: 'Work with me',
+    home: '/en/',
+    workHref: 'en/work-with-me/',
+    status: 'limited availability',
+    collaborationText: 'I help with backend services',
+  }),
 });
 
 const ALLOWED_CONTEXTUAL = Object.freeze([
@@ -97,22 +111,38 @@ async function assertHomepage(browser, baseUrl, locale) {
   try {
     const response = await page.goto(`${baseUrl}${copy.home}`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`${locale}: homepage unavailable`);
-    if (await page.locator('[data-home-path]').count() !== 3) throw new Error(`${locale}: homepage must preserve exactly three primary paths`);
+
+    if (await page.locator('[data-home-proof]').count() !== 4) throw new Error(`${locale}: C2 homepage must expose exactly four proof facts`);
+    if (await page.locator('[data-home-flagship]').count() !== 3) throw new Error(`${locale}: C2 homepage must preserve exactly three selected projects`);
+    for (const kind of ['experience', 'writing', 'personal']) {
+      if (await page.locator(`[data-home-bridge="${kind}"]`).count() !== 1) {
+        throw new Error(`${locale}: C2 homepage ${kind} bridge must render exactly once`);
+      }
+    }
     if (await page.locator('[data-home-collaboration="true"]').count() !== 1) throw new Error(`${locale}: homepage collaboration bridge must render exactly once`);
-    const cta = page.locator('.tr-home-collaboration__cta');
+
+    const bodyText = await page.locator('body').innerText();
+    if (!bodyText.includes(copy.collaborationText)) throw new Error(`${locale}: positive-first homepage collaboration copy is missing`);
+
+    const cta = page.locator('.tr-home-collaboration__action--primary').first();
+    if (await cta.count() !== 1) throw new Error(`${locale}: homepage collaboration primary action is missing`);
     const href = await cta.getAttribute('href');
     if (!href || !new URL(href, page.url()).pathname.endsWith(copy.workHref)) throw new Error(`${locale}: homepage collaboration CTA route drifted: ${href}`);
     await assertCurrentTab(cta, `${locale} homepage collaboration CTA`);
+
     const order = await page.evaluate(() => {
       const flagship = document.querySelector('[data-home-flagship]')?.closest('section');
+      const experience = document.querySelector('[data-home-bridge="experience"]');
+      const writing = document.querySelector('[data-home-bridge="writing"]');
       const collaboration = document.querySelector('[data-home-collaboration="true"]');
-      const now = document.querySelector('#now-title')?.closest('section');
-      return flagship && collaboration && now
-        ? Boolean(flagship.compareDocumentPosition(collaboration) & Node.DOCUMENT_POSITION_FOLLOWING)
-          && Boolean(collaboration.compareDocumentPosition(now) & Node.DOCUMENT_POSITION_FOLLOWING)
-        : false;
+      const personal = document.querySelector('[data-home-bridge="personal"]');
+      const nodes = [flagship, experience, writing, collaboration, personal];
+      if (nodes.some((node) => !node)) return false;
+      return nodes.slice(0, -1).every((node, index) =>
+        Boolean(node.compareDocumentPosition(nodes[index + 1]) & Node.DOCUMENT_POSITION_FOLLOWING));
     });
-    if (!order) throw new Error(`${locale}: collaboration bridge must remain after flagship proof and before current focus`);
+    if (!order) throw new Error(`${locale}: C2 homepage order drifted after selected work`);
+
     assertNoSalesRuntime(await page.content(), `${locale} homepage`);
   } finally {
     await runtime.close();
