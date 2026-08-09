@@ -5,7 +5,7 @@
 ## Основные контакты
 
 - **Telegram:** [@TrueRuslan_Blog](https://t.me/TrueRuslan_Blog)
-- **Email:** [contact@trueruslan.ru](mailto:contact@trueruslan.ru)
+- **Email:** [nemykin@true-ruslan.ru](mailto:nemykin@true-ruslan.ru)
 
 ## Где ещё меня можно найти
 
