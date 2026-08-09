@@ -57,6 +57,7 @@ async function assertResumePdf(page, context) {
 async function assertHydratedLinkPolicy(page, label) {
   const report = await page.evaluate(() => {
     const exemptScheme = /^(?:mailto|tel|javascript|data):/i;
+    const policy = window.TrueRuslanLinkPolicy;
 
     function containsLegacyLandingPath(rawHref) {
       const value = String(rawHref || '').trim();
@@ -71,7 +72,19 @@ async function assertHydratedLinkPolicy(page, label) {
 
     const violations = [];
     let navigationalLinks = 0;
+    let internalLinks = 0;
+    let externalLinks = 0;
     let samePageFragments = 0;
+
+    if (!policy || typeof policy.shouldOpenInNewContext !== 'function') {
+      return {
+        violations: ['runtime link policy API is unavailable'],
+        navigationalLinks,
+        internalLinks,
+        externalLinks,
+        samePageFragments,
+      };
+    }
 
     for (const anchor of document.querySelectorAll('a[href]')) {
       const href = String(anchor.getAttribute('href') || '').trim();
@@ -83,25 +96,41 @@ async function assertHydratedLinkPolicy(page, label) {
 
       if (href.startsWith('#')) {
         samePageFragments += 1;
-        if (anchor.getAttribute('target') === '_blank') {
-          violations.push(`same-page fragment forced into new tab: ${href}`);
+        if (anchor.getAttribute('target')) {
+          violations.push(`same-page fragment declares target: ${href}`);
         }
         continue;
       }
 
-      if (exemptScheme.test(href)) continue;
-      navigationalLinks += 1;
-
-      const rel = new Set(String(anchor.getAttribute('rel') || '').toLowerCase().split(/\s+/).filter(Boolean));
-      if (anchor.getAttribute('target') !== '_blank') {
-        violations.push(`missing target=_blank: ${href}`);
+      if (exemptScheme.test(href)) {
+        if (anchor.getAttribute('target')) {
+          violations.push(`protocol action declares target: ${href}`);
+        }
+        continue;
       }
-      if (!rel.has('noopener') || !rel.has('noreferrer')) {
-        violations.push(`missing noopener/noreferrer: ${href}`);
+
+      navigationalLinks += 1;
+      const newContext = policy.shouldOpenInNewContext(href);
+      const target = anchor.getAttribute('target');
+      const rel = new Set(String(anchor.getAttribute('rel') || '').toLowerCase().split(/\s+/).filter(Boolean));
+
+      if (newContext) {
+        externalLinks += 1;
+        if (target !== '_blank') {
+          violations.push(`external link missing target=_blank: ${href}`);
+        }
+        if (!rel.has('noopener') || !rel.has('noreferrer')) {
+          violations.push(`external link missing noopener/noreferrer: ${href}`);
+        }
+      } else {
+        internalLinks += 1;
+        if (target) {
+          violations.push(`same-site link unexpectedly declares target=${target}: ${href}`);
+        }
       }
     }
 
-    return {violations, navigationalLinks, samePageFragments};
+    return {violations, navigationalLinks, internalLinks, externalLinks, samePageFragments};
   });
 
   if (report.navigationalLinks === 0) {
@@ -179,6 +208,8 @@ async function checkScenario(browser, baseUrl, scenario, summary) {
       requiredText: scenario.requiredText || [],
       accessibilityChecked: Boolean(scenario.accessibility),
       navigationalLinksChecked: linkPolicy.navigationalLinks,
+      internalLinksChecked: linkPolicy.internalLinks,
+      externalLinksChecked: linkPolicy.externalLinks,
       samePageFragmentsChecked: linkPolicy.samePageFragments,
     });
   } finally {
