@@ -9,6 +9,7 @@ import {renderHomepageBridge} from './standalone-home.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+const visibleText = (html) => html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
 function sliceBetween(source, startMarker, endMarker) {
   const start = source.indexOf(startMarker);
@@ -49,13 +50,13 @@ test('experience bridge presents commercial experience without resume or PDF emp
   assert.match(ru, /Коммерческая разработка/);
   assert.match(ru, /Посмотреть опыт →/);
   assert.match(ru, /href="landing\/resume\.html"/);
-  assert.doesNotMatch(ru, /резюме|PDF/i);
+  assert.doesNotMatch(visibleText(ru), /резюме|PDF/i);
 
   const en = renderHomepageBridge('experience', 'en');
   assert.match(en, /Commercial experience/);
   assert.match(en, /Explore experience →/);
   assert.match(en, /href="en\/resume\.html"/);
-  assert.doesNotMatch(en, /resume|PDF/i);
+  assert.doesNotMatch(visibleText(en), /resume|PDF/i);
 });
 
 test('visible navigation is Experience-first while the stable resume route is preserved', () => {
