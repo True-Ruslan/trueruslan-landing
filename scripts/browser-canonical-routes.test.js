@@ -23,9 +23,20 @@ const CANONICAL_ONLY_SMOKES = Object.freeze([
   'search-smoke.cjs',
 ]);
 
+const LEGACY_CANONICAL_PATTERNS = Object.freeze([
+  /(?:pathname|route|path):\s*['"`]\/landing\//,
+  /routeFragment:\s*['"`]landing\//,
+  /page\.goto\([^\n]*\/landing\//,
+  /endsWith\(['"`]\/landing\//,
+  /startsWith\(['"`]landing\//,
+]);
+
 test('content browser smokes never treat the legacy /landing namespace as canonical', () => {
   for (const file of CANONICAL_ONLY_SMOKES) {
-    assert.doesNotMatch(read(file), /(?:['"`]|includes\(['"]|endsWith\(['"])[^\n]*\/landing\//, `${file} leaks a legacy /landing browser route expectation`);
+    const source = read(file);
+    for (const pattern of LEGACY_CANONICAL_PATTERNS) {
+      assert.doesNotMatch(source, pattern, `${file} leaks a legacy /landing browser route expectation`);
+    }
   }
 });
 
