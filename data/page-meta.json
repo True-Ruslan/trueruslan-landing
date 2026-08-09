@@ -408,5 +408,25 @@
     "kicker": "PUBLISHED WORK",
     "tags": ["ARTICLES", "RESEARCH", "TALKS"],
     "accent": "cyan"
+  },
+  {
+    "path": "landing/work-with-me.html",
+    "card": "work-with-me",
+    "title": "Работа со мной — Руслан Немыкин",
+    "description": "Инженерная практика Руслана Немыкина: backend, интеграции, AI engineering, технические аудиты, Teaching & Mentoring и прямое обсуждение задач с явными границами.",
+    "displayTitle": "WORK WITH ME",
+    "kicker": "ENGINEERING PRACTICE",
+    "tags": ["BACKEND", "AI", "MENTORING"],
+    "accent": "green"
+  },
+  {
+    "path": "en/work-with-me.html",
+    "card": "work-with-me-en",
+    "title": "Work with me — Ruslan Nemykin",
+    "description": "Evidence-led private engineering practice: backend systems, integrations, AI engineering, technical review, Teaching & Mentoring and direct bounded collaboration.",
+    "displayTitle": "WORK WITH ME",
+    "kicker": "ENGINEERING PRACTICE",
+    "tags": ["BACKEND", "AI", "MENTORING"],
+    "accent": "green"
   }
 ]

@@ -7,6 +7,12 @@ const VIEWPORTS = Object.freeze({
 const CORE_SCENARIOS = Object.freeze({
   home: Object.freeze({slug: 'home', path: '/', heading: 'Руслан Немыкин'}),
   projects: Object.freeze({slug: 'projects', path: '/landing/projects/', heading: 'Проекты'}),
+  workWithMe: Object.freeze({
+    slug: 'work-with-me',
+    path: '/landing/work-with-me/',
+    heading: 'Работа со мной',
+    requiredText: ['Engineering', 'Teaching & Mentoring', 'Context', 'Scope', 'Estimate', 'Implementation', 'Handover'],
+  }),
   vlezet: Object.freeze({
     slug: 'vlezet',
     path: '/landing/projects/vlezet/',

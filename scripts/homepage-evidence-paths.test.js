@@ -4,6 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
+import {loadCollaboration} from './collaboration.js';
 import {loadProjectEvidence} from './project-evidence.js';
 import {loadProjectRegistry} from './project-registry.js';
 import {renderStandaloneHome} from './standalone-home.js';
@@ -28,6 +29,7 @@ test('production homepage templates reserve evidence-first build surfaces', () =
     assert.equal(count(template, '{{HOME_PRIMARY_PATHS}}'), 1);
     assert.equal(count(template, '{{HOME_EVIDENCE_SIGNALS}}'), 1);
     assert.equal(count(template, '{{HOME_FLAGSHIPS}}'), 1);
+    assert.equal(count(template, '{{HOME_COLLABORATION_BRIDGE}}'), 1);
     assert.doesNotMatch(template, /\{\{CURRENTLY_BUILDING\}\}/);
     assert.doesNotMatch(template, /JAVA 8–21|AI \/ LLM \/ AGENTS/);
   }
@@ -45,11 +47,12 @@ test('production homepage templates reserve evidence-first build surfaces', () =
 test('production homepage rendering exposes three public flagships and no private or de-emphasized project', () => {
   const projects = loadProjectRegistry(PROJECTS);
   const evidence = loadProjectEvidence(EVIDENCE, {projects});
+  const collaboration = loadCollaboration();
   const ru = renderStandaloneHome(
     fs.readFileSync(RU_TEMPLATE, 'utf8'),
     'https://trueruslan.ru',
     projects,
-    {evidence},
+    {evidence, collaboration},
   );
   const en = renderStandaloneHome(
     fs.readFileSync(EN_TEMPLATE, 'utf8'),
@@ -58,6 +61,7 @@ test('production homepage rendering exposes three public flagships and no privat
     {
       locale: 'en',
       evidence,
+      collaboration,
       hrefTransform: (href, project) => {
         if (project.slug === 'livingworld') return 'en/projects/livingworld.html';
         if (project.slug === 'notchhub') return 'en/projects/notchhub.html';
@@ -76,6 +80,7 @@ test('production homepage rendering exposes three public flagships and no privat
     assert.equal(count(html, 'data-home-path='), 3);
     assert.equal(count(html, 'data-home-evidence='), 3);
     assert.equal(count(html, 'data-home-flagship='), 3);
+    assert.equal(count(html, 'data-home-collaboration='), 1);
     assert.doesNotMatch(html, /NODE ZERO|data-home-flagship="node-zero"|data-home-flagship="vlezet"|data-home-evidence="vlezet"/);
     assert.doesNotMatch(html, /\{\{HOME_/);
     assert.match(html, /data-home-flagship="notchhub"/);

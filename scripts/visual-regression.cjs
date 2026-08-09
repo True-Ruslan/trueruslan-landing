@@ -7,6 +7,7 @@ const ROOT = path.resolve(__dirname, '..');
 const TOOLS_DIR = path.join(ROOT, '.quality-tools', 'node_modules');
 const ARTIFACTS_DIR = path.join(ROOT, 'quality-artifacts');
 const BASELINE_PATH = path.join(ROOT, 'tests', 'visual-baselines.json');
+const BASELINE_OVERRIDE_PATH = path.join(ROOT, 'tests', 'visual-baseline-overrides.json');
 
 function requireTool(name) {
   try {
@@ -78,8 +79,22 @@ function writeDiffPreview(name, actual, expected, sampleSize) {
   );
 }
 
-function main() {
+function loadConfig() {
   const config = JSON.parse(fs.readFileSync(BASELINE_PATH, 'utf8'));
+  if (!fs.existsSync(BASELINE_OVERRIDE_PATH)) return config;
+
+  const overrides = JSON.parse(fs.readFileSync(BASELINE_OVERRIDE_PATH, 'utf8'));
+  for (const name of Object.keys(overrides)) {
+    if (!Object.hasOwn(config.baselines, name)) {
+      throw new Error(`Unknown visual baseline override: ${name}`);
+    }
+  }
+  config.baselines = {...config.baselines, ...overrides};
+  return config;
+}
+
+function main() {
+  const config = loadConfig();
   const failures = [];
   const results = [];
   const expectedSampleLength = config.sampleSize * config.sampleSize * 3;

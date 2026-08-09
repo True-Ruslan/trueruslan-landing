@@ -62,6 +62,18 @@ async function runScenario(browserType, browserName, scenario, baseUrl) {
       }
     }
 
+    if (scenario.workWithMe) {
+      if (await page.locator('[data-tr-collaboration-rendered="availability"]').count() < 1) {
+        throw new Error(`${browserName} Work with me canonical availability is missing.`);
+      }
+      if (await page.locator('a[href="https://t.me/TrueRuslan"]').count() < 1) {
+        throw new Error(`${browserName} Work with me direct Telegram handoff is missing.`);
+      }
+      if (await page.locator('form').count() !== 0) {
+        throw new Error(`${browserName} Work with me must not expose a form.`);
+      }
+    }
+
     diagnostics.assertClean(`${browserName} ${scenario.path}`);
     return {browser: browserName, ...scenario, heading};
   } catch (error) {
@@ -79,6 +91,7 @@ async function main() {
   const scenarios = [
     {...CORE_SCENARIOS.home, path: '/'},
     {...CORE_SCENARIOS.projects},
+    {...CORE_SCENARIOS.workWithMe, workWithMe: true},
     {...CORE_SCENARIOS.vlezet},
     {...CORE_SCENARIOS.villaigence},
     {...CORE_SCENARIOS.publications, publications: true},

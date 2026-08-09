@@ -1,0 +1,19 @@
+{
+  "updated": "2026-08-08",
+  "availability": {
+    "engineering": "limited",
+    "education": "limited"
+  },
+  "contact": {
+    "telegram": "https://t.me/TrueRuslan",
+    "email": "ruslan.nemikin@gmail.com"
+  },
+  "pricing": "estimate-only",
+  "legalFormat": "self-employed-receipt-supported",
+  "contextualTargets": {
+    "landing/projects/portfolio-platform.html": "engineering",
+    "landing/projects/notchhub.html": "engineering",
+    "landing/notes/deployment-success-is-not-production-verification.html": "engineering",
+    "landing/notes/server-authoritative-ai-npcs.html": "ai-integration"
+  }
+}

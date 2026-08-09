@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {loadCollaboration, renderHomepageCollaborationBridge} from './collaboration.js';
 import {renderFeaturedPublications} from './publication-renderer.js';
 import {loadProjectEvidence} from './project-evidence.js';
 import {
@@ -216,6 +217,7 @@ export function renderStandaloneHome(template, siteUrl, projects = [], {
   locale = 'ru',
   evidence = [],
   publications = [],
+  collaboration = null,
   hrefTransform = (href) => href,
   ctaTransform = (_project, cta) => cta,
 } = {}) {
@@ -236,6 +238,12 @@ export function renderStandaloneHome(template, siteUrl, projects = [], {
   const flagships = template.includes('{{HOME_FLAGSHIPS}}')
     ? renderHomepageFlagships(projects, {locale, hrefTransform, ctaTransform})
     : '';
+  const collaborationBridge = template.includes('{{HOME_COLLABORATION_BRIDGE}}')
+    ? (() => {
+      if (!collaboration) throw new Error('collaboration data is required for the homepage collaboration bridge.');
+      return renderHomepageCollaborationBridge(collaboration, {locale});
+    })()
+    : '';
   const featuredPublications = locale === 'ru' && publications.length
     ? renderFeaturedPublications(publications, {
       surface: 'home',
@@ -248,6 +256,7 @@ export function renderStandaloneHome(template, siteUrl, projects = [], {
     .replace('{{HOME_PRIMARY_PATHS}}', primaryPaths)
     .replace('{{HOME_EVIDENCE_SIGNALS}}', evidenceSignals)
     .replace('{{HOME_FLAGSHIPS}}', flagships)
+    .replace('{{HOME_COLLABORATION_BRIDGE}}', collaborationBridge)
     .replace('{{CURRENTLY_BUILDING}}', activeProjects)
     .replace('{{FEATURED_PUBLICATIONS}}', featuredPublications);
 }
@@ -258,6 +267,7 @@ export function writeStandaloneHome({
   projectRegistryPath = DEFAULT_PROJECTS_PATH,
   evidence = null,
   publications = [],
+  collaboration = null,
   siteUrl,
   locale = 'ru',
   hrefTransform = (href) => href,
@@ -274,10 +284,14 @@ export function writeStandaloneHome({
       ? loadProjectEvidence(DEFAULT_PROJECT_EVIDENCE_PATH, {projects})
       : []
   );
+  const resolvedCollaboration = collaboration ?? (
+    template.includes('{{HOME_COLLABORATION_BRIDGE}}') ? loadCollaboration() : null
+  );
   const html = renderStandaloneHome(template, siteUrl, projects, {
     locale,
     evidence: resolvedEvidence,
     publications,
+    collaboration: resolvedCollaboration,
     hrefTransform,
     ctaTransform,
   });

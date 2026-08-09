@@ -1,0 +1,219 @@
+const fs = require('node:fs');
+const path = require('node:path');
+
+const {requireQualityTool} = require('./quality-harness/tools.cjs');
+const {
+  APEX,
+  WORK_WITH_ME_URL,
+  WORK_WITH_ME_EN_URL,
+  CONTACTS_URL,
+  SEARCH_URL,
+} = require('./production-live-routes.cjs');
+
+const {chromium} = requireQualityTool('playwright', 'Work with me production smoke');
+const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
+const ARTIFACTS_DIR = path.resolve('production-artifacts');
+const CANONICAL = JSON.parse(fs.readFileSync(path.resolve('data/collaboration.json'), 'utf8'));
+const FORBIDDEN_LEAD_RUNTIME = /(?:hubspot|salesforce|calendly|typeform|tally\.so|forms\.gle|stripe\.com|paypal\.com)/i;
+
+const CONTEXTUAL_ALLOWED = [
+  'landing/projects/portfolio-platform/',
+  'landing/projects/notchhub/',
+  'landing/notes/deployment-success-is-not-production-verification/',
+  'landing/notes/server-authoritative-ai-npcs/',
+  'en/projects/portfolio-platform/',
+  'en/projects/notchhub/',
+  'en/notes/server-authoritative-ai-npcs/',
+];
+const CONTEXTUAL_FORBIDDEN = [
+  'landing/about/',
+  'landing/resume/',
+  'landing/photos/',
+  'landing/bibliography/',
+  'landing/engineering-map/',
+];
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function writeJson(name, value) {
+  fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
+  fs.writeFileSync(path.join(ARTIFACTS_DIR, name), `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+}
+
+function assertNoSalesRuntime(html, label) {
+  assert(!/<form\b/i.test(html), `${label}: form leaked into production`);
+  assert(!FORBIDDEN_LEAD_RUNTIME.test(html), `${label}: third-party lead/booking/payment runtime leaked into production`);
+  assert(!/(?:₽\s*\d|\$\s*\d|€\s*\d|\b(?:USD|EUR)\s*\d)/i.test(html), `${label}: public numeric pricing leaked into production`);
+}
+
+async function assertSeoPair(page, url, otherLocaleUrl, locale) {
+  const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+  const ru = await page.locator('link[rel="alternate"][hreflang="ru"]').getAttribute('href');
+  const en = await page.locator('link[rel="alternate"][hreflang="en"]').getAttribute('href');
+  assert(canonical && new URL(canonical).href === new URL(url).href, `${locale}: canonical drifted: ${canonical}`);
+  if (locale === 'ru') {
+    assert(ru && new URL(ru).href === new URL(url).href, `RU alternate drifted: ${ru}`);
+    assert(en && new URL(en).href === new URL(otherLocaleUrl).href, `EN alternate drifted: ${en}`);
+  } else {
+    assert(en && new URL(en).href === new URL(url).href, `EN alternate drifted: ${en}`);
+    assert(ru && new URL(ru).href === new URL(otherLocaleUrl).href, `RU alternate drifted: ${ru}`);
+  }
+  return {canonical, ru, en};
+}
+
+async function verifyWorkPage(page, url, locale) {
+  const response = await page.goto(url, {waitUntil: 'networkidle', timeout: 45000});
+  assert(response?.ok(), `${locale} Work with me HTTP ${response?.status() ?? 'none'}`);
+  assert(await page.locator('html').getAttribute('lang') === locale, `${locale}: html lang mismatch`);
+  const heading = (await page.locator('h1').first().innerText()).trim();
+  assert(locale === 'ru' ? heading.includes('Работа со мной') : heading.includes('Work with me'), `${locale}: unexpected H1 ${heading}`);
+
+  const availability = page.locator('[data-tr-collaboration-rendered="availability"]');
+  assert(await availability.count() >= 1, `${locale}: canonical availability missing`);
+  const availabilityText = await availability.first().innerText();
+  assert(availabilityText.includes('2026-08-08'), `${locale}: canonical updated date missing`);
+  assert(await page.locator('[data-status="limited"]').count() >= 2, `${locale}: limited states missing`);
+  assert(await page.locator('a[href="https://t.me/TrueRuslan"]').count() >= 1, `${locale}: canonical Telegram missing`);
+  assert(await page.locator('a[href="mailto:ruslan.nemikin@gmail.com"]').count() >= 1, `${locale}: canonical email missing`);
+  assertNoSalesRuntime(await page.content(), `${locale} Work with me`);
+
+  const seo = await assertSeoPair(page, url, locale === 'ru' ? WORK_WITH_ME_EN_URL : WORK_WITH_ME_URL, locale);
+  await page.screenshot({path: path.join(ARTIFACTS_DIR, `work-with-me-production-${locale}.png`), fullPage: true});
+  return {status: response.status(), heading, seo};
+}
+
+async function verifyNoJavaScript(browser, url, locale) {
+  const context = await browser.newContext({javaScriptEnabled: false, viewport: {width: 390, height: 844}, colorScheme: 'dark'});
+  const page = await context.newPage();
+  try {
+    const response = await page.goto(url, {waitUntil: 'load', timeout: 45000});
+    assert(response?.ok(), `${locale} Work with me no-JS HTTP ${response?.status() ?? 'none'}`);
+    const body = await page.locator('body').innerText();
+    for (const token of ['Engineering', 'Teaching & Mentoring', 'Context', 'Scope', 'Estimate', 'Implementation', 'Handover', '2026-08-08']) {
+      assert(body.includes(token), `${locale} no-JS missing ${token}`);
+    }
+    assert(await page.locator('a[href="https://t.me/TrueRuslan"]').count() >= 1, `${locale} no-JS Telegram missing`);
+    assert(await page.locator('a[href="mailto:ruslan.nemikin@gmail.com"]').count() >= 1, `${locale} no-JS email missing`);
+    assertNoSalesRuntime(await page.content(), `${locale} Work with me no-JS`);
+    return {status: response.status(), semanticFallback: true};
+  } finally {
+    await context.close();
+  }
+}
+
+async function verifyHomepage(page, url, locale) {
+  const response = await page.goto(url, {waitUntil: 'networkidle', timeout: 45000});
+  assert(response?.ok(), `${locale} homepage HTTP ${response?.status() ?? 'none'}`);
+  assert(await page.locator('[data-home-path]').count() === 3, `${locale}: homepage primary path count drifted`);
+  assert(await page.locator('[data-home-collaboration="true"]').count() === 1, `${locale}: collaboration bridge missing/duplicated`);
+  const ordering = await page.evaluate(() => {
+    const flagship = document.querySelector('[data-home-flagship]')?.closest('section');
+    const bridge = document.querySelector('[data-home-collaboration="true"]');
+    const now = document.querySelector('#now-title')?.closest('section');
+    return Boolean(flagship && bridge && now
+      && (flagship.compareDocumentPosition(bridge) & Node.DOCUMENT_POSITION_FOLLOWING)
+      && (bridge.compareDocumentPosition(now) & Node.DOCUMENT_POSITION_FOLLOWING));
+  });
+  assert(ordering, `${locale}: collaboration bridge ordering drifted`);
+  assertNoSalesRuntime(await page.content(), `${locale} homepage`);
+  return {status: response.status(), primaryPaths: 3, collaborationBridge: true};
+}
+
+async function verifyContacts(page) {
+  const response = await page.goto(CONTACTS_URL, {waitUntil: 'networkidle', timeout: 45000});
+  assert(response?.ok(), `Contacts HTTP ${response?.status() ?? 'none'}`);
+  assert(await page.locator('[data-tr-collaboration-rendered="handoff"]').count() >= 1, 'Contacts canonical handoff missing');
+  assert(await page.locator('a[href="https://t.me/TrueRuslan"]').count() >= 1, 'Contacts Telegram missing');
+  assert(await page.locator('a[href="mailto:ruslan.nemikin@gmail.com"]').count() >= 1, 'Contacts email missing');
+  assert(await page.locator('a[href*="work-with-me/"]').count() >= 1, 'Contacts Work with me link missing');
+  assertNoSalesRuntime(await page.content(), 'Contacts');
+  return {status: response.status(), handoff: true};
+}
+
+async function verifyContextual(page) {
+  for (const route of CONTEXTUAL_ALLOWED) {
+    const response = await page.goto(new URL(route, APEX).href, {waitUntil: 'networkidle', timeout: 45000});
+    assert(response?.ok(), `approved contextual route HTTP failure: ${route}`);
+    assert(await page.locator('[data-tr-contextual-collaboration="true"]').count() === 1, `approved contextual CTA missing/duplicated: ${route}`);
+  }
+  for (const route of CONTEXTUAL_FORBIDDEN) {
+    const response = await page.goto(new URL(route, APEX).href, {waitUntil: 'networkidle', timeout: 45000});
+    assert(response?.ok(), `forbidden contextual route probe HTTP failure: ${route}`);
+    assert(await page.locator('[data-tr-contextual-collaboration="true"]').count() === 0, `contextual CTA leaked: ${route}`);
+  }
+  return {allowed: CONTEXTUAL_ALLOWED.length, forbidden: CONTEXTUAL_FORBIDDEN.length};
+}
+
+async function verifySearch(page) {
+  const response = await page.goto(SEARCH_URL, {waitUntil: 'networkidle', timeout: 45000});
+  assert(response?.ok(), `search HTTP ${response?.status() ?? 'none'}`);
+  const input = page.locator('.tr-search-input').first();
+  const button = page.locator('.tr-search-button').first();
+  await input.fill('inflated public service list');
+  await button.click();
+  await page.waitForFunction(() => [...document.querySelectorAll('a')]
+    .some((link) => (link.getAttribute('href') || '').includes('en/work-with-me/')), null, {timeout: 10000});
+  assert(await page.locator('a[href*="en/work-with-me/"]').count() >= 1, 'generated search does not expose English Work with me');
+  return {query: 'inflated public service list', found: true};
+}
+
+async function main() {
+  fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
+  assert(EXPECTED_DEPLOYED_SHA !== 'unknown', 'EXPECTED_DEPLOYED_SHA is required for production acceptance');
+  assert(CANONICAL.availability.engineering === 'limited' && CANONICAL.availability.education === 'limited', 'canonical availability fixture drifted');
+
+  let browser;
+  const summary = {
+    expectedDeployedSha: EXPECTED_DEPLOYED_SHA,
+    checkedAt: new Date().toISOString(),
+    rendered: {},
+    noJavaScript: {},
+    homepage: {},
+    contacts: null,
+    contextual: null,
+    search: null,
+    diagnostics: {pageErrors: [], firstPartyRequestFailures: []},
+  };
+
+  try {
+    browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
+    const context = await browser.newContext({viewport: {width: 1440, height: 1000}, colorScheme: 'dark', reducedMotion: 'reduce'});
+    const page = await context.newPage();
+    page.on('pageerror', (error) => summary.diagnostics.pageErrors.push(error.message));
+    page.on('requestfailed', (request) => {
+      const failure = request.failure()?.errorText || 'unknown';
+      if (failure.includes('ERR_ABORTED')) return;
+      const hostname = new URL(request.url()).hostname;
+      if (hostname === 'trueruslan.ru' || hostname === 'www.trueruslan.ru') summary.diagnostics.firstPartyRequestFailures.push({url: request.url(), failure});
+    });
+
+    summary.rendered.ru = await verifyWorkPage(page, WORK_WITH_ME_URL, 'ru');
+    summary.rendered.en = await verifyWorkPage(page, WORK_WITH_ME_EN_URL, 'en');
+    summary.noJavaScript.ru = await verifyNoJavaScript(browser, WORK_WITH_ME_URL, 'ru');
+    summary.noJavaScript.en = await verifyNoJavaScript(browser, WORK_WITH_ME_EN_URL, 'en');
+    summary.homepage.ru = await verifyHomepage(page, APEX, 'ru');
+    summary.homepage.en = await verifyHomepage(page, new URL('en/', APEX).href, 'en');
+    summary.contacts = await verifyContacts(page);
+    summary.contextual = await verifyContextual(page);
+    summary.search = await verifySearch(page);
+    assert(summary.diagnostics.pageErrors.length === 0, `page errors: ${summary.diagnostics.pageErrors.join(' | ')}`);
+    assert(summary.diagnostics.firstPartyRequestFailures.length === 0, `first-party request failures: ${JSON.stringify(summary.diagnostics.firstPartyRequestFailures)}`);
+    await context.close();
+
+    writeJson('work-with-me-production-summary.json', summary);
+    console.log(`Work with me production smoke passed for deployed SHA ${EXPECTED_DEPLOYED_SHA}.`);
+  } catch (error) {
+    summary.failure = error.stack || error.message;
+    writeJson('work-with-me-production-summary.json', summary);
+    throw error;
+  } finally {
+    if (browser) await browser.close();
+  }
+}
+
+main().catch((error) => {
+  console.error(error.stack || error.message);
+  process.exit(1);
+});
