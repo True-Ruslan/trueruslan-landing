@@ -39,14 +39,16 @@ test('dedicated Work with me smoke covers both locales, no-JS, search, simple Co
     'assertNoBlockingAxe',
     'assertNoHorizontalOverflow',
     'https://t.me/TrueRuslan',
-    'mailto:ruslan.nemikin@gmail.com',
+    'mailto:nemykin@true-ruslan.ru',
     'https://t.me/TrueRuslan_Blog',
-    'mailto:contact@trueruslan.ru',
     'Contacts must not render the collaboration handoff',
-    'Contacts Telegram must follow the global new-tab policy',
+    'Contacts Telegram must follow the external new-tab policy',
     'Contacts mailto must stay in the current context',
+    'internal link must stay in the current tab',
+    'generated internal search result',
   ]) assert.ok(smoke.includes(literal), `Work with me browser smoke missing contract: ${literal}`);
 
+  assert.doesNotMatch(smoke, /mailto:(?:contact@trueruslan\.ru|ruslan\.nemikin@gmail\.com)/i);
   assert.equal(smoke.includes('/landing/work-with-me/'), false, 'Work with me smoke must not use the legacy RU route');
   assert.equal(smoke.includes('/landing/contacts/'), false, 'Contacts smoke must not use the legacy RU route');
 });
