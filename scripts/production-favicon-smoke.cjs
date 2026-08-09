@@ -1,12 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const {requireQualityTool} = require('./quality-harness/tools.cjs');
+const {APEX, RESUME_URL} = require('./production-live-routes.cjs');
 
 const {chromium} = requireQualityTool('playwright', 'Production favicon smoke');
 
-const APEX = 'https://trueruslan.ru/';
 const FAVICON_URL = new URL('favicon.svg', APEX).href;
-const RESUME_URL = new URL('landing/resume.html', APEX).href;
 const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
 const ARTIFACTS_DIR = path.resolve('production-artifacts');
 

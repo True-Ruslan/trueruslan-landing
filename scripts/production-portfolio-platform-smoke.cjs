@@ -142,7 +142,7 @@ async function main() {
     await input.waitFor({state: 'visible', timeout: 10000});
     await input.fill('TrueRuslan Landing static-first');
     await button.click();
-    const result = page.locator('a[href*="landing/projects/portfolio-platform"]').first();
+    const result = page.locator('a[href*="projects/portfolio-platform/"]:not([href*="landing/projects/portfolio-platform/"])').first();
     await result.waitFor({state: 'visible', timeout: 15000});
     const resultHref = await result.getAttribute('href');
     assert(resultHref && new URL(resultHref, page.url()).pathname === new URL(PORTFOLIO_PLATFORM_URL).pathname, `search returned wrong portfolio platform route: ${resultHref || 'missing'}`);

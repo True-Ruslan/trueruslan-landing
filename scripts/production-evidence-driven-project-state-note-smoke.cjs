@@ -80,14 +80,8 @@ async function main() {
 
     const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
     const ogUrl = await page.locator('meta[property="og:url"]').getAttribute('content');
-    assert(
-      canonical && normalizeUrl(canonical) === normalizeUrl(EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_URL),
-      `wrong P3.4F canonical: ${canonical || 'missing'}`,
-    );
-    assert(
-      ogUrl && normalizeUrl(ogUrl) === normalizeUrl(EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_URL),
-      `wrong P3.4F OpenGraph URL: ${ogUrl || 'missing'}`,
-    );
+    assert(canonical && normalizeUrl(canonical) === normalizeUrl(EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_URL), `wrong P3.4F canonical: ${canonical || 'missing'}`);
+    assert(ogUrl && normalizeUrl(ogUrl) === normalizeUrl(EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_URL), `wrong P3.4F OpenGraph URL: ${ogUrl || 'missing'}`);
 
     const documentContent = page.locator(DOCUMENT_CONTENT_SELECTOR).first();
     await documentContent.waitFor({state: 'visible', timeout: 10000});
@@ -124,10 +118,7 @@ async function main() {
     assert(/последний commit[^\n]*не доказывает[^\n]*production/i.test(noteText), 'P3.4F Note misses repository/production denial');
     const noteHtml = await page.content();
     assert(!noteHtml.includes(LEGACY_ORIGIN), 'P3.4F Note leaks the legacy Pages origin');
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, 'evidence-driven-project-state-note.png'),
-      fullPage: true,
-    });
+    await page.screenshot({path: path.join(ARTIFACTS_DIR, 'evidence-driven-project-state-note.png'), fullPage: true});
     writeText('evidence-driven-project-state-note.html', noteHtml);
     summary.note = {
       requested: EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_URL,
@@ -162,20 +153,14 @@ async function main() {
     await button.waitFor({state: 'visible', timeout: 10000});
     await input.fill(SEARCH_QUERY);
     await button.click();
-    const result = page.locator('a[href*="landing/notes/evidence-driven-project-state"]').first();
+    const result = page.locator('a[href*="notes/evidence-driven-project-state/"]:not([href*="landing/notes/evidence-driven-project-state/"])').first();
     await result.waitFor({state: 'visible', timeout: 15000});
     const resultText = (await result.innerText()).trim();
     const resultHref = await result.getAttribute('href');
     const cleanUrl = new URL(EVIDENCE_DRIVEN_PROJECT_STATE_NOTE_URL);
     assert(resultText.toLowerCase().includes('состояние проекта'), `unexpected P3.4F search result: ${resultText}`);
-    assert(
-      resultHref && new URL(resultHref, page.url()).pathname === cleanUrl.pathname,
-      `generated search returned wrong P3.4F route: ${resultHref || 'missing'}`,
-    );
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, 'evidence-driven-project-state-search.png'),
-      fullPage: true,
-    });
+    assert(resultHref && new URL(resultHref, page.url()).pathname === cleanUrl.pathname, `generated search returned wrong P3.4F route: ${resultHref || 'missing'}`);
+    await page.screenshot({path: path.join(ARTIFACTS_DIR, 'evidence-driven-project-state-search.png'), fullPage: true});
     summary.generatedSearch = {
       url: page.url(),
       status: searchResponse.status(),
@@ -185,10 +170,7 @@ async function main() {
     };
 
     assert(summary.diagnostics.pageErrors.length === 0, `page errors: ${summary.diagnostics.pageErrors.join(' | ')}`);
-    assert(
-      summary.diagnostics.firstPartyRequestFailures.length === 0,
-      `first-party request failures: ${JSON.stringify(summary.diagnostics.firstPartyRequestFailures)}`,
-    );
+    assert(summary.diagnostics.firstPartyRequestFailures.length === 0, `first-party request failures: ${JSON.stringify(summary.diagnostics.firstPartyRequestFailures)}`);
 
     writeJson('evidence-driven-project-state-note-production-summary.json', summary);
     console.log(`P3.4F evidence-driven project state Note smoke passed for deployed SHA ${EXPECTED_DEPLOYED_SHA}.`);

@@ -153,7 +153,7 @@ jobs:
       - name: Run deployed production smoke
         env:
           EXPECTED_DEPLOYED_SHA: ${{ steps.pages.outputs.deployed_sha }}
-          EXPECT_PROJECTED_PUBLIC_ROUTES: ${{ github.event_name != 'pull_request' }}
+          EXPECT_PROJECTED_PUBLIC_ROUTES: true
           PAGES_STATUS: ${{ steps.pages.outputs.pages_status }}
           PAGES_BUILD_ID: ${{ steps.pages.outputs.pages_build_id }}
           PAGES_CREATED_AT: ${{ steps.pages.outputs.pages_created_at }}
@@ -261,7 +261,7 @@ jobs:
 
       - name: Upload production live evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.0
         with:
           name: production-live-evidence
           path: production-artifacts

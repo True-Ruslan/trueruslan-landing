@@ -171,7 +171,7 @@ async function main() {
     await button.waitFor({state: 'visible', timeout: 10000});
     await input.fill(SEARCH_QUERY);
     await button.click();
-    const result = page.locator('a[href*="landing/notes/clean-urls-without-cloudflare-routing"]').first();
+    const result = page.locator('a[href*="notes/clean-urls-without-cloudflare-routing/"]:not([href*="landing/notes/clean-urls-without-cloudflare-routing/"])').first();
     await result.waitFor({state: 'visible', timeout: 15000});
     const resultText = (await result.innerText()).trim();
     const resultHref = await result.getAttribute('href');

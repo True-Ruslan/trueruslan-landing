@@ -9,11 +9,7 @@ const WORKFLOW = path.join(ROOT, '.github', 'workflows', 'production-live.yml');
 const SMOKE = path.join(ROOT, 'scripts', 'production-live-smoke.cjs');
 const PLATFORM_SMOKE = path.join(ROOT, 'scripts', 'production-portfolio-platform-smoke.cjs');
 const FLAGSHIP_SMOKE = path.join(ROOT, 'scripts', 'production-flagship-normalization-smoke.cjs');
-const DEPLOYMENT_NOTE_SMOKE = path.join(
-  ROOT,
-  'scripts',
-  'production-deployment-verification-note-smoke.cjs',
-);
+const DEPLOYMENT_NOTE_SMOKE = path.join(ROOT, 'scripts', 'production-deployment-verification-note-smoke.cjs');
 const ROUTES = path.join(ROOT, 'scripts', 'production-live-routes.cjs');
 
 test('live production workflow is read-only, deployment-aware and artifact-producing', () => {
@@ -55,7 +51,8 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
   assert.match(workflow, /github\.event\.workflow_run\.conclusion/);
   assert.match(workflow, /EXACT_DEPLOYMENT/);
   assert.match(workflow, /EXPECTED_SHA/);
-  assert.match(workflow, /EXPECT_PROJECTED_PUBLIC_ROUTES:\s*\$\{\{ github\.event_name != 'pull_request' \}\}/);
+  assert.match(workflow, /EXPECT_PROJECTED_PUBLIC_ROUTES:\s*true/);
+  assert.doesNotMatch(workflow, /EXPECT_PROJECTED_PUBLIC_ROUTES:\s*\$\{\{ github\.event_name != 'pull_request' \}\}/);
   assert.match(workflow, /playwright@1\.61\.1/);
   assert.match(workflow, /install --with-deps chromium/);
   assert.match(workflow, /node scripts\/production-live-smoke\.cjs/);
@@ -71,7 +68,7 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
   assert.doesNotMatch(workflow, /\bgit\s+(?:commit|push)\b|npm\s+audit\s+fix/);
 });
 
-test('baseline live smoke remains safe for PR execution against current production', () => {
+test('baseline live smoke remains safe for PR execution against the projected current production contract', () => {
   assert.ok(fs.existsSync(SMOKE), 'missing baseline live production smoke script');
   const source = fs.readFileSync(SMOKE, 'utf8');
 

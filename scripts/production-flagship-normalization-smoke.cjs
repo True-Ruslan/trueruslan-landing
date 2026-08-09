@@ -107,7 +107,7 @@ async function verifyCaseStudy(page, {
 
   const related = {};
   for (const fragment of relatedHrefFragments) {
-    const link = documentContent.locator(`a[href*="${fragment}"]`).first();
+    const link = documentContent.locator(`a[href*="${fragment}"]:visible`).first();
     await link.waitFor({state: 'visible', timeout: 10000});
     const href = await link.getAttribute('href');
     assert(href, `${locale} ${slug} related link ${fragment} has no href`);
@@ -315,7 +315,7 @@ async function main() {
       relatedHrefFragments: [
         'server-authoritative-ai-npcs',
         'llm-output-is-a-protocol-boundary',
-        'landing/projects/livingworld',
+        '/projects/livingworld/',
       ],
       alternateUrl: VILLAIGENCE_URL,
       requireEvidence: false,
