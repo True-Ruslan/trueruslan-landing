@@ -39,7 +39,9 @@ test('production Work with me smoke remains SHA-bound and checks the bounded pro
     'mailto:nemykin@true-ruslan.ru',
     'internal homepage CTA must stay in current tab',
     'approved contextual CTA must stay in current tab',
-    'internal generated-search result must stay in current tab',
+    'generated internal search result opened a new tab',
+    'generated internal search result did not navigate current tab',
+    'navigatedInCurrentTab: true',
     'generated search does not expose English Work with me',
     'work-with-me-production-summary.json',
   ]) assert.ok(smoke.includes(literal), `production Work with me smoke missing contract: ${literal}`);
