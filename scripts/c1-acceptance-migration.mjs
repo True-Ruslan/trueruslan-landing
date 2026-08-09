@@ -32,3 +32,5 @@ insertBefore(
 );
 
 console.log('C1 durable acceptance migration applied');
+
+// Retrigger marker: 2026-08-09
