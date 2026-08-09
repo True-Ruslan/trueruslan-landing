@@ -103,12 +103,32 @@
     return observer;
   }
 
+  function installInteractionGuard(document = root.document) {
+    if (!document?.documentElement || typeof document.addEventListener !== 'function') return false;
+    if (document.documentElement.dataset.trLinkPolicyInteractionGuard === 'ready') return true;
+
+    const normalizeEventAnchor = (event) => {
+      const target = event?.target;
+      const anchor = target?.closest?.('a[href]') || (String(target?.tagName || '').toLowerCase() === 'a' ? target : null);
+      if (anchor) normalizeAnchor(anchor);
+    };
+
+    document.addEventListener('pointerdown', normalizeEventAnchor, true);
+    document.addEventListener('click', normalizeEventAnchor, true);
+    document.documentElement.dataset.trLinkPolicyInteractionGuard = 'ready';
+    return true;
+  }
+
   function init(document = root.document) {
     if (!document?.documentElement) return false;
     applyToDocument(document);
-    if (document.documentElement.dataset.trLinkPolicyRuntime === 'ready') return true;
+    if (document.documentElement.dataset.trLinkPolicyRuntime === 'ready') {
+      installInteractionGuard(document);
+      return true;
+    }
     document.documentElement.dataset.trLinkPolicyRuntime = 'ready';
     observe(document);
+    installInteractionGuard(document);
     return true;
   }
 
@@ -118,6 +138,7 @@
     normalizeAnchor,
     applyToDocument,
     observe,
+    installInteractionGuard,
     init,
   });
 
