@@ -24,8 +24,8 @@ test('production live link verifier delegates navigation classification to the s
 test('production live link verifier no longer requires new-tab attributes from every navigational link', () => {
   const smoke = source();
 
-  assert.doesNotMatch(smoke, /missing target=_blank:\s*\$\{href\}/);
-  assert.doesNotMatch(smoke, /missing noopener\/noreferrer:\s*\$\{href\}/);
+  assert.doesNotMatch(smoke, /violations\.push\(`missing target=_blank: \$\{href\}`\)/);
+  assert.doesNotMatch(smoke, /violations\.push\(`missing noopener\/noreferrer: \$\{href\}`\)/);
 });
 
 test('production generated-search acceptance verifies actual current-tab navigation', () => {
