@@ -16,12 +16,20 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 
+function readRequiredGeneratedPage(filePath, targetPath) {
+  try {
+    return fs.readFileSync(filePath, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') throw new Error(`generated Work with me page not found: ${targetPath}`);
+    throw error;
+  }
+}
+
 function applyWorkWithMeNoJavaScriptFallbacks(outputDir) {
   const updated = [];
   for (const target of workWithMeNoJavaScriptTargets()) {
     const filePath = path.join(outputDir, ...target.path.split('/'));
-    if (!fs.existsSync(filePath)) throw new Error(`generated Work with me page not found: ${target.path}`);
-    const current = fs.readFileSync(filePath, 'utf8');
+    const current = readRequiredGeneratedPage(filePath, target.path);
     const next = injectWorkWithMeNoJavaScriptFallback(current, {locale: target.locale});
     fs.writeFileSync(filePath, next, 'utf8');
     updated.push(target.path);
