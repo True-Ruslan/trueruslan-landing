@@ -90,8 +90,9 @@ test('P3.5C keeps one generated search and integrates English Publications acros
   assert.match(copyAssets, /locale: 'en'/);
 
   const home = read('templates/index.en.html');
-  assert.match(home, /href="en\/now\.html">Now<\/a>/);
-  assert.match(home, /href="en\/publications\.html">Publications<\/a>/);
+  assert.match(home, /href="en\/now\.html"/);
+  assert.match(home, /href="en\/publications\.html">Writing<\/a>/);
+  assert.match(home, /<h3>Publications<\/h3>/);
   assert.doesNotMatch(home, /Now \(RU\)|PUBLICATIONS \/ RU|Open Russian page/);
 
   const searchSmoke = read('scripts/search-smoke.cjs');

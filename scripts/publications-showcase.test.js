@@ -8,6 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const REGISTRY_PATH = path.join(ROOT, 'data', 'publications.json');
 const PAGE_PATH = path.join(ROOT, 'docs', 'landing', 'publications.md');
 const HOME_TEMPLATE_PATH = path.join(ROOT, 'templates', 'index.html');
+const STANDALONE_HOME_PATH = path.join(ROOT, 'scripts', 'standalone-home.js');
 const TOC_PATH = path.join(ROOT, 'docs', 'toc.yaml');
 const META_PATH = path.join(ROOT, 'data', 'page-meta.json');
 const PACKAGE_PATH = path.join(ROOT, 'package.json');
@@ -68,7 +69,9 @@ test('standalone homepage reserves one featured-publications surface after flags
   assert.ok(publicationsIndex > flagshipsIndex, 'featured publications must follow flagship projects');
   assert.ok(publicationsIndex > currentFocusIndex, 'featured publications must follow current focus');
   assert.ok(publicationsIndex < remainingPlatformIndex, 'featured publications must precede secondary platform links');
-  assert.match(home, /landing\/publications\.html/);
+
+  const renderer = read(STANDALONE_HOME_PATH);
+  assert.match(renderer, /catalogueHref: 'landing\/publications\.html'/);
 });
 
 test('Publications stays first-class in the content tree while primary navigation uses one Materials entry', () => {
@@ -87,7 +90,9 @@ test('Publications stays first-class in the content tree while primary navigatio
   const home = read(HOME_TEMPLATE_PATH);
   assert.match(home, /landing\/notes\.html">Материалы<\/a>/);
   assert.doesNotMatch(home, /<nav[^>]*tr-site-nav[\s\S]*?>[\s\S]*?<a[^>]+>Публикации<\/a>[\s\S]*?<\/nav>/);
-  assert.match(home, /landing\/publications\.html/);
+
+  const renderer = read(STANDALONE_HOME_PATH);
+  assert.match(renderer, /catalogueHref: 'landing\/publications\.html'/);
 });
 
 test('publications page has canonical metadata/OpenGraph configuration', () => {
