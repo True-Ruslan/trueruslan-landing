@@ -91,18 +91,9 @@
 
   function observe(document = root.document) {
     if (!document?.documentElement || typeof root.MutationObserver !== 'function') return null;
-    let scheduled = false;
-    const repair = () => {
-      scheduled = false;
+    const observer = new root.MutationObserver(() => {
       applyToDocument(document);
-    };
-    const schedule = () => {
-      if (scheduled) return;
-      scheduled = true;
-      if (typeof root.requestAnimationFrame === 'function') root.requestAnimationFrame(repair);
-      else root.setTimeout(repair, 0);
-    };
-    const observer = new root.MutationObserver(schedule);
+    });
     observer.observe(document.documentElement, {
       subtree: true,
       childList: true,
