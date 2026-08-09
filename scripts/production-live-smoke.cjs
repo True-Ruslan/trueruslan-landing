@@ -44,6 +44,18 @@ function normalizeUrl(value) {
   return url.href;
 }
 
+function containsLegacyLandingPublicUrl(content) {
+  for (const match of String(content || '').matchAll(/https:\/\/[^\s"'<>]+/gi)) {
+    try {
+      const candidate = new URL(match[0]);
+      if (candidate.origin === 'https://trueruslan.ru' && candidate.pathname.startsWith('/landing/')) {
+        return true;
+      }
+    } catch {}
+  }
+  return false;
+}
+
 async function assertPageLinkPolicy(page, label) {
   const report = await page.evaluate(() => {
     const exemptScheme = /^(?:mailto|tel|javascript|data):/i;
@@ -156,7 +168,7 @@ async function main() {
     assert(!homeHtml.includes(LEGACY_ORIGIN), 'homepage leaks the legacy Pages origin');
     let homeLinkPolicy = null;
     if (EXPECT_PROJECTED_PUBLIC_ROUTES) {
-      assert(!homeHtml.includes('https://trueruslan.ru/landing/'), 'homepage exposes the legacy /landing namespace');
+      assert(!containsLegacyLandingPublicUrl(homeHtml), 'homepage exposes the legacy /landing namespace');
       homeLinkPolicy = await assertPageLinkPolicy(page, 'homepage');
     }
     const beaconCount = await page.locator(`script[src*="${CLOUDFLARE_BEACON}"]`).count();
@@ -205,7 +217,7 @@ async function main() {
     const noteHtml = await page.content();
     assert(!noteHtml.includes(LEGACY_ORIGIN), 'persistence Note leaks the legacy Pages origin');
     if (EXPECT_PROJECTED_PUBLIC_ROUTES) {
-      assert(!noteHtml.includes('https://trueruslan.ru/landing/'), 'persistence Note exposes the legacy /landing namespace');
+      assert(!containsLegacyLandingPublicUrl(noteHtml), 'persistence Note exposes the legacy /landing namespace');
     }
     await page.screenshot({path: path.join(ARTIFACTS_DIR, 'persistence-note.png'), fullPage: true});
     writeText('persistence-note.html', noteHtml);
@@ -229,7 +241,7 @@ async function main() {
     assert(feedText.includes('Restart — это часть продукта'), 'Atom feed misses the persistence Note title');
     assert(feedText.includes(ACTIVE_NOTE_URL), 'Atom feed misses the persistence Note canonical URL');
     if (EXPECT_PROJECTED_PUBLIC_ROUTES) {
-      assert(!feedText.includes('https://trueruslan.ru/landing/'), 'Atom feed exposes legacy /landing URLs');
+      assert(!containsLegacyLandingPublicUrl(feedText), 'Atom feed exposes legacy /landing URLs');
     }
     writeText('feed.xml', feedText);
     summary.feed = {
