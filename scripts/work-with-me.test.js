@@ -5,7 +5,7 @@ import path from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
 import {loadI18nManifest} from './i18n.js';
-import {renderStandaloneHome} from './standalone-home.js';
+import {renderHomepageCollaborationSummary, renderStandaloneHome} from './standalone-home.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -129,8 +129,8 @@ test('homepage collaboration bridge uses positive-first presentation copy', asyn
   const collaborationModule = await import(pathToFileURL(modulePath).href);
   const value = collaborationModule.loadCollaboration();
 
-  const ru = collaborationModule.renderHomepageCollaborationBridge(value, {locale: 'ru'});
-  const en = collaborationModule.renderHomepageCollaborationBridge(value, {locale: 'en'});
+  const ru = renderHomepageCollaborationSummary(value, 'ru');
+  const en = renderHomepageCollaborationSummary(value, 'en');
 
   assert.match(ru, /Помогаю с backend-сервисами/);
   assert.match(en, /I help with backend services/);
