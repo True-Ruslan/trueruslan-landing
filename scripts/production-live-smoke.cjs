@@ -58,13 +58,17 @@ function containsLegacyLandingPublicUrl(content) {
 
 async function assertPageLinkPolicy(page, label) {
   const report = await page.evaluate(() => {
-    const exemptScheme = /^(?:mailto|tel|javascript|data):/i;
     const violations = [];
     let navigationalLinks = 0;
+    const shouldOpenInNewContext = window.TrueRuslanLinkPolicy?.shouldOpenInNewContext;
+
+    if (typeof shouldOpenInNewContext !== 'function') {
+      return {navigationalLinks, violations: ['link policy runtime is unavailable']};
+    }
 
     for (const anchor of document.querySelectorAll('a[href]')) {
       const href = String(anchor.getAttribute('href') || '').trim();
-      if (!href || href.startsWith('#') || exemptScheme.test(href)) continue;
+      if (!href) continue;
       navigationalLinks += 1;
 
       let pathname = '';
@@ -73,9 +77,16 @@ async function assertPageLinkPolicy(page, label) {
       } catch {}
       if (pathname.includes('/landing/')) violations.push(`legacy /landing href: ${href}`);
 
+      const target = anchor.getAttribute('target');
       const rel = new Set(String(anchor.getAttribute('rel') || '').toLowerCase().split(/\s+/).filter(Boolean));
-      if (anchor.getAttribute('target') !== '_blank') violations.push(`missing target=_blank: ${href}`);
-      if (!rel.has('noopener') || !rel.has('noreferrer')) violations.push(`missing noopener/noreferrer: ${href}`);
+      if (shouldOpenInNewContext(href)) {
+        if (target !== '_blank') violations.push(`external link missing target=_blank: ${href}`);
+        if (!rel.has('noopener') || !rel.has('noreferrer')) {
+          violations.push(`external link missing noopener/noreferrer: ${href}`);
+        }
+      } else if (target) {
+        violations.push(`current-context link unexpectedly declares target=${target}: ${href}`);
+      }
     }
 
     return {navigationalLinks, violations};
@@ -255,6 +266,7 @@ async function main() {
 
     const searchResponse = await page.goto(SEARCH_URL, {waitUntil: 'networkidle', timeout: 45000});
     assert(searchResponse?.ok(), `production search returned HTTP ${searchResponse?.status() ?? 'none'}`);
+    const searchPageUrl = page.url();
     const searchInput = page.locator('.tr-search-input').first();
     const searchButton = page.locator('.tr-search-button').first();
     await searchInput.waitFor({state: 'visible', timeout: 10000});
@@ -274,16 +286,31 @@ async function main() {
     const resultTarget = await result.getAttribute('target');
     const resultRel = new Set(String(await result.getAttribute('rel') || '').toLowerCase().split(/\s+/).filter(Boolean));
     if (EXPECT_PROJECTED_PUBLIC_ROUTES) {
-      assert(resultTarget === '_blank', `search result does not open in a new tab: ${resultTarget}`);
-      assert(resultRel.has('noopener') && resultRel.has('noreferrer'), `search result lacks noopener/noreferrer: ${[...resultRel].join(' ')}`);
+      assert(!resultTarget, `internal search result unexpectedly declares target=${resultTarget}`);
+      let popupOpened = false;
+      page.once('popup', (popup) => {
+        popupOpened = true;
+        popup.close().catch(() => {});
+      });
+      await page.screenshot({path: path.join(ARTIFACTS_DIR, 'persistence-search.png'), fullPage: true});
+      await result.click();
+      await page.waitForURL((url) => url.pathname === new URL(ACTIVE_NOTE_URL).pathname, {timeout: 10000}).catch(() => {});
+      await page.waitForTimeout(100);
+      assert(!popupOpened, 'search result opened a new tab');
+      assert(
+        new URL(page.url()).pathname === new URL(ACTIVE_NOTE_URL).pathname,
+        `search result did not navigate the current tab: ${page.url()}`,
+      );
+    } else {
+      await page.screenshot({path: path.join(ARTIFACTS_DIR, 'persistence-search.png'), fullPage: true});
     }
-    await page.screenshot({path: path.join(ARTIFACTS_DIR, 'persistence-search.png'), fullPage: true});
     summary.search = {
-      url: page.url(),
+      url: searchPageUrl,
+      finalUrl: page.url(),
       status: searchResponse.status(),
       query: SEARCH_QUERY,
       resultText,
-      resultHref: new URL(resultHref, page.url()).href,
+      resultHref: new URL(resultHref, searchPageUrl).href,
       projectedPolicyChecked: EXPECT_PROJECTED_PUBLIC_ROUTES,
       target: resultTarget,
       rel: [...resultRel],
