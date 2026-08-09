@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {renderHomepageBridge} from './standalone-home.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
 
@@ -11,8 +13,9 @@ const home = fs.readFileSync(path.join(root, 'templates', 'index.html'), 'utf8')
 const toc = fs.readFileSync(path.join(root, 'docs', 'toc.yaml'), 'utf8');
 const yfm = fs.readFileSync(path.join(root, 'docs', '.yfm'), 'utf8');
 
-test('standalone homepage keeps the canonical photo route reachable outside primary navigation', () => {
-  assert.match(home, /href="landing\/photos\.html"[^>]*>[\s\S]*?<h3>Фотографии<\/h3>/);
+test('standalone homepage keeps the canonical photo route reachable through the C2 personal bridge, outside primary navigation', () => {
+  const personal = renderHomepageBridge('personal', 'ru');
+  assert.match(personal, /href="landing\/photos\.html"[^>]*>Фото →<\/a>/);
   assert.doesNotMatch(home, /<nav class="tr-site-nav"[\s\S]*?href="landing\/photos\.html"[^>]*>Фото/);
   assert.doesNotMatch(home, /href="photos\/"[^>]*>Фото/);
 });
