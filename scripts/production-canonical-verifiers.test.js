@@ -43,7 +43,9 @@ test('Work with me production verifier follows canonical contextual routes, curr
   assert.doesNotMatch(source, /mailto:(?:contact@trueruslan\.ru|ruslan\.nemikin@gmail\.com)/i);
   assert.match(source, /internal homepage CTA must stay in current tab/);
   assert.match(source, /approved contextual CTA must stay in current tab/);
-  assert.match(source, /internal generated-search result must stay in current tab/);
+  assert.match(source, /generated internal search result opened a new tab/);
+  assert.match(source, /generated internal search result did not navigate current tab/);
+  assert.match(source, /navigatedInCurrentTab:\s*true/);
   assert.match(source, /collaboration-rendered=\"handoff\"[^\n]*count\(\) === 0|count\(\) === 0[^\n]*collaboration-rendered=\"handoff\"/);
   assert.doesNotMatch(source, /Contacts canonical handoff missing/);
 });
