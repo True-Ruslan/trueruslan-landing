@@ -97,7 +97,8 @@ test('P3.5A keeps the controlled English Vlezet flagship on the current canonica
   assert.match(copyAssets, /path: 'en\/projects\/vlezet\.html', locale: 'en'/);
   assert.match(copyAssets, /'en\/projects\/vlezet\.html'/);
 
-  assert.match(browserSmoke, /id: 'vlezet', ru: '\/landing\/projects\/vlezet\/', en: '\/en\/projects\/vlezet\/'/);
+  assert.match(browserSmoke, /id: 'vlezet', ru: '\/projects\/vlezet\/', en: '\/en\/projects\/vlezet\/'/);
+  assert.doesNotMatch(browserSmoke, /id: 'vlezet', ru: '\/landing\/projects\/vlezet\//);
   assert.match(browserSmoke, /name: 'vlezet-mobile', route: '\/en\/projects\/vlezet\/'/);
   assert.match(browserSmoke, /async function assertEnglishVlezetNoJsEvidence/);
   assert.match(browserSmoke, /data-tr-project-evidence-noscript=\"vlezet-en\"/);
