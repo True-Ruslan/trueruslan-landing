@@ -104,10 +104,10 @@ test('deployment-only P3.4E smoke covers Note route PDF bytes resume semantics f
   const workflow = fs.readFileSync(WORKFLOW, 'utf8');
 
   for (const marker of [
-    'landing/notes/passive-pdf-validation-vs-semantic-completeness/',
+    'notes/passive-pdf-validation-vs-semantic-completeness/',
     TITLE,
     'main.dc-doc-page__content',
-    'landing/resume/',
+    'resume/',
     'assets/documents/cv.pdf',
     '%PDF-',
     'application/pdf',

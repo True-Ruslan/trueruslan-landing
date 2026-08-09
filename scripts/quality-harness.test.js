@@ -171,13 +171,13 @@ test('common scenario declarations preserve canonical clean routes and viewports
   assert.deepEqual(VIEWPORTS.desktop, {width: 1440, height: 1000});
   assert.equal(CORE_SCENARIOS.home.path, '/');
   assert.equal(CORE_SCENARIOS.home.heading, 'Руслан Немыкин');
-  assert.equal(CORE_SCENARIOS.projects.path, '/landing/projects/');
-  assert.equal(CORE_SCENARIOS.vlezet.path, '/landing/projects/vlezet/');
+  assert.equal(CORE_SCENARIOS.projects.path, '/projects/');
+  assert.equal(CORE_SCENARIOS.vlezet.path, '/projects/vlezet/');
   assert.equal(CORE_SCENARIOS.vlezet.heading, 'Vlezet');
-  assert.equal(CORE_SCENARIOS.villaigence.path, '/landing/projects/livingworld/');
-  assert.equal(CORE_SCENARIOS.publications.path, '/landing/publications/');
+  assert.equal(CORE_SCENARIOS.villaigence.path, '/projects/livingworld/');
+  assert.equal(CORE_SCENARIOS.publications.path, '/publications/');
   assert.equal(CORE_SCENARIOS.publications.heading, 'Публикации и выступления');
-  assert.equal(CORE_SCENARIOS.resume.path, '/landing/resume/');
+  assert.equal(CORE_SCENARIOS.resume.path, '/resume/');
   assert.equal(Object.isFrozen(VIEWPORTS), true);
   assert.equal(Object.isFrozen(CORE_SCENARIOS), true);
 });

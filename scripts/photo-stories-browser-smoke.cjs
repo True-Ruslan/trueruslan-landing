@@ -9,7 +9,8 @@ const {ensureArtifactsDir, artifactPath, captureScreenshot, writeJsonArtifact} =
 const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 
 const PORT = Number(process.env.PHOTO_STORIES_SMOKE_PORT || 4184);
-const CANONICAL_ROUTE = '/landing/photos/';
+const CANONICAL_ROUTE = '/photos/';
+const LEGACY_ROUTE = '/landing/photos/';
 const {chromium} = requireQualityTool('playwright', 'Photo Stories smoke tool');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Photo Stories smoke tool');
 
@@ -180,7 +181,7 @@ async function assertArchiveAndLightbox(page, name, baseUrl) {
 }
 
 async function assertLegacyRedirect(page, name, baseUrl) {
-  await page.goto(`${baseUrl}/photos/`, {waitUntil: 'domcontentloaded'});
+  await page.goto(`${baseUrl}${LEGACY_ROUTE}`, {waitUntil: 'domcontentloaded'});
   await page.waitForURL(new RegExp(`${CANONICAL_ROUTE.replaceAll('/', '\\/')}$`), {timeout: 5000});
   if (!page.url().endsWith(CANONICAL_ROUTE)) {
     throw new Error(`${name}: legacy photo route did not redirect to the canonical index`);

@@ -90,7 +90,7 @@ test('deployment-only P3.4F smoke covers route content feed search and uncertain
   const workflow = fs.readFileSync(WORKFLOW, 'utf8');
 
   for (const marker of [
-    'landing/notes/evidence-driven-project-state/',
+    'notes/evidence-driven-project-state/',
     TITLE,
     'main.dc-doc-page__content',
     'canonical registry',

@@ -25,6 +25,10 @@ navigation:
         type: link
         url: landing/about.html
         target: _self
+      - text: Контакты
+        type: link
+        url: landing/contacts.html
+        target: _self
     rightItems:
       - type: link
         text: GitHub

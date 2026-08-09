@@ -153,6 +153,7 @@ jobs:
       - name: Run deployed production smoke
         env:
           EXPECTED_DEPLOYED_SHA: ${{ steps.pages.outputs.deployed_sha }}
+          EXPECT_PROJECTED_PUBLIC_ROUTES: ${{ github.event_name != 'pull_request' }}
           PAGES_STATUS: ${{ steps.pages.outputs.pages_status }}
           PAGES_BUILD_ID: ${{ steps.pages.outputs.pages_build_id }}
           PAGES_CREATED_AT: ${{ steps.pages.outputs.pages_created_at }}

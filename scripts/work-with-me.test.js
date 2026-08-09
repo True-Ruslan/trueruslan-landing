@@ -78,17 +78,18 @@ test('Work with me is the thirteenth controlled RU EN route pair with bounded me
   assert.match(en?.title ?? '', /Work with me/i);
 });
 
-test('primary navigation keeps collaboration visible while secondary content moves out of the header', () => {
-  const ruExpected = ['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне'];
+test('primary navigation keeps collaboration and direct Contacts visible while secondary content stays out of the header', () => {
+  const ruExpected = ['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне', 'Контакты'];
   const enExpected = ['Projects', 'Experience', 'Writing', 'Work with me', 'About'];
   assert.deepEqual(navigationTexts('templates/index.html'), ruExpected);
   assert.deepEqual(tocHeaderTexts(), ruExpected);
   assert.deepEqual(navigationTexts('templates/index.en.html'), enExpected);
 
   const toc = read('docs/toc.yaml');
-  for (const secondary of ['Сейчас', 'Engineering Map', 'Engineering Notes', 'Публикации', 'Источники', 'Фото', 'Контакты']) {
+  for (const secondary of ['Сейчас', 'Engineering Map', 'Engineering Notes', 'Публикации', 'Источники', 'Фото']) {
     assert.match(toc, new RegExp(`name: ${secondary}`));
   }
+  assert.match(toc, /name: Контакты/);
 });
 
 test('homepage collaboration bridge sits after flagship proof and preserves exactly three primary paths', async () => {
@@ -122,11 +123,13 @@ test('homepage collaboration bridge sits after flagship proof and preserves exac
   }
 });
 
-test('Contacts delegates direct handoff to canonical collaboration truth', () => {
+test('Contacts exposes a simple direct handoff independent of the Work with me collaboration renderer', () => {
   const source = read('docs/landing/contacts.md');
-  assert.match(source, /data-tr-collaboration-handoff="contacts"/);
-  assert.match(source, /work-with-me\.md/);
-  assert.doesNotMatch(source, /ruslan\.nemikin@gmail\.com|https:\/\/t\.me\/TrueRuslan(?!_)/);
+  assert.match(source, /## Основные контакты/);
+  assert.match(source, /\[@TrueRuslan_Blog\]\(https:\/\/t\.me\/TrueRuslan_Blog\)/);
+  assert.match(source, /\[contact@trueruslan\.ru\]\(mailto:contact@trueruslan\.ru\)/);
+  assert.doesNotMatch(source, /data-tr-collaboration-handoff/);
+  assert.doesNotMatch(source, /Описать задачу/i);
   assert.match(source, /GitHub|Habr|LinkedIn/);
 });
 

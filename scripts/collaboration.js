@@ -378,19 +378,6 @@ export function applyCollaborationPages(outputDir, collaboration) {
     fs.writeFileSync(htmlPath, html, 'utf8');
     updated.push(target.path);
   }
-
-  const contactsPath = 'landing/contacts.html';
-  const contactsHtmlPath = path.join(outputDir, ...contactsPath.split('/'));
-  let contactsHtml = readRequiredUtf8File(contactsHtmlPath, `generated contacts page not found: ${contactsPath}`);
-  contactsHtml = replaceGeneratedPlaceholder(contactsHtml, {
-    kind: 'handoff',
-    context: 'contacts',
-    content: renderCollaborationHandoff(value, {locale: 'ru'}),
-    label: 'collaboration handoff for Contacts',
-    fallbackKey: 'handoff-contacts-ru',
-  });
-  fs.writeFileSync(contactsHtmlPath, contactsHtml, 'utf8');
-  updated.push(contactsPath);
   return updated;
 }
 

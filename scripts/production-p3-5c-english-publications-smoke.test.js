@@ -10,7 +10,7 @@ const routes = fs.readFileSync(path.join(__dirname, 'production-live-routes.cjs'
 const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'production-live.yml'), 'utf8');
 
 test('P3.5C production smoke pins English Publications route, canonical identities, split presentation surfaces, no-JS and search', () => {
-  assert.match(routes, /PUBLICATIONS_PATH = 'landing\/publications\/'/);
+  assert.match(routes, /PUBLICATIONS_PATH = 'publications\/'/);
   assert.match(routes, /PUBLICATIONS_EN_PATH = 'en\/publications\/'/);
   assert.match(source, /PUBLICATIONS_URL/);
   assert.match(source, /PUBLICATIONS_EN_URL/);

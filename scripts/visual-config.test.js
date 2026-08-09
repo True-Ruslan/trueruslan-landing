@@ -32,7 +32,10 @@ test('visual theme and custom resources are wired into Diplodoc', () => {
   assert.doesNotMatch(packageJson.scripts['build:docs'], /--static-content/);
   assert.match(packageJson.scripts['build:docs:fast'], /--allow-custom-resources/);
   assert.doesNotMatch(packageJson.scripts['build:docs:fast'], /--static-content/);
-  assert.equal(packageJson.scripts['check:site'], 'node scripts/site-integrity.js');
+  assert.equal(
+    packageJson.scripts['check:site'],
+    'node scripts/site-integrity.js && node scripts/public-url-link-policy-artifact.js',
+  );
 
   assert.equal(packageJson.license, 'MIT');
   assert.match(license, /^MIT License/m);

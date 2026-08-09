@@ -34,6 +34,7 @@ resources:
     - _assets/script/header-utilities.js
     - _assets/script/header-chrome-unifier.js
     - _assets/script/header-list-semantics.js
+    - _assets/script/link-policy-runtime.js
 
 search:
   provider: local

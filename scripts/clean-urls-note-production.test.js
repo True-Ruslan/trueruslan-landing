@@ -25,7 +25,7 @@ test('deployment-only P3.4B smoke covers clean route legacy compatibility feed a
   assert.match(workflow, /node scripts\/production-clean-urls-note-smoke\.cjs/);
 
   for (const marker of [
-    'landing/notes/clean-urls-without-cloudflare-routing/',
+    'notes/clean-urls-without-cloudflare-routing/',
     'Как clean URLs заработали на GitHub Pages без Cloudflare routing',
     'main.dc-doc-page__content',
     'repository-native directory URLs',

@@ -21,6 +21,9 @@ async function searchForRoute(page, input, button, {query, routeFragment, textFr
 
   const routes = await page.locator(`a[href*="${routeFragment}"]`).evaluateAll((links) => links.map((link) => link.getAttribute('href')));
   if (routes.length < 1) throw new Error(`${query}: search result does not route to ${routeFragment}`);
+  if (routes.some((href) => String(href).includes('/landing/'))) {
+    throw new Error(`${query}: search result leaks the legacy /landing namespace: ${routes.join(', ')}`);
+  }
   return routes;
 }
 
@@ -46,7 +49,7 @@ async function main() {
 
       const villaigenceRoutes = await searchForRoute(page, input, button, {
         query: 'VillAIgence',
-        routeFragment: 'landing/projects/livingworld/',
+        routeFragment: 'projects/livingworld/',
         textFragment: 'VillAIgence',
       });
       const inventedRoutes = await page.locator('a[href*="projects/villaigence"]').count();
@@ -55,13 +58,13 @@ async function main() {
 
       const authorityRoutes = await searchForRoute(page, input, button, {
         query: 'deterministic authority',
-        routeFragment: 'landing/notes/probabilistic-proposals-deterministic-authority/',
+        routeFragment: 'notes/probabilistic-proposals-deterministic-authority/',
         textFragment: 'AI может предложить, но не применить',
       });
 
       const persistenceRoutes = await searchForRoute(page, input, button, {
         query: 'persistence contract',
-        routeFragment: 'landing/notes/restart-persistence-is-a-product-contract/',
+        routeFragment: 'notes/restart-persistence-is-a-product-contract/',
         textFragment: 'Restart',
       });
 

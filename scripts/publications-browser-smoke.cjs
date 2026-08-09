@@ -16,7 +16,7 @@ const EXPECTED_PUBLICATION_IDS = Object.freeze([
 ]);
 const LOCALES = Object.freeze({
   ru: Object.freeze({
-    route: '/landing/publications/',
+    route: '/publications/',
     heading: 'Публикации и выступления',
     featured: 'Избранное',
     emptyGroups: Object.freeze(['Научные публикации', 'Доклады и конференции', 'Интервью и приглашённые материалы', 'Публикации в сборниках']),

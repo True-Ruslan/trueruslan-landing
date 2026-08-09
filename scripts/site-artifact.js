@@ -88,7 +88,7 @@ export function verifySiteArtifact(outputDir, {
     ['en/index.html', [`${expected}/`, `${expected}/en/`]],
     ['robots.txt', [`Sitemap: ${expected}/sitemap.xml`]],
     ['sitemap.xml', [`<loc>${expected}/</loc>`, `${expected}/en/`]],
-    ['feed.xml', [`${expected}/feed.xml`, `${expected}/landing/notes/`]],
+    ['feed.xml', [`${expected}/feed.xml`, `${expected}/notes/`]],
   ]);
   for (const [relativePath, fragments] of expectedFragments) {
     const content = contents.get(relativePath);
@@ -102,8 +102,12 @@ export function verifySiteArtifact(outputDir, {
 
   for (const relativePath of ['sitemap.xml', 'feed.xml']) {
     const content = contents.get(relativePath);
-    if (content && containsPublicHtmlRoute(content)) {
+    if (!content) continue;
+    if (containsPublicHtmlRoute(content)) {
       errors.push(`${relativePath} contains a public .html route.`);
+    }
+    if (content.includes(`${expected}/landing/`)) {
+      errors.push(`${relativePath} contains the legacy /landing/ public namespace.`);
     }
   }
 

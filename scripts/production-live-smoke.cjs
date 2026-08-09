@@ -5,6 +5,7 @@ const {
   APEX,
   NOTE_URL,
   WWW_NOTE_URL,
+  LEGACY_NOTE_DIRECTORY_URL,
   LEGACY_NOTE_URL,
   SEARCH_URL,
 } = require('./production-live-routes.cjs');
@@ -16,7 +17,12 @@ const SEARCH_QUERY = 'persistence contract';
 const LEGACY_ORIGIN = 'true-ruslan.github.io/trueruslan-landing';
 const CLOUDFLARE_BEACON = 'static.cloudflareinsights.com/beacon.min.js';
 const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
+const EXPECT_PROJECTED_PUBLIC_ROUTES = process.env.EXPECT_PROJECTED_PUBLIC_ROUTES === 'true';
 const ARTIFACTS_DIR = path.resolve('production-artifacts');
+const ACTIVE_NOTE_URL = EXPECT_PROJECTED_PUBLIC_ROUTES ? NOTE_URL : LEGACY_NOTE_DIRECTORY_URL;
+const ACTIVE_WWW_NOTE_URL = EXPECT_PROJECTED_PUBLIC_ROUTES
+  ? WWW_NOTE_URL
+  : LEGACY_NOTE_DIRECTORY_URL.replace('https://trueruslan.ru/', 'https://www.trueruslan.ru/');
 
 function writeJson(name, value) {
   fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
@@ -38,11 +44,80 @@ function normalizeUrl(value) {
   return url.href;
 }
 
+function containsLegacyLandingPublicUrl(content) {
+  for (const match of String(content || '').matchAll(/https:\/\/[^\s"'<>]+/gi)) {
+    try {
+      const candidate = new URL(match[0]);
+      if (candidate.origin === 'https://trueruslan.ru' && candidate.pathname.startsWith('/landing/')) {
+        return true;
+      }
+    } catch {}
+  }
+  return false;
+}
+
+async function assertPageLinkPolicy(page, label) {
+  const report = await page.evaluate(() => {
+    const exemptScheme = /^(?:mailto|tel|javascript|data):/i;
+    const violations = [];
+    let navigationalLinks = 0;
+
+    for (const anchor of document.querySelectorAll('a[href]')) {
+      const href = String(anchor.getAttribute('href') || '').trim();
+      if (!href || href.startsWith('#') || exemptScheme.test(href)) continue;
+      navigationalLinks += 1;
+
+      let pathname = '';
+      try {
+        pathname = new URL(href, document.baseURI).pathname;
+      } catch {}
+      if (pathname.includes('/landing/')) violations.push(`legacy /landing href: ${href}`);
+
+      const rel = new Set(String(anchor.getAttribute('rel') || '').toLowerCase().split(/\s+/).filter(Boolean));
+      if (anchor.getAttribute('target') !== '_blank') violations.push(`missing target=_blank: ${href}`);
+      if (!rel.has('noopener') || !rel.has('noreferrer')) violations.push(`missing noopener/noreferrer: ${href}`);
+    }
+
+    return {navigationalLinks, violations};
+  });
+
+  assert(report.navigationalLinks > 0, `${label}: no navigational links found`);
+  assert(report.violations.length === 0, `${label}: link policy violations: ${report.violations.join(' | ')}`);
+  return report;
+}
+
+async function assertLegacyRedirect(page, legacyUrl, label) {
+  const requested = new URL(legacyUrl);
+  requested.searchParams.set('source', `production-${label}`);
+  requested.hash = 'legacy-route';
+  const response = await page.goto(requested.href, {waitUntil: 'networkidle', timeout: 45000});
+  assert(response?.ok(), `${label} returned HTTP ${response?.status() ?? 'none'}`);
+  await page.waitForURL((url) => (
+    url.hostname === 'trueruslan.ru'
+    && url.pathname === new URL(NOTE_URL).pathname
+    && url.search === requested.search
+    && url.hash === requested.hash
+  ), {timeout: 10000});
+  const finalUrl = new URL(page.url());
+  assert(finalUrl.pathname === new URL(NOTE_URL).pathname, `${label} resolved to the wrong path: ${finalUrl.pathname}`);
+  assert(finalUrl.search === requested.search, `${label} lost query parameters: ${finalUrl.search}`);
+  assert(finalUrl.hash === requested.hash, `${label} lost fragment: ${finalUrl.hash}`);
+  return {
+    requested: requested.href,
+    finalUrl: finalUrl.href,
+    status: response.status(),
+    canonicalPath: true,
+    queryPreserved: true,
+    fragmentPreserved: true,
+  };
+}
+
 async function main() {
   fs.mkdirSync(ARTIFACTS_DIR, {recursive: true});
   let browser;
   const summary = {
     expectedDeployedSha: EXPECTED_DEPLOYED_SHA,
+    projectedPublicRoutesRequired: EXPECT_PROJECTED_PUBLIC_ROUTES,
     checkedAt: new Date().toISOString(),
     apex: {},
     www: {},
@@ -91,6 +166,11 @@ async function main() {
     assert(homeTitle.includes('Руслан Немыкин — Backend Engineer'), `unexpected homepage title: ${homeTitle}`);
     const homeHtml = await page.content();
     assert(!homeHtml.includes(LEGACY_ORIGIN), 'homepage leaks the legacy Pages origin');
+    let homeLinkPolicy = null;
+    if (EXPECT_PROJECTED_PUBLIC_ROUTES) {
+      assert(!containsLegacyLandingPublicUrl(homeHtml), 'homepage exposes the legacy /landing namespace');
+      homeLinkPolicy = await assertPageLinkPolicy(page, 'homepage');
+    }
     const beaconCount = await page.locator(`script[src*="${CLOUDFLARE_BEACON}"]`).count();
     assert(beaconCount === 1, `expected exactly one Cloudflare beacon, got ${beaconCount}`);
     summary.apex = {
@@ -100,55 +180,45 @@ async function main() {
       title: homeTitle,
       cloudflareBeaconCount: beaconCount,
       legacyOriginAbsent: true,
+      projectedPolicyChecked: EXPECT_PROJECTED_PUBLIC_ROUTES,
+      navigationalLinksChecked: homeLinkPolicy?.navigationalLinks ?? 0,
     };
 
-    const wwwResponse = await page.goto(WWW_NOTE_URL, {waitUntil: 'networkidle', timeout: 45000});
+    const wwwResponse = await page.goto(ACTIVE_WWW_NOTE_URL, {waitUntil: 'networkidle', timeout: 45000});
     assert(wwwResponse?.ok(), `www note returned HTTP ${wwwResponse?.status() ?? 'none'}`);
     const wwwFinal = new URL(page.url());
     assert(wwwFinal.hostname === 'trueruslan.ru', `www did not resolve to apex: ${wwwFinal.href}`);
-    assert(wwwFinal.pathname === new URL(NOTE_URL).pathname, `www resolved to the wrong path: ${wwwFinal.pathname}`);
+    assert(wwwFinal.pathname === new URL(ACTIVE_NOTE_URL).pathname, `www resolved to the wrong path: ${wwwFinal.pathname}`);
     summary.www = {
-      requested: WWW_NOTE_URL,
+      requested: ACTIVE_WWW_NOTE_URL,
       finalUrl: wwwFinal.href,
       status: wwwResponse.status(),
       apexHostname: true,
       canonicalPath: true,
     };
 
-    const legacyRequested = new URL(LEGACY_NOTE_URL);
-    legacyRequested.searchParams.set('source', 'production-smoke');
-    legacyRequested.hash = 'legacy-route';
-    const legacyResponse = await page.goto(legacyRequested.href, {waitUntil: 'networkidle', timeout: 45000});
-    assert(legacyResponse?.ok(), `legacy Note returned HTTP ${legacyResponse?.status() ?? 'none'}`);
-    await page.waitForURL((url) => (
-      url.hostname === 'trueruslan.ru'
-      && url.pathname === new URL(NOTE_URL).pathname
-      && url.search === legacyRequested.search
-      && url.hash === legacyRequested.hash
-    ), {timeout: 10000});
-    const legacyFinal = new URL(page.url());
-    assert(legacyFinal.pathname === new URL(NOTE_URL).pathname, `legacy Note resolved to the wrong path: ${legacyFinal.pathname}`);
-    assert(legacyFinal.search === legacyRequested.search, `legacy Note lost query parameters: ${legacyFinal.search}`);
-    assert(legacyFinal.hash === legacyRequested.hash, `legacy Note lost fragment: ${legacyFinal.hash}`);
-    summary.legacy = {
-      requested: legacyRequested.href,
-      finalUrl: legacyFinal.href,
-      status: legacyResponse.status(),
-      canonicalPath: true,
-      queryPreserved: true,
-      fragmentPreserved: true,
-    };
+    if (EXPECT_PROJECTED_PUBLIC_ROUTES) {
+      summary.legacy.directory = await assertLegacyRedirect(page, LEGACY_NOTE_DIRECTORY_URL, 'legacy-directory');
+      summary.legacy.html = await assertLegacyRedirect(page, LEGACY_NOTE_URL, 'legacy-html');
+    } else {
+      summary.legacy = {projectedPolicyRequired: false};
+    }
 
-    const noteResponse = await page.goto(NOTE_URL, {waitUntil: 'networkidle', timeout: 45000});
+    const noteResponse = await page.goto(ACTIVE_NOTE_URL, {waitUntil: 'networkidle', timeout: 45000});
     assert(noteResponse?.ok(), `persistence Note returned HTTP ${noteResponse?.status() ?? 'none'}`);
     const noteHeading = (await page.locator('h1').first().innerText()).trim();
     assert(noteHeading.includes('Restart — это часть продукта'), `unexpected Note heading: ${noteHeading}`);
     const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
     const ogUrl = await page.locator('meta[property="og:url"]').getAttribute('content');
-    assert(normalizeUrl(canonical) === normalizeUrl(NOTE_URL), `wrong canonical URL: ${canonical}`);
-    assert(normalizeUrl(ogUrl) === normalizeUrl(NOTE_URL), `wrong OpenGraph URL: ${ogUrl}`);
+    assert(normalizeUrl(canonical) === normalizeUrl(ACTIVE_NOTE_URL), `wrong canonical URL: ${canonical}`);
+    assert(normalizeUrl(ogUrl) === normalizeUrl(ACTIVE_NOTE_URL), `wrong OpenGraph URL: ${ogUrl}`);
+    let noteLinkPolicy = null;
+    if (EXPECT_PROJECTED_PUBLIC_ROUTES) noteLinkPolicy = await assertPageLinkPolicy(page, 'persistence Note');
     const noteHtml = await page.content();
     assert(!noteHtml.includes(LEGACY_ORIGIN), 'persistence Note leaks the legacy Pages origin');
+    if (EXPECT_PROJECTED_PUBLIC_ROUTES) {
+      assert(!containsLegacyLandingPublicUrl(noteHtml), 'persistence Note exposes the legacy /landing namespace');
+    }
     await page.screenshot({path: path.join(ARTIFACTS_DIR, 'persistence-note.png'), fullPage: true});
     writeText('persistence-note.html', noteHtml);
     summary.note = {
@@ -159,6 +229,8 @@ async function main() {
       canonical,
       ogUrl,
       legacyOriginAbsent: true,
+      projectedPolicyChecked: EXPECT_PROJECTED_PUBLIC_ROUTES,
+      navigationalLinksChecked: noteLinkPolicy?.navigationalLinks ?? 0,
     };
 
     const feedResponse = await context.request.get(FEED_URL, {timeout: 30000});
@@ -167,7 +239,10 @@ async function main() {
     const feedContentType = feedResponse.headers()['content-type'] || '';
     assert(/xml|atom/i.test(feedContentType), `unexpected feed content type: ${feedContentType}`);
     assert(feedText.includes('Restart — это часть продукта'), 'Atom feed misses the persistence Note title');
-    assert(feedText.includes(NOTE_URL), 'Atom feed misses the persistence Note canonical URL');
+    assert(feedText.includes(ACTIVE_NOTE_URL), 'Atom feed misses the persistence Note canonical URL');
+    if (EXPECT_PROJECTED_PUBLIC_ROUTES) {
+      assert(!containsLegacyLandingPublicUrl(feedText), 'Atom feed exposes legacy /landing URLs');
+    }
     writeText('feed.xml', feedText);
     summary.feed = {
       url: FEED_URL,
@@ -175,6 +250,7 @@ async function main() {
       contentType: feedContentType,
       containsNoteTitle: true,
       containsCanonicalUrl: true,
+      projectedPolicyChecked: EXPECT_PROJECTED_PUBLIC_ROUTES,
     };
 
     const searchResponse = await page.goto(SEARCH_URL, {waitUntil: 'networkidle', timeout: 45000});
@@ -185,12 +261,22 @@ async function main() {
     await searchButton.waitFor({state: 'visible', timeout: 10000});
     await searchInput.fill(SEARCH_QUERY);
     await searchButton.click();
-    const result = page.locator('a[href*="landing/notes/restart-persistence-is-a-product-contract"]').first();
+    const resultSelector = EXPECT_PROJECTED_PUBLIC_ROUTES
+      ? 'a[href*="notes/restart-persistence-is-a-product-contract"]:not([href*="landing/"])'
+      : 'a[href*="landing/notes/restart-persistence-is-a-product-contract"]';
+    const result = page.locator(resultSelector).first();
     await result.waitFor({state: 'visible', timeout: 15000});
     const resultText = (await result.innerText()).trim();
     const resultHref = await result.getAttribute('href');
     assert(resultText.includes('Restart'), `unexpected search result text: ${resultText}`);
-    assert(new URL(resultHref, page.url()).pathname === new URL(NOTE_URL).pathname, `search returned wrong route: ${resultHref}`);
+    assert(new URL(resultHref, page.url()).pathname === new URL(ACTIVE_NOTE_URL).pathname, `search returned wrong route: ${resultHref}`);
+
+    const resultTarget = await result.getAttribute('target');
+    const resultRel = new Set(String(await result.getAttribute('rel') || '').toLowerCase().split(/\s+/).filter(Boolean));
+    if (EXPECT_PROJECTED_PUBLIC_ROUTES) {
+      assert(resultTarget === '_blank', `search result does not open in a new tab: ${resultTarget}`);
+      assert(resultRel.has('noopener') && resultRel.has('noreferrer'), `search result lacks noopener/noreferrer: ${[...resultRel].join(' ')}`);
+    }
     await page.screenshot({path: path.join(ARTIFACTS_DIR, 'persistence-search.png'), fullPage: true});
     summary.search = {
       url: page.url(),
@@ -198,6 +284,9 @@ async function main() {
       query: SEARCH_QUERY,
       resultText,
       resultHref: new URL(resultHref, page.url()).href,
+      projectedPolicyChecked: EXPECT_PROJECTED_PUBLIC_ROUTES,
+      target: resultTarget,
+      rel: [...resultRel],
     };
 
     assert(summary.diagnostics.pageErrors.length === 0, `page errors: ${summary.diagnostics.pageErrors.join(' | ')}`);

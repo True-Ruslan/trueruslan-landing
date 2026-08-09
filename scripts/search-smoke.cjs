@@ -25,6 +25,9 @@ async function assertBackControl(page, baseUrl, name) {
   if (actualHome.origin !== new URL(baseUrl).origin || actualHome.pathname !== expectedHome.pathname) {
     throw new Error(`${name}: search back fallback mismatch: ${actualHome.href}`);
   }
+  if (await back.getAttribute('target') !== '_blank') throw new Error(`${name}: search back must open in a new tab`);
+  const rel = new Set(String(await back.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
+  if (!rel.has('noopener') || !rel.has('noreferrer')) throw new Error(`${name}: search back lacks noopener/noreferrer`);
 
   const box = await back.boundingBox();
   if (!box || box.width < 40 || box.height < 40) {
@@ -171,13 +174,16 @@ async function assertPublicationSearchCoverage(page) {
       const body = document.body.innerText.toLocaleLowerCase('ru');
       const hasPhrase = body.includes(phrase.toLocaleLowerCase('ru'));
       const hasPublicationsRoute = [...document.querySelectorAll('a')]
-        .some((link) => (link.getAttribute('href') || '').includes('landing/publications/'));
+        .some((link) => {
+          const href = link.getAttribute('href') || '';
+          return href.includes('publications/') && !href.includes('landing/publications/');
+        });
       return hasPhrase && hasPublicationsRoute;
     }, item, {timeout: 7000});
 
-    const matchingRoutes = page.locator('a[href*="landing/publications/"]');
+    const matchingRoutes = page.locator('a[href*="publications/"]:not([href*="landing/publications/"])');
     if (await matchingRoutes.count() < 1) {
-      throw new Error(`publication search query did not route to Publications: ${item.query}`);
+      throw new Error(`publication search query did not route to canonical Publications: ${item.query}`);
     }
   }
 }
@@ -237,8 +243,8 @@ async function assertEnglishPublicationsSearchCoverage(page) {
   }
 }
 
-async function assertSameOriginBackNavigation(page, baseUrl) {
-  const sourcePath = '/landing/projects/';
+async function assertSameOriginBackTarget(page, baseUrl) {
+  const sourcePath = '/projects/';
   const sourceUrl = `${baseUrl}${sourcePath}`;
   const searchUrl = `${baseUrl}${SEARCH_PATH}`;
 
@@ -246,9 +252,13 @@ async function assertSameOriginBackNavigation(page, baseUrl) {
   if (!sourceResponse?.ok()) throw new Error('search back: source page unavailable');
   await page.evaluate((target) => window.location.assign(target), searchUrl);
   await page.waitForURL(searchUrl);
-  await page.locator('[data-tr-search-back="true"]').waitFor({state: 'visible'});
-  await page.locator('[data-tr-search-back="true"]').click();
-  await page.waitForURL(sourceUrl);
+  const back = page.locator('[data-tr-search-back="true"]');
+  await back.waitFor({state: 'visible'});
+  const href = new URL(await back.getAttribute('href'), page.url()).href;
+  if (href !== sourceUrl) throw new Error(`search back: expected referrer ${sourceUrl}, got ${href}`);
+  if (await back.getAttribute('target') !== '_blank') throw new Error('search back: referrer target must open in a new tab');
+  const rel = new Set(String(await back.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
+  if (!rel.has('noopener') || !rel.has('noreferrer')) throw new Error('search back: referrer lacks noopener/noreferrer');
 }
 
 async function runScenario(browser, baseUrl, name, viewport) {
@@ -305,7 +315,7 @@ async function runScenario(browser, baseUrl, name, viewport) {
       await assertEnglishVlezetSearchCoverage(page);
       await assertEnglishNowSearchCoverage(page);
       await assertEnglishPublicationsSearchCoverage(page);
-      await assertSameOriginBackNavigation(page, baseUrl);
+      await assertSameOriginBackTarget(page, baseUrl);
     }
     diagnostics.assertClean(name);
 

@@ -19,7 +19,7 @@ const FORBIDDEN_FONT_ORIGINS = Object.freeze([
 ]);
 
 const EXPECTED_NAV = Object.freeze({
-  ru: Object.freeze(['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне']),
+  ru: Object.freeze(['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне', 'Контакты']),
   en: Object.freeze(['Projects', 'Experience', 'Writing', 'Work with me', 'About']),
 });
 
@@ -43,12 +43,12 @@ function assertNoRuntimeFontCdn(source, label) {
   }
 }
 
-test('C1: standalone RU and EN headers expose exactly five semantic primary destinations', () => {
+test('C1 foundation preserves the current approved standalone primary destinations', () => {
   assert.deepEqual(standalonePrimaryLabels('templates/index.html'), EXPECTED_NAV.ru);
   assert.deepEqual(standalonePrimaryLabels('templates/index.en.html'), EXPECTED_NAV.en);
 });
 
-test('C1: Diplodoc primary header matches the five-destination RU presentation hierarchy', () => {
+test('C1 foundation preserves the current approved Diplodoc RU presentation hierarchy', () => {
   assert.deepEqual(tocPrimaryLabels(), EXPECTED_NAV.ru);
 });
 
