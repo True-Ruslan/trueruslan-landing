@@ -109,14 +109,8 @@ async function main() {
 
     const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
     const ogUrl = await page.locator('meta[property="og:url"]').getAttribute('content');
-    assert(
-      canonical && normalizeUrl(canonical) === normalizeUrl(PASSIVE_PDF_COMPLETENESS_NOTE_URL),
-      `wrong P3.4E canonical: ${canonical || 'missing'}`,
-    );
-    assert(
-      ogUrl && normalizeUrl(ogUrl) === normalizeUrl(PASSIVE_PDF_COMPLETENESS_NOTE_URL),
-      `wrong P3.4E OpenGraph URL: ${ogUrl || 'missing'}`,
-    );
+    assert(canonical && normalizeUrl(canonical) === normalizeUrl(PASSIVE_PDF_COMPLETENESS_NOTE_URL), `wrong P3.4E canonical: ${canonical || 'missing'}`);
+    assert(ogUrl && normalizeUrl(ogUrl) === normalizeUrl(PASSIVE_PDF_COMPLETENESS_NOTE_URL), `wrong P3.4E OpenGraph URL: ${ogUrl || 'missing'}`);
 
     const documentContent = page.locator(DOCUMENT_CONTENT_SELECTOR).first();
     await documentContent.waitFor({state: 'visible', timeout: 10000});
@@ -146,10 +140,7 @@ async function main() {
     assert(!noteText.includes('parseable PDF guarantees completeness'), 'P3.4E Note overclaims parseability');
     const noteHtml = await page.content();
     assert(!noteHtml.includes(LEGACY_ORIGIN), 'P3.4E Note leaks the legacy Pages origin');
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, 'passive-pdf-semantic-completeness-note.png'),
-      fullPage: true,
-    });
+    await page.screenshot({path: path.join(ARTIFACTS_DIR, 'passive-pdf-semantic-completeness-note.png'), fullPage: true});
     writeText('passive-pdf-semantic-completeness-note.html', noteHtml);
     summary.note = {
       requested: PASSIVE_PDF_COMPLETENESS_NOTE_URL,
@@ -187,16 +178,10 @@ async function main() {
     });
     assert(rawResumeResponse.ok(), `raw resume returned HTTP ${rawResumeResponse.status()}`);
     const rawResumeHtml = await rawResumeResponse.text();
-    assert(
-      rawResumeHtml.includes('<noscript data-tr-resume-fallback>'),
-      'raw deployed web-CV misses noscript PDF fallback',
-    );
+    assert(rawResumeHtml.includes('<noscript data-tr-resume-fallback>'), 'raw deployed web-CV misses noscript PDF fallback');
     assert(rawResumeHtml.includes('assets/documents/cv.pdf'), 'raw deployed web-CV misses PDF asset route');
 
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, 'passive-pdf-resume.png'),
-      fullPage: true,
-    });
+    await page.screenshot({path: path.join(ARTIFACTS_DIR, 'passive-pdf-resume.png'), fullPage: true});
     writeText('passive-pdf-resume.html', resumeHtml);
     writeText('passive-pdf-resume-raw.html', rawResumeHtml);
     summary.resume = {
@@ -257,20 +242,14 @@ async function main() {
     await button.waitFor({state: 'visible', timeout: 10000});
     await input.fill(SEARCH_QUERY);
     await button.click();
-    const result = page.locator('a[href*="landing/notes/passive-pdf-validation-vs-semantic-completeness"]').first();
+    const result = page.locator('a[href*="notes/passive-pdf-validation-vs-semantic-completeness/"]:not([href*="landing/notes/passive-pdf-validation-vs-semantic-completeness/"])').first();
     await result.waitFor({state: 'visible', timeout: 15000});
     const resultText = (await result.innerText()).trim();
     const resultHref = await result.getAttribute('href');
     const cleanUrl = new URL(PASSIVE_PDF_COMPLETENESS_NOTE_URL);
     assert(resultText.toLowerCase().includes('pdf'), `unexpected P3.4E search result: ${resultText}`);
-    assert(
-      resultHref && new URL(resultHref, page.url()).pathname === cleanUrl.pathname,
-      `generated search returned wrong P3.4E route: ${resultHref || 'missing'}`,
-    );
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, 'passive-pdf-semantic-completeness-search.png'),
-      fullPage: true,
-    });
+    assert(resultHref && new URL(resultHref, page.url()).pathname === cleanUrl.pathname, `generated search returned wrong P3.4E route: ${resultHref || 'missing'}`);
+    await page.screenshot({path: path.join(ARTIFACTS_DIR, 'passive-pdf-semantic-completeness-search.png'), fullPage: true});
     summary.generatedSearch = {
       url: page.url(),
       status: searchResponse.status(),
@@ -280,10 +259,7 @@ async function main() {
     };
 
     assert(summary.diagnostics.pageErrors.length === 0, `page errors: ${summary.diagnostics.pageErrors.join(' | ')}`);
-    assert(
-      summary.diagnostics.firstPartyRequestFailures.length === 0,
-      `first-party request failures: ${JSON.stringify(summary.diagnostics.firstPartyRequestFailures)}`,
-    );
+    assert(summary.diagnostics.firstPartyRequestFailures.length === 0, `first-party request failures: ${JSON.stringify(summary.diagnostics.firstPartyRequestFailures)}`);
 
     writeJson('passive-pdf-semantic-completeness-note-production-summary.json', summary);
     console.log(`P3.4E passive PDF completeness Note smoke passed for deployed SHA ${EXPECTED_DEPLOYED_SHA}.`);
