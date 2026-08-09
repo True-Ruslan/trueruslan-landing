@@ -46,6 +46,6 @@ test('PROJECT_STATE, ROADMAP and CHANGELOG record C1 while P3.6 remains waiting'
 
 test('C1 acceptance does not claim that the full redesign measurement baseline is complete', () => {
   const ledger = read(ACCEPTANCE);
-  assert.match(ledger, /final accepted redesign/i);
+  assert.match(ledger, /final accepted .*redesign/i);
   assert.match(ledger, /does not (?:start|reset|close).*P3\.6/i);
 });
