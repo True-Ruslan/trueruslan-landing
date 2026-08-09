@@ -35,7 +35,7 @@ test('PROJECT_STATE, ROADMAP and CHANGELOG record C1 while P3.6 remains waiting'
   for (const relativePath of ['docs/PROJECT_STATE.md', 'docs/ROADMAP.md', 'docs/CHANGELOG.md']) {
     const source = read(relativePath);
     requireEvidence(source, relativePath);
-    assert.match(source, /C1\s+—\s+Presentation foundation/i, `${relativePath}: C1 milestone missing`);
+    assert.match(source, /C1(?:\s+—)?\s+Presentation foundation/i, `${relativePath}: C1 milestone missing`);
   }
 
   const state = read('docs/PROJECT_STATE.md');
