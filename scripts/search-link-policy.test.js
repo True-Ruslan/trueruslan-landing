@@ -8,44 +8,75 @@ import {fileURLToPath} from 'node:url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCE_PATH = path.join(ROOT, 'docs', '_assets', 'script', 'search-ui.js');
 
-function loadApi() {
+function loadApi(extraContext = {}) {
   const source = fs.readFileSync(SOURCE_PATH, 'utf8');
-  const context = {URL};
+  const context = {URL, ...extraContext};
   vm.createContext(context);
   vm.runInContext(source, context, {filename: SOURCE_PATH});
   return context.TrueRuslanSearchUI;
 }
 
-function fakeAnchor(href, rel = '') {
+function fakeAnchor(href, rel = '', target = null) {
   const attrs = new Map([['href', href]]);
   if (rel) attrs.set('rel', rel);
+  if (target) attrs.set('target', target);
   return {
     href,
     getAttribute(name) { return attrs.get(name) ?? null; },
     setAttribute(name, value) { attrs.set(name, String(value)); },
+    removeAttribute(name) { attrs.delete(name); },
     attrs,
   };
 }
 
-test('dynamic search navigation applies the same new-tab policy as final HTML', () => {
+test('dynamic search navigation keeps same-site links current-context and external links safe-new-tab', () => {
   const api = loadApi();
-  assert.equal(typeof api.applyNewTabPolicy, 'function');
+  assert.equal(typeof api.applyLinkPolicy, 'function');
+  assert.equal(typeof api.applyNewTabPolicy, 'function', 'compatibility alias must remain available');
 
-  const internal = fakeAnchor('/projects/notchhub/');
-  assert.equal(api.applyNewTabPolicy(internal), true);
-  assert.equal(internal.attrs.get('target'), '_blank');
-  assert.equal(internal.attrs.get('rel'), 'noopener noreferrer');
+  const internal = fakeAnchor('/projects/notchhub/', 'noopener noreferrer', '_blank');
+  assert.equal(api.applyLinkPolicy(internal), true);
+  assert.equal(internal.attrs.has('target'), false);
+
+  const absoluteInternal = fakeAnchor('https://trueruslan.ru/work-with-me/');
+  assert.equal(api.applyLinkPolicy(absoluteInternal), false);
+  assert.equal(absoluteInternal.attrs.has('target'), false);
 
   const external = fakeAnchor('https://github.com/True-Ruslan', 'nofollow noopener');
-  assert.equal(api.applyNewTabPolicy(external), true);
+  assert.equal(api.applyLinkPolicy(external), true);
   assert.equal(external.attrs.get('target'), '_blank');
   assert.equal(external.attrs.get('rel'), 'nofollow noopener noreferrer');
 
-  for (const href of ['#architecture', 'mailto:ruslan@example.com', 'tel:+10000000000']) {
+  for (const href of ['#architecture', 'mailto:nemykin@true-ruslan.ru', 'tel:+10000000000']) {
     const anchor = fakeAnchor(href);
-    assert.equal(api.applyNewTabPolicy(anchor), false, `${href} must remain current-context`);
+    assert.equal(api.applyLinkPolicy(anchor), false, `${href} must remain current-context`);
     assert.equal(anchor.attrs.has('target'), false);
   }
+});
+
+test('search UI delegates link ownership to the shared runtime policy when available', () => {
+  const calls = [];
+  const shared = {
+    shouldOpenInNewContext(href) {
+      calls.push(['classify', href]);
+      return href.startsWith('https://external.example/');
+    },
+    normalizeAnchor(anchor) {
+      calls.push(['normalize', anchor.getAttribute('href')]);
+      anchor.removeAttribute('target');
+      return true;
+    },
+  };
+  const api = loadApi({TrueRuslanLinkPolicy: shared});
+  const anchor = fakeAnchor('/notes/', '', '_blank');
+
+  assert.equal(api.shouldOpenInNewContext('https://external.example/page'), true);
+  assert.equal(api.applyLinkPolicy(anchor), true);
+  assert.equal(anchor.attrs.has('target'), false);
+  assert.deepEqual(calls, [
+    ['classify', 'https://external.example/page'],
+    ['normalize', '/notes/'],
+  ]);
 });
 
 test('search back control resolves a real same-origin referrer without history replacement', () => {
