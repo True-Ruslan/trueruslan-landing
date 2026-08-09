@@ -173,8 +173,19 @@ async function verifySearch(page) {
     .some((link) => (link.getAttribute('href') || '').includes('en/work-with-me/')), null, {timeout: 10000});
   const result = page.locator('a[href*="en/work-with-me/"]').first();
   assert(await result.count() >= 1, 'generated search does not expose English Work with me');
-  assert(!(await result.getAttribute('target')), 'internal generated-search result must stay in current tab');
-  return {query: 'inflated public service list', found: true};
+
+  const popupPromise = page.waitForEvent('popup', {timeout: 1500}).catch(() => null);
+  const navigationPromise = page.waitForURL((url) => url.pathname.endsWith('/en/work-with-me/'), {timeout: 10000})
+    .then(() => true)
+    .catch(() => false);
+  await result.click();
+  const [popup, navigated] = await Promise.all([popupPromise, navigationPromise]);
+  if (popup) {
+    await popup.close();
+    throw new Error('generated internal search result opened a new tab');
+  }
+  assert(navigated, `generated internal search result did not navigate current tab: ${page.url()}`);
+  return {query: 'inflated public service list', found: true, navigatedInCurrentTab: true};
 }
 
 async function main() {
