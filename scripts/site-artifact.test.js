@@ -20,7 +20,7 @@ function fixture({origin, staleOrigin = null} = {}) {
   write(root, 'en/index.html', `<!doctype html><html><head><link rel="canonical" href="${base}/en/"><link rel="alternate" hreflang="ru" href="${base}/"></head></html>`);
   write(root, 'robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`);
   write(root, 'sitemap.xml', `<?xml version="1.0"?><urlset><url><loc>${base}/</loc></url><url><loc>${base}/en/</loc></url></urlset>`);
-  write(root, 'feed.xml', `<?xml version="1.0"?><feed><id>${base}/feed.xml</id><link href="${base}/feed.xml" rel="self"/><link href="${base}/landing/notes/"/></feed>`);
+  write(root, 'feed.xml', `<?xml version="1.0"?><feed><id>${base}/feed.xml</id><link href="${base}/feed.xml" rel="self"/><link href="${base}/notes/"/></feed>`);
   return root;
 }
 
@@ -55,7 +55,7 @@ test('site artifact accepts a legacy subpath identity', () => {
   assert.deepEqual(result.errors, []);
 });
 
-test('site artifact rejects public html routes in sitemap and feed', () => {
+test('site artifact rejects public html routes and the legacy landing namespace in sitemap and feed', () => {
   const outputDir = fixture({origin: 'https://trueruslan.ru'});
   write(outputDir, 'sitemap.xml', '<?xml version="1.0"?><urlset><url><loc>https://trueruslan.ru/landing/projects.html</loc></url><url><loc>https://trueruslan.ru/</loc></url><url><loc>https://trueruslan.ru/en/</loc></url></urlset>');
   write(outputDir, 'feed.xml', '<?xml version="1.0"?><feed><id>https://trueruslan.ru/feed.xml</id><link href="https://trueruslan.ru/feed.xml" rel="self"/><link href="https://trueruslan.ru/landing/notes.html"/></feed>');
@@ -67,6 +67,7 @@ test('site artifact rejects public html routes in sitemap and feed', () => {
   assert.equal(result.ok, false);
   assert.match(result.errors.join(' '), /sitemap\.xml contains a public \.html route/i);
   assert.match(result.errors.join(' '), /feed\.xml contains a public \.html route/i);
+  assert.match(result.errors.join(' '), /legacy \/landing\/ public namespace/i);
 });
 
 test('site artifact reports missing files, stale origins and wrong canonical routes', () => {
