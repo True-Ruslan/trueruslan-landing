@@ -1,8 +1,37 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-08**, после exact-production acceptance homepage/Experience/NotchHub presentation refinement; P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-09**, после exact-production acceptance Work with me / private practice; P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-09 — Work with me / private practice — PRODUCTION ACCEPTED
+
+PR #171 implemented the approved evidence-led private-practice design from PR #170. It adds RU/EN Work with me routes backed by one fail-closed `data/collaboration.json`, a restrained homepage bridge, canonical Contacts handoff and an exact contextual CTA allowlist. There is no form, CRM, booking, payment flow, public pricing, lead database, conversion tracking, session replay or AI seller.
+
+TDD and acceptance caught three important boundaries before merge: the initial product RED established the missing surfaces; a dedicated browser gate exposed incomplete no-JavaScript Diplodoc output; and final Advanced Security review exposed a postprocessor TOCTOU race. The no-JS artifact became a full semantic fallback with inspected mobile presentation, and the race was reproduced by Build #1426 before direct read + fail-closed `ENOENT` remediation.
+
+Final feature production evidence:
+
+```text
+feature PR:                       #171 — MERGED
+accepted squash / deployed SHA:  433ee076f3f90dfe14feea97f59ad84bca0c337a
+exact-head Build:                 #1427 / 31285618671 — SUCCESS
+quality artifact:                 9029759379
+quality digest:                   sha256:cc321f83f41539df0e256fcb23c5d28801d5f70093ab79b97bca594796a28987
+CodeQL:                          #949 / 31285618637 — SUCCESS
+Dependency Review:               #855 / 31285618645 — SUCCESS
+Pages:                           #199 / 31285875710 — SUCCESS
+Pages deployment ID:             5814010976
+Pages artifact:                  9029779285
+Pages artifact digest:           sha256:a22a8436e963650ddb89a22e2d6914b449575933a2a4b3a1618561503e469a86
+Production Live Smoke:           #350 / 31285898990 — SUCCESS
+Work with me production smoke:   PASS
+production artifact:             9029804820
+production digest:               sha256:e01e5baf0675d826334b2d75dd865e66833eaf2f804181a2061f7389b3505577
+observedAt:                      2026-08-09T00:20:13.227Z
+```
+
+Production Work with me verification passed RU/EN rendered and no-JavaScript pages, canonical availability/contact truth, homepage ordering and exactly three primary paths, Contacts handoff, 7 allowed versus 5 forbidden contextual surfaces, generated search and first-party runtime diagnostics. P3.6 measurement remains open / NEXT / WAITING; this feature does not imply engagement or product-impact evidence.
 
 ## 2026-08-08 — Homepage density, Experience, unified header and NotchHub — PRODUCTION ACCEPTED
 
