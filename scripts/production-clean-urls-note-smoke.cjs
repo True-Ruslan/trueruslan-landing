@@ -12,7 +12,7 @@ const {chromium} = requireQualityTool('playwright', 'P3.4B clean URLs Note smoke
 
 const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
 const FEED_URL = new URL('feed.xml', APEX).href;
-const LEGACY_NOTE_URL = `${CLEAN_URLS_NOTE_URL.slice(0, -1)}.html?source=production-smoke#legacy-compatibility`;
+const LEGACY_NOTE_URL = new URL('landing/notes/clean-urls-without-cloudflare-routing.html?source=production-smoke#legacy-compatibility', APEX).href;
 const LEGACY_ORIGIN = 'true-ruslan.github.io/trueruslan-landing';
 const DOCUMENT_CONTENT_SELECTOR = 'main.dc-doc-page__content';
 const ARTIFACTS_DIR = path.resolve('production-artifacts');

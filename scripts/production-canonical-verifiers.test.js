@@ -67,3 +67,11 @@ test('P3.4A-F production Note search verifiers accept canonical result routes on
     assert.doesNotMatch(source, new RegExp(`a\\[href\\*=\\"landing/notes/${slug}`), `${file} still treats legacy search href as canonical`);
   }
 });
+
+test('P3.4B legacy compatibility probe targets the retained landing HTML alias', () => {
+  const source = read('production-clean-urls-note-smoke.cjs');
+  assert.match(source, /new URL\(['"]landing\/notes\/clean-urls-without-cloudflare-routing\.html\?source=production-smoke#legacy-compatibility['"],\s*APEX\)\.href/);
+  assert.doesNotMatch(source, /CLEAN_URLS_NOTE_URL\.slice\(0, -1\).*\.html/);
+  assert.match(source, /queryPreserved:\s*true/);
+  assert.match(source, /fragmentPreserved:\s*true/);
+});
