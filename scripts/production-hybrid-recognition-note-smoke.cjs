@@ -83,14 +83,8 @@ async function main() {
 
     const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
     const ogUrl = await page.locator('meta[property="og:url"]').getAttribute('content');
-    assert(
-      canonical && normalizeUrl(canonical) === normalizeUrl(HYBRID_RECOGNITION_NOTE_URL),
-      `wrong P3.4C canonical: ${canonical || 'missing'}`,
-    );
-    assert(
-      ogUrl && normalizeUrl(ogUrl) === normalizeUrl(HYBRID_RECOGNITION_NOTE_URL),
-      `wrong P3.4C OpenGraph URL: ${ogUrl || 'missing'}`,
-    );
+    assert(canonical && normalizeUrl(canonical) === normalizeUrl(HYBRID_RECOGNITION_NOTE_URL), `wrong P3.4C canonical: ${canonical || 'missing'}`);
+    assert(ogUrl && normalizeUrl(ogUrl) === normalizeUrl(HYBRID_RECOGNITION_NOTE_URL), `wrong P3.4C OpenGraph URL: ${ogUrl || 'missing'}`);
 
     const documentContent = page.locator(DOCUMENT_CONTENT_SELECTOR).first();
     await documentContent.waitFor({state: 'visible', timeout: 10000});
@@ -130,10 +124,7 @@ async function main() {
     assert(!noteText.includes('M7.8C accepted'), 'P3.4C Note promotes M7.8C beyond Draft evidence');
     const noteHtml = await page.content();
     assert(!noteHtml.includes(LEGACY_ORIGIN), 'P3.4C Note leaks the legacy Pages origin');
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, 'hybrid-recognition-note.png'),
-      fullPage: true,
-    });
+    await page.screenshot({path: path.join(ARTIFACTS_DIR, 'hybrid-recognition-note.png'), fullPage: true});
     writeText('hybrid-recognition-note.html', noteHtml);
     summary.note = {
       requested: HYBRID_RECOGNITION_NOTE_URL,
@@ -168,20 +159,14 @@ async function main() {
     await button.waitFor({state: 'visible', timeout: 10000});
     await input.fill(SEARCH_QUERY);
     await button.click();
-    const result = page.locator('a[href*="landing/notes/hybrid-cv-ai-recognition-boundaries"]').first();
+    const result = page.locator('a[href*="notes/hybrid-cv-ai-recognition-boundaries/"]:not([href*="landing/notes/hybrid-cv-ai-recognition-boundaries/"])').first();
     await result.waitFor({state: 'visible', timeout: 15000});
     const resultText = (await result.innerText()).trim();
     const resultHref = await result.getAttribute('href');
     const cleanUrl = new URL(HYBRID_RECOGNITION_NOTE_URL);
     assert(resultText.toLowerCase().includes('local cv'), `unexpected P3.4C search result: ${resultText}`);
-    assert(
-      resultHref && new URL(resultHref, page.url()).pathname === cleanUrl.pathname,
-      `generated search returned wrong P3.4C route: ${resultHref || 'missing'}`,
-    );
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, 'hybrid-recognition-search.png'),
-      fullPage: true,
-    });
+    assert(resultHref && new URL(resultHref, page.url()).pathname === cleanUrl.pathname, `generated search returned wrong P3.4C route: ${resultHref || 'missing'}`);
+    await page.screenshot({path: path.join(ARTIFACTS_DIR, 'hybrid-recognition-search.png'), fullPage: true});
     summary.generatedSearch = {
       url: page.url(),
       status: searchResponse.status(),
@@ -191,10 +176,7 @@ async function main() {
     };
 
     assert(summary.diagnostics.pageErrors.length === 0, `page errors: ${summary.diagnostics.pageErrors.join(' | ')}`);
-    assert(
-      summary.diagnostics.firstPartyRequestFailures.length === 0,
-      `first-party request failures: ${JSON.stringify(summary.diagnostics.firstPartyRequestFailures)}`,
-    );
+    assert(summary.diagnostics.firstPartyRequestFailures.length === 0, `first-party request failures: ${JSON.stringify(summary.diagnostics.firstPartyRequestFailures)}`);
 
     writeJson('hybrid-recognition-note-production-summary.json', summary);
     console.log(`P3.4C hybrid recognition Note smoke passed for deployed SHA ${EXPECTED_DEPLOYED_SHA}.`);
