@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import * as parse5 from 'parse5';
 
 const EXEMPT_SCHEME = /^(?:mailto|tel|javascript|data):/i;
+const RUNTIME_SCRIPT_SRC = '_assets/script/link-policy-runtime.js';
 
 function walkFiles(dir) {
   const files = [];
@@ -51,7 +52,6 @@ function mergeRelTokens(value) {
 }
 
 function renderAnchorStartTag(node) {
-  const href = attrValue(node, 'href');
   const currentRel = attrValue(node, 'rel');
   const attrs = (node.attrs ?? [])
     .filter((attr) => !['target', 'rel'].includes(attr.name.toLowerCase()))
@@ -81,18 +81,26 @@ function collectAnchorReplacements(node, replacements) {
   if (node.content) collectAnchorReplacements(node.content, replacements);
 }
 
+function ensureRuntimeScript(html) {
+  const source = String(html);
+  if (source.includes(RUNTIME_SCRIPT_SRC) || source.includes('data-tr-clean-url-redirect')) return source;
+  const closingHead = source.search(/<\/head\s*>/i);
+  if (closingHead < 0) return source;
+  const script = `<script src="${RUNTIME_SCRIPT_SRC}" defer data-tr-link-policy-runtime></script>\n`;
+  return `${source.slice(0, closingHead)}${script}${source.slice(closingHead)}`;
+}
+
 export function applyLinkPolicy(html) {
   const source = String(html);
   const document = parse5.parse(source, {sourceCodeLocationInfo: true});
   const replacements = [];
   collectAnchorReplacements(document, replacements);
-  if (replacements.length === 0) return source;
 
   let output = source;
   for (const replacement of replacements.sort((left, right) => right.start - left.start)) {
     output = `${output.slice(0, replacement.start)}${replacement.value}${output.slice(replacement.end)}`;
   }
-  return output;
+  return ensureRuntimeScript(output);
 }
 
 export function applyLinkPolicyToSite({outputDir} = {}) {
