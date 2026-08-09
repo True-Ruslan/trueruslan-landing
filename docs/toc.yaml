@@ -13,25 +13,17 @@ navigation:
         type: link
         url: landing/resume.html
         target: _self
+      - text: Материалы
+        type: link
+        url: landing/notes.html
+        target: _self
       - text: Работа со мной
         type: link
         url: landing/work-with-me.html
         target: _self
-      - text: Notes
-        type: link
-        url: landing/notes.html
-        target: _self
-      - text: Публикации
-        type: link
-        url: landing/publications.html
-        target: _self
       - text: Обо мне
         type: link
         url: landing/about.html
-        target: _self
-      - text: Контакты
-        type: link
-        url: landing/contacts.html
         target: _self
     rightItems:
       - type: link

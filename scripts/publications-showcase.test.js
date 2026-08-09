@@ -71,9 +71,9 @@ test('standalone homepage reserves one featured-publications surface after flags
   assert.match(home, /landing\/publications\.html/);
 });
 
-test('primary and side navigation expose Publications after Notes', () => {
+test('Publications stays first-class in the content tree while primary navigation uses one Materials entry', () => {
   const toc = read(TOC_PATH);
-  assert.match(toc, /- text: Notes[\s\S]{0,180}- text: Публикации/);
+  assert.match(toc, /- text: Материалы[\s\S]{0,160}url: landing\/notes\.html/);
 
   const notesIndex = toc.indexOf('  - name: Engineering Notes');
   const publicationsIndex = toc.indexOf('  - name: Публикации');
@@ -85,7 +85,9 @@ test('primary and side navigation expose Publications after Notes', () => {
   assert.match(toc, /href: \.\/landing\/publications\.md/);
 
   const home = read(HOME_TEMPLATE_PATH);
-  assert.match(home, /landing\/notes\.html">Notes<\/a>\s*<a href="landing\/publications\.html">Публикации<\/a>/);
+  assert.match(home, /landing\/notes\.html">Материалы<\/a>/);
+  assert.doesNotMatch(home, /<nav[^>]*tr-site-nav[\s\S]*?>[\s\S]*?<a[^>]+>Публикации<\/a>[\s\S]*?<\/nav>/);
+  assert.match(home, /landing\/publications\.html/);
 });
 
 test('publications page has canonical metadata/OpenGraph configuration', () => {

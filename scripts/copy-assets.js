@@ -70,7 +70,7 @@ export const LOCALIZED_PROJECT_EVIDENCE_TARGETS = Object.freeze({
 });
 const PROJECT_EVIDENCE_STYLESHEET = '_assets/style/project-evidence.css';
 
-const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico']);
+const ASSET_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico', '.woff2', '.txt']);
 const SEARCH_RESOURCES = [
   ['_assets', 'style', 'search.css'],
   ['_assets', 'script', 'search-ui.js'],
