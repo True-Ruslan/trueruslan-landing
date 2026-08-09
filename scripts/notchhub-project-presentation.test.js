@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-import {renderHomepagePrimaryPaths, selectHomepageFlagships} from './standalone-home.js';
+import {loadCollaboration} from './collaboration.js';
+import {renderStandaloneHome, selectHomepageFlagships} from './standalone-home.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -42,17 +43,24 @@ test('NotchHub replaces Vlezet in the homepage flagship set without deleting Vle
   );
 });
 
-test('homepage project path and current-focus copy highlight NotchHub instead of Vlezet', () => {
-  for (const locale of ['ru', 'en']) {
-    const paths = renderHomepagePrimaryPaths(locale);
-    assert.match(paths, /NotchHub/);
-    assert.doesNotMatch(paths, /Vlezet/);
-  }
+test('C2 selected work highlights NotchHub instead of Vlezet while Now keeps current project truth', () => {
+  const projects = json('data/projects.json');
+  const collaboration = loadCollaboration();
 
-  for (const relativePath of ['templates/index.html', 'templates/index.en.html']) {
-    const source = read(relativePath);
-    assert.match(source, /NotchHub/);
-    assert.doesNotMatch(source, /VillAIgence · Vlezet|Vlezet · Portfolio/);
+  const ru = renderStandaloneHome(read('templates/index.html'), 'https://trueruslan.ru', projects, {collaboration});
+  const en = renderStandaloneHome(read('templates/index.en.html'), 'https://trueruslan.ru', projects, {
+    locale: 'en',
+    collaboration,
+    hrefTransform: (href) => ({
+      'landing/projects/livingworld.html': 'en/projects/livingworld.html',
+      'landing/projects/notchhub.html': 'en/projects/notchhub.html',
+      'landing/projects/portfolio-platform.html': 'en/projects/portfolio-platform.html',
+    })[href] ?? href,
+  });
+
+  for (const html of [ru, en]) {
+    assert.match(html, /data-home-flagship="notchhub"/);
+    assert.doesNotMatch(html, /data-home-flagship="vlezet"/);
   }
 
   const now = JSON.stringify(json('data/now.json'));
