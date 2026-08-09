@@ -8,6 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 const lock = JSON.parse(fs.readFileSync(path.join(ROOT, 'package-lock.json'), 'utf8'));
 const site = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'site.json'), 'utf8'));
+const CONTACT_EMAIL = 'nemykin@true-ruslan.ru';
 
 const REQUIRED_KEYWORDS = [
   'engineering-portfolio',
@@ -33,6 +34,8 @@ test('package metadata reflects the engineering portfolio and knowledge platform
 
   assert.equal(pkg.repository.url, 'https://github.com/True-Ruslan/trueruslan-landing.git');
   assert.equal(pkg.bugs.url, 'https://github.com/True-Ruslan/trueruslan-landing/issues');
+  assert.equal(pkg.bugs.email, CONTACT_EMAIL);
+  assert.equal(pkg.author.email, CONTACT_EMAIL);
   assert.equal('homepage' in pkg, false);
   assert.equal(site.legacyOrigin, 'https://true-ruslan.github.io/trueruslan-landing');
   assert.equal(site.customOrigin, 'https://trueruslan.ru');

@@ -25,9 +25,9 @@ async function assertBackControl(page, baseUrl, name) {
   if (actualHome.origin !== new URL(baseUrl).origin || actualHome.pathname !== expectedHome.pathname) {
     throw new Error(`${name}: search back fallback mismatch: ${actualHome.href}`);
   }
-  if (await back.getAttribute('target') !== '_blank') throw new Error(`${name}: search back must open in a new tab`);
+  if (await back.getAttribute('target')) throw new Error(`${name}: internal search back must stay in the current tab`);
   const rel = new Set(String(await back.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
-  if (!rel.has('noopener') || !rel.has('noreferrer')) throw new Error(`${name}: search back lacks noopener/noreferrer`);
+  if (rel.has('noopener') || rel.has('noreferrer')) throw new Error(`${name}: internal search back retains external-link rel policy`);
 
   const box = await back.boundingBox();
   if (!box || box.width < 40 || box.height < 40) {
@@ -256,9 +256,19 @@ async function assertSameOriginBackTarget(page, baseUrl) {
   await back.waitFor({state: 'visible'});
   const href = new URL(await back.getAttribute('href'), page.url()).href;
   if (href !== sourceUrl) throw new Error(`search back: expected referrer ${sourceUrl}, got ${href}`);
-  if (await back.getAttribute('target') !== '_blank') throw new Error('search back: referrer target must open in a new tab');
+  if (await back.getAttribute('target')) throw new Error('search back: same-origin referrer must stay in the current tab');
   const rel = new Set(String(await back.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
-  if (!rel.has('noopener') || !rel.has('noreferrer')) throw new Error('search back: referrer lacks noopener/noreferrer');
+  if (rel.has('noopener') || rel.has('noreferrer')) throw new Error('search back: same-origin referrer retains external-link rel policy');
+
+  let popupOpened = false;
+  page.once('popup', (popup) => {
+    popupOpened = true;
+    popup.close().catch(() => {});
+  });
+  await back.click();
+  await page.waitForURL(sourceUrl, {timeout: 5000}).catch(() => {});
+  if (popupOpened) throw new Error('search back: same-origin referrer opened a popup');
+  if (page.url() !== sourceUrl) throw new Error(`search back: click did not navigate the current tab to ${sourceUrl}; got ${page.url()}`);
 }
 
 async function runScenario(browser, baseUrl, name, viewport) {

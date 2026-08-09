@@ -4,6 +4,9 @@ import {fileURLToPath} from 'node:url';
 import * as parse5 from 'parse5';
 
 const EXEMPT_SCHEME = /^(?:mailto|tel|javascript|data):/i;
+const POLICY_REL_TOKENS = new Set(['noopener', 'noreferrer']);
+const SAME_SITE_HOSTS = new Set(['trueruslan.ru', 'www.trueruslan.ru']);
+const SITE_BASE = 'https://trueruslan.ru/';
 const RUNTIME_SCRIPT_SRC = '_assets/script/link-policy-runtime.js';
 
 function walkFiles(dir) {
@@ -21,11 +24,18 @@ function attrValue(node, name) {
   return node.attrs?.find((attr) => attr.name.toLowerCase() === name)?.value ?? null;
 }
 
-function shouldOpenInNewContext(href) {
+export function shouldOpenInNewContext(href) {
   const value = String(href ?? '').trim();
   if (!value || value.startsWith('#')) return false;
   if (EXEMPT_SCHEME.test(value)) return false;
-  return true;
+
+  try {
+    const url = new URL(value, SITE_BASE);
+    if (!['http:', 'https:'].includes(url.protocol)) return false;
+    return !SAME_SITE_HOSTS.has(url.hostname.toLowerCase());
+  } catch {
+    return false;
+  }
 }
 
 function escapeAttribute(value) {
@@ -43,7 +53,7 @@ function mergeRelTokens(value) {
     seen.add(normalized);
     tokens.push(token);
   }
-  for (const required of ['noopener', 'noreferrer']) {
+  for (const required of POLICY_REL_TOKENS) {
     if (seen.has(required)) continue;
     seen.add(required);
     tokens.push(required);
@@ -51,14 +61,28 @@ function mergeRelTokens(value) {
   return tokens.join(' ');
 }
 
-function renderAnchorStartTag(node) {
+function stripPolicyRelTokens(value) {
+  return String(value ?? '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((token) => !POLICY_REL_TOKENS.has(token.toLowerCase()))
+    .join(' ');
+}
+
+function renderAnchorStartTag(node, {newContext}) {
   const currentRel = attrValue(node, 'rel');
   const attrs = (node.attrs ?? [])
     .filter((attr) => !['target', 'rel'].includes(attr.name.toLowerCase()))
     .map((attr) => ({name: attr.name, value: attr.value}));
 
-  attrs.push({name: 'target', value: '_blank'});
-  attrs.push({name: 'rel', value: mergeRelTokens(currentRel)});
+  if (newContext) {
+    attrs.push({name: 'target', value: '_blank'});
+    attrs.push({name: 'rel', value: mergeRelTokens(currentRel)});
+  } else {
+    const preservedRel = stripPolicyRelTokens(currentRel);
+    if (preservedRel) attrs.push({name: 'rel', value: preservedRel});
+  }
 
   return `<a${attrs.map((attr) => ` ${attr.name}="${escapeAttribute(attr.value)}"`).join('')}>`;
 }
@@ -68,12 +92,18 @@ function collectAnchorReplacements(node, replacements) {
   if (node.tagName === 'a') {
     const href = attrValue(node, 'href');
     const startTag = node.sourceCodeLocation?.startTag;
-    if (shouldOpenInNewContext(href) && startTag) {
-      replacements.push({
-        start: startTag.startOffset,
-        end: startTag.endOffset,
-        value: renderAnchorStartTag(node),
-      });
+    if (startTag) {
+      const newContext = shouldOpenInNewContext(href);
+      const target = attrValue(node, 'target');
+      const rel = attrValue(node, 'rel');
+      const hasPolicyRel = String(rel ?? '').split(/\s+/).some((token) => POLICY_REL_TOKENS.has(token.toLowerCase()));
+      if (newContext || target || hasPolicyRel) {
+        replacements.push({
+          start: startTag.startOffset,
+          end: startTag.endOffset,
+          value: renderAnchorStartTag(node, {newContext}),
+        });
+      }
     }
   }
 

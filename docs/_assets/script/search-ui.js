@@ -1,6 +1,10 @@
 (function bootstrapEngineeringSearch(root) {
   'use strict';
 
+  const EXEMPT_SCHEME = /^(?:mailto|tel|javascript|data):/i;
+  const SAME_SITE_HOSTS = new Set(['trueruslan.ru', 'www.trueruslan.ru']);
+  const SITE_BASE = 'https://trueruslan.ru/';
+
   function isEditableTarget(target) {
     if (!target || typeof target !== 'object') return false;
     const tagName = String(target.tagName || '').toLowerCase();
@@ -35,16 +39,51 @@
     return new URL(document.referrer).href;
   }
 
-  function shouldOpenInNewContext(href) {
-    const value = String(href || '').trim();
-    if (!value || value.startsWith('#')) return false;
-    return !/^(?:mailto|tel|javascript|data):/i.test(value);
+  function runtimeBase() {
+    return root.document?.baseURI || root.location?.href || SITE_BASE;
   }
 
-  function applyNewTabPolicy(anchor) {
+  function shouldOpenInNewContext(href) {
+    if (root.TrueRuslanLinkPolicy?.shouldOpenInNewContext) {
+      return root.TrueRuslanLinkPolicy.shouldOpenInNewContext(href);
+    }
+
+    const value = String(href || '').trim();
+    if (!value || value.startsWith('#') || EXEMPT_SCHEME.test(value)) return false;
+    try {
+      const base = new URL(runtimeBase(), SITE_BASE);
+      const url = new URL(value, base);
+      if (!['http:', 'https:'].includes(url.protocol)) return false;
+      if (SAME_SITE_HOSTS.has(url.hostname.toLowerCase())) return false;
+      if (url.origin === base.origin) return false;
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function applyLinkPolicy(anchor) {
     if (!anchor || typeof anchor.getAttribute !== 'function' || typeof anchor.setAttribute !== 'function') return false;
+    if (root.TrueRuslanLinkPolicy?.normalizeAnchor) {
+      return root.TrueRuslanLinkPolicy.normalizeAnchor(anchor);
+    }
+
     const href = anchor.getAttribute('href') || anchor.href;
-    if (!shouldOpenInNewContext(href)) return false;
+    if (!shouldOpenInNewContext(href)) {
+      const target = anchor.getAttribute('target');
+      if (target) anchor.removeAttribute?.('target');
+      const currentRel = String(anchor.getAttribute('rel') || '').trim();
+      const nextRel = currentRel
+        .split(/\s+/)
+        .filter(Boolean)
+        .filter((token) => !['noopener', 'noreferrer'].includes(token.toLowerCase()))
+        .join(' ');
+      if (currentRel !== nextRel) {
+        if (nextRel) anchor.setAttribute('rel', nextRel);
+        else anchor.removeAttribute?.('rel');
+      }
+      return Boolean(target || currentRel !== nextRel);
+    }
 
     const tokens = [];
     const seen = new Set();
@@ -66,6 +105,8 @@
     return true;
   }
 
+  const applyNewTabPolicy = applyLinkPolicy;
+
   function createBackControl(document, rootObject = root) {
     const existing = document.querySelector('[data-tr-search-back="true"]');
     if (existing) return existing;
@@ -78,7 +119,7 @@
     anchor.setAttribute('aria-label', 'Вернуться на предыдущую страницу');
     anchor.setAttribute('title', 'Вернуться назад');
     anchor.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m11.5 5-5 5 5 5M7 10h7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Назад</span>';
-    applyNewTabPolicy(anchor);
+    applyLinkPolicy(anchor);
     document.body.prepend(anchor);
     return anchor;
   }
@@ -109,7 +150,7 @@
     );
     for (const container of resultContainers) {
       container.classList.add('tr-search-results');
-      for (const anchor of container.querySelectorAll('a')) applyNewTabPolicy(anchor);
+      for (const anchor of container.querySelectorAll('a')) applyLinkPolicy(anchor);
     }
 
     const resultItems = document.querySelectorAll(
@@ -118,7 +159,7 @@
     for (const item of resultItems) {
       if (item.closest('header, nav')) continue;
       if (item.querySelector('a')) item.classList.add('tr-search-result');
-      for (const anchor of item.querySelectorAll('a')) applyNewTabPolicy(anchor);
+      for (const anchor of item.querySelectorAll('a')) applyLinkPolicy(anchor);
     }
 
     const emptyStates = document.querySelectorAll('.dc-search-page__search-empty, [class*="no-result" i]');
@@ -170,6 +211,7 @@
     canReturnToReferrer,
     resolveBackHref,
     shouldOpenInNewContext,
+    applyLinkPolicy,
     applyNewTabPolicy,
     createBackControl,
     decorate,

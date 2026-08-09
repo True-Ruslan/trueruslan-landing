@@ -5,7 +5,8 @@ import {fileURLToPath} from 'node:url';
 import {globSync} from 'glob';
 import {parse} from 'parse5';
 
-const EXEMPT_SCHEME = /^(?:mailto|tel|javascript|data):/i;
+import {shouldOpenInNewContext} from './link-policy.js';
+
 const REQUIRED_CANONICAL_FILES = Object.freeze([
   'index.html',
   'resume/index.html',
@@ -37,12 +38,6 @@ function relTokens(node) {
   return new Set(String(getAttribute(node, 'rel') ?? '').toLowerCase().split(/\s+/).filter(Boolean));
 }
 
-function shouldOpenInNewContext(href) {
-  const value = String(href ?? '').trim();
-  if (!value || value.startsWith('#')) return false;
-  return !EXEMPT_SCHEME.test(value);
-}
-
 function containsLegacyLandingPath(value) {
   const raw = String(value ?? '').trim();
   if (!raw) return false;
@@ -60,16 +55,18 @@ function collectPolicyFindings(node, relativePath, findings) {
 
   if (node.tagName === 'a') {
     const href = getAttribute(node, 'href');
+    const target = getAttribute(node, 'target');
+    const rel = relTokens(node);
     if (containsLegacyLandingPath(href)) {
       findings.push(`${relativePath}: anchor still exposes legacy /landing namespace: ${href}`);
     }
     if (shouldOpenInNewContext(href)) {
-      const target = getAttribute(node, 'target');
-      const rel = relTokens(node);
-      if (target !== '_blank') findings.push(`${relativePath}: navigational anchor is not target=_blank: ${href}`);
+      if (target !== '_blank') findings.push(`${relativePath}: external anchor is not target=_blank: ${href}`);
       if (!rel.has('noopener') || !rel.has('noreferrer')) {
-        findings.push(`${relativePath}: navigational anchor lacks noopener/noreferrer: ${href}`);
+        findings.push(`${relativePath}: external anchor lacks noopener/noreferrer: ${href}`);
       }
+    } else if (target) {
+      findings.push(`${relativePath}: current-context anchor unexpectedly declares target=${target}: ${href}`);
     }
   }
 

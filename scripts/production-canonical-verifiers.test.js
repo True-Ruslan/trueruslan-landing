@@ -22,7 +22,7 @@ test('flagship production related-link checks select visible canonical links', (
   assert.doesNotMatch(source, /['"]landing\/projects\/livingworld['"]/);
 });
 
-test('Work with me production verifier follows canonical contextual routes and simplified Contacts', () => {
+test('Work with me production verifier follows canonical contextual routes, current-tab internals and simplified Contacts', () => {
   const source = read('production-work-with-me-smoke.cjs');
   for (const route of [
     'projects/portfolio-platform/',
@@ -39,7 +39,13 @@ test('Work with me production verifier follows canonical contextual routes and s
   assert.doesNotMatch(source, /['"]landing\/(?:projects|notes|about|resume|photos|bibliography|engineering-map)\//);
   assert.match(source, /Основные контакты/);
   assert.match(source, /https:\/\/t\.me\/TrueRuslan_Blog/);
-  assert.match(source, /mailto:contact@trueruslan\.ru/);
+  assert.match(source, /mailto:nemykin@true-ruslan\.ru/);
+  assert.doesNotMatch(source, /mailto:(?:contact@trueruslan\.ru|ruslan\.nemikin@gmail\.com)/i);
+  assert.match(source, /internal homepage CTA must stay in current tab/);
+  assert.match(source, /approved contextual CTA must stay in current tab/);
+  assert.match(source, /generated internal search result opened a new tab/);
+  assert.match(source, /generated internal search result did not navigate current tab/);
+  assert.match(source, /navigatedInCurrentTab:\s*true/);
   assert.match(source, /collaboration-rendered=\"handoff\"[^\n]*count\(\) === 0|count\(\) === 0[^\n]*collaboration-rendered=\"handoff\"/);
   assert.doesNotMatch(source, /Contacts canonical handoff missing/);
 });

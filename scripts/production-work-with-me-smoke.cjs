@@ -76,7 +76,7 @@ async function verifyWorkPage(page, url, locale) {
   assert(availabilityText.includes('2026-08-08'), `${locale}: canonical updated date missing`);
   assert(await page.locator('[data-status="limited"]').count() >= 2, `${locale}: limited states missing`);
   assert(await page.locator('a[href="https://t.me/TrueRuslan"]').count() >= 1, `${locale}: canonical Telegram missing`);
-  assert(await page.locator('a[href="mailto:ruslan.nemikin@gmail.com"]').count() >= 1, `${locale}: canonical email missing`);
+  assert(await page.locator('a[href="mailto:nemykin@true-ruslan.ru"]').count() >= 1, `${locale}: canonical email missing`);
   assertNoSalesRuntime(await page.content(), `${locale} Work with me`);
 
   const seo = await assertSeoPair(page, url, locale === 'ru' ? WORK_WITH_ME_EN_URL : WORK_WITH_ME_URL, locale);
@@ -95,7 +95,7 @@ async function verifyNoJavaScript(browser, url, locale) {
       assert(body.includes(token), `${locale} no-JS missing ${token}`);
     }
     assert(await page.locator('a[href="https://t.me/TrueRuslan"]').count() >= 1, `${locale} no-JS Telegram missing`);
-    assert(await page.locator('a[href="mailto:ruslan.nemikin@gmail.com"]').count() >= 1, `${locale} no-JS email missing`);
+    assert(await page.locator('a[href="mailto:nemykin@true-ruslan.ru"]').count() >= 1, `${locale} no-JS email missing`);
     assertNoSalesRuntime(await page.content(), `${locale} Work with me no-JS`);
     return {status: response.status(), semanticFallback: true};
   } finally {
@@ -108,6 +108,8 @@ async function verifyHomepage(page, url, locale) {
   assert(response?.ok(), `${locale} homepage HTTP ${response?.status() ?? 'none'}`);
   assert(await page.locator('[data-home-path]').count() === 3, `${locale}: homepage primary path count drifted`);
   assert(await page.locator('[data-home-collaboration="true"]').count() === 1, `${locale}: collaboration bridge missing/duplicated`);
+  const internalCta = page.locator('[data-home-collaboration="true"] a[href]').first();
+  assert(!(await internalCta.getAttribute('target')), `${locale}: internal homepage CTA must stay in current tab`);
   const ordering = await page.evaluate(() => {
     const flagship = document.querySelector('[data-home-flagship]')?.closest('section');
     const bridge = document.querySelector('[data-home-collaboration="true"]');
@@ -129,10 +131,10 @@ async function verifyContacts(page) {
   assert(await page.locator('[data-tr-collaboration-rendered="handoff"]').count() === 0, 'Contacts must not render the collaboration handoff');
 
   const telegram = page.locator('a[href="https://t.me/TrueRuslan_Blog"]');
-  const email = page.locator('a[href="mailto:contact@trueruslan.ru"]');
+  const email = page.locator('a[href="mailto:nemykin@true-ruslan.ru"]');
   assert(await telegram.count() >= 1, 'Contacts Telegram missing');
   assert(await email.count() >= 1, 'Contacts email missing');
-  assert(await telegram.first().getAttribute('target') === '_blank', 'Contacts Telegram must follow the global new-tab policy');
+  assert(await telegram.first().getAttribute('target') === '_blank', 'Contacts Telegram must follow the external new-tab policy');
   const telegramRel = new Set(String(await telegram.first().getAttribute('rel') || '').split(/\s+/).filter(Boolean));
   assert(telegramRel.has('noopener') && telegramRel.has('noreferrer'), 'Contacts Telegram lacks noopener/noreferrer');
   assert(!(await email.first().getAttribute('target')), 'Contacts mailto must stay in the current context');
@@ -147,7 +149,10 @@ async function verifyContextual(page) {
   for (const route of CONTEXTUAL_ALLOWED) {
     const response = await page.goto(new URL(route, APEX).href, {waitUntil: 'networkidle', timeout: 45000});
     assert(response?.ok(), `approved contextual route HTTP failure: ${route}`);
-    assert(await page.locator('[data-tr-contextual-collaboration="true"]').count() === 1, `approved contextual CTA missing/duplicated: ${route}`);
+    const cta = page.locator('[data-tr-contextual-collaboration="true"]');
+    assert(await cta.count() === 1, `approved contextual CTA missing/duplicated: ${route}`);
+    const anchor = cta.locator('a[href]').first();
+    assert(!(await anchor.getAttribute('target')), `approved contextual CTA must stay in current tab: ${route}`);
   }
   for (const route of CONTEXTUAL_FORBIDDEN) {
     const response = await page.goto(new URL(route, APEX).href, {waitUntil: 'networkidle', timeout: 45000});
@@ -166,8 +171,21 @@ async function verifySearch(page) {
   await button.click();
   await page.waitForFunction(() => [...document.querySelectorAll('a')]
     .some((link) => (link.getAttribute('href') || '').includes('en/work-with-me/')), null, {timeout: 10000});
-  assert(await page.locator('a[href*="en/work-with-me/"]').count() >= 1, 'generated search does not expose English Work with me');
-  return {query: 'inflated public service list', found: true};
+  const result = page.locator('a[href*="en/work-with-me/"]').first();
+  assert(await result.count() >= 1, 'generated search does not expose English Work with me');
+
+  const popupPromise = page.waitForEvent('popup', {timeout: 1500}).catch(() => null);
+  const navigationPromise = page.waitForURL((url) => url.pathname.endsWith('/en/work-with-me/'), {timeout: 10000})
+    .then(() => true)
+    .catch(() => false);
+  await result.click();
+  const [popup, navigated] = await Promise.all([popupPromise, navigationPromise]);
+  if (popup) {
+    await popup.close();
+    throw new Error('generated internal search result opened a new tab');
+  }
+  assert(navigated, `generated internal search result did not navigate current tab: ${page.url()}`);
+  return {query: 'inflated public service list', found: true, navigatedInCurrentTab: true};
 }
 
 async function main() {

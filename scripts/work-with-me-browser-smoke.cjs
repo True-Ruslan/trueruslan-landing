@@ -43,6 +43,10 @@ function assertNoSalesRuntime(html, label) {
   }
 }
 
+async function assertCurrentTab(anchor, label) {
+  if (await anchor.first().getAttribute('target')) throw new Error(`${label}: internal link must stay in the current tab`);
+}
+
 async function assertWorkPage(browser, baseUrl, locale, {javaScriptEnabled, viewport, screenshot}) {
   const copy = LOCALES[locale];
   const runtime = await createScenarioPage(browser, {viewport, javaScriptEnabled, colorScheme: 'dark', reducedMotion: 'reduce'});
@@ -64,7 +68,7 @@ async function assertWorkPage(browser, baseUrl, locale, {javaScriptEnabled, view
     }
 
     const telegram = page.locator('a[href="https://t.me/TrueRuslan"]');
-    const email = page.locator('a[href="mailto:ruslan.nemikin@gmail.com"]');
+    const email = page.locator('a[href="mailto:nemykin@true-ruslan.ru"]');
     if (await telegram.count() < 1 || await email.count() < 1) throw new Error(`${locale}: canonical direct handoff is missing`);
     const html = await page.content();
     assertNoSalesRuntime(html, `${locale} Work with me`);
@@ -95,8 +99,10 @@ async function assertHomepage(browser, baseUrl, locale) {
     if (!response?.ok()) throw new Error(`${locale}: homepage unavailable`);
     if (await page.locator('[data-home-path]').count() !== 3) throw new Error(`${locale}: homepage must preserve exactly three primary paths`);
     if (await page.locator('[data-home-collaboration="true"]').count() !== 1) throw new Error(`${locale}: homepage collaboration bridge must render exactly once`);
-    const href = await page.locator('.tr-home-collaboration__cta').getAttribute('href');
+    const cta = page.locator('.tr-home-collaboration__cta');
+    const href = await cta.getAttribute('href');
     if (!href || !new URL(href, page.url()).pathname.endsWith(copy.workHref)) throw new Error(`${locale}: homepage collaboration CTA route drifted: ${href}`);
+    await assertCurrentTab(cta, `${locale} homepage collaboration CTA`);
     const order = await page.evaluate(() => {
       const flagship = document.querySelector('[data-home-flagship]')?.closest('section');
       const collaboration = document.querySelector('[data-home-collaboration="true"]');
@@ -124,10 +130,10 @@ async function assertContacts(browser, baseUrl) {
     if (await page.locator('[data-tr-collaboration-rendered="handoff"]').count() !== 0) throw new Error('Contacts must not render the collaboration handoff');
 
     const telegram = page.locator('a[href="https://t.me/TrueRuslan_Blog"]');
-    const email = page.locator('a[href="mailto:contact@trueruslan.ru"]');
+    const email = page.locator('a[href="mailto:nemykin@true-ruslan.ru"]');
     if (await telegram.count() < 1) throw new Error('Contacts Telegram link missing');
     if (await email.count() < 1) throw new Error('Contacts email link missing');
-    if (await telegram.first().getAttribute('target') !== '_blank') throw new Error('Contacts Telegram must follow the global new-tab policy');
+    if (await telegram.first().getAttribute('target') !== '_blank') throw new Error('Contacts Telegram must follow the external new-tab policy');
     const telegramRel = new Set(String(await telegram.first().getAttribute('rel') || '').split(/\s+/));
     if (!telegramRel.has('noopener') || !telegramRel.has('noreferrer')) throw new Error('Contacts Telegram lacks noopener/noreferrer');
     if (await email.first().getAttribute('target')) throw new Error('Contacts mailto must stay in the current context');
@@ -148,9 +154,9 @@ async function assertContextualBoundaries(browser, baseUrl) {
     for (const route of ALLOWED_CONTEXTUAL) {
       const response = await page.goto(`${baseUrl}${route}`, {waitUntil: 'networkidle'});
       if (!response?.ok()) throw new Error(`contextual target unavailable: ${route}`);
-      if (await page.locator('[data-tr-contextual-collaboration="true"]').count() !== 1) {
-        throw new Error(`approved contextual CTA missing or duplicated: ${route}`);
-      }
+      const cta = page.locator('[data-tr-contextual-collaboration="true"]');
+      if (await cta.count() !== 1) throw new Error(`approved contextual CTA missing or duplicated: ${route}`);
+      await assertCurrentTab(cta.locator('a[href]').first(), `contextual CTA ${route}`);
     }
     for (const route of FORBIDDEN_CONTEXTUAL) {
       const response = await page.goto(`${baseUrl}${route}`, {waitUntil: 'networkidle'});
@@ -177,8 +183,22 @@ async function assertSearch(browser, baseUrl) {
     await button.click();
     await page.waitForFunction(() => [...document.querySelectorAll('a')]
       .some((link) => (link.getAttribute('href') || '').includes('en/work-with-me/')), null, {timeout: 7000});
-    if (await page.locator('a[href*="en/work-with-me/"]').count() < 1) throw new Error('generated search does not expose English Work with me');
-    return {query: 'inflated public service list', found: true};
+    const result = page.locator('a[href*="en/work-with-me/"]').first();
+    if (await result.count() < 1) throw new Error('generated search does not expose English Work with me');
+
+    const popupPromise = page.waitForEvent('popup', {timeout: 1500}).catch(() => null);
+    const navigationPromise = page.waitForURL((url) => url.pathname.endsWith('/en/work-with-me/'), {timeout: 7000})
+      .then(() => true)
+      .catch(() => false);
+    await result.click();
+    const [popup, navigated] = await Promise.all([popupPromise, navigationPromise]);
+    if (popup) {
+      await popup.close();
+      throw new Error('generated internal search result opened a new tab');
+    }
+    if (!navigated) throw new Error(`generated internal search result did not navigate current tab: ${page.url()}`);
+
+    return {query: 'inflated public service list', found: true, navigatedInCurrentTab: true};
   } finally {
     await runtime.close();
   }

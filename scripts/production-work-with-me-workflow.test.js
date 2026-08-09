@@ -36,8 +36,15 @@ test('production Work with me smoke remains SHA-bound and checks the bounded pro
     'CONTEXTUAL_FORBIDDEN',
     'javaScriptEnabled: false',
     'https://t.me/TrueRuslan',
-    'mailto:ruslan.nemikin@gmail.com',
+    'mailto:nemykin@true-ruslan.ru',
+    'internal homepage CTA must stay in current tab',
+    'approved contextual CTA must stay in current tab',
+    'generated internal search result opened a new tab',
+    'generated internal search result did not navigate current tab',
+    'navigatedInCurrentTab: true',
     'generated search does not expose English Work with me',
     'work-with-me-production-summary.json',
   ]) assert.ok(smoke.includes(literal), `production Work with me smoke missing contract: ${literal}`);
+
+  assert.doesNotMatch(smoke, /mailto:(?:contact@trueruslan\.ru|ruslan\.nemikin@gmail\.com)/i);
 });
