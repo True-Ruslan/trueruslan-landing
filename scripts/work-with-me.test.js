@@ -78,18 +78,19 @@ test('Work with me is the thirteenth controlled RU EN route pair with bounded me
   assert.match(en?.title ?? '', /Work with me/i);
 });
 
-test('primary navigation keeps collaboration and direct Contacts visible while secondary content stays out of the header', () => {
-  const ruExpected = ['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне', 'Контакты'];
+test('primary navigation stays bounded while collaboration is primary and Contacts remains secondary', () => {
+  const ruExpected = ['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне'];
   const enExpected = ['Projects', 'Experience', 'Writing', 'Work with me', 'About'];
   assert.deepEqual(navigationTexts('templates/index.html'), ruExpected);
   assert.deepEqual(tocHeaderTexts(), ruExpected);
   assert.deepEqual(navigationTexts('templates/index.en.html'), enExpected);
 
   const toc = read('docs/toc.yaml');
-  for (const secondary of ['Сейчас', 'Engineering Map', 'Engineering Notes', 'Публикации', 'Источники', 'Фото']) {
+  for (const secondary of ['Сейчас', 'Engineering Map', 'Engineering Notes', 'Публикации', 'Источники', 'Фото', 'Контакты']) {
     assert.match(toc, new RegExp(`name: ${secondary}`));
   }
-  assert.match(toc, /name: Контакты/);
+  assert.equal(navigationTexts('templates/index.html').includes('Контакты'), false);
+  assert.equal(tocHeaderTexts().includes('Контакты'), false);
 });
 
 test('homepage collaboration bridge follows Writing and precedes Personal in the C2 scan path', async () => {
