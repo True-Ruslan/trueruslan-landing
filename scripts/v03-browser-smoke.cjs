@@ -29,8 +29,9 @@ async function assertCommandPalette(page) {
   const palette = page.locator('.tr-command-palette');
   await palette.waitFor({state: 'visible'});
   const input = palette.locator('[data-tr-command-input]');
-  const inputFocused = await input.evaluate((node) => document.activeElement === node);
-  if (!inputFocused) throw new Error('Command palette did not move focus to its search input.');
+  if (!(await input.evaluate((node) => document.activeElement === node))) {
+    throw new Error('Command palette did not move focus to its search input.');
+  }
 
   await input.fill('Поиск');
   const searchLink = palette.locator('a', {hasText: 'Поиск по сайту'});
@@ -42,8 +43,9 @@ async function assertCommandPalette(page) {
 
   await page.keyboard.press('Escape');
   await page.waitForFunction(() => document.querySelector('.tr-command-palette')?.hidden === true);
-  const focusRestored = await trigger.evaluate((node) => document.activeElement === node);
-  if (!focusRestored) throw new Error('Command palette did not restore focus to the trigger after Escape.');
+  if (!(await trigger.evaluate((node) => document.activeElement === node))) {
+    throw new Error('Command palette did not restore focus to the trigger after Escape.');
+  }
 }
 
 async function checkPage(browser, baseUrl, {
@@ -54,6 +56,8 @@ async function checkPage(browser, baseUrl, {
   axe = true,
   viewport = VIEWPORTS.compactDesktop,
 }) {
+  if (pathname.includes('/landing/')) throw new Error(`${slug}: browser smoke must use canonical public routes: ${pathname}`);
+
   const runtime = await createScenarioPage(browser, {viewport, colorScheme: 'dark', reducedMotion: 'reduce'});
   const {page} = runtime;
   const diagnostics = installPageDiagnostics(page, {
@@ -87,8 +91,9 @@ async function checkPage(browser, baseUrl, {
 async function assertProjectTimeline(page, slug) {
   const timeline = page.locator('.tr-project-timeline');
   await timeline.waitFor({state: 'visible'});
-  const milestones = await timeline.locator('.tr-project-timeline__item').count();
-  if (milestones < 3) throw new Error(`${slug} timeline has fewer than three milestones.`);
+  if (await timeline.locator('.tr-project-timeline__item').count() < 3) {
+    throw new Error(`${slug} timeline has fewer than three milestones.`);
+  }
   if (await timeline.locator('.tr-project-timeline__item--current').count() !== 1) {
     throw new Error(`${slug} timeline must expose exactly one current milestone.`);
   }
@@ -102,9 +107,7 @@ async function assertOrderedHeadings(page, slug, orderedHeadings) {
   let previous = -1;
   for (const expected of orderedHeadings) {
     const index = headings.findIndex((heading, candidate) => candidate > previous && heading.includes(expected));
-    if (index === -1) {
-      throw new Error(`${slug} is missing ordered section ${expected}; found ${headings.join(' | ')}`);
-    }
+    if (index === -1) throw new Error(`${slug} is missing ordered section ${expected}; found ${headings.join(' | ')}`);
     previous = index;
   }
 }
@@ -123,27 +126,21 @@ async function assertNormalizedCaseStudy(page, {
   const status = page.locator(`[data-project-status="${slug}"]`).first();
   await status.waitFor({state: 'visible'});
   const actualStatus = (await status.innerText()).trim();
-  const expectedStatus = expectedProjectStatus(slug);
-  if (actualStatus !== expectedStatus) {
-    throw new Error(`${slug} case-study status drifted from Project Registry: ${actualStatus} != ${expectedStatus}`);
+  if (actualStatus !== expectedProjectStatus(slug)) {
+    throw new Error(`${slug} case-study status drifted from Project Registry: ${actualStatus}`);
   }
 
   await assertOrderedHeadings(page, slug, orderedHeadings);
-
   const text = await document.innerText();
   for (const marker of requiredText) {
     if (!text.includes(marker)) throw new Error(`${slug} is missing boundary marker ${marker}.`);
   }
-
   for (const fragment of relatedHrefFragments) {
-    const link = document.locator(`a[href*="${fragment}"]`).first();
-    await link.waitFor({state: 'visible'});
+    await document.locator(`a[href*="${fragment}"]`).first().waitFor({state: 'visible'});
   }
 
   if (requireTimeline) await assertProjectTimeline(page, slug);
-  if (requireEvidence) {
-    await page.locator(`[data-project-evidence="${slug}"]`).waitFor({state: 'visible'});
-  }
+  if (requireEvidence) await page.locator(`[data-project-evidence="${slug}"]`).waitFor({state: 'visible'});
 }
 
 async function main() {
@@ -161,7 +158,7 @@ async function main() {
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'projects-registry-status',
-      pathname: '/landing/projects/',
+      pathname: '/projects/',
       heading: 'Проекты',
       verify: async (page) => {
         for (const slug of ['livingworld', 'notchhub', 'node-zero', 'portfolio-platform']) {
@@ -171,21 +168,23 @@ async function main() {
             throw new Error(`${slug} status on Projects hub drifted from Project Registry.`);
           }
         }
-        const caseStudyHref = await page.locator('a[href*="projects/portfolio-platform"]').first().getAttribute('href');
-        if (!caseStudyHref || !new URL(caseStudyHref, page.url()).pathname.endsWith('/landing/projects/portfolio-platform/')) {
-          throw new Error(`Projects hub does not expose the clean portfolio platform route: ${caseStudyHref || 'missing'}`);
+        const href = await page.locator('a[href*="projects/portfolio-platform"]').first().getAttribute('href');
+        const pathname = href ? new URL(href, page.url()).pathname : '';
+        if (!pathname.endsWith('/projects/portfolio-platform/') || pathname.includes('/landing/')) {
+          throw new Error(`Projects hub does not expose canonical portfolio platform route: ${href || 'missing'}`);
         }
       },
     });
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'now',
-      pathname: '/landing/now/',
+      pathname: '/now/',
       heading: 'Сейчас',
       verify: async (page) => {
         await page.locator('[data-tr-now]').waitFor({state: 'visible'});
-        const activeCards = await page.locator('[data-tr-now] .tr-active-card').count();
-        if (activeCards < 1) throw new Error('Now page contains no registry-derived active project cards.');
+        if (await page.locator('[data-tr-now] .tr-active-card').count() < 1) {
+          throw new Error('Now page contains no registry-derived active project cards.');
+        }
         const nowText = await page.locator('[data-tr-now]').innerText();
         for (const slug of ['livingworld', 'node-zero', 'portfolio-platform']) {
           if (!nowText.includes(expectedProjectStatus(slug))) {
@@ -198,19 +197,17 @@ async function main() {
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'notes',
-      pathname: '/landing/notes/',
+      pathname: '/notes/',
       heading: 'Engineering Notes',
       verify: async (page, baseUrl) => {
         const feedLink = page.locator('a', {hasText: 'Подписаться на Atom feed'}).first();
         await feedLink.waitFor({state: 'visible'});
-        const rawHref = await feedLink.getAttribute('href');
-        if (rawHref !== 'feed.xml') {
-          throw new Error(`Engineering Notes feed link must stay inside deployment base: ${rawHref || 'missing href'}`);
+        if (await feedLink.getAttribute('href') !== 'feed.xml') {
+          throw new Error('Engineering Notes feed link escaped the deployment base.');
         }
         const feedResponse = await page.request.get(`${baseUrl}/feed.xml`);
         if (!feedResponse.ok()) throw new Error(`Atom feed failed to load: HTTP ${feedResponse.status()}`);
-        const feedBody = await feedResponse.text();
-        if (!feedBody.includes('<title>TrueRuslan Engineering Notes</title>')) {
+        if (!(await feedResponse.text()).includes('<title>TrueRuslan Engineering Notes</title>')) {
           throw new Error('Atom feed identity marker is missing.');
         }
       },
@@ -218,89 +215,40 @@ async function main() {
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'note-metadata',
-      pathname: '/landing/notes/server-authoritative-ai-npcs/',
+      pathname: '/notes/server-authoritative-ai-npcs/',
       heading: 'Проектирование server-authoritative AI NPC pipeline',
       verify: async (page) => {
         await page.locator('.tr-note-meta').waitFor({state: 'visible'});
         await page.locator('.tr-note-nav').waitFor({state: 'visible'});
-        const relatedLink = page.locator('.tr-note-nav a').first();
-        const rawHref = await relatedLink.getAttribute('href');
-        if (!rawHref || !rawHref.startsWith('landing/notes/')) {
-          throw new Error(`Note navigation is not deployment-base-safe: ${rawHref || 'missing href'}`);
+        const rawHref = await page.locator('.tr-note-nav a').first().getAttribute('href');
+        const pathname = rawHref ? new URL(rawHref, page.url()).pathname : '';
+        if (!pathname.includes('/notes/') || pathname.includes('/landing/')) {
+          throw new Error(`Note navigation is not canonical/deployment-base-safe: ${rawHref || 'missing href'}`);
         }
       },
     });
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'normalized-livingworld',
-      pathname: '/landing/projects/livingworld/',
+      pathname: '/projects/livingworld/',
       heading: 'VillAIgence',
       verify: async (page) => assertNormalizedCaseStudy(page, {
         slug: 'livingworld',
-        orderedHeadings: [
-          'Проблема',
-          'Ограничения',
-          'Текущая lifecycle',
-          'Архитектура',
-          'альтернативы',
-          'Что подтверждено',
-          'Известные ограничения',
-          'Следующий принятый шаг',
-          'Связанные материалы',
-          'Что бы я сделал иначе',
-        ],
-        requiredText: [
-          '0.2.0+1.21.1',
-          '7 PASS / 0 FAIL',
-          'VAI-M2-INST-005',
-          'VAI-CONCUR-004',
-          'PR #110',
-          'PR #123',
-          'PR #125',
-          'Draft/RED',
-          'SYSTEM_OBSERVED',
-        ],
-        relatedHrefFragments: [
-          'server-authoritative-ai-npcs',
-          'source-tests-to-installed-acceptance',
-          'restart-persistence-is-a-product-contract',
-        ],
+        orderedHeadings: ['Проблема', 'Ограничения', 'Текущая lifecycle', 'Архитектура', 'альтернативы', 'Что подтверждено', 'Известные ограничения', 'Следующий принятый шаг', 'Связанные материалы', 'Что бы я сделал иначе'],
+        requiredText: ['0.2.0+1.21.1', '7 PASS / 0 FAIL', 'VAI-M2-INST-005', 'VAI-CONCUR-004', 'PR #110', 'PR #123', 'PR #125', 'Draft/RED', 'SYSTEM_OBSERVED'],
+        relatedHrefFragments: ['server-authoritative-ai-npcs', 'source-tests-to-installed-acceptance', 'restart-persistence-is-a-product-contract'],
       }),
     });
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'normalized-vlezet',
-      pathname: '/landing/projects/vlezet/',
+      pathname: '/projects/vlezet/',
       heading: 'Vlezet',
       verify: async (page) => assertNormalizedCaseStudy(page, {
         slug: 'vlezet',
-        orderedHeadings: [
-          'Проблема',
-          'Ограничения',
-          'Текущая lifecycle',
-          'Архитектура',
-          'альтернативы',
-          'Что подтверждено',
-          'Известные ограничения',
-          'Следующий принятый шаг',
-          'Связанные материалы',
-          'Что бы я сделал иначе',
-        ],
-        requiredText: [
-          'M7.8B',
-          'M7.8C',
-          'PR #42',
-          'PR #44',
-          'PR #45',
-          'PR #52',
-          'usefulness acceptance',
-          'Assisted Tracing',
-          'ACTIVE DEVELOPMENT',
-        ],
-        relatedHrefFragments: [
-          'probabilistic-proposals-deterministic-authority',
-          'green-ci-is-not-product-verification',
-        ],
+        orderedHeadings: ['Проблема', 'Ограничения', 'Текущая lifecycle', 'Архитектура', 'альтернативы', 'Что подтверждено', 'Известные ограничения', 'Следующий принятый шаг', 'Связанные материалы', 'Что бы я сделал иначе'],
+        requiredText: ['M7.8B', 'M7.8C', 'PR #42', 'PR #44', 'PR #45', 'PR #52', 'usefulness acceptance', 'Assisted Tracing', 'ACTIVE DEVELOPMENT'],
+        relatedHrefFragments: ['probabilistic-proposals-deterministic-authority', 'green-ci-is-not-product-verification'],
       }),
     });
 
@@ -310,34 +258,9 @@ async function main() {
       heading: 'VillAIgence',
       verify: async (page) => assertNormalizedCaseStudy(page, {
         slug: 'livingworld',
-        orderedHeadings: [
-          'Problem',
-          'Constraints',
-          'Current lifecycle',
-          'Architecture',
-          'Alternatives',
-          'Evidence boundary',
-          'Known limitations',
-          'Next accepted milestone',
-          'Related material',
-          'What I would change',
-        ],
-        requiredText: [
-          '0.2.0+1.21.1',
-          '7 PASS / 0 FAIL',
-          'VAI-M2-INST-005',
-          'VAI-CONCUR-004',
-          'PR #110',
-          'PR #123',
-          'PR #125',
-          'Draft/RED',
-          'SYSTEM_OBSERVED',
-        ],
-        relatedHrefFragments: [
-          'server-authoritative-ai-npcs',
-          'llm-output-is-a-protocol-boundary',
-          'landing/projects/livingworld',
-        ],
+        orderedHeadings: ['Problem', 'Constraints', 'Current lifecycle', 'Architecture', 'Alternatives', 'Evidence boundary', 'Known limitations', 'Next accepted milestone', 'Related material', 'What I would change'],
+        requiredText: ['0.2.0+1.21.1', '7 PASS / 0 FAIL', 'VAI-M2-INST-005', 'VAI-CONCUR-004', 'PR #110', 'PR #123', 'PR #125', 'Draft/RED', 'SYSTEM_OBSERVED'],
+        relatedHrefFragments: ['server-authoritative-ai-npcs', 'llm-output-is-a-protocol-boundary', '/projects/livingworld'],
         requireTimeline: false,
         requireEvidence: false,
       }),
@@ -349,7 +272,7 @@ async function main() {
     ]) {
       await checkPage(browser, serverRuntime.baseUrl, {
         slug: `timeline-${project.slug}`,
-        pathname: `/landing/projects/${project.slug}/`,
+        pathname: `/projects/${project.slug}/`,
         heading: project.heading,
         verify: async (page) => {
           await assertProjectTimeline(page, project.slug);
@@ -361,7 +284,8 @@ async function main() {
               if (!evidenceText.includes(marker)) throw new Error(`Portfolio platform evidence is missing ${marker}.`);
             }
             const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
-            if (!canonical || !new URL(canonical).pathname.endsWith('/landing/projects/portfolio-platform/')) {
+            const pathname = canonical ? new URL(canonical).pathname : '';
+            if (!pathname.endsWith('/projects/portfolio-platform/') || pathname.includes('/landing/')) {
               throw new Error(`Portfolio platform canonical route is wrong: ${canonical || 'missing'}`);
             }
           }
@@ -380,7 +304,8 @@ async function main() {
           throw new Error('English portfolio platform status drifted from Project Registry.');
         }
         const alternateRu = await page.locator('link[rel="alternate"][hreflang="ru"]').getAttribute('href');
-        if (!alternateRu || !new URL(alternateRu).pathname.endsWith('/landing/projects/portfolio-platform/')) {
+        const pathname = alternateRu ? new URL(alternateRu).pathname : '';
+        if (!pathname.endsWith('/projects/portfolio-platform/') || pathname.includes('/landing/')) {
           throw new Error(`English portfolio platform lacks the correct RU alternate: ${alternateRu || 'missing'}`);
         }
       },
