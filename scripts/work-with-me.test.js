@@ -38,7 +38,7 @@ test('RU and EN Work with me pages keep reusable collaboration truth out of Mark
     assert.match(source, /data-tr-collaboration-availability/);
     assert.match(source, /data-tr-collaboration-handoff/);
     for (const pattern of expected) assert.match(source, pattern);
-    assert.doesNotMatch(source, /ruslan\.nemikin@gmail\.com|https:\/\/t\.me\/TrueRuslan/);
+    assert.doesNotMatch(source, /nemykin@true-ruslan\.ru|ruslan\.nemikin@gmail\.com|https:\/\/t\.me\/TrueRuslan/);
     assert.doesNotMatch(source, /<form\b|\b(?:₽|руб(?:\.|лей)?|USD|EUR|\$\d|€\d)/i);
   }
 });
@@ -56,7 +56,7 @@ test('collaboration renderer derives localized availability and direct handoff f
     assert.match(availability, /2026-08-08/);
     assert.match(handoff, /data-tr-collaboration-rendered="handoff"/);
     assert.match(handoff, /https:\/\/t\.me\/TrueRuslan/);
-    assert.match(handoff, /mailto:ruslan\.nemikin@gmail\.com/);
+    assert.match(handoff, /mailto:nemykin@true-ruslan\.ru/);
     assert.doesNotMatch(`${availability}${handoff}`, /<form\b|public price|прайс|hourly|за час|\b(?:₽|USD|EUR)\b/i);
   }
 });
@@ -127,7 +127,7 @@ test('Contacts exposes a simple direct handoff independent of the Work with me c
   const source = read('docs/landing/contacts.md');
   assert.match(source, /## Основные контакты/);
   assert.match(source, /\[@TrueRuslan_Blog\]\(https:\/\/t\.me\/TrueRuslan_Blog\)/);
-  assert.match(source, /\[contact@trueruslan\.ru\]\(mailto:contact@trueruslan\.ru\)/);
+  assert.match(source, /\[nemykin@true-ruslan\.ru\]\(mailto:nemykin@true-ruslan\.ru\)/);
   assert.doesNotMatch(source, /data-tr-collaboration-handoff/);
   assert.doesNotMatch(source, /Описать задачу/i);
   assert.match(source, /GitHub|Habr|LinkedIn/);
