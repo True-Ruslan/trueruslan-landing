@@ -2,11 +2,22 @@
   'use strict';
 
   const EXEMPT_SCHEME = /^(?:mailto|tel|javascript|data):/i;
+  const POLICY_REL_TOKENS = new Set(['noopener', 'noreferrer']);
+  const SAME_SITE_HOSTS = new Set(['trueruslan.ru', 'www.trueruslan.ru']);
+  const SITE_BASE = 'https://trueruslan.ru/';
 
   function shouldOpenInNewContext(href) {
     const value = String(href || '').trim();
     if (!value || value.startsWith('#')) return false;
-    return !EXEMPT_SCHEME.test(value);
+    if (EXEMPT_SCHEME.test(value)) return false;
+
+    try {
+      const url = new URL(value, SITE_BASE);
+      if (!['http:', 'https:'].includes(url.protocol)) return false;
+      return !SAME_SITE_HOSTS.has(url.hostname.toLowerCase());
+    } catch {
+      return false;
+    }
   }
 
   function mergeRelTokens(value) {
@@ -18,7 +29,7 @@
       seen.add(normalized);
       tokens.push(token);
     }
-    for (const required of ['noopener', 'noreferrer']) {
+    for (const required of POLICY_REL_TOKENS) {
       if (seen.has(required)) continue;
       seen.add(required);
       tokens.push(required);
@@ -26,15 +37,34 @@
     return tokens.join(' ');
   }
 
+  function stripPolicyRelTokens(value) {
+    return String(value || '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .filter((token) => !POLICY_REL_TOKENS.has(token.toLowerCase()))
+      .join(' ');
+  }
+
   function normalizeAnchor(anchor) {
     if (!anchor || typeof anchor.getAttribute !== 'function' || typeof anchor.setAttribute !== 'function') return false;
     const href = anchor.getAttribute('href') || anchor.href || '';
-    if (!shouldOpenInNewContext(href)) {
-      if (String(href).trim().startsWith('#') && anchor.getAttribute('target') === '_blank') {
+    const newContext = shouldOpenInNewContext(href);
+
+    if (!newContext) {
+      let changed = false;
+      if (anchor.getAttribute('target')) {
         anchor.removeAttribute?.('target');
-        return true;
+        changed = true;
       }
-      return false;
+      const currentRel = anchor.getAttribute('rel');
+      const nextRel = stripPolicyRelTokens(currentRel);
+      if (currentRel && currentRel !== nextRel) {
+        if (nextRel) anchor.setAttribute('rel', nextRel);
+        else anchor.removeAttribute?.('rel');
+        changed = true;
+      }
+      return changed;
     }
 
     let changed = false;
