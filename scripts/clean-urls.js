@@ -91,10 +91,42 @@ export function toDirectoryUrl(value, siteUrl = DEFAULT_SITE_URL) {
   return `${cleanPathname(pathname)}${suffix}`;
 }
 
+function projectLandingPathname(pathname) {
+  if (pathname.startsWith('/landing/')) return `/${pathname.slice('/landing/'.length)}`;
+  if (pathname.startsWith('landing/')) return pathname.slice('landing/'.length);
+  if (pathname.startsWith('./landing/')) return `./${pathname.slice('./landing/'.length)}`;
+  return pathname;
+}
+
+export function toPublicRoute(value, siteUrl = DEFAULT_SITE_URL) {
+  const directoryUrl = toDirectoryUrl(value, siteUrl);
+
+  if (/^[a-z][a-z\d+.-]*:/i.test(directoryUrl)) {
+    let parsed;
+    let site;
+    try {
+      parsed = new URL(directoryUrl);
+      site = new URL(normalizeSiteUrl(siteUrl));
+    } catch {
+      return directoryUrl;
+    }
+    if (!/^https?:$/.test(parsed.protocol) || parsed.origin !== site.origin) return directoryUrl;
+    if (!parsed.pathname.startsWith(site.pathname)) return directoryUrl;
+
+    const relativePath = parsed.pathname.slice(site.pathname.length);
+    parsed.pathname = `${site.pathname}${projectLandingPathname(relativePath)}`;
+    return parsed.toString();
+  }
+
+  if (directoryUrl.startsWith('//')) return directoryUrl;
+  const {pathname, suffix} = splitSuffix(directoryUrl);
+  return `${projectLandingPathname(pathname)}${suffix}`;
+}
+
 const URL_TOKEN_PATTERN = /https?:\/\/[^\s"'<>\\]+|(?:\.\.?\/|\/)?(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.html(?:[?#][^\s"'<>\\]*)?/g;
 
 export function rewriteUrlReferences(content, siteUrl = DEFAULT_SITE_URL) {
-  return String(content).replace(URL_TOKEN_PATTERN, (value) => toDirectoryUrl(value, siteUrl));
+  return String(content).replace(URL_TOKEN_PATTERN, (value) => toPublicRoute(value, siteUrl));
 }
 
 function incrementBaseValue(value) {
@@ -113,6 +145,15 @@ export function incrementRelativeBase(html) {
         `${prefix}${pathname}/${depthPrefix}${Number(depth) + 1}${basePrefix}${incrementBaseValue(routerBase)}${suffix}`
       ),
     );
+}
+
+export function projectLandingCanonicalHtml(html) {
+  return String(html).replace(
+    /("router"\s*:\s*\{[^{}]*?"pathname"\s*:\s*")landing\/([^"/]+(?:\/[^"/]+)*)("\s*,\s*"depth"\s*:\s*)(\d+)(\s*,[^{}]*?"base"\s*:\s*")((?:\.\.\/)+|\.\/)(")/g,
+    (_match, prefix, pathname, depthPrefix, depth, basePrefix, routerBase, suffix) => (
+      `${prefix}${pathname}/${depthPrefix}${depth}${basePrefix}${routerBase}${suffix}`
+    ),
+  );
 }
 
 function escapeHtml(value) {
@@ -137,7 +178,7 @@ function patchCustomRuntime(content) {
     )
     .replace(
       'if (path.endsWith(`/landing/${page}.html`)) return page;',
-      'if (path.endsWith(`/landing/${page}`) || path.endsWith(`/landing/${page}.html`)) return page;',
+      'if (path.endsWith(`/${page}/`) || path.endsWith(`/${page}`) || path.endsWith(`/landing/${page}`) || path.endsWith(`/landing/${page}.html`)) return page;',
     )
     .replace(
       "return new URL('../assets/documents/cv.pdf', currentHref).href;",
@@ -155,9 +196,12 @@ function patchCustomRuntime(content) {
 
 export function patchSearchWorker(content) {
   const source = 'link: `${base.replace(/\\/?$/, "")}/${entry.ref.replace(/&\\/?/, "")}`,';
-  const target = 'link: `${base.replace(/\\/?$/, "")}/${entry.ref.replace(/&\\/?/, "").replace(/index\\.html$/, "").replace(/\\.html$/, "/")}`,';
+  const target = 'link: `${base.replace(/\\/?$/, "")}/${entry.ref.replace(/&\\/?/, "").replace(/^landing\\//, "").replace(/index\\.html$/, "").replace(/\\.html$/, "/")}`,';
   const value = String(content);
   if (value.includes(target)) return value;
+
+  const legacyTarget = 'link: `${base.replace(/\\/?$/, "")}/${entry.ref.replace(/&\\/?/, "").replace(/index\\.html$/, "").replace(/\\.html$/, "/")}`,';
+  if (value.includes(legacyTarget)) return value.replace(legacyTarget, target);
 
   const patched = value.replace(source, target);
   if (patched === value) {
@@ -202,15 +246,29 @@ export function publishDirectoryRoutes({outputDir, siteUrl} = {}) {
   const routes = [];
   for (const sourcePath of sourcePages) {
     const relativeSource = path.relative(normalizedOutput, sourcePath).replaceAll(path.sep, '/');
-    const route = toDirectoryUrl(relativeSource, resolvedSiteUrl);
+    const route = toPublicRoute(relativeSource, resolvedSiteUrl);
     if (!route.endsWith('/')) throw new Error(`Unable to derive directory route for ${relativeSource}`);
 
-    const targetPath = path.join(normalizedOutput, route, 'index.html');
     const sourceHtml = fs.readFileSync(sourcePath, 'utf8');
-    const cleanHtml = incrementRelativeBase(rewriteUrlReferences(sourceHtml, resolvedSiteUrl));
+    const rewrittenHtml = rewriteUrlReferences(sourceHtml, resolvedSiteUrl);
+    const landingSource = relativeSource.startsWith('landing/');
+    const cleanHtml = landingSource
+      ? projectLandingCanonicalHtml(rewrittenHtml)
+      : incrementRelativeBase(rewrittenHtml);
+    const targetPath = path.join(normalizedOutput, route, 'index.html');
     fs.mkdirSync(path.dirname(targetPath), {recursive: true});
     fs.writeFileSync(targetPath, cleanHtml, 'utf8');
-    fs.writeFileSync(sourcePath, createLegacyRedirect(route, resolvedSiteUrl), 'utf8');
+
+    const redirect = createLegacyRedirect(route, resolvedSiteUrl);
+    fs.writeFileSync(sourcePath, redirect, 'utf8');
+
+    if (landingSource) {
+      const legacyDirectoryRoute = toDirectoryUrl(relativeSource, resolvedSiteUrl);
+      const legacyDirectoryPath = path.join(normalizedOutput, legacyDirectoryRoute, 'index.html');
+      fs.mkdirSync(path.dirname(legacyDirectoryPath), {recursive: true});
+      fs.writeFileSync(legacyDirectoryPath, redirect, 'utf8');
+    }
+
     routes.push(route);
   }
 
