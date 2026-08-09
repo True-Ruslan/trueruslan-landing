@@ -54,6 +54,17 @@ test('dynamic search navigation keeps same-site links current-context and extern
   }
 });
 
+test('search fallback treats the active deployment origin as internal', () => {
+  const location = new URL('http://127.0.0.1:4192/_search/ru/');
+  const api = loadApi({location});
+  const result = fakeAnchor('http://127.0.0.1:4192/en/work-with-me/', 'noopener noreferrer', '_blank');
+
+  assert.equal(api.shouldOpenInNewContext(result.href), false);
+  assert.equal(api.applyLinkPolicy(result), true);
+  assert.equal(result.attrs.has('target'), false);
+  assert.equal(result.attrs.has('rel'), false);
+});
+
 test('search UI delegates link ownership to the shared runtime policy when available', () => {
   const calls = [];
   const shared = {
