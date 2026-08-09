@@ -19,7 +19,7 @@ const BEACON_SRC = 'https://static.cloudflareinsights.com/beacon.min.js';
 const ROUTES = Object.freeze([
   '/',
   '/en/',
-  '/landing/projects/livingworld/',
+  '/projects/livingworld/',
   '/en/projects/livingworld/',
   '/_search/ru/',
 ]);
