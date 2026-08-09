@@ -28,7 +28,7 @@ test('canonical collaboration manifest matches the approved private-practice bou
     },
     contact: {
       telegram: 'https://t.me/TrueRuslan',
-      email: 'ruslan.nemikin@gmail.com',
+      email: 'nemykin@true-ruslan.ru',
     },
     pricing: 'estimate-only',
     legalFormat: 'self-employed-receipt-supported',
