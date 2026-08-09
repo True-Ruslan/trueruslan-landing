@@ -47,3 +47,9 @@ test('Photo Stories explicitly separates canonical /photos from legacy /landing/
   assert.match(source, /page\.goto\(`\$\{baseUrl\}\$\{LEGACY_ROUTE\}`/);
   assert.match(source, /waitForURL\(new RegExp\(`\$\{CANONICAL_ROUTE/);
 });
+
+test('v0.3 related-material acceptance selects a visible link before choosing the first match', () => {
+  const source = read('v03-browser-smoke.cjs');
+  assert.match(source, /locator\(`a\[href\*=\"\$\{fragment\}\"\]:visible`\)\.first\(\)\.waitFor\(\{state: 'visible'\}\)/);
+  assert.doesNotMatch(source, /locator\(`a\[href\*=\"\$\{fragment\}\"\]`\)\.first\(\)\.waitFor/);
+});
