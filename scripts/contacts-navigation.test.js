@@ -10,8 +10,9 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), 'u
 test('Contacts is a first-class primary navigation item in Diplodoc and standalone home', () => {
   const toc = read('docs/toc.yaml');
   const home = read('templates/index.html');
+  const leftItems = toc.split('    leftItems:\n', 2)[1]?.split('    rightItems:\n', 1)[0] ?? '';
 
-  assert.match(toc, /header:[\s\S]*leftItems:[\s\S]*- text: Контакты\n\s+type: link\n\s+url: landing\/contacts\.html/);
+  assert.match(leftItems, /- text: Контакты\n\s+type: link\n\s+url: landing\/contacts\.html/);
   assert.match(home, /<nav class="tr-site-nav"[^>]*>[\s\S]*<a href="landing\/contacts\.html">Контакты<\/a>[\s\S]*<\/nav>/);
 });
 
