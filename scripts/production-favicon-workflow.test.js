@@ -17,20 +17,22 @@ test('production workflow runs the favicon contract only after a deployable even
   assert.match(workflow, /run:\s*node scripts\/production-favicon-smoke\.cjs/);
 });
 
-test('production favicon smoke checks the root SVG and rendered root-absolute links', () => {
+test('production favicon smoke checks the root SVG and canonical representative pages', () => {
   assert.ok(fs.existsSync(SMOKE), 'missing production favicon smoke');
   const source = fs.readFileSync(SMOKE, 'utf8');
 
   for (const marker of [
-    'https://trueruslan.ru/',
+    '{APEX, RESUME_URL}',
     'favicon.svg',
-    'landing/resume.html',
     'link[rel="icon"]',
     'production-artifacts',
   ]) {
     assert.ok(source.includes(marker), `missing production favicon marker: ${marker}`);
   }
 
+  assert.doesNotMatch(source, /landing\/resume\.html/);
+  assert.match(source, /inspectPage\(page, APEX\)/);
+  assert.match(source, /inspectPage\(page, RESUME_URL\)/);
   assert.ok(source.includes('image\\/svg\\+xml'), 'favicon smoke must require the SVG MIME type');
   assert.match(source, /response\.ok\(\)/);
   assert.match(source, /normalizeUrl/);
