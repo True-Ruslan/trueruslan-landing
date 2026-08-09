@@ -103,24 +103,30 @@ test('final HTML and hydration link policy exist in the production build chain',
   assert.match(yfm, /_assets\/script\/link-policy-runtime\.js/);
 });
 
-test('link policy module enforces new-tab navigation but preserves local fragments and protocols', async () => {
+test('link policy opens only external web resources in a new tab', async () => {
   assert.ok(fs.existsSync(linkPolicyPath), 'scripts/link-policy.js must exist');
-  const {applyLinkPolicy} = await import(pathToFileURL(linkPolicyPath));
+  const {applyLinkPolicy, shouldOpenInNewContext} = await import(pathToFileURL(linkPolicyPath));
   assert.equal(typeof applyLinkPolicy, 'function');
+  assert.equal(shouldOpenInNewContext('/projects/'), false);
+  assert.equal(shouldOpenInNewContext('https://trueruslan.ru/projects/'), false);
+  assert.equal(shouldOpenInNewContext('https://www.trueruslan.ru/projects/'), false);
+  assert.equal(shouldOpenInNewContext('https://github.com/True-Ruslan'), true);
 
   const input = '<html><head></head><body><main>'
-    + '<a href="/projects/">Projects</a>'
+    + '<a href="/projects/" target="_blank" rel="noopener noreferrer">Projects</a>'
+    + '<a href="https://trueruslan.ru/about/" target="_blank">About</a>'
     + '<a href="https://github.com/True-Ruslan" rel="nofollow">GitHub</a>'
     + '<a href="#architecture">Architecture</a>'
-    + '<a href="mailto:ruslan@example.com">Mail</a>'
+    + '<a href="mailto:nemykin@true-ruslan.ru">Mail</a>'
     + '<a href="tel:+10000000000">Call</a>'
     + '</main></body></html>';
   const output = applyLinkPolicy(input);
 
-  assert.match(output, /href="\/projects\/"[^>]*target="_blank"[^>]*rel="[^"]*noopener[^"]*noreferrer[^"]*"/);
+  assert.doesNotMatch(output, /href="\/projects\/"[^>]*target=/);
+  assert.doesNotMatch(output, /href="https:\/\/trueruslan\.ru\/about\/"[^>]*target=/);
   assert.match(output, /href="https:\/\/github\.com\/True-Ruslan"[^>]*target="_blank"[^>]*rel="[^"]*nofollow[^"]*noopener[^"]*noreferrer[^"]*"/);
   assert.doesNotMatch(output, /href="#architecture"[^>]*target=/);
-  assert.doesNotMatch(output, /href="mailto:ruslan@example\.com"[^>]*target=/);
+  assert.doesNotMatch(output, /href="mailto:nemykin@true-ruslan\.ru"[^>]*target=/);
   assert.doesNotMatch(output, /href="tel:\+10000000000"[^>]*target=/);
   assert.match(output, /<script src="_assets\/script\/link-policy-runtime\.js" defer data-tr-link-policy-runtime><\/script>/);
   assert.equal(applyLinkPolicy(output), output, 'link policy must be idempotent');
