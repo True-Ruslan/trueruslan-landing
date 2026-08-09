@@ -185,8 +185,20 @@ async function assertSearch(browser, baseUrl) {
       .some((link) => (link.getAttribute('href') || '').includes('en/work-with-me/')), null, {timeout: 7000});
     const result = page.locator('a[href*="en/work-with-me/"]').first();
     if (await result.count() < 1) throw new Error('generated search does not expose English Work with me');
-    await assertCurrentTab(result, 'generated internal search result');
-    return {query: 'inflated public service list', found: true};
+
+    const popupPromise = page.waitForEvent('popup', {timeout: 1500}).catch(() => null);
+    const navigationPromise = page.waitForURL((url) => url.pathname.endsWith('/en/work-with-me/'), {timeout: 7000})
+      .then(() => true)
+      .catch(() => false);
+    await result.click();
+    const [popup, navigated] = await Promise.all([popupPromise, navigationPromise]);
+    if (popup) {
+      await popup.close();
+      throw new Error('generated internal search result opened a new tab');
+    }
+    if (!navigated) throw new Error(`generated internal search result did not navigate current tab: ${page.url()}`);
+
+    return {query: 'inflated public service list', found: true, navigatedInCurrentTab: true};
   } finally {
     await runtime.close();
   }
