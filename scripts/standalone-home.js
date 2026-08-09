@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-import {loadCollaboration, renderHomepageCollaborationBridge} from './collaboration.js';
+import {loadCollaboration, validateCollaboration} from './collaboration.js';
 import {
   DEFAULT_PROJECTS_PATH,
   escapeHtml,
@@ -57,8 +57,17 @@ const HOME_COPY = Object.freeze({
         actions: Object.freeze([
           Object.freeze({href: 'landing/about.html', label: 'Обо мне →', primary: true}),
           Object.freeze({href: 'landing/now.html', label: 'Сейчас →'}),
+          Object.freeze({href: 'landing/photos.html', label: 'Фото →'}),
         ]),
       }),
+    }),
+    collaboration: Object.freeze({
+      eyebrow: 'РАБОТА СО МНОЙ',
+      title: 'Можно подключиться к конкретной инженерной задаче',
+      text: 'Помогаю с backend-сервисами, интеграциями, архитектурными разборами, AI-инструментами и техническим наставничеством. Если задача похожа — можно сразу посмотреть форматы работы и написать напрямую.',
+      availability: 'Текущая доступность',
+      action: 'Посмотреть форматы работы →',
+      handoff: 'Написать напрямую',
     }),
     flagshipCta: 'Открыть проект →',
     tagsLabel: 'Технологии и направления',
@@ -99,6 +108,14 @@ const HOME_COPY = Object.freeze({
         ]),
       }),
     }),
+    collaboration: Object.freeze({
+      eyebrow: 'WORK WITH ME',
+      title: 'I can join a concrete engineering problem',
+      text: 'I help with backend services, integrations, architecture reviews, AI tooling and technical mentoring. If that matches the problem, you can review the available formats and contact me directly.',
+      availability: 'Current availability',
+      action: 'Review work formats →',
+      handoff: 'Contact me directly',
+    }),
     flagshipCta: 'Open project →',
     tagsLabel: 'Technologies and areas',
   }),
@@ -108,6 +125,10 @@ function getHomeCopy(locale) {
   const copy = HOME_COPY[locale];
   if (!copy) throw new Error(`unsupported homepage locale: ${locale}`);
   return copy;
+}
+
+function collaborationStatusLabel(status) {
+  return String(status).replaceAll('-', ' ').toUpperCase();
 }
 
 export function renderHomepageProofStrip(locale = 'ru') {
@@ -141,6 +162,27 @@ export function renderHomepageBridge(kind, locale = 'ru') {
   </div>
   <div class="tr-home-bridge__actions">
 ${actions}
+  </div>
+</section>`;
+}
+
+export function renderHomepageCollaborationSummary(collaboration, locale = 'ru') {
+  validateCollaboration(collaboration);
+  const copy = getHomeCopy(locale).collaboration;
+  const category = collaboration.categories.find(({id}) => id === 'engineering') ?? collaboration.categories[0];
+
+  return `<section class="tr-home-section tr-home-collaboration" data-home-collaboration="true" aria-labelledby="home-collaboration-${escapeHtml(locale)}-title">
+  <div class="tr-home-collaboration__copy">
+    <p class="tr-home-collaboration__eyebrow">${escapeHtml(copy.eyebrow)}</p>
+    <h2 id="home-collaboration-${escapeHtml(locale)}-title">${escapeHtml(copy.title)}</h2>
+    <p>${escapeHtml(copy.text)}</p>
+  </div>
+  <div class="tr-home-collaboration__meta">
+    <p><span>${escapeHtml(copy.availability)}:</span> <strong data-tr-collaboration-home-availability>${escapeHtml(collaborationStatusLabel(collaboration.availability.status))}</strong></p>
+    <div class="tr-home-collaboration__actions">
+      <a class="tr-home-collaboration__action tr-home-collaboration__action--primary" href="${escapeHtml(category.href)}">${escapeHtml(copy.action)}</a>
+      <a class="tr-home-collaboration__action" href="${escapeHtml(collaboration.directHandoff.primary.href)}">${escapeHtml(copy.handoff)}</a>
+    </div>
   </div>
 </section>`;
 }
@@ -212,7 +254,7 @@ export function renderStandaloneHome(template, siteUrl, projects = [], {
   const collaborationBridge = template.includes('{{HOME_COLLABORATION_BRIDGE}}')
     ? (() => {
       if (!collaboration) throw new Error('collaboration data is required for the homepage collaboration bridge.');
-      return renderHomepageCollaborationBridge(collaboration, {locale});
+      return renderHomepageCollaborationSummary(collaboration, locale);
     })()
     : '';
   const personalBridge = template.includes('{{HOME_PERSONAL_BRIDGE}}')
