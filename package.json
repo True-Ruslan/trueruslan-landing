@@ -45,7 +45,7 @@
     "postprocess:clean-urls": "node scripts/clean-urls.js",
     "postprocess:link-policy": "node scripts/link-policy.js",
     "postprocess:yandex-metrica": "node scripts/yandex-metrica-browser-cli.js",
-    "check:site": "node scripts/site-integrity.js",
+    "check:site": "node scripts/site-integrity.js && node scripts/public-url-link-policy-artifact.js",
     "check:freshness": "node scripts/content-freshness-report.js",
     "probe:freshness": "node scripts/content-freshness-probe.js",
     "test": "node --test scripts/*.test.js"
