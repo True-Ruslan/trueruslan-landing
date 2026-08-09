@@ -429,6 +429,26 @@ observedAt:                      2026-08-09T00:20:13.227Z
 
 This capability is accepted independently of P3.6. **P3.6 remains NEXT / WAITING** for real equal-duration operator-observed aggregate evidence and human review.
 
+### C1 — Presentation foundation — PRODUCTION ACCEPTED
+
+Portfolio Clarity & Scanability implementation has started with a bounded production foundation:
+
+- Onest Variable is self-hosted with exact reviewed WOFF2 subsets and OFL license;
+- shared readability tokens use a 17px desktop / 16px mobile body target, 1.62 line height and 70ch long-form width;
+- RU/EN primary navigation is limited to five semantic destinations while secondary knowledge surfaces remain in the content tree;
+- mobile overflow, Chromium accessibility/Lighthouse, Firefox/WebKit, privacy, metadata/search and visual-regression gates remain green without weakening.
+
+- PR #174 squash / deployed SHA: `9cc9d69e6b49e3e9f3432788f0deb943d7acebf5`;
+- final exact-head Build #1463 / `31304311486` — SUCCESS;
+- Pages #202 / `31304612906` — SUCCESS;
+- Pages deployment `5817134996` — success;
+- Production Live Smoke #354 / `31304642055` — SUCCESS;
+- production artifact `9035548962`;
+- production digest `sha256:41af56c91d59b5c80134d49b1928b0fde348384334c8863ddd9c74c9f4e5c85c`;
+- production observation: `2026-08-09T08:55:33.810Z`.
+
+Next redesign slice: **C2 — Homepage structure**. C1 does not start/reset/close P3.6; the final accepted redesign remains the new presentation-baseline boundary.
+
 ## P3.6 — Measurement checkpoint — NEXT / WAITING
 
 After sufficient aggregate traffic, run the manual checkpoint with real `operator-observed` Cloudflare Web Analytics, Google Search Console and Yandex Webmaster aggregates. P3.6 remains an observation checkpoint, not permission to infer engagement or product impact from an insufficient sample or from synthetic pipeline proof.

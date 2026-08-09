@@ -4,6 +4,29 @@
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
+## 2026-08-09 — C1 Presentation foundation — PRODUCTION ACCEPTED
+
+- Began implementation of the approved **Portfolio Clarity & Scanability** redesign with an intentionally bounded foundation slice.
+- Replaced the generic system/UI typography with self-hosted **Onest Variable** using reviewed Cyrillic + Latin WOFF2 subsets, exact SHA-256 contracts and retained SIL OFL 1.1 text.
+- Added shared readability tokens: 17px desktop body target, 16px mobile body target, 1.62 line-height and 70ch long-form width.
+- Reduced primary navigation to exactly five semantic destinations in both RU and EN while keeping /now, Engineering Map, Notes, Publications, Sources, Photos and Contacts available through the existing content tree/sidebar.
+- Extended build-time asset publication to WOFF2 and license text; no runtime font CDN was introduced.
+- TDD RED: head `a6e3c067c63d8ca91245e941b89c9ac0b0514a1a`, Build #1442 / `31301733976`, 585 PASS / exactly 5 expected FAIL.
+- Final source acceptance: Build #1463 / `31304311486`, 591 PASS / 0 FAIL; CodeQL #988 and Dependency Review #891 SUCCESS; full browser/a11y/Lighthouse/cross-browser/privacy/SEO/visual matrix SUCCESS.
+- Manual visual review accepted only the homepage desktop/mobile baseline change caused by the new font; unrelated shared baselines were preserved.
+- Production accepted exact squash SHA `9cc9d69e6b49e3e9f3432788f0deb943d7acebf5`.
+
+- PR #174 squash / deployed SHA: `9cc9d69e6b49e3e9f3432788f0deb943d7acebf5`;
+- final exact-head Build #1463 / `31304311486` — SUCCESS;
+- Pages #202 / `31304612906` — SUCCESS;
+- Pages deployment `5817134996` — success;
+- Production Live Smoke #354 / `31304642055` — SUCCESS;
+- production artifact `9035548962`;
+- production digest `sha256:41af56c91d59b5c80134d49b1928b0fde348384334c8863ddd9c74c9f4e5c85c`;
+- production observation: `2026-08-09T08:55:33.810Z`.
+
+C1 is not the final redesign measurement baseline. P3.6 remains **NEXT / WAITING**, and the next implementation slice is **C2 — Homepage structure**.
+
 ## 2026-08-09 — Work with me / private practice — PRODUCTION ACCEPTED
 
 PR #171 implemented the approved evidence-led private-practice design from PR #170. It adds RU/EN Work with me routes backed by one fail-closed `data/collaboration.json`, a restrained homepage bridge, canonical Contacts handoff and an exact contextual CTA allowlist. There is no form, CRM, booking, payment flow, public pricing, lead database, conversion tracking, session replay or AI seller.
