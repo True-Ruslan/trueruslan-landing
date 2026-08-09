@@ -100,7 +100,7 @@ test('deployment-only P3.4C smoke covers route content feed search and Draft bou
   const workflow = fs.readFileSync(WORKFLOW, 'utf8');
 
   for (const marker of [
-    'landing/notes/hybrid-cv-ai-recognition-boundaries/',
+    'notes/hybrid-cv-ai-recognition-boundaries/',
     TITLE,
     'main.dc-doc-page__content',
     'VlezetDocument',
