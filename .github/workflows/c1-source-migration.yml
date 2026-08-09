@@ -1,0 +1,39 @@
+name: C1 source migration
+
+on:
+  push:
+    branches:
+      - feat/portfolio-clarity-c1-foundation
+    paths:
+      - .github/workflows/c1-source-migration.yml
+      - scripts/c1-source-migration.mjs
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/portfolio-clarity-c1-foundation
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Apply C1 source migration
+        run: node scripts/c1-source-migration.mjs
+      - name: Verify bounded diff
+        run: |
+          git diff --check
+          git diff --exit-code -- docs/assets/fonts docs/_assets/style/typography.css scripts/portfolio-clarity-c1.test.js || true
+          git diff -- docs/toc.yaml templates/index.html templates/index.en.html docs/.yfm scripts/copy-assets.js scripts/work-with-me.test.js scripts/publications-showcase.test.js
+      - name: Commit migrated sources
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/toc.yaml templates/index.html templates/index.en.html docs/.yfm scripts/copy-assets.js scripts/work-with-me.test.js scripts/publications-showcase.test.js
+          git diff --cached --check
+          git diff --cached --quiet && exit 1
+          git commit -m "feat: apply C1 navigation and typography wiring"
+          git push origin HEAD:feat/portfolio-clarity-c1-foundation
