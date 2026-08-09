@@ -21,10 +21,12 @@ function fakeAnchor(href, {target = null, rel = ''} = {}) {
   if (target) attrs.set('target', target);
   if (rel) attrs.set('rel', rel);
   return {
+    tagName: 'A',
     href,
     getAttribute(name) { return attrs.get(name) ?? null; },
     setAttribute(name, value) { attrs.set(name, String(value)); },
     removeAttribute(name) { attrs.delete(name); },
+    closest(selector) { return selector === 'a[href]' ? this : null; },
     attrs,
   };
 }
@@ -65,4 +67,24 @@ test('runtime policy keeps same-page fragments and protocol actions current-cont
     assert.equal(api.normalizeAnchor(anchor), false);
     assert.equal(anchor.attrs.has('target'), false);
   }
+});
+
+test('interaction guard repairs a stale internal target before pointer/click default navigation', () => {
+  const api = loadApi();
+  const listeners = new Map();
+  const document = {
+    documentElement: {dataset: {}},
+    addEventListener(type, listener, capture) {
+      listeners.set(type, {listener, capture});
+    },
+  };
+  assert.equal(api.installInteractionGuard(document), true);
+  assert.equal(listeners.get('pointerdown')?.capture, true);
+  assert.equal(listeners.get('click')?.capture, true);
+
+  const internal = fakeAnchor('/en/work-with-me/', {target: '_blank', rel: 'noopener noreferrer'});
+  listeners.get('click').listener({target: internal});
+  assert.equal(internal.attrs.has('target'), false);
+  assert.equal(internal.attrs.has('rel'), false);
+  assert.equal(api.installInteractionGuard(document), true, 'guard installation must be idempotent');
 });
