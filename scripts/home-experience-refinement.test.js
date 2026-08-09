@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-import {renderHomepagePrimaryPaths} from './standalone-home.js';
+import {renderHomepageBridge} from './standalone-home.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -18,25 +18,18 @@ function sliceBetween(source, startMarker, endMarker) {
   return source.slice(start, end);
 }
 
-function experienceCardBody(rendered) {
-  const marker = 'data-home-path="resume"';
-  const markerIndex = rendered.indexOf(marker);
-  assert.notEqual(markerIndex, -1, 'missing experience card');
-  const bodyStart = rendered.indexOf('>', markerIndex) + 1;
-  const bodyEnd = rendered.indexOf('</a>', bodyStart);
-  assert.ok(bodyStart > 0 && bodyEnd > bodyStart, 'invalid experience card markup');
-  return rendered.slice(bodyStart, bodyEnd);
-}
-
-test('homepage puts the terminal slot between the lead and primary paths in both locales', () => {
+test('homepage keeps actions and terminal inside the hero before the proof layer', () => {
   for (const relativePath of ['templates/index.html', 'templates/index.en.html']) {
     const template = read(relativePath);
     const hero = sliceBetween(template, '<section class="tr-home-hero">', '</section>');
     const lead = hero.indexOf('class="tr-home-lead"');
+    const actions = hero.indexOf('class="tr-home-actions"');
     const terminal = hero.indexOf('data-tr-terminal-slot');
-    const paths = hero.indexOf('{{HOME_PRIMARY_PATHS}}');
+    const proof = template.indexOf('{{HOME_PROOF_STRIP}}');
+    const heroEnd = template.indexOf('</section>', template.indexOf('<section class="tr-home-hero">'));
 
-    assert.ok(lead !== -1 && terminal > lead && paths > terminal, `${relativePath}: expected lead -> terminal -> primary paths`);
+    assert.ok(lead !== -1 && actions > lead && terminal > actions, `${relativePath}: expected lead -> actions -> terminal`);
+    assert.ok(proof > heroEnd, `${relativePath}: proof layer must follow the hero`);
     assert.ok(template.indexOf('_assets/style/home-refinement.css') > template.indexOf('_assets/style/home.css'), `${relativePath}: refinement CSS must load after home.css`);
     assert.ok(template.indexOf('_assets/script/home-terminal-placement.js') > template.indexOf('_assets/script/custom.js'), `${relativePath}: terminal placement must run after terminal creation runtime`);
   }
@@ -51,18 +44,18 @@ test('terminal placement uses the explicit homepage slot without name-dependent 
   assert.doesNotMatch(source, /Руслан Немыкин|querySelectorAll\('h1, h2'\)|setInterval|setTimeout/);
 });
 
-test('primary path copy presents experience without resume or PDF emphasis', () => {
-  const ru = renderHomepagePrimaryPaths('ru');
-  const ruVisible = experienceCardBody(ru);
-  assert.match(ruVisible, />Опыт</);
-  assert.match(ruVisible, /Посмотреть опыт →/);
-  assert.doesNotMatch(ruVisible, /резюме|PDF/i);
+test('experience bridge presents commercial experience without resume or PDF emphasis', () => {
+  const ru = renderHomepageBridge('experience', 'ru');
+  assert.match(ru, /Коммерческая разработка/);
+  assert.match(ru, /Посмотреть опыт →/);
+  assert.match(ru, /href="landing\/resume\.html"/);
+  assert.doesNotMatch(ru, /резюме|PDF/i);
 
-  const en = renderHomepagePrimaryPaths('en');
-  const enVisible = experienceCardBody(en);
-  assert.match(enVisible, />Experience</);
-  assert.match(enVisible, /Explore experience →/);
-  assert.doesNotMatch(enVisible, /resume|PDF/i);
+  const en = renderHomepageBridge('experience', 'en');
+  assert.match(en, /Commercial experience/);
+  assert.match(en, /Explore experience →/);
+  assert.match(en, /href="en\/resume\.html"/);
+  assert.doesNotMatch(en, /resume|PDF/i);
 });
 
 test('visible navigation is Experience-first while the stable resume route is preserved', () => {
@@ -99,12 +92,14 @@ test('experience page demotes the PDF to a Resume section and gives the domains 
   assert.ok(config.indexOf('_assets/style/experience-refinement.css') > config.indexOf('_assets/style/resume.css'));
 });
 
-test('homepage owns a single compact top-spacing rhythm instead of stacked shell and hero gaps', () => {
+test('homepage owns a single compact top-spacing rhythm and C2 proof/bridge styling', () => {
   const css = read('docs/_assets/style/home-refinement.css');
   const shell = sliceBetween(css, '.tr-home-shell {', '\n}');
   const hero = sliceBetween(css, '.tr-home-hero {', '\n}');
 
   assert.match(shell, /padding:\s*0\s+0\s+/);
   assert.match(hero, /padding:\s*clamp\(1\.5rem,\s*3vw,\s*2\.5rem\)\s+0/);
+  assert.match(css, /\.tr-home-proof-strip\s*\{/);
+  assert.match(css, /\.tr-home-bridge\s*\{/);
   assert.doesNotMatch(shell, /clamp\(2\.5rem,\s*7vw,\s*6rem\)/);
 });
