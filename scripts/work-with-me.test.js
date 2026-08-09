@@ -5,7 +5,7 @@ import path from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
 import {loadI18nManifest} from './i18n.js';
-import {renderStandaloneHome} from './standalone-home.js';
+import {renderHomepageCollaborationSummary, renderStandaloneHome} from './standalone-home.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -78,36 +78,37 @@ test('Work with me is the thirteenth controlled RU EN route pair with bounded me
   assert.match(en?.title ?? '', /Work with me/i);
 });
 
-test('primary navigation keeps collaboration and direct Contacts visible while secondary content stays out of the header', () => {
-  const ruExpected = ['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне', 'Контакты'];
+test('primary navigation stays bounded while collaboration is primary and Contacts remains secondary', () => {
+  const ruExpected = ['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне'];
   const enExpected = ['Projects', 'Experience', 'Writing', 'Work with me', 'About'];
   assert.deepEqual(navigationTexts('templates/index.html'), ruExpected);
   assert.deepEqual(tocHeaderTexts(), ruExpected);
   assert.deepEqual(navigationTexts('templates/index.en.html'), enExpected);
 
   const toc = read('docs/toc.yaml');
-  for (const secondary of ['Сейчас', 'Engineering Map', 'Engineering Notes', 'Публикации', 'Источники', 'Фото']) {
+  for (const secondary of ['Сейчас', 'Engineering Map', 'Engineering Notes', 'Публикации', 'Источники', 'Фото', 'Контакты']) {
     assert.match(toc, new RegExp(`name: ${secondary}`));
   }
-  assert.match(toc, /name: Контакты/);
+  assert.equal(navigationTexts('templates/index.html').includes('Контакты'), false);
+  assert.equal(tocHeaderTexts().includes('Контакты'), false);
 });
 
-test('homepage collaboration bridge sits after flagship proof and preserves exactly three primary paths', async () => {
+test('homepage collaboration bridge follows Writing and precedes Personal in the C2 scan path', async () => {
   const modulePath = path.join(__dirname, 'collaboration.js');
   const collaborationModule = await import(pathToFileURL(modulePath).href);
   const collaboration = collaborationModule.loadCollaboration();
   const projects = JSON.parse(read('data/projects.json'));
-  const evidence = JSON.parse(read('data/project-evidence.json'));
 
   for (const [templatePath, locale] of [['templates/index.html', 'ru'], ['templates/index.en.html', 'en']]) {
     const template = read(templatePath);
+    const writingIndex = template.indexOf('{{HOME_WRITING_BRIDGE}}');
     const bridgeIndex = template.indexOf('{{HOME_COLLABORATION_BRIDGE}}');
-    assert.ok(bridgeIndex > template.indexOf('{{HOME_FLAGSHIPS}}'), `${locale} bridge must follow flagship proof`);
-    assert.ok(bridgeIndex < template.indexOf('now-title'), `${locale} bridge must precede current focus`);
+    const personalIndex = template.indexOf('{{HOME_PERSONAL_BRIDGE}}');
+    assert.ok(writingIndex !== -1 && bridgeIndex > writingIndex, `${locale} collaboration bridge must follow writing`);
+    assert.ok(personalIndex > bridgeIndex, `${locale} personal bridge must follow collaboration`);
 
     const html = renderStandaloneHome(template, 'https://trueruslan.ru', projects, {
       locale,
-      evidence,
       collaboration,
       hrefTransform: locale === 'en'
         ? (href) => ({
@@ -117,10 +118,24 @@ test('homepage collaboration bridge sits after flagship proof and preserves exac
         }[href] ?? href)
         : (href) => href,
     });
-    assert.equal((html.match(/data-home-path=/g) ?? []).length, 3);
+    assert.equal((html.match(/data-home-proof=/g) ?? []).length, 4);
     assert.equal((html.match(/data-home-collaboration=/g) ?? []).length, 1);
-    assert.doesNotMatch(html, /<form\b|public price|публичн(?:ый|ого) прайс/i);
+    assert.equal((html.match(/data-home-bridge=/g) ?? []).length, 3);
+    assert.doesNotMatch(html, /data-home-path=|data-home-evidence=|<form\b|public price|публичн(?:ый|ого) прайс/i);
   }
+});
+
+test('homepage collaboration bridge uses positive-first presentation copy', async () => {
+  const modulePath = path.join(__dirname, 'collaboration.js');
+  const collaborationModule = await import(pathToFileURL(modulePath).href);
+  const value = collaborationModule.loadCollaboration();
+
+  const ru = renderHomepageCollaborationSummary(value, 'ru');
+  const en = renderHomepageCollaborationSummary(value, 'en');
+
+  assert.match(ru, /Помогаю с backend-сервисами/);
+  assert.match(en, /I help with backend services/);
+  assert.doesNotMatch(`${ru}\n${en}`, /evidence boundaries|без формы|intermediary CRM|не каталог|not a catalogue/i);
 });
 
 test('Contacts exposes a simple direct handoff independent of the Work with me collaboration renderer', () => {

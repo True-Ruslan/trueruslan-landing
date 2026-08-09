@@ -2,9 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-import {loadCollaboration, renderHomepageCollaborationBridge} from './collaboration.js';
-import {renderFeaturedPublications} from './publication-renderer.js';
-import {loadProjectEvidence} from './project-evidence.js';
+import {loadCollaboration, validateCollaboration} from './collaboration.js';
 import {
   DEFAULT_PROJECTS_PATH,
   escapeHtml,
@@ -18,7 +16,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DEFAULT_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 const DEFAULT_OUTPUT = path.join(ROOT, 'docs-html', 'index.html');
-const DEFAULT_PROJECT_EVIDENCE_PATH = path.join(ROOT, 'data', 'project-evidence.json');
 
 const HOMEPAGE_FLAGSHIP_SLUGS = Object.freeze([
   'livingworld',
@@ -28,89 +25,98 @@ const HOMEPAGE_FLAGSHIP_SLUGS = Object.freeze([
 
 const HOME_COPY = Object.freeze({
   ru: Object.freeze({
-    pathsLabel: 'Основные разделы',
-    paths: Object.freeze([
-      Object.freeze({
-        id: 'resume',
-        index: '01 / ОПЫТ',
-        href: 'landing/resume.html',
-        title: 'Опыт',
-        description: 'Коммерческая разработка, текущий стек, инженерная практика, образование и преподавание.',
-        detail: '5+ лет · Java · Backend',
-        cta: 'Посмотреть опыт →',
-      }),
-      Object.freeze({
-        id: 'projects',
-        index: '02 / ПРОЕКТЫ',
-        href: 'landing/projects.html',
-        title: 'Инженерные проекты',
-        description: 'Архитектура, ограничения, принятые границы и проверяемые результаты собственных систем.',
-        detail: 'VillAIgence · NotchHub · Portfolio',
-        cta: 'Изучить проекты →',
-      }),
-      Object.freeze({
-        id: 'materials',
-        index: '03 / МАТЕРИАЛЫ',
-        href: 'landing/notes.html',
-        title: 'Заметки и публикации',
-        description: 'Engineering Notes о конкретных решениях и Публикации, вышедшие на внешних площадках.',
-        detail: 'Notes · Публикации · Sources',
-        cta: 'Читать материалы →',
-      }),
+    proofLabel: 'Коротко о профессиональном профиле',
+    proof: Object.freeze([
+      Object.freeze({value: '5+ лет', label: 'коммерческой разработки'}),
+      Object.freeze({value: 'Java 11–25', label: 'основной backend-стек'}),
+      Object.freeze({value: 'Spring Boot · Kafka', label: 'сервисы и интеграции'}),
+      Object.freeze({value: 'PostgreSQL · ClickHouse', label: 'data-heavy системы'}),
     ]),
-    evidenceLabel: 'Проверяемый текущий статус',
-    evidenceKicker: 'EVIDENCE / CURRENT BOUNDARY',
-    verifiedAt: 'Проверено',
-    registrySource: 'Статус из реестра проектов',
-    facts: Object.freeze({
-      livingworld: Object.freeze({label: 'Принятый installed результат', version: 'Installed 0.2.0 result'}),
-      notchhub: Object.freeze({label: 'Принятая продуктовая граница', fallback: '0.1.0 Personal build · M0 / R0.1 / P0 / P0.1 accepted'}),
-      'portfolio-platform': Object.freeze({label: 'Публичный контур', fallback: 'Static-first production platform'}),
+    bridges: Object.freeze({
+      experience: Object.freeze({
+        eyebrow: 'ОПЫТ',
+        title: 'Коммерческая разработка',
+        text: 'Более 5 лет работаю с Java-backend: продуктовыми и внутренними сервисами, банковскими и B2B-интеграциями, данными, legacy-модернизацией и инженерной автоматизацией.',
+        actions: Object.freeze([
+          Object.freeze({href: 'landing/resume.html', label: 'Посмотреть опыт →', primary: true}),
+        ]),
+      }),
+      writing: Object.freeze({
+        eyebrow: 'МАТЕРИАЛЫ',
+        title: 'Инженерные материалы',
+        text: 'Пишу о конкретных инженерных решениях, границах надёжности и практике разработки. Отдельно собраны внешние технические и научные публикации.',
+        actions: Object.freeze([
+          Object.freeze({href: 'landing/notes.html', label: 'Engineering Notes →', primary: true}),
+          Object.freeze({href: 'landing/publications.html', label: 'Публикации →'}),
+        ]),
+      }),
+      personal: Object.freeze({
+        eyebrow: 'ЛИЧНЫЙ КОНТЕКСТ',
+        title: 'Преподавание, исследование и личный контекст',
+        text: 'Помимо разработки, преподаю IT-дисциплины и учусь в аспирантуре МПГУ. На сайте также сохраняю личный контекст и короткий текущий срез работы.',
+        actions: Object.freeze([
+          Object.freeze({href: 'landing/about.html', label: 'Обо мне →', primary: true}),
+          Object.freeze({href: 'landing/now.html', label: 'Сейчас →'}),
+          Object.freeze({href: 'landing/photos.html', label: 'Фото →'}),
+        ]),
+      }),
     }),
-    flagshipCta: 'Открыть case study →',
+    collaboration: Object.freeze({
+      eyebrow: 'РАБОТА СО МНОЙ',
+      title: 'Можно подключиться к конкретной инженерной задаче',
+      text: 'Помогаю с backend-сервисами, интеграциями, архитектурными разборами, AI-инструментами и техническим наставничеством. Если задача похожа — можно сразу посмотреть форматы работы и написать напрямую.',
+      availability: 'Текущая доступность',
+      action: 'Посмотреть форматы работы →',
+      handoff: 'Написать напрямую',
+    }),
+    flagshipCta: 'Открыть проект →',
     tagsLabel: 'Технологии и направления',
   }),
   en: Object.freeze({
-    pathsLabel: 'Primary sections',
-    paths: Object.freeze([
-      Object.freeze({
-        id: 'resume',
-        index: '01 / EXPERIENCE',
-        href: 'en/resume.html',
-        title: 'Experience',
-        description: 'Commercial engineering work, current stack, engineering practice, education and teaching.',
-        detail: '5+ years · Java · Backend',
-        cta: 'Explore experience →',
-      }),
-      Object.freeze({
-        id: 'projects',
-        index: '02 / PROJECTS',
-        href: 'en/projects.html',
-        title: 'Engineering projects',
-        description: 'Architecture, constraints, accepted boundaries and reviewable evidence from long-running systems.',
-        detail: 'VillAIgence · NotchHub · Portfolio',
-        cta: 'Explore projects →',
-      }),
-      Object.freeze({
-        id: 'materials',
-        index: '03 / MATERIALS',
-        href: 'en/notes/server-authoritative-ai-npcs.html',
-        title: 'Notes and publications',
-        description: 'Selected English Engineering Notes plus the broader Russian knowledge and publication layer.',
-        detail: 'Selected EN · Full RU archive',
-        cta: 'Read engineering notes →',
-      }),
+    proofLabel: 'Professional profile at a glance',
+    proof: Object.freeze([
+      Object.freeze({value: '5+ years', label: 'commercial engineering'}),
+      Object.freeze({value: 'Java 11–25', label: 'primary backend stack'}),
+      Object.freeze({value: 'Spring Boot · Kafka', label: 'services and integrations'}),
+      Object.freeze({value: 'PostgreSQL · ClickHouse', label: 'data-intensive systems'}),
     ]),
-    evidenceLabel: 'Reviewable current status',
-    evidenceKicker: 'EVIDENCE / CURRENT BOUNDARY',
-    verifiedAt: 'Verified',
-    registrySource: 'Status from the project registry',
-    facts: Object.freeze({
-      livingworld: Object.freeze({label: 'Accepted installed result', version: 'Installed 0.2.0 result'}),
-      notchhub: Object.freeze({label: 'Accepted product boundary', fallback: '0.1.0 Personal build · M0 / R0.1 / P0 / P0.1 accepted'}),
-      'portfolio-platform': Object.freeze({label: 'Public boundary', fallback: 'Static-first production platform'}),
+    bridges: Object.freeze({
+      experience: Object.freeze({
+        eyebrow: 'EXPERIENCE',
+        title: 'Commercial experience',
+        text: 'I have 5+ years of Java backend experience across product and internal services, banking and B2B integrations, data-heavy systems, legacy modernization and engineering automation.',
+        actions: Object.freeze([
+          Object.freeze({href: 'en/resume.html', label: 'Explore experience →', primary: true}),
+        ]),
+      }),
+      writing: Object.freeze({
+        eyebrow: 'WRITING',
+        title: 'Engineering writing',
+        text: 'I write about concrete engineering decisions, reliability boundaries and development practice, with external technical and research publications collected separately.',
+        actions: Object.freeze([
+          Object.freeze({href: 'en/notes/server-authoritative-ai-npcs.html', label: 'Engineering Notes →', primary: true}),
+          Object.freeze({href: 'en/publications.html', label: 'Publications →'}),
+        ]),
+      }),
+      personal: Object.freeze({
+        eyebrow: 'PERSONAL',
+        title: 'Teaching, research and personal context',
+        text: 'Alongside engineering, I teach software-development subjects and pursue postgraduate research at MPGU. The site also keeps a concise view of what I am working on now.',
+        actions: Object.freeze([
+          Object.freeze({href: 'en/about.html', label: 'About me →', primary: true}),
+          Object.freeze({href: 'en/now.html', label: 'Now →'}),
+        ]),
+      }),
     }),
-    flagshipCta: 'Open case study →',
+    collaboration: Object.freeze({
+      eyebrow: 'WORK WITH ME',
+      title: 'I can join a concrete engineering problem',
+      text: 'I help with backend services, integrations, architecture reviews, AI tooling and technical mentoring. If that matches the problem, you can review the available formats and contact me directly.',
+      availability: 'Current availability',
+      action: 'Review work formats →',
+      handoff: 'Contact me directly',
+    }),
+    flagshipCta: 'Open project →',
     tagsLabel: 'Technologies and areas',
   }),
 });
@@ -121,24 +127,66 @@ function getHomeCopy(locale) {
   return copy;
 }
 
-function renderPathCard(pathItem) {
-  if (!isSafeLocalHtmlHref(pathItem.href)) throw new Error(`unsafe homepage path: ${pathItem.href}`);
-  return `<a class="tr-home-path" data-home-path="${escapeHtml(pathItem.id)}" href="${escapeHtml(pathItem.href)}">
-  <span class="tr-home-path__index">${escapeHtml(pathItem.index)}</span>
-  <span class="tr-home-path__body">
-    <strong>${escapeHtml(pathItem.title)}</strong>
-    <span>${escapeHtml(pathItem.description)}</span>
-  </span>
-  <span class="tr-home-path__meta">${escapeHtml(pathItem.detail)}</span>
-  <span class="tr-home-path__cta">${escapeHtml(pathItem.cta)}</span>
-</a>`;
+function collaborationStatusLabel(status) {
+  return String(status).replaceAll('-', ' ').toUpperCase();
 }
 
-export function renderHomepagePrimaryPaths(locale = 'ru') {
+export function renderHomepageProofStrip(locale = 'ru') {
   const copy = getHomeCopy(locale);
-  return `<nav class="tr-home-paths" aria-label="${escapeHtml(copy.pathsLabel)}">
-${copy.paths.map(renderPathCard).join('\n')}
-</nav>`;
+  const items = copy.proof.map(({value, label}, index) => `<div class="tr-home-proof" data-home-proof="${index + 1}">
+  <dt>${escapeHtml(value)}</dt>
+  <dd>${escapeHtml(label)}</dd>
+</div>`).join('\n');
+
+  return `<dl class="tr-home-proof-strip" aria-label="${escapeHtml(copy.proofLabel)}">
+${items}
+</dl>`;
+}
+
+export function renderHomepageBridge(kind, locale = 'ru') {
+  const copy = getHomeCopy(locale);
+  const bridge = copy.bridges[kind];
+  if (!bridge) throw new Error(`unsupported homepage bridge: ${kind}`);
+
+  const actions = bridge.actions.map(({href, label, primary = false}) => {
+    if (!isSafeLocalHtmlHref(href)) throw new Error(`unsafe homepage bridge href: ${href}`);
+    const modifier = primary ? ' tr-home-bridge__action--primary' : '';
+    return `<a class="tr-home-bridge__action${modifier}" href="${escapeHtml(href)}">${escapeHtml(label)}</a>`;
+  }).join('\n');
+
+  return `<section class="tr-home-section tr-home-bridge" data-home-bridge="${escapeHtml(kind)}" aria-labelledby="home-${escapeHtml(kind)}-${locale}-title">
+  <div class="tr-home-bridge__copy">
+    <p class="tr-home-bridge__eyebrow">${escapeHtml(bridge.eyebrow)}</p>
+    <h2 id="home-${escapeHtml(kind)}-${locale}-title">${escapeHtml(bridge.title)}</h2>
+    <p>${escapeHtml(bridge.text)}</p>
+  </div>
+  <div class="tr-home-bridge__actions">
+${actions}
+  </div>
+</section>`;
+}
+
+export function renderHomepageCollaborationSummary(collaboration, locale = 'ru') {
+  const value = validateCollaboration(collaboration);
+  const copy = getHomeCopy(locale).collaboration;
+  const workWithMeHref = locale === 'en' ? 'en/work-with-me.html' : 'landing/work-with-me.html';
+  const directHref = value.contact.telegram;
+  const status = value.availability.engineering;
+
+  return `<section class="tr-home-section tr-home-collaboration" data-home-collaboration="true" aria-labelledby="home-collaboration-${escapeHtml(locale)}-title">
+  <div class="tr-home-collaboration__copy">
+    <p class="tr-home-collaboration__eyebrow">${escapeHtml(copy.eyebrow)}</p>
+    <h2 id="home-collaboration-${escapeHtml(locale)}-title">${escapeHtml(copy.title)}</h2>
+    <p>${escapeHtml(copy.text)}</p>
+  </div>
+  <div class="tr-home-collaboration__meta">
+    <p><span>${escapeHtml(copy.availability)}:</span> <strong data-tr-collaboration-home-availability data-status="${escapeHtml(status)}">${escapeHtml(collaborationStatusLabel(status))}</strong></p>
+    <div class="tr-home-collaboration__actions">
+      <a class="tr-home-collaboration__action tr-home-collaboration__action--primary" href="${escapeHtml(workWithMeHref)}">${escapeHtml(copy.action)}</a>
+      <a class="tr-home-collaboration__action" href="${escapeHtml(directHref)}">${escapeHtml(copy.handoff)}</a>
+    </div>
+  </div>
+</section>`;
 }
 
 export function selectHomepageFlagships(projects) {
@@ -154,40 +202,6 @@ export function selectHomepageFlagships(projects) {
   });
 }
 
-function findVersionValue(evidence, label) {
-  return evidence?.versions?.find((version) => version.label === label)?.value ?? null;
-}
-
-export function renderHomepageEvidenceSignals(projects, evidence = [], {locale = 'ru'} = {}) {
-  const copy = getHomeCopy(locale);
-  const flagships = selectHomepageFlagships(projects);
-  const evidenceByProject = new Map(evidence.map((snapshot) => [snapshot.project, snapshot]));
-
-  const cards = flagships.map((project) => {
-    const fact = copy.facts[project.slug];
-    const snapshot = evidenceByProject.get(project.slug);
-    const value = fact.version ? findVersionValue(snapshot, fact.version) : fact.fallback;
-    if (!value) throw new Error(`homepage evidence fact missing for ${project.slug}: ${fact.version}`);
-    const source = snapshot?.lastVerified
-      ? `${copy.verifiedAt}: ${snapshot.lastVerified}`
-      : copy.registrySource;
-
-    return `<article class="tr-home-evidence-card" data-home-evidence="${escapeHtml(project.slug)}">
-  <span class="tr-home-evidence-card__status">${escapeHtml(project.statusLabel)}</span>
-  <h3>${escapeHtml(project.name)}</h3>
-  <p><span>${escapeHtml(fact.label)}</span><strong>${escapeHtml(value)}</strong></p>
-  <small>${escapeHtml(source)}</small>
-</article>`;
-  }).join('\n');
-
-  return `<section class="tr-home-evidence" aria-label="${escapeHtml(copy.evidenceLabel)}">
-  <p class="tr-home-evidence__kicker">${escapeHtml(copy.evidenceKicker)}</p>
-  <div class="tr-home-evidence__grid">
-${cards}
-  </div>
-</section>`;
-}
-
 function renderHomepageFlagships(projects, {
   hrefTransform = (href) => href,
   ctaTransform = (_project, cta) => cta,
@@ -199,7 +213,7 @@ function renderHomepageFlagships(projects, {
     if (!isSafeLocalHtmlHref(href)) throw new Error(`unsafe rendered homepage flagship href: ${href}`);
     const cta = ctaTransform(project, copy.flagshipCta);
     if (typeof cta !== 'string' || !cta.trim()) throw new Error(`invalid homepage flagship CTA for ${project.slug}`);
-    const tags = project.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
+    const tags = project.tags.slice(0, 3).map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
 
     return `<a class="tr-home-flagship" data-home-flagship="${escapeHtml(project.slug)}" href="${escapeHtml(href)}">
   <span class="tr-home-flagship__status">${escapeHtml(project.statusLabel)}</span>
@@ -215,8 +229,6 @@ function renderHomepageFlagships(projects, {
 
 export function renderStandaloneHome(template, siteUrl, projects = [], {
   locale = 'ru',
-  evidence = [],
-  publications = [],
   collaboration = null,
   hrefTransform = (href) => href,
   ctaTransform = (_project, cta) => cta,
@@ -229,44 +241,43 @@ export function renderStandaloneHome(template, siteUrl, projects = [], {
   const activeProjects = projects.length
     ? renderProjectCards(getActiveProjects(projects), {locale, hrefTransform, ctaTransform})
     : '';
-  const primaryPaths = template.includes('{{HOME_PRIMARY_PATHS}}')
-    ? renderHomepagePrimaryPaths(locale)
-    : '';
-  const evidenceSignals = template.includes('{{HOME_EVIDENCE_SIGNALS}}')
-    ? renderHomepageEvidenceSignals(projects, evidence, {locale})
+  const proofStrip = template.includes('{{HOME_PROOF_STRIP}}')
+    ? renderHomepageProofStrip(locale)
     : '';
   const flagships = template.includes('{{HOME_FLAGSHIPS}}')
     ? renderHomepageFlagships(projects, {locale, hrefTransform, ctaTransform})
     : '';
+  const experienceBridge = template.includes('{{HOME_EXPERIENCE_BRIDGE}}')
+    ? renderHomepageBridge('experience', locale)
+    : '';
+  const writingBridge = template.includes('{{HOME_WRITING_BRIDGE}}')
+    ? renderHomepageBridge('writing', locale)
+    : '';
   const collaborationBridge = template.includes('{{HOME_COLLABORATION_BRIDGE}}')
     ? (() => {
       if (!collaboration) throw new Error('collaboration data is required for the homepage collaboration bridge.');
-      return renderHomepageCollaborationBridge(collaboration, {locale});
+      return renderHomepageCollaborationSummary(collaboration, locale);
     })()
     : '';
-  const featuredPublications = locale === 'ru' && publications.length
-    ? renderFeaturedPublications(publications, {
-      surface: 'home',
-      catalogueHref: 'landing/publications.html',
-    })
+  const personalBridge = template.includes('{{HOME_PERSONAL_BRIDGE}}')
+    ? renderHomepageBridge('personal', locale)
     : '';
 
   return template
     .replaceAll('{{SITE_URL}}', normalizedSiteUrl)
-    .replace('{{HOME_PRIMARY_PATHS}}', primaryPaths)
-    .replace('{{HOME_EVIDENCE_SIGNALS}}', evidenceSignals)
+    .replace('{{HOME_PROOF_STRIP}}', proofStrip)
     .replace('{{HOME_FLAGSHIPS}}', flagships)
+    .replace('{{HOME_EXPERIENCE_BRIDGE}}', experienceBridge)
+    .replace('{{HOME_WRITING_BRIDGE}}', writingBridge)
     .replace('{{HOME_COLLABORATION_BRIDGE}}', collaborationBridge)
-    .replace('{{CURRENTLY_BUILDING}}', activeProjects)
-    .replace('{{FEATURED_PUBLICATIONS}}', featuredPublications);
+    .replace('{{HOME_PERSONAL_BRIDGE}}', personalBridge)
+    .replace('{{CURRENTLY_BUILDING}}', activeProjects);
 }
 
 export function writeStandaloneHome({
   templatePath = DEFAULT_TEMPLATE,
   outputPath = DEFAULT_OUTPUT,
   projectRegistryPath = DEFAULT_PROJECTS_PATH,
-  evidence = null,
-  publications = [],
   collaboration = null,
   siteUrl,
   locale = 'ru',
@@ -279,18 +290,11 @@ export function writeStandaloneHome({
 
   const template = fs.readFileSync(templatePath, 'utf8');
   const projects = loadProjectRegistry(projectRegistryPath);
-  const resolvedEvidence = evidence ?? (
-    path.resolve(projectRegistryPath) === path.resolve(DEFAULT_PROJECTS_PATH)
-      ? loadProjectEvidence(DEFAULT_PROJECT_EVIDENCE_PATH, {projects})
-      : []
-  );
   const resolvedCollaboration = collaboration ?? (
     template.includes('{{HOME_COLLABORATION_BRIDGE}}') ? loadCollaboration() : null
   );
   const html = renderStandaloneHome(template, siteUrl, projects, {
     locale,
-    evidence: resolvedEvidence,
-    publications,
     collaboration: resolvedCollaboration,
     hrefTransform,
     ctaTransform,

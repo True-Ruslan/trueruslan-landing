@@ -7,13 +7,17 @@ import {fileURLToPath} from 'node:url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 
-test('Contacts is a first-class primary navigation item in Diplodoc and standalone home', () => {
+test('Contacts remains a first-class route while C2 keeps it out of primary navigation', () => {
   const toc = read('docs/toc.yaml');
   const home = read('templates/index.html');
   const leftItems = toc.split('    leftItems:\n', 2)[1]?.split('    rightItems:\n', 1)[0] ?? '';
+  const primaryNav = home.match(/<nav class="tr-site-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1] ?? '';
+  const footer = home.match(/<footer class="tr-site-footer"[^>]*>([\s\S]*?)<\/footer>/)?.[1] ?? '';
 
-  assert.match(leftItems, /- text: Контакты\n\s+type: link\n\s+url: landing\/contacts\.html/);
-  assert.match(home, /<nav class="tr-site-nav"[^>]*>[\s\S]*<a href="landing\/contacts\.html">Контакты<\/a>[\s\S]*<\/nav>/);
+  assert.doesNotMatch(leftItems, /- text: Контакты/);
+  assert.doesNotMatch(primaryNav, />Контакты<\/a>/);
+  assert.match(toc, /- name: Контакты\s+href: \.\/landing\/contacts\.md/);
+  assert.match(footer, /<a href="landing\/contacts\.html">Контакты<\/a>/);
 });
 
 test('Contacts uses a simple primary contact block without the collaboration handoff', () => {

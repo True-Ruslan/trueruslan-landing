@@ -58,15 +58,18 @@ function assertStandaloneTemplate(relativePath, {searchLabel, languageLabel}) {
   }
   assert.match(header, /target="_blank" rel="noopener noreferrer"/);
 
-  assert.equal(hero.split('{{HOME_PRIMARY_PATHS}}').length - 1, 1);
-  assert.equal(hero.split('{{HOME_EVIDENCE_SIGNALS}}').length - 1, 1);
-  assert.doesNotMatch(hero, /tr-home-actions/);
+  assert.match(hero, /Java Backend Engineer/);
+  assert.match(hero, /5\+/);
+  assert.equal(hero.split('class="tr-home-actions__link').length - 1, 3);
+  assert.equal(hero.split('tr-home-actions__link--primary').length - 1, 1);
+  assert.match(hero, /data-tr-terminal-slot/);
+  assert.doesNotMatch(hero, /\{\{HOME_PRIMARY_PATHS\}\}|\{\{HOME_EVIDENCE_SIGNALS\}\}/);
   for (const url of Object.values(URLS)) {
     assert.doesNotMatch(hero, new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
 }
 
-test('RU and EN standalone headers expose canonical icon utilities and evidence-first hero surfaces', () => {
+test('RU and EN standalone headers expose canonical icon utilities and C2 fast-scan hero surfaces', () => {
   assertStandaloneTemplate('templates/index.html', {
     searchLabel: 'Поиск по сайту',
     languageLabel: 'Выбрать язык',

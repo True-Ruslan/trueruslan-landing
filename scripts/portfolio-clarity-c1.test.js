@@ -18,9 +18,9 @@ const FORBIDDEN_FONT_ORIGINS = Object.freeze([
   'https://cdn.jsdelivr.net',
 ]);
 
-const EXPECTED_NAV = Object.freeze({
-  ru: Object.freeze(['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне', 'Контакты']),
-  en: Object.freeze(['Projects', 'Experience', 'Writing', 'Work with me', 'About']),
+const C1_FOUNDATION_ROUTES = Object.freeze({
+  ruPrimaryAfterC2: Object.freeze(['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне']),
+  enPrimary: Object.freeze(['Projects', 'Experience', 'Writing', 'Work with me', 'About']),
 });
 
 function standalonePrimaryLabels(relativePath) {
@@ -43,13 +43,19 @@ function assertNoRuntimeFontCdn(source, label) {
   }
 }
 
-test('C1 foundation preserves the current approved standalone primary destinations', () => {
-  assert.deepEqual(standalonePrimaryLabels('templates/index.html'), EXPECTED_NAV.ru);
-  assert.deepEqual(standalonePrimaryLabels('templates/index.en.html'), EXPECTED_NAV.en);
+test('C1 foundation survives later C2 primary-navigation reprioritization', () => {
+  assert.deepEqual(standalonePrimaryLabels('templates/index.html'), C1_FOUNDATION_ROUTES.ruPrimaryAfterC2);
+  assert.deepEqual(standalonePrimaryLabels('templates/index.en.html'), C1_FOUNDATION_ROUTES.enPrimary);
+
+  const ruHome = read('templates/index.html');
+  const toc = read('docs/toc.yaml');
+  assert.match(ruHome, /href="landing\/contacts\.html">Контакты<\/a>/);
+  assert.match(toc, /- name: Контакты\s+href: \.\/landing\/contacts\.md/);
 });
 
-test('C1 foundation preserves the current approved Diplodoc RU presentation hierarchy', () => {
-  assert.deepEqual(tocPrimaryLabels(), EXPECTED_NAV.ru);
+test('C1 Diplodoc presentation foundation survives later C2 hierarchy refinement', () => {
+  assert.deepEqual(tocPrimaryLabels(), C1_FOUNDATION_ROUTES.ruPrimaryAfterC2);
+  assert.match(read('docs/toc.yaml'), /navigation:[\s\S]*logo:[\s\S]*TRUERUSLAN_/);
 });
 
 test('C1: reviewed Onest variable subsets are vendored byte-exact and licensed', () => {
