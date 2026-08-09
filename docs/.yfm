@@ -9,6 +9,7 @@ interface:
 resources:
   style:
     - _assets/style/custom.css
+    - _assets/style/typography.css
     - _assets/style/accessibility.css
     - _assets/style/content-flow.css
     - _assets/style/standalone.css

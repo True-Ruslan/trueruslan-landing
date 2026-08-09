@@ -78,15 +78,17 @@ test('Work with me is the thirteenth controlled RU EN route pair with bounded me
   assert.match(en?.title ?? '', /Work with me/i);
 });
 
-test('primary navigation gives collaboration a normal bounded position without removing secondary content', () => {
-  const ruExpected = ['Проекты', 'Опыт', 'Работа со мной', 'Notes', 'Публикации', 'Обо мне', 'Контакты'];
-  const enExpected = ['Projects', 'Experience', 'Work with me', 'Now', 'Publications', 'About', 'Notes (RU)'];
+test('primary navigation keeps collaboration visible while secondary content moves out of the header', () => {
+  const ruExpected = ['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне'];
+  const enExpected = ['Projects', 'Experience', 'Writing', 'Work with me', 'About'];
   assert.deepEqual(navigationTexts('templates/index.html'), ruExpected);
   assert.deepEqual(tocHeaderTexts(), ruExpected);
   assert.deepEqual(navigationTexts('templates/index.en.html'), enExpected);
 
   const toc = read('docs/toc.yaml');
-  for (const secondary of ['Engineering Map', 'Источники', 'Фото']) assert.match(toc, new RegExp(`name: ${secondary}`));
+  for (const secondary of ['Сейчас', 'Engineering Map', 'Engineering Notes', 'Публикации', 'Источники', 'Фото', 'Контакты']) {
+    assert.match(toc, new RegExp(`name: ${secondary}`));
+  }
 });
 
 test('homepage collaboration bridge sits after flagship proof and preserves exactly three primary paths', async () => {
