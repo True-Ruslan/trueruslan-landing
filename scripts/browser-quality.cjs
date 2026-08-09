@@ -54,6 +54,65 @@ async function assertResumePdf(page, context) {
   }
 }
 
+async function assertHydratedLinkPolicy(page, label) {
+  const report = await page.evaluate(() => {
+    const exemptScheme = /^(?:mailto|tel|javascript|data):/i;
+
+    function containsLegacyLandingPath(rawHref) {
+      const value = String(rawHref || '').trim();
+      if (!value) return false;
+      if (/^(?:\.\.\/|\.\/)*landing\//.test(value) || value.startsWith('/landing/')) return true;
+      try {
+        return new URL(value, document.baseURI).pathname.includes('/landing/');
+      } catch {
+        return false;
+      }
+    }
+
+    const violations = [];
+    let navigationalLinks = 0;
+    let samePageFragments = 0;
+
+    for (const anchor of document.querySelectorAll('a[href]')) {
+      const href = String(anchor.getAttribute('href') || '').trim();
+      if (!href) continue;
+
+      if (containsLegacyLandingPath(href)) {
+        violations.push(`legacy /landing href: ${href}`);
+      }
+
+      if (href.startsWith('#')) {
+        samePageFragments += 1;
+        if (anchor.getAttribute('target') === '_blank') {
+          violations.push(`same-page fragment forced into new tab: ${href}`);
+        }
+        continue;
+      }
+
+      if (exemptScheme.test(href)) continue;
+      navigationalLinks += 1;
+
+      const rel = new Set(String(anchor.getAttribute('rel') || '').toLowerCase().split(/\s+/).filter(Boolean));
+      if (anchor.getAttribute('target') !== '_blank') {
+        violations.push(`missing target=_blank: ${href}`);
+      }
+      if (!rel.has('noopener') || !rel.has('noreferrer')) {
+        violations.push(`missing noopener/noreferrer: ${href}`);
+      }
+    }
+
+    return {violations, navigationalLinks, samePageFragments};
+  });
+
+  if (report.navigationalLinks === 0) {
+    throw new Error(`${label}: no navigational anchors found for hydrated link-policy verification.`);
+  }
+  if (report.violations.length) {
+    throw new Error(`${label}: hydrated link-policy violations (${report.violations.length}):\n${report.violations.join('\n')}`);
+  }
+  return report;
+}
+
 async function checkScenario(browser, baseUrl, scenario, summary) {
   const runtime = await createScenarioPage(browser, {
     viewport: scenario.viewport,
@@ -92,6 +151,7 @@ async function checkScenario(browser, baseUrl, scenario, summary) {
       throw new Error(`Custom visual layer did not initialize on ${scenario.path}`);
     }
 
+    const linkPolicy = await assertHydratedLinkPolicy(page, `Browser quality ${scenario.slug}`);
     await assertNoHorizontalOverflow(page, `Browser quality ${scenario.slug}`);
 
     if (scenario.path.includes('/resume')) {
@@ -118,6 +178,8 @@ async function checkScenario(browser, baseUrl, scenario, summary) {
       viewport: scenario.viewport,
       requiredText: scenario.requiredText || [],
       accessibilityChecked: Boolean(scenario.accessibility),
+      navigationalLinksChecked: linkPolicy.navigationalLinks,
+      samePageFragmentsChecked: linkPolicy.samePageFragments,
     });
   } finally {
     await runtime.close();
