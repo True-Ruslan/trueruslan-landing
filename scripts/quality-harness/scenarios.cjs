@@ -6,16 +6,16 @@ const VIEWPORTS = Object.freeze({
 
 const CORE_SCENARIOS = Object.freeze({
   home: Object.freeze({slug: 'home', path: '/', heading: 'Руслан Немыкин'}),
-  projects: Object.freeze({slug: 'projects', path: '/landing/projects/', heading: 'Проекты'}),
+  projects: Object.freeze({slug: 'projects', path: '/projects/', heading: 'Проекты'}),
   workWithMe: Object.freeze({
     slug: 'work-with-me',
-    path: '/landing/work-with-me/',
+    path: '/work-with-me/',
     heading: 'Работа со мной',
     requiredText: ['Engineering', 'Teaching & Mentoring', 'Context', 'Scope', 'Estimate', 'Implementation', 'Handover'],
   }),
   vlezet: Object.freeze({
     slug: 'vlezet',
-    path: '/landing/projects/vlezet/',
+    path: '/projects/vlezet/',
     heading: 'Vlezet',
     requiredText: [
       'M7.8B',
@@ -28,7 +28,7 @@ const CORE_SCENARIOS = Object.freeze({
   }),
   villaigence: Object.freeze({
     slug: 'villaigence',
-    path: '/landing/projects/livingworld/',
+    path: '/projects/livingworld/',
     heading: 'VillAIgence',
     requiredText: [
       'Memory 2.0',
@@ -40,8 +40,8 @@ const CORE_SCENARIOS = Object.freeze({
       'PR #110',
     ],
   }),
-  publications: Object.freeze({slug: 'publications', path: '/landing/publications/', heading: 'Публикации и выступления'}),
-  resume: Object.freeze({slug: 'resume', path: '/landing/resume/', heading: 'Опыт'}),
+  publications: Object.freeze({slug: 'publications', path: '/publications/', heading: 'Публикации и выступления'}),
+  resume: Object.freeze({slug: 'resume', path: '/resume/', heading: 'Опыт'}),
 });
 
 module.exports = {
