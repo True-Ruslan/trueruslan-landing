@@ -12,7 +12,7 @@ const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Projec
 const PROJECTS = [
   {
     project: 'vlezet',
-    route: '/landing/projects/vlezet/',
+    route: '/projects/vlezet/',
     status: 'verified',
     label: 'ПРОВЕРЕНО',
     borderStyle: 'solid',
@@ -38,7 +38,7 @@ const PROJECTS = [
   },
   {
     project: 'livingworld',
-    route: '/landing/projects/livingworld/',
+    route: '/projects/livingworld/',
     status: 'verified',
     label: 'ПРОВЕРЕНО',
     borderStyle: 'solid',
@@ -66,7 +66,7 @@ const PROJECTS = [
       'https://github.com/True-Ruslan/villAIgence/pull/125',
     ],
   },
-  {project: 'node-zero', route: '/landing/projects/node-zero/', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
+  {project: 'node-zero', route: '/projects/node-zero/', status: 'stale', label: 'ТРЕБУЕТ ПЕРЕПРОВЕРКИ', borderStyle: 'dashed'},
 ];
 
 async function assertEvidence(page, expected, prefix) {
