@@ -83,14 +83,8 @@ async function main() {
 
     const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
     const ogUrl = await page.locator('meta[property="og:url"]').getAttribute('content');
-    assert(
-      canonical && normalizeUrl(canonical) === normalizeUrl(GAMETESTS_ACCEPTANCE_NOTE_URL),
-      `wrong P3.4D canonical: ${canonical || 'missing'}`,
-    );
-    assert(
-      ogUrl && normalizeUrl(ogUrl) === normalizeUrl(GAMETESTS_ACCEPTANCE_NOTE_URL),
-      `wrong P3.4D OpenGraph URL: ${ogUrl || 'missing'}`,
-    );
+    assert(canonical && normalizeUrl(canonical) === normalizeUrl(GAMETESTS_ACCEPTANCE_NOTE_URL), `wrong P3.4D canonical: ${canonical || 'missing'}`);
+    assert(ogUrl && normalizeUrl(ogUrl) === normalizeUrl(GAMETESTS_ACCEPTANCE_NOTE_URL), `wrong P3.4D OpenGraph URL: ${ogUrl || 'missing'}`);
 
     const documentContent = page.locator(DOCUMENT_CONTENT_SELECTOR).first();
     await documentContent.waitFor({state: 'visible', timeout: 10000});
@@ -127,10 +121,7 @@ async function main() {
     assert(!noteText.includes('GameTests fully prove installed gameplay'), 'P3.4D Note overclaims GameTests');
     const noteHtml = await page.content();
     assert(!noteHtml.includes(LEGACY_ORIGIN), 'P3.4D Note leaks the legacy Pages origin');
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, 'gametests-installed-acceptance-note.png'),
-      fullPage: true,
-    });
+    await page.screenshot({path: path.join(ARTIFACTS_DIR, 'gametests-installed-acceptance-note.png'), fullPage: true});
     writeText('gametests-installed-acceptance-note.html', noteHtml);
     summary.note = {
       requested: GAMETESTS_ACCEPTANCE_NOTE_URL,
@@ -165,20 +156,14 @@ async function main() {
     await button.waitFor({state: 'visible', timeout: 10000});
     await input.fill(SEARCH_QUERY);
     await button.click();
-    const result = page.locator('a[href*="landing/notes/gametests-vs-installed-gameplay-acceptance"]').first();
+    const result = page.locator('a[href*="notes/gametests-vs-installed-gameplay-acceptance/"]:not([href*="landing/notes/gametests-vs-installed-gameplay-acceptance/"])').first();
     await result.waitFor({state: 'visible', timeout: 15000});
     const resultText = (await result.innerText()).trim();
     const resultHref = await result.getAttribute('href');
     const cleanUrl = new URL(GAMETESTS_ACCEPTANCE_NOTE_URL);
     assert(resultText.toLowerCase().includes('gametests'), `unexpected P3.4D search result: ${resultText}`);
-    assert(
-      resultHref && new URL(resultHref, page.url()).pathname === cleanUrl.pathname,
-      `generated search returned wrong P3.4D route: ${resultHref || 'missing'}`,
-    );
-    await page.screenshot({
-      path: path.join(ARTIFACTS_DIR, 'gametests-installed-acceptance-search.png'),
-      fullPage: true,
-    });
+    assert(resultHref && new URL(resultHref, page.url()).pathname === cleanUrl.pathname, `generated search returned wrong P3.4D route: ${resultHref || 'missing'}`);
+    await page.screenshot({path: path.join(ARTIFACTS_DIR, 'gametests-installed-acceptance-search.png'), fullPage: true});
     summary.generatedSearch = {
       url: page.url(),
       status: searchResponse.status(),
@@ -188,10 +173,7 @@ async function main() {
     };
 
     assert(summary.diagnostics.pageErrors.length === 0, `page errors: ${summary.diagnostics.pageErrors.join(' | ')}`);
-    assert(
-      summary.diagnostics.firstPartyRequestFailures.length === 0,
-      `first-party request failures: ${JSON.stringify(summary.diagnostics.firstPartyRequestFailures)}`,
-    );
+    assert(summary.diagnostics.firstPartyRequestFailures.length === 0, `first-party request failures: ${JSON.stringify(summary.diagnostics.firstPartyRequestFailures)}`);
 
     writeJson('gametests-installed-acceptance-note-production-summary.json', summary);
     console.log(`P3.4D GameTests acceptance Note smoke passed for deployed SHA ${EXPECTED_DEPLOYED_SHA}.`);
