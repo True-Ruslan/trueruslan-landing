@@ -39,6 +39,10 @@
     return new URL(document.referrer).href;
   }
 
+  function runtimeBase() {
+    return root.document?.baseURI || root.location?.href || SITE_BASE;
+  }
+
   function shouldOpenInNewContext(href) {
     if (root.TrueRuslanLinkPolicy?.shouldOpenInNewContext) {
       return root.TrueRuslanLinkPolicy.shouldOpenInNewContext(href);
@@ -47,9 +51,12 @@
     const value = String(href || '').trim();
     if (!value || value.startsWith('#') || EXEMPT_SCHEME.test(value)) return false;
     try {
-      const url = new URL(value, SITE_BASE);
+      const base = new URL(runtimeBase(), SITE_BASE);
+      const url = new URL(value, base);
       if (!['http:', 'https:'].includes(url.protocol)) return false;
-      return !SAME_SITE_HOSTS.has(url.hostname.toLowerCase());
+      if (SAME_SITE_HOSTS.has(url.hostname.toLowerCase())) return false;
+      if (url.origin === base.origin) return false;
+      return true;
     } catch {
       return false;
     }
@@ -65,7 +72,17 @@
     if (!shouldOpenInNewContext(href)) {
       const target = anchor.getAttribute('target');
       if (target) anchor.removeAttribute?.('target');
-      return Boolean(target);
+      const currentRel = String(anchor.getAttribute('rel') || '').trim();
+      const nextRel = currentRel
+        .split(/\s+/)
+        .filter(Boolean)
+        .filter((token) => !['noopener', 'noreferrer'].includes(token.toLowerCase()))
+        .join(' ');
+      if (currentRel !== nextRel) {
+        if (nextRel) anchor.setAttribute('rel', nextRel);
+        else anchor.removeAttribute?.('rel');
+      }
+      return Boolean(target || currentRel !== nextRel);
     }
 
     const tokens = [];
