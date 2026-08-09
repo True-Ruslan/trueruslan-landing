@@ -55,6 +55,7 @@ test('live production workflow is read-only, deployment-aware and artifact-produ
   assert.match(workflow, /github\.event\.workflow_run\.conclusion/);
   assert.match(workflow, /EXACT_DEPLOYMENT/);
   assert.match(workflow, /EXPECTED_SHA/);
+  assert.match(workflow, /EXPECT_PROJECTED_PUBLIC_ROUTES:\s*\$\{\{ github\.event_name != 'pull_request' \}\}/);
   assert.match(workflow, /playwright@1\.61\.1/);
   assert.match(workflow, /install --with-deps chromium/);
   assert.match(workflow, /node scripts\/production-live-smoke\.cjs/);
@@ -78,6 +79,8 @@ test('baseline live smoke remains safe for PR execution against current producti
     source,
     /PORTFOLIO_PLATFORM_URL|VILLAIGENCE_URL|VLEZET_URL|DEPLOYMENT_VERIFICATION_NOTE_URL|flagship-normalization-production-summary/,
   );
+  assert.match(source, /EXPECT_PROJECTED_PUBLIC_ROUTES/);
+  assert.match(source, /ACTIVE_NOTE_URL/);
   assert.match(source, /Production live smoke passed/);
 });
 
@@ -88,7 +91,7 @@ test('deployment-only platform smoke covers new RU EN clean routes, homepage and
   const source = `${fs.readFileSync(ROUTES, 'utf8')}\n${platformSource}`;
 
   for (const marker of [
-    'landing/projects/portfolio-platform/',
+    'projects/portfolio-platform/',
     'en/projects/portfolio-platform/',
     'data-home-flagship="portfolio-platform"',
     'TrueRuslan Landing static-first',
@@ -114,8 +117,8 @@ test('deployment-only flagship smoke covers current RU and EN VillAIgence and Vl
   const source = `${fs.readFileSync(ROUTES, 'utf8')}\n${flagshipSource}`;
 
   for (const marker of [
-    'landing/projects/livingworld/',
-    'landing/projects/vlezet/',
+    'projects/livingworld/',
+    'projects/vlezet/',
     'en/projects/livingworld/',
     'en/projects/vlezet/',
     'main.dc-doc-page__content',
@@ -159,7 +162,7 @@ test('deployment-only P3.4A Note smoke covers route content feed and generated s
   const source = `${fs.readFileSync(ROUTES, 'utf8')}\n${noteSource}`;
 
   for (const marker of [
-    'landing/notes/deployment-success-is-not-production-verification/',
+    'notes/deployment-success-is-not-production-verification/',
     'Почему успешный deployment ещё не означает production verification',
     'main.dc-doc-page__content',
     'repository readiness',
@@ -185,7 +188,7 @@ test('deployment-only P3.4A Note smoke covers route content feed and generated s
   assert.match(source, /page\.screenshot/);
 });
 
-test('live production smoke covers domain, clean routes, legacy compatibility, feed, search and telemetry boundaries', () => {
+test('live production smoke covers domain, projected routes, legacy compatibility, feed, search and link policy', () => {
   assert.ok(fs.existsSync(SMOKE), 'missing live production smoke script');
   assert.ok(fs.existsSync(ROUTES), 'missing live production route contract');
   const source = `${fs.readFileSync(ROUTES, 'utf8')}\n${fs.readFileSync(SMOKE, 'utf8')}`;
@@ -193,7 +196,8 @@ test('live production smoke covers domain, clean routes, legacy compatibility, f
   for (const marker of [
     'https://trueruslan.ru/',
     'https://www.trueruslan.ru/',
-    'restart-persistence-is-a-product-contract/',
+    "const NOTE_PATH = 'notes/restart-persistence-is-a-product-contract/'",
+    "const LEGACY_NOTE_DIRECTORY_PATH = 'landing/notes/restart-persistence-is-a-product-contract/'",
     'restart-persistence-is-a-product-contract.html',
     'feed.xml',
     '_search/ru/',
@@ -202,12 +206,16 @@ test('live production smoke covers domain, clean routes, legacy compatibility, f
     'true-ruslan.github.io/trueruslan-landing',
     'link[rel="canonical"]',
     'meta[property="og:url"]',
+    'target',
+    'noopener',
+    'noreferrer',
   ]) {
     assert.ok(source.includes(marker), `missing live smoke marker: ${marker}`);
   }
 
   assert.match(source, /production-artifacts/);
   assert.match(source, /EXPECTED_DEPLOYED_SHA/);
+  assert.match(source, /EXPECT_PROJECTED_PUBLIC_ROUTES/);
   assert.match(source, /page\.screenshot/);
   assert.match(source, /writeFileSync/);
   assert.match(source, /queryPreserved/);
