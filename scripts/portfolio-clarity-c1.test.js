@@ -12,6 +12,11 @@ const FONT_FILES = Object.freeze({
   'docs/assets/fonts/Onest-cyrillic-wght-normal.woff2': '37bc16874135c16134679b1db25b87fe80eb9fcd4ef3666af7c531bfde204fe2',
   'docs/assets/fonts/Onest-latin-wght-normal.woff2': '67849bcc11e02177442da14ad954bfe1cc709553dad137b5003449b303e83fc3',
 });
+const FORBIDDEN_FONT_ORIGINS = Object.freeze([
+  'https://fonts.googleapis.com',
+  'https://fonts.gstatic.com',
+  'https://cdn.jsdelivr.net',
+]);
 
 const EXPECTED_NAV = Object.freeze({
   ru: Object.freeze(['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне']),
@@ -30,6 +35,12 @@ function tocPrimaryLabels() {
   const header = source.match(/\n  header:\n([\s\S]*?)\n    rightItems:/);
   assert.ok(header, 'docs/toc.yaml: navigation.header block missing');
   return [...header[1].matchAll(/^      - text:\s*(.+)$/gm)].map((match) => match[1].trim());
+}
+
+function assertNoRuntimeFontCdn(source, label) {
+  for (const origin of FORBIDDEN_FONT_ORIGINS) {
+    assert.equal(source.includes(origin), false, `${label}: runtime font origin must stay self-hosted: ${origin}`);
+  }
 }
 
 test('C1: standalone RU and EN headers expose exactly five semantic primary destinations', () => {
@@ -65,12 +76,12 @@ test('C1: Onest is self-hosted with safe variable-font fallback and no runtime f
   assert.match(css, /Onest-latin-wght-normal\.woff2["']\)\s*format\(["']woff2["']\)/i);
   assert.match(css, /--tr-font-sans:\s*["']Onest["']/i);
   assert.match(css, /body,[\s\S]*?\.g-root\s*\{[\s\S]*?font-family:\s*var\(--tr-font-sans\)/i);
-  assert.doesNotMatch(css, /fonts\.(?:googleapis|gstatic)\.com|cdn\.jsdelivr\.net/i);
+  assertNoRuntimeFontCdn(css, TYPOGRAPHY);
 
   for (const template of ['templates/index.html', 'templates/index.en.html']) {
     const html = read(template);
     assert.match(html, /_assets\/style\/typography\.css/);
-    assert.doesNotMatch(html, /fonts\.(?:googleapis|gstatic)\.com|cdn\.jsdelivr\.net/i);
+    assertNoRuntimeFontCdn(html, template);
   }
   assert.match(read('docs/.yfm'), /- _assets\/style\/typography\.css/);
 });
