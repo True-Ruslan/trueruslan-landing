@@ -30,6 +30,42 @@
     }
   }
 
+  function resolveBackHref(document, locationObject = root.location) {
+    if (!canReturnToReferrer(document, locationObject)) return resolveSiteHome(locationObject);
+    return new URL(document.referrer).href;
+  }
+
+  function shouldOpenInNewContext(href) {
+    const value = String(href || '').trim();
+    if (!value || value.startsWith('#')) return false;
+    return !/^(?:mailto|tel|javascript|data):/i.test(value);
+  }
+
+  function applyNewTabPolicy(anchor) {
+    if (!anchor || typeof anchor.getAttribute !== 'function' || typeof anchor.setAttribute !== 'function') return false;
+    const href = anchor.getAttribute('href') || anchor.href;
+    if (!shouldOpenInNewContext(href)) return false;
+
+    const tokens = [];
+    const seen = new Set();
+    const currentRel = String(anchor.getAttribute('rel') || '').trim();
+    for (const token of currentRel.split(/\s+/).filter(Boolean)) {
+      const normalized = token.toLowerCase();
+      if (seen.has(normalized)) continue;
+      seen.add(normalized);
+      tokens.push(token);
+    }
+    for (const required of ['noopener', 'noreferrer']) {
+      if (seen.has(required)) continue;
+      seen.add(required);
+      tokens.push(required);
+    }
+
+    anchor.setAttribute('target', '_blank');
+    anchor.setAttribute('rel', tokens.join(' '));
+    return true;
+  }
+
   function createBackControl(document, rootObject = root) {
     const existing = document.querySelector('[data-tr-search-back="true"]');
     if (existing) return existing;
@@ -38,15 +74,11 @@
     const anchor = document.createElement('a');
     anchor.className = 'tr-search-back';
     anchor.dataset.trSearchBack = 'true';
-    anchor.href = resolveSiteHome(rootObject.location);
+    anchor.href = resolveBackHref(document, rootObject.location);
     anchor.setAttribute('aria-label', 'Вернуться на предыдущую страницу');
     anchor.setAttribute('title', 'Вернуться назад');
     anchor.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m11.5 5-5 5 5 5M7 10h7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Назад</span>';
-    anchor.addEventListener('click', (event) => {
-      if (!canReturnToReferrer(document, rootObject.location)) return;
-      event.preventDefault();
-      rootObject.history.back();
-    });
+    applyNewTabPolicy(anchor);
     document.body.prepend(anchor);
     return anchor;
   }
@@ -75,7 +107,10 @@
     const resultContainers = document.querySelectorAll(
       '.dc-search-page__content, .dc-search-page__search-results, [class*="result-list" i]'
     );
-    for (const container of resultContainers) container.classList.add('tr-search-results');
+    for (const container of resultContainers) {
+      container.classList.add('tr-search-results');
+      for (const anchor of container.querySelectorAll('a')) applyNewTabPolicy(anchor);
+    }
 
     const resultItems = document.querySelectorAll(
       '.dc-search-page__search-result, [class*="result-item" i], [class*="search-result" i]'
@@ -83,6 +118,7 @@
     for (const item of resultItems) {
       if (item.closest('header, nav')) continue;
       if (item.querySelector('a')) item.classList.add('tr-search-result');
+      for (const anchor of item.querySelectorAll('a')) applyNewTabPolicy(anchor);
     }
 
     const emptyStates = document.querySelectorAll('.dc-search-page__search-empty, [class*="no-result" i]');
@@ -132,6 +168,9 @@
     findSearchInput,
     resolveSiteHome,
     canReturnToReferrer,
+    resolveBackHref,
+    shouldOpenInNewContext,
+    applyNewTabPolicy,
     createBackControl,
     decorate,
     init,
