@@ -27,11 +27,12 @@ const validPolicy = Object.freeze({
   noscriptTracking: false,
 });
 
-test('copy-assets runs consent-gated Metrica only after clean URLs have produced final HTML', () => {
+test('copy-assets runs link policy after clean URLs and consent-gated Metrica last', () => {
   assert.equal(packageJson.scripts['postprocess:yandex-metrica'], 'node scripts/yandex-metrica-browser-cli.js');
+  assert.equal(packageJson.scripts['postprocess:link-policy'], 'node scripts/link-policy.js');
   assert.match(
     packageJson.scripts['copy-assets'],
-    /postprocess:clean-urls\s*&&\s*npm run postprocess:yandex-metrica$/,
+    /postprocess:clean-urls\s*&&\s*npm run postprocess:link-policy\s*&&\s*npm run postprocess:yandex-metrica$/,
   );
 });
 
