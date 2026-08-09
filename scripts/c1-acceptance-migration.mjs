@@ -32,3 +32,5 @@ insertBefore(
 );
 
 console.log('C1 durable acceptance migration applied');
+
+// Rerun marker after durable-regression matcher correction.
