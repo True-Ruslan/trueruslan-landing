@@ -1,25 +1,19 @@
 # Контакты
 
-Проще всего написать мне напрямую. Если речь о конкретном проекте, коде, статье или техническом вопросе, полезно сразу дать контекст, желаемый результат и важные ограничения.
+Если хотите связаться со мной по работе, open source, преподаванию или с содержательным техническим вопросом — пишите напрямую.
 
-Для задач, где вы рассматриваете платную инженерную работу, наставничество или другой профессиональный формат, сначала можно посмотреть страницу [Работа со мной](./work-with-me.md). Она описывает рабочие границы без каталога услуг и публичных пакетов.
+## Основные контакты
 
-## Написать мне
-
-<div data-tr-collaboration-handoff="contacts"></div>
+- **Telegram:** [@TrueRuslan_Blog](https://t.me/TrueRuslan_Blog)
+- **Email:** [contact@trueruslan.ru](mailto:contact@trueruslan.ru)
 
 ## Где ещё меня можно найти
 
 - **GitHub:** [True-Ruslan](https://github.com/True-Ruslan)
 - **Habr:** [Руслан Немыкин](https://habr.com/ru/users/TrueRuslan/)
-- **Telegram Blog:** [@TrueRuslan_Blog](https://t.me/TrueRuslan_Blog)
 - **LinkedIn:** [Ruslan Nemykin](https://linkedin.com/in/trueruslan)
 
 ## Остальные профили
 
 - **VK:** [Руслан Немыкин](https://vk.com/trueruslan)
 - **Instagram:** [true.ruslan](https://instagram.com/true.ruslan)
-
----
-
-Можно написать и по open source, собственным проектам, преподаванию или с содержательным вопросом по теме, которой я занимаюсь. Страница «Работа со мной» нужна только для квалификации профессионального запроса и не превращает этот раздел в sales funnel.
