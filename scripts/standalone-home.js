@@ -167,9 +167,11 @@ ${actions}
 }
 
 export function renderHomepageCollaborationSummary(collaboration, locale = 'ru') {
-  validateCollaboration(collaboration);
+  const value = validateCollaboration(collaboration);
   const copy = getHomeCopy(locale).collaboration;
-  const category = collaboration.categories.find(({id}) => id === 'engineering') ?? collaboration.categories[0];
+  const workWithMeHref = locale === 'en' ? 'en/work-with-me.html' : 'landing/work-with-me.html';
+  const directHref = value.contact.telegram;
+  const status = value.availability.engineering;
 
   return `<section class="tr-home-section tr-home-collaboration" data-home-collaboration="true" aria-labelledby="home-collaboration-${escapeHtml(locale)}-title">
   <div class="tr-home-collaboration__copy">
@@ -178,10 +180,10 @@ export function renderHomepageCollaborationSummary(collaboration, locale = 'ru')
     <p>${escapeHtml(copy.text)}</p>
   </div>
   <div class="tr-home-collaboration__meta">
-    <p><span>${escapeHtml(copy.availability)}:</span> <strong data-tr-collaboration-home-availability>${escapeHtml(collaborationStatusLabel(collaboration.availability.status))}</strong></p>
+    <p><span>${escapeHtml(copy.availability)}:</span> <strong data-tr-collaboration-home-availability data-status="${escapeHtml(status)}">${escapeHtml(collaborationStatusLabel(status))}</strong></p>
     <div class="tr-home-collaboration__actions">
-      <a class="tr-home-collaboration__action tr-home-collaboration__action--primary" href="${escapeHtml(category.href)}">${escapeHtml(copy.action)}</a>
-      <a class="tr-home-collaboration__action" href="${escapeHtml(collaboration.directHandoff.primary.href)}">${escapeHtml(copy.handoff)}</a>
+      <a class="tr-home-collaboration__action tr-home-collaboration__action--primary" href="${escapeHtml(workWithMeHref)}">${escapeHtml(copy.action)}</a>
+      <a class="tr-home-collaboration__action" href="${escapeHtml(directHref)}">${escapeHtml(copy.handoff)}</a>
     </div>
   </div>
 </section>`;
