@@ -4,11 +4,12 @@ import path from 'node:path';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
+import {renderHomepageBridge} from './standalone-home.js';
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const REGISTRY_PATH = path.join(ROOT, 'data', 'publications.json');
 const PAGE_PATH = path.join(ROOT, 'docs', 'landing', 'publications.md');
 const HOME_TEMPLATE_PATH = path.join(ROOT, 'templates', 'index.html');
-const STANDALONE_HOME_PATH = path.join(ROOT, 'scripts', 'standalone-home.js');
 const TOC_PATH = path.join(ROOT, 'docs', 'toc.yaml');
 const META_PATH = path.join(ROOT, 'data', 'page-meta.json');
 const PACKAGE_PATH = path.join(ROOT, 'package.json');
@@ -54,24 +55,23 @@ test('Diplodoc builds generate publication content before indexing', () => {
   assert.match(packageJson.scripts['build:docs:fast'], /^npm run generate:publications && yfm /);
 });
 
-test('standalone homepage reserves one featured-publications surface after flagship and current-focus context', () => {
+test('C2 homepage exposes Publications through the compact Writing bridge instead of a second catalogue surface', () => {
   const home = read(HOME_TEMPLATE_PATH);
   const flagshipsIndex = home.indexOf('{{HOME_FLAGSHIPS}}');
-  const currentFocusIndex = home.indexOf('id="now-title"');
-  const publicationsIndex = home.indexOf('{{FEATURED_PUBLICATIONS}}');
-  const remainingPlatformIndex = home.indexOf('id="explore-title"');
+  const experienceIndex = home.indexOf('{{HOME_EXPERIENCE_BRIDGE}}');
+  const writingIndex = home.indexOf('{{HOME_WRITING_BRIDGE}}');
+  const collaborationIndex = home.indexOf('{{HOME_COLLABORATION_BRIDGE}}');
 
   assert.notEqual(flagshipsIndex, -1, 'homepage must contain {{HOME_FLAGSHIPS}}');
-  assert.notEqual(currentFocusIndex, -1, 'homepage must contain current-focus context');
-  assert.notEqual(publicationsIndex, -1, 'homepage must contain {{FEATURED_PUBLICATIONS}}');
-  assert.notEqual(remainingPlatformIndex, -1, 'homepage must contain the remaining platform section');
-  assert.equal(home.indexOf('{{FEATURED_PUBLICATIONS}}', publicationsIndex + 1), -1);
-  assert.ok(publicationsIndex > flagshipsIndex, 'featured publications must follow flagship projects');
-  assert.ok(publicationsIndex > currentFocusIndex, 'featured publications must follow current focus');
-  assert.ok(publicationsIndex < remainingPlatformIndex, 'featured publications must precede secondary platform links');
+  assert.ok(experienceIndex > flagshipsIndex, 'experience must follow selected work');
+  assert.ok(writingIndex > experienceIndex, 'writing must follow experience');
+  assert.ok(collaborationIndex > writingIndex, 'collaboration must follow writing');
+  assert.doesNotMatch(home, /\{\{FEATURED_PUBLICATIONS\}\}|id="now-title"|id="explore-title"/);
 
-  const renderer = read(STANDALONE_HOME_PATH);
-  assert.match(renderer, /catalogueHref: 'landing\/publications\.html'/);
+  const writing = renderHomepageBridge('writing', 'ru');
+  assert.match(writing, /href="landing\/notes\.html"/);
+  assert.match(writing, /href="landing\/publications\.html"/);
+  assert.match(writing, /Инженерные материалы/);
 });
 
 test('Publications stays first-class in the content tree while primary navigation uses one Materials entry', () => {
@@ -91,8 +91,8 @@ test('Publications stays first-class in the content tree while primary navigatio
   assert.match(home, /landing\/notes\.html">Материалы<\/a>/);
   assert.doesNotMatch(home, /<nav[^>]*tr-site-nav[\s\S]*?>[\s\S]*?<a[^>]+>Публикации<\/a>[\s\S]*?<\/nav>/);
 
-  const renderer = read(STANDALONE_HOME_PATH);
-  assert.match(renderer, /catalogueHref: 'landing\/publications\.html'/);
+  const writing = renderHomepageBridge('writing', 'ru');
+  assert.match(writing, /href="landing\/publications\.html"/);
 });
 
 test('publications page has canonical metadata/OpenGraph configuration', () => {
