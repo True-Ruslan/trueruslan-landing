@@ -27,3 +27,14 @@ test('production live link verifier no longer requires new-tab attributes from e
   assert.doesNotMatch(smoke, /missing target=_blank:\s*\$\{href\}/);
   assert.doesNotMatch(smoke, /missing noopener\/noreferrer:\s*\$\{href\}/);
 });
+
+test('production generated-search acceptance verifies actual current-tab navigation', () => {
+  const smoke = source();
+
+  assert.doesNotMatch(smoke, /search result does not open in a new tab/);
+  assert.doesNotMatch(smoke, /search result lacks noopener\/noreferrer/);
+  assert.match(smoke, /search result opened a new tab/);
+  assert.match(smoke, /search result did not navigate the current tab/);
+  assert.match(smoke, /page\.once\(['"]popup['"]/);
+  assert.match(smoke, /result\.click\(\)/);
+});
