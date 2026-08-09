@@ -8,6 +8,7 @@ import {fileURLToPath, pathToFileURL} from 'node:url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cleanUrlsPath = path.join(ROOT, 'scripts', 'clean-urls.js');
 const linkPolicyPath = path.join(ROOT, 'scripts', 'link-policy.js');
+const runtimeLinkPolicyPath = path.join(ROOT, 'docs', '_assets', 'script', 'link-policy-runtime.js');
 
 async function loadCleanUrls() {
   return import(pathToFileURL(cleanUrlsPath));
@@ -92,11 +93,14 @@ test('search worker projects landing result routes without mutating registry ide
   assert.match(patched, /replace\(\/\\\.html\$\/, "\/"\)/);
 });
 
-test('final HTML link policy exists in the production build chain', () => {
+test('final HTML and hydration link policy exist in the production build chain', () => {
   assert.ok(fs.existsSync(linkPolicyPath), 'scripts/link-policy.js must exist');
+  assert.ok(fs.existsSync(runtimeLinkPolicyPath), 'runtime link policy must exist');
   const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  const yfm = fs.readFileSync(path.join(ROOT, 'docs', '.yfm'), 'utf8');
   assert.equal(typeof pkg.scripts['postprocess:link-policy'], 'string');
   assert.match(pkg.scripts['copy-assets'], /postprocess:clean-urls[^\n]*postprocess:link-policy[^\n]*postprocess:yandex-metrica/);
+  assert.match(yfm, /_assets\/script\/link-policy-runtime\.js/);
 });
 
 test('link policy module enforces new-tab navigation but preserves local fragments and protocols', async () => {
@@ -104,13 +108,13 @@ test('link policy module enforces new-tab navigation but preserves local fragmen
   const {applyLinkPolicy} = await import(pathToFileURL(linkPolicyPath));
   assert.equal(typeof applyLinkPolicy, 'function');
 
-  const input = '<main>'
+  const input = '<html><head></head><body><main>'
     + '<a href="/projects/">Projects</a>'
     + '<a href="https://github.com/True-Ruslan" rel="nofollow">GitHub</a>'
     + '<a href="#architecture">Architecture</a>'
     + '<a href="mailto:ruslan@example.com">Mail</a>'
     + '<a href="tel:+10000000000">Call</a>'
-    + '</main>';
+    + '</main></body></html>';
   const output = applyLinkPolicy(input);
 
   assert.match(output, /href="\/projects\/"[^>]*target="_blank"[^>]*rel="[^"]*noopener[^"]*noreferrer[^"]*"/);
@@ -118,5 +122,6 @@ test('link policy module enforces new-tab navigation but preserves local fragmen
   assert.doesNotMatch(output, /href="#architecture"[^>]*target=/);
   assert.doesNotMatch(output, /href="mailto:ruslan@example\.com"[^>]*target=/);
   assert.doesNotMatch(output, /href="tel:\+10000000000"[^>]*target=/);
+  assert.match(output, /<script src="_assets\/script\/link-policy-runtime\.js" defer data-tr-link-policy-runtime><\/script>/);
   assert.equal(applyLinkPolicy(output), output, 'link policy must be idempotent');
 });
