@@ -43,6 +43,24 @@ test('Work with me production verifier follows canonical contextual routes and s
 
 test('favicon production verifier uses the canonical resume route model', () => {
   const source = read('production-favicon-smoke.cjs');
-  assert.match(source, /RESUME_URL/);
+  assert.match(source, /\{APEX, RESUME_URL\}\s*=\s*require\(['"]\.\/production-live-routes\.cjs['"]\)/);
   assert.doesNotMatch(source, /new URL\(['"]landing\/resume\.html['"]/);
+});
+
+test('P3.4A-F production Note search verifiers accept canonical result routes only', () => {
+  const cases = [
+    ['production-deployment-verification-note-smoke.cjs', 'deployment-success-is-not-production-verification'],
+    ['production-clean-urls-note-smoke.cjs', 'clean-urls-without-cloudflare-routing'],
+    ['production-hybrid-recognition-note-smoke.cjs', 'hybrid-cv-ai-recognition-boundaries'],
+    ['production-gametests-installed-acceptance-note-smoke.cjs', 'gametests-vs-installed-gameplay-acceptance'],
+    ['production-passive-pdf-semantic-completeness-note-smoke.cjs', 'passive-pdf-validation-vs-semantic-completeness'],
+    ['production-evidence-driven-project-state-note-smoke.cjs', 'evidence-driven-project-state'],
+  ];
+
+  for (const [file, slug] of cases) {
+    const source = read(file);
+    const canonicalSelector = `a[href*="notes/${slug}/"]:not([href*="landing/notes/${slug}/"])`;
+    assert.ok(source.includes(canonicalSelector), `${file} must select canonical search result ${canonicalSelector}`);
+    assert.doesNotMatch(source, new RegExp(`a\\[href\\*=\\"landing/notes/${slug}`), `${file} still treats legacy search href as canonical`);
+  }
 });
