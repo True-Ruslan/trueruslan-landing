@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 
 import {loadPublicationRegistry} from './publication-registry.js';
 import {renderPublicationCatalogue} from './publication-renderer.js';
+import {renderHomepageBridge} from './standalone-home.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -80,7 +81,7 @@ test('English Publications is one RU EN route pair with metadata and bounded Eng
   assert.match(toc, /name: Publications\s+href: \.\/en\/publications\.md/);
 });
 
-test('P3.5C keeps one generated search and integrates English Publications across build and home navigation', () => {
+test('P3.5C keeps one generated search and integrates English Publications through C2 Writing and Personal bridges', () => {
   const generator = read('scripts/publication-content-generator.js');
   assert.match(generator, /publications-catalogue\.en\.md/);
   assert.match(generator, /locale: 'en'/);
@@ -90,10 +91,16 @@ test('P3.5C keeps one generated search and integrates English Publications acros
   assert.match(copyAssets, /locale: 'en'/);
 
   const home = read('templates/index.en.html');
-  assert.match(home, /href="en\/now\.html"/);
   assert.match(home, /href="en\/publications\.html">Writing<\/a>/);
-  assert.match(home, /<h3>Publications<\/h3>/);
-  assert.doesNotMatch(home, /Now \(RU\)|PUBLICATIONS \/ RU|Open Russian page/);
+  assert.match(home, /\{\{HOME_WRITING_BRIDGE\}\}/);
+  assert.match(home, /\{\{HOME_PERSONAL_BRIDGE\}\}/);
+  assert.doesNotMatch(home, /Now \(RU\)|PUBLICATIONS \/ RU|Open Russian page|Selected English layer/);
+
+  const writing = renderHomepageBridge('writing', 'en');
+  const personal = renderHomepageBridge('personal', 'en');
+  assert.match(writing, /href="en\/publications\.html"/);
+  assert.match(writing, /Publications →/);
+  assert.match(personal, /href="en\/now\.html"/);
 
   const searchSmoke = read('scripts/search-smoke.cjs');
   assert.match(searchSmoke, /assertEnglishPublicationsSearchCoverage/);
