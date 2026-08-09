@@ -297,6 +297,21 @@ The feature is accepted only on exact deployed SHA `433ee076f3f90dfe14feea97f59a
 
 ---
 
+### C1 — Presentation foundation — PRODUCTION ACCEPTED
+
+The first runtime slice of **Portfolio Clarity & Scanability** is production-accepted. It establishes self-hosted Onest Variable typography, bounded readability tokens and one five-destination RU/EN primary navigation while preserving secondary content, static-first/no-JS behavior and every existing quality gate.
+
+- PR #174 squash / deployed SHA: `9cc9d69e6b49e3e9f3432788f0deb943d7acebf5`;
+- final exact-head Build #1463 / `31304311486` — SUCCESS;
+- Pages #202 / `31304612906` — SUCCESS;
+- Pages deployment `5817134996` — success;
+- Production Live Smoke #354 / `31304642055` — SUCCESS;
+- production artifact `9035548962`;
+- production digest `sha256:41af56c91d59b5c80134d49b1928b0fde348384334c8863ddd9c74c9f4e5c85c`;
+- production observation: `2026-08-09T08:55:33.810Z`.
+
+The durable acceptance ledger is `docs/acceptance/2026-08-09-portfolio-clarity-c1.md`. This is an isolated foundation slice, not the final redesign measurement baseline: **P3.6 — Measurement checkpoint — NEXT / WAITING** remains unchanged until the full accepted redesign and its new observation window exist.
+
 ## 3. External project evidence boundaries
 
 Content Freshness observation от **2026-08-08** был вручную reconciled с текущими репозиториями. Новые release/PR/activity signals обновляют evidence snapshot, но сами по себе не повышают lifecycle и не заменяют product-owner/installed acceptance.
