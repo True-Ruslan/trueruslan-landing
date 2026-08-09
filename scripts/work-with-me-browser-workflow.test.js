@@ -26,12 +26,13 @@ test('Build runs a dedicated Work with me browser/no-JS/search/a11y smoke and pr
   assert.match(workflow, /cp artifacts\/work-with-me-en-desktop\.png quality-artifacts\/work-with-me-en-desktop\.png/);
 });
 
-test('dedicated Work with me smoke covers both locales, no-JS, search, Contacts and exact CTA boundaries', () => {
+test('dedicated Work with me smoke covers both locales, no-JS, search, simple Contacts and exact CTA boundaries', () => {
   for (const literal of [
-    '/landing/work-with-me/',
+    '/work-with-me/',
     '/en/work-with-me/',
     'javaScriptEnabled: false',
-    '/landing/contacts/',
+    '/contacts/',
+    'Основные контакты',
     'ALLOWED_CONTEXTUAL',
     'FORBIDDEN_CONTEXTUAL',
     '/_search/ru/',
@@ -39,7 +40,15 @@ test('dedicated Work with me smoke covers both locales, no-JS, search, Contacts 
     'assertNoHorizontalOverflow',
     'https://t.me/TrueRuslan',
     'mailto:ruslan.nemikin@gmail.com',
+    'https://t.me/TrueRuslan_Blog',
+    'mailto:contact@trueruslan.ru',
+    'Contacts must not render the collaboration handoff',
+    'Contacts Telegram must follow the global new-tab policy',
+    'Contacts mailto must stay in the current context',
   ]) assert.ok(smoke.includes(literal), `Work with me browser smoke missing contract: ${literal}`);
+
+  assert.equal(smoke.includes('/landing/work-with-me/'), false, 'Work with me smoke must not use the legacy RU route');
+  assert.equal(smoke.includes('/landing/contacts/'), false, 'Contacts smoke must not use the legacy RU route');
 });
 
 test('Firefox and WebKit compatibility matrix includes Work with me', () => {
