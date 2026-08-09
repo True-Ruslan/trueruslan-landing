@@ -1,0 +1,40 @@
+name: C1 unit fix
+
+on:
+  push:
+    branches:
+      - feat/portfolio-clarity-c1-foundation
+    paths:
+      - .github/workflows/c1-unit-fix.yml
+      - scripts/c1-unit-fix.mjs
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/portfolio-clarity-c1-foundation
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Apply deterministic fixes
+        run: node scripts/c1-unit-fix.mjs
+      - name: Verify unit suite before commit
+        run: npm test
+      - name: Remove temporary migration files
+        run: rm scripts/c1-unit-fix.mjs .github/workflows/c1-unit-fix.yml
+      - name: Commit reviewed fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git diff --cached --quiet && exit 1
+          git commit -m "fix: align C1 unit contracts and font bytes"
+          git push origin HEAD:feat/portfolio-clarity-c1-foundation
