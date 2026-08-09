@@ -136,7 +136,7 @@ async function assertNormalizedCaseStudy(page, {
     if (!text.includes(marker)) throw new Error(`${slug} is missing boundary marker ${marker}.`);
   }
   for (const fragment of relatedHrefFragments) {
-    await document.locator(`a[href*="${fragment}"]`).first().waitFor({state: 'visible'});
+    await document.locator(`a[href*="${fragment}"]:visible`).first().waitFor({state: 'visible'});
   }
 
   if (requireTimeline) await assertProjectTimeline(page, slug);
