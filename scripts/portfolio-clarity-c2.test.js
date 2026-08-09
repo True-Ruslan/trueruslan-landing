@@ -14,6 +14,7 @@ const PROJECTS = path.join(ROOT, 'data', 'projects.json');
 const EVIDENCE = path.join(ROOT, 'data', 'project-evidence.json');
 const RU_TEMPLATE = path.join(ROOT, 'templates', 'index.html');
 const EN_TEMPLATE = path.join(ROOT, 'templates', 'index.en.html');
+const TOC = path.join(ROOT, 'docs', 'toc.yaml');
 
 const read = (filePath) => fs.readFileSync(filePath, 'utf8');
 const count = (source, marker) => source.split(marker).length - 1;
@@ -26,6 +27,21 @@ function assertOrdered(source, markers, label) {
     assert.ok(index > previous, `${label}: expected ${marker} after previous homepage layer`);
     previous = index;
   }
+}
+
+function primaryNavTexts(template) {
+  const start = template.indexOf('<nav class="tr-site-nav"');
+  const end = template.indexOf('</nav>', start);
+  assert.ok(start !== -1 && end > start, 'primary navigation must exist');
+  return [...template.slice(start, end).matchAll(/<a[^>]*>([^<]+)<\/a>/g)].map((match) => match[1].trim());
+}
+
+function tocHeaderTexts() {
+  const toc = read(TOC);
+  const start = toc.indexOf('    leftItems:');
+  const end = toc.indexOf('    rightItems:', start);
+  assert.ok(start !== -1 && end > start, 'Diplodoc primary header must exist');
+  return [...toc.slice(start, end).matchAll(/- text: ([^\n]+)/g)].map((match) => match[1].trim());
 }
 
 function englishProjectHref(href) {
@@ -60,6 +76,19 @@ test('C2 templates reserve one ordered fast-scan hierarchy in both locales', () 
       '{{HOME_PERSONAL_BRIDGE}}',
     ], locale);
   }
+});
+
+test('C2 primary navigation is bounded to five semantic destinations and Contacts remains secondary', () => {
+  const expectedRu = ['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне'];
+  const expectedEn = ['Projects', 'Experience', 'Writing', 'Work with me', 'About'];
+
+  assert.deepEqual(primaryNavTexts(read(RU_TEMPLATE)), expectedRu);
+  assert.deepEqual(primaryNavTexts(read(EN_TEMPLATE)), expectedEn);
+  assert.deepEqual(tocHeaderTexts(), expectedRu);
+
+  const toc = read(TOC);
+  assert.match(toc, /- name: Контакты\s+href: \.\/landing\/contacts\.md/);
+  assert.doesNotMatch(toc.slice(toc.indexOf('    leftItems:'), toc.indexOf('    rightItems:')), /text: Контакты/);
 });
 
 test('C2 rendered homepage exposes four proof facts, three selected projects and three compact bridges', () => {
