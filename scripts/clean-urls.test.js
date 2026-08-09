@@ -79,6 +79,7 @@ test('patchSearchWorker converts public result links without mutating search ide
   const patched = patchSearchWorker(source);
 
   assert.match(patched, /entry\.ref\.replace\(\/&\\\/\?\//);
+  assert.match(patched, /replace\(\/\^landing\\\/\//);
   assert.match(patched, /replace\(\/index\\\.html\$\/, ""\)/);
   assert.match(patched, /replace\(\/\\\.html\$\/, "\/"\)/);
   assert.equal(patchSearchWorker(patched), patched);
@@ -88,7 +89,7 @@ test('patchSearchWorker converts public result links without mutating search ide
   );
 });
 
-test('publishDirectoryRoutes creates directory indexes, rewrites references and preserves legacy entrypoints', async () => {
+test('publishDirectoryRoutes creates projected indexes, rewrites references and preserves landing aliases', async () => {
   const {publishDirectoryRoutes} = await loadCleanUrlsModule();
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'clean-urls-'));
   const pagePath = path.join(outputDir, 'landing', 'resume.html');
@@ -113,28 +114,36 @@ test('publishDirectoryRoutes creates directory indexes, rewrites references and 
   const result = publishDirectoryRoutes({outputDir, siteUrl: 'https://trueruslan.ru'});
 
   assert.equal(result.siteUrl, 'https://trueruslan.ru/');
-  assert.deepEqual(result.routes, ['landing/projects/vlezet/', 'landing/resume/']);
+  assert.deepEqual(result.routes, ['projects/vlezet/', 'resume/']);
+  assert.ok(fs.existsSync(path.join(outputDir, 'resume', 'index.html')));
+  assert.ok(fs.existsSync(path.join(outputDir, 'projects', 'vlezet', 'index.html')));
   assert.ok(fs.existsSync(path.join(outputDir, 'landing', 'resume', 'index.html')));
   assert.ok(fs.existsSync(path.join(outputDir, 'landing', 'projects', 'vlezet', 'index.html')));
 
-  const cleanPage = fs.readFileSync(path.join(outputDir, 'landing', 'resume', 'index.html'), 'utf8');
-  assert.match(cleanPage, /<base href="\.\.\/\.\.\/">/);
-  assert.match(cleanPage, /"router":\{"pathname":"landing\/resume\/","depth":3,"base":"\.\.\/\.\.\/"\}/);
-  assert.match(cleanPage, /https:\/\/trueruslan\.ru\/landing\/resume\//);
-  assert.match(cleanPage, /landing\/projects\/#work/);
+  const cleanPage = fs.readFileSync(path.join(outputDir, 'resume', 'index.html'), 'utf8');
+  assert.match(cleanPage, /<base href="\.\.\/">/);
+  assert.match(cleanPage, /"router":\{"pathname":"resume\/","depth":2,"base":"\.\.\/"\}/);
+  assert.match(cleanPage, /https:\/\/trueruslan\.ru\/resume\//);
+  assert.doesNotMatch(cleanPage, /https:\/\/trueruslan\.ru\/landing\/resume\//);
+  assert.match(cleanPage, /projects\/#work/);
 
-  const nestedCleanPage = fs.readFileSync(path.join(outputDir, 'landing', 'projects', 'vlezet', 'index.html'), 'utf8');
-  assert.match(nestedCleanPage, /<base href="\.\.\/\.\.\/\.\.\/">/);
-  assert.match(nestedCleanPage, /"router":\{"pathname":"landing\/projects\/vlezet\/","depth":4,"base":"\.\.\/\.\.\/\.\.\/"\}/);
+  const nestedCleanPage = fs.readFileSync(path.join(outputDir, 'projects', 'vlezet', 'index.html'), 'utf8');
+  assert.match(nestedCleanPage, /<base href="\.\.\/\.\.\/">/);
+  assert.match(nestedCleanPage, /"router":\{"pathname":"projects\/vlezet\/","depth":3,"base":"\.\.\/\.\.\/"\}/);
 
   const legacyPage = fs.readFileSync(pagePath, 'utf8');
   assert.match(legacyPage, /http-equiv="refresh"/i);
-  assert.match(legacyPage, /url=https:\/\/trueruslan\.ru\/landing\/resume\//i);
-  assert.match(legacyPage, /rel="canonical" href="https:\/\/trueruslan\.ru\/landing\/resume\/"/);
+  assert.match(legacyPage, /url=https:\/\/trueruslan\.ru\/resume\//i);
+  assert.match(legacyPage, /rel="canonical" href="https:\/\/trueruslan\.ru\/resume\/"/);
 
-  assert.equal(fs.readFileSync(path.join(outputDir, 'sitemap.xml'), 'utf8'), '<loc>https://trueruslan.ru/landing/resume/</loc>');
+  const legacyDirectoryPage = fs.readFileSync(path.join(outputDir, 'landing', 'resume', 'index.html'), 'utf8');
+  assert.match(legacyDirectoryPage, /data-tr-clean-url-redirect/);
+  assert.match(legacyDirectoryPage, /url=https:\/\/trueruslan\.ru\/resume\//i);
+
+  assert.equal(fs.readFileSync(path.join(outputDir, 'sitemap.xml'), 'utf8'), '<loc>https://trueruslan.ru/resume/</loc>');
   assert.equal(fs.readFileSync(searchRegistry, 'utf8'), 'self.registry={"landing/resume.html":{"title":"Resume"}};');
   assert.equal(fs.readFileSync(searchIndex, 'utf8'), 'self.index={"fieldVectors":[["title/landing/resume.html",[]]]};');
+  assert.match(fs.readFileSync(searchApi, 'utf8'), /replace\(\/\^landing\\\/\//);
   assert.match(fs.readFileSync(searchApi, 'utf8'), /replace\(\/\\\.html\$\/, "\/"\)/);
-  assert.match(fs.readFileSync(path.join(outputDir, 'index.html'), 'utf8'), /href="landing\/resume\/"/);
+  assert.match(fs.readFileSync(path.join(outputDir, 'index.html'), 'utf8'), /href="resume\/"/);
 });
