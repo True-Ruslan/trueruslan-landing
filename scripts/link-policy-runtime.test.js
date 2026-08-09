@@ -8,9 +8,10 @@ import {fileURLToPath} from 'node:url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCE_PATH = path.join(ROOT, 'docs', '_assets', 'script', 'link-policy-runtime.js');
 
-function loadApi() {
+function loadApi({href = 'https://trueruslan.ru/'} = {}) {
   const source = fs.readFileSync(SOURCE_PATH, 'utf8');
-  const context = {URL};
+  const location = new URL(href);
+  const context = {URL, location};
   vm.createContext(context);
   vm.runInContext(source, context, {filename: SOURCE_PATH});
   return context.TrueRuslanLinkPolicy;
@@ -31,28 +32,6 @@ function fakeAnchor(href, {target = null, rel = ''} = {}) {
   };
 }
 
-function fakeClick(target, overrides = {}) {
-  return {
-    target,
-    button: 0,
-    ctrlKey: false,
-    metaKey: false,
-    shiftKey: false,
-    altKey: false,
-    defaultPrevented: false,
-    prevented: false,
-    stopped: false,
-    preventDefault() {
-      this.defaultPrevented = true;
-      this.prevented = true;
-    },
-    stopImmediatePropagation() {
-      this.stopped = true;
-    },
-    ...overrides,
-  };
-}
-
 test('runtime policy keeps relative same-site navigation in the current tab', () => {
   const api = loadApi();
   const search = fakeAnchor('_search/ru/');
@@ -61,8 +40,21 @@ test('runtime policy keeps relative same-site navigation in the current tab', ()
   assert.equal(search.attrs.has('rel'), false);
 });
 
-test('runtime policy strips stale new-tab policy from same-site language links', () => {
-  const api = loadApi();
+test('runtime policy treats the active deployment origin as internal', () => {
+  const api = loadApi({href: 'http://127.0.0.1:4192/_search/ru/'});
+  const searchResult = fakeAnchor('http://127.0.0.1:4192/en/work-with-me/', {
+    target: '_blank',
+    rel: 'noopener noreferrer',
+  });
+
+  assert.equal(api.shouldOpenInNewContext(searchResult.href), false);
+  assert.equal(api.normalizeAnchor(searchResult), true);
+  assert.equal(searchResult.attrs.has('target'), false);
+  assert.equal(searchResult.attrs.has('rel'), false);
+});
+
+test('runtime policy strips stale new-tab policy from canonical same-site language links', () => {
+  const api = loadApi({href: 'http://127.0.0.1:4192/_search/ru/'});
   const language = fakeAnchor('https://trueruslan.ru/en/', {target: '_blank', rel: 'alternate noopener noreferrer'});
   assert.equal(api.normalizeAnchor(language), true);
   assert.equal(language.attrs.has('target'), false);
@@ -91,72 +83,22 @@ test('runtime policy keeps same-page fragments and protocol actions current-cont
   }
 });
 
-test('interaction guard owns ordinary internal clicks before third-party handlers can reopen a popup', () => {
+test('interaction guard repairs a stale internal target before pointer/click default navigation', () => {
   const api = loadApi();
   const listeners = new Map();
-  const assigned = [];
   const document = {
     documentElement: {dataset: {}},
     addEventListener(type, listener, capture) {
       listeners.set(type, {listener, capture});
     },
   };
-  const rootObject = {
-    location: {
-      href: 'https://trueruslan.ru/_search/ru/',
-      assign(value) { assigned.push(value); },
-    },
-  };
-
-  assert.equal(api.installInteractionGuard(document, rootObject), true);
+  assert.equal(api.installInteractionGuard(document), true);
   assert.equal(listeners.get('pointerdown')?.capture, true);
   assert.equal(listeners.get('click')?.capture, true);
 
   const internal = fakeAnchor('/en/work-with-me/', {target: '_blank', rel: 'noopener noreferrer'});
-  const click = fakeClick(internal);
-  listeners.get('click').listener(click);
-
-  assert.equal(click.prevented, true, 'ordinary internal click must suppress third-party/default popup navigation');
-  assert.equal(click.stopped, true, 'ordinary internal click must stop later third-party click handlers');
-  assert.deepEqual(assigned, ['https://trueruslan.ru/en/work-with-me/']);
+  listeners.get('click').listener({target: internal});
   assert.equal(internal.attrs.has('target'), false);
   assert.equal(internal.attrs.has('rel'), false);
-  assert.equal(api.installInteractionGuard(document, rootObject), true, 'guard installation must be idempotent');
-});
-
-test('interaction guard preserves explicit modified/middle-click and external navigation semantics', () => {
-  const api = loadApi();
-  const listeners = new Map();
-  const assigned = [];
-  const document = {
-    documentElement: {dataset: {}},
-    addEventListener(type, listener, capture) {
-      listeners.set(type, {listener, capture});
-    },
-  };
-  const rootObject = {
-    location: {
-      href: 'https://trueruslan.ru/_search/ru/',
-      assign(value) { assigned.push(value); },
-    },
-  };
-  api.installInteractionGuard(document, rootObject);
-
-  for (const overrides of [{metaKey: true}, {ctrlKey: true}, {shiftKey: true}, {button: 1}]) {
-    const click = fakeClick(fakeAnchor('/projects/notchhub/'), overrides);
-    listeners.get('click').listener(click);
-    assert.equal(click.prevented, false);
-    assert.equal(click.stopped, false);
-  }
-
-  const external = fakeClick(fakeAnchor('https://github.com/True-Ruslan'));
-  listeners.get('click').listener(external);
-  assert.equal(external.prevented, false);
-  assert.equal(external.stopped, false);
-
-  const mailto = fakeClick(fakeAnchor('mailto:nemykin@true-ruslan.ru'));
-  listeners.get('click').listener(mailto);
-  assert.equal(mailto.prevented, false);
-  assert.equal(mailto.stopped, false);
-  assert.deepEqual(assigned, []);
+  assert.equal(api.installInteractionGuard(document), true, 'guard installation must be idempotent');
 });
