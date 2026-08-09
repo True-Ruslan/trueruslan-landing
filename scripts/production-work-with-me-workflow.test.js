@@ -48,3 +48,23 @@ test('production Work with me smoke remains SHA-bound and checks the bounded pro
 
   assert.doesNotMatch(smoke, /mailto:(?:contact@trueruslan\.ru|ruslan\.nemikin@gmail\.com)/i);
 });
+
+test('production homepage verifier follows the C2 fast-scan hierarchy instead of removed C1 path cards', () => {
+  for (const literal of [
+    "[data-home-proof]",
+    "[data-home-flagship]",
+    "[data-home-bridge=\"experience\"]",
+    "[data-home-bridge=\"writing\"]",
+    "[data-home-collaboration=\"true\"]",
+    "[data-home-bridge=\"personal\"]",
+    'C2 homepage must expose exactly four proof facts',
+    'C2 homepage must preserve exactly three selected projects',
+    'C2 homepage order drifted after selected work',
+    'positive-first homepage collaboration copy is missing',
+  ]) assert.ok(smoke.includes(literal), `production C2 homepage verifier missing contract: ${literal}`);
+
+  assert.doesNotMatch(smoke, /\[data-home-path\]/);
+  assert.doesNotMatch(smoke, /#now-title/);
+  assert.doesNotMatch(smoke, /homepage primary path count drifted/);
+  assert.doesNotMatch(smoke, /primaryPaths:\s*3/);
+});
