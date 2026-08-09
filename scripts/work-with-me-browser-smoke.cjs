@@ -11,25 +11,25 @@ const {chromium} = requireQualityTool('playwright');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright');
 
 const LOCALES = Object.freeze({
-  ru: Object.freeze({route: '/landing/work-with-me/', heading: 'Работа со мной', home: '/', workHref: 'landing/work-with-me/', status: 'ограниченная доступность'}),
+  ru: Object.freeze({route: '/work-with-me/', heading: 'Работа со мной', home: '/', workHref: 'work-with-me/', status: 'ограниченная доступность'}),
   en: Object.freeze({route: '/en/work-with-me/', heading: 'Work with me', home: '/en/', workHref: 'en/work-with-me/', status: 'limited availability'}),
 });
 
 const ALLOWED_CONTEXTUAL = Object.freeze([
-  '/landing/projects/portfolio-platform/',
-  '/landing/projects/notchhub/',
-  '/landing/notes/deployment-success-is-not-production-verification/',
-  '/landing/notes/server-authoritative-ai-npcs/',
+  '/projects/portfolio-platform/',
+  '/projects/notchhub/',
+  '/notes/deployment-success-is-not-production-verification/',
+  '/notes/server-authoritative-ai-npcs/',
   '/en/projects/portfolio-platform/',
   '/en/projects/notchhub/',
   '/en/notes/server-authoritative-ai-npcs/',
 ]);
 const FORBIDDEN_CONTEXTUAL = Object.freeze([
-  '/landing/about/',
-  '/landing/resume/',
-  '/landing/photos/',
-  '/landing/bibliography/',
-  '/landing/engineering-map/',
+  '/about/',
+  '/resume/',
+  '/photos/',
+  '/bibliography/',
+  '/engineering-map/',
 ]);
 const FORBIDDEN_LEAD_RUNTIME = /(?:hubspot|salesforce|calendly|typeform|tally\.so|forms\.gle|stripe\.com|paypal\.com)/i;
 
@@ -117,16 +117,24 @@ async function assertContacts(browser, baseUrl) {
   const runtime = await createScenarioPage(browser, {viewport: VIEWPORTS.desktop, colorScheme: 'dark'});
   const {page} = runtime;
   try {
-    const response = await page.goto(`${baseUrl}/landing/contacts/`, {waitUntil: 'networkidle'});
+    const response = await page.goto(`${baseUrl}/contacts/`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error('Contacts unavailable');
-    if (await page.locator('[data-tr-collaboration-rendered="handoff"]').count() < 1) throw new Error('Contacts canonical handoff missing');
-    if (await page.locator('a[href="https://t.me/TrueRuslan"]').count() < 1) throw new Error('Contacts Telegram handoff missing');
-    if (await page.locator('a[href="mailto:ruslan.nemikin@gmail.com"]').count() < 1) throw new Error('Contacts email handoff missing');
+    const bodyText = await page.locator('body').innerText();
+    if (!bodyText.includes('Основные контакты')) throw new Error('Contacts primary contact heading missing');
+    if (await page.locator('[data-tr-collaboration-rendered="handoff"]').count() !== 0) throw new Error('Contacts must not render the collaboration handoff');
+
+    const telegram = page.locator('a[href="https://t.me/TrueRuslan_Blog"]');
+    const email = page.locator('a[href="mailto:contact@trueruslan.ru"]');
+    if (await telegram.count() < 1) throw new Error('Contacts Telegram link missing');
+    if (await email.count() < 1) throw new Error('Contacts email link missing');
+    if (await telegram.first().getAttribute('target') !== '_blank') throw new Error('Contacts Telegram must follow the global new-tab policy');
+    const telegramRel = new Set(String(await telegram.first().getAttribute('rel') || '').split(/\s+/));
+    if (!telegramRel.has('noopener') || !telegramRel.has('noreferrer')) throw new Error('Contacts Telegram lacks noopener/noreferrer');
+    if (await email.first().getAttribute('target')) throw new Error('Contacts mailto must stay in the current context');
+
     for (const token of ['GitHub', 'Habr', 'LinkedIn']) {
-      if (!(await page.locator('body').innerText()).includes(token)) throw new Error(`Contacts external profile missing: ${token}`);
+      if (!bodyText.includes(token)) throw new Error(`Contacts external profile missing: ${token}`);
     }
-    const workLinks = page.locator('a[href*="work-with-me/"]');
-    if (await workLinks.count() < 1) throw new Error('Contacts Work with me link missing');
     assertNoSalesRuntime(await page.content(), 'Contacts');
   } finally {
     await runtime.close();
