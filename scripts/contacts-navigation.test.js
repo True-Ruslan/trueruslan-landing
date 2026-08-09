@@ -21,7 +21,8 @@ test('Contacts uses a simple primary contact block without the collaboration han
 
   assert.match(contacts, /## Основные контакты/);
   assert.match(contacts, /\[@TrueRuslan_Blog\]\(https:\/\/t\.me\/TrueRuslan_Blog\)/);
-  assert.match(contacts, /\[contact@trueruslan\.ru\]\(mailto:contact@trueruslan\.ru\)/);
+  assert.match(contacts, /\[nemykin@true-ruslan\.ru\]\(mailto:nemykin@true-ruslan\.ru\)/);
+  assert.doesNotMatch(contacts, /contact@trueruslan\.ru|ruslan\.nemikin@gmail\.com/i);
   assert.doesNotMatch(contacts, /data-tr-collaboration-handoff/);
   assert.doesNotMatch(contacts, /## Написать мне/);
   assert.doesNotMatch(contacts, /Описать задачу/i);
