@@ -26,3 +26,9 @@ test('Contacts uses a simple primary contact block without the collaboration han
   assert.doesNotMatch(contacts, /## Написать мне/);
   assert.doesNotMatch(contacts, /Описать задачу/i);
 });
+
+test('collaboration postprocessor no longer owns or mutates the Contacts page', () => {
+  const collaboration = read('scripts/collaboration.js');
+  assert.doesNotMatch(collaboration, /landing\/contacts\.html/);
+  assert.doesNotMatch(collaboration, /handoff for Contacts/i);
+});
