@@ -106,21 +106,53 @@ async function verifyNoJavaScript(browser, url, locale) {
 async function verifyHomepage(page, url, locale) {
   const response = await page.goto(url, {waitUntil: 'networkidle', timeout: 45000});
   assert(response?.ok(), `${locale} homepage HTTP ${response?.status() ?? 'none'}`);
-  assert(await page.locator('[data-home-path]').count() === 3, `${locale}: homepage primary path count drifted`);
+
+  assert(await page.locator('[data-home-proof]').count() === 4, `${locale}: C2 homepage must expose exactly four proof facts`);
+  assert(await page.locator('[data-home-flagship]').count() === 3, `${locale}: C2 homepage must preserve exactly three selected projects`);
+  for (const kind of ['experience', 'writing', 'personal']) {
+    assert(
+      await page.locator(`[data-home-bridge="${kind}"]`).count() === 1,
+      `${locale}: C2 homepage ${kind} bridge missing/duplicated`,
+    );
+  }
   assert(await page.locator('[data-home-collaboration="true"]').count() === 1, `${locale}: collaboration bridge missing/duplicated`);
-  const internalCta = page.locator('[data-home-collaboration="true"] a[href]').first();
+
+  const bodyText = await page.locator('body').innerText();
+  const positiveFirstCopy = locale === 'ru' ? 'Помогаю с backend-сервисами' : 'I help with backend services';
+  assert(bodyText.includes(positiveFirstCopy), `${locale}: positive-first homepage collaboration copy is missing`);
+
+  const primaryNavItems = await page.locator('.tr-site-nav > a').allInnerTexts();
+  assert(primaryNavItems.length === 5, `${locale}: C2 primary navigation must contain exactly five semantic destinations`);
+  if (locale === 'ru') {
+    assert(!primaryNavItems.includes('Контакты'), 'ru: Contacts must remain outside primary navigation');
+    assert(await page.locator('footer a[href*="contacts"]').count() >= 1, 'ru: secondary Contacts destination missing from footer');
+  }
+
+  const internalCta = page.locator('.tr-home-collaboration__action--primary').first();
+  assert(await internalCta.count() === 1, `${locale}: homepage collaboration primary CTA missing`);
   assert(!(await internalCta.getAttribute('target')), `${locale}: internal homepage CTA must stay in current tab`);
+
   const ordering = await page.evaluate(() => {
-    const flagship = document.querySelector('[data-home-flagship]')?.closest('section');
-    const bridge = document.querySelector('[data-home-collaboration="true"]');
-    const now = document.querySelector('#now-title')?.closest('section');
-    return Boolean(flagship && bridge && now
-      && (flagship.compareDocumentPosition(bridge) & Node.DOCUMENT_POSITION_FOLLOWING)
-      && (bridge.compareDocumentPosition(now) & Node.DOCUMENT_POSITION_FOLLOWING));
+    const selectedWork = document.querySelector('[data-home-flagship]')?.closest('section');
+    const experience = document.querySelector('[data-home-bridge="experience"]');
+    const writing = document.querySelector('[data-home-bridge="writing"]');
+    const collaboration = document.querySelector('[data-home-collaboration="true"]');
+    const personal = document.querySelector('[data-home-bridge="personal"]');
+    const nodes = [selectedWork, experience, writing, collaboration, personal];
+    if (nodes.some((node) => !node)) return false;
+    return nodes.slice(0, -1).every((node, index) =>
+      Boolean(node.compareDocumentPosition(nodes[index + 1]) & Node.DOCUMENT_POSITION_FOLLOWING));
   });
-  assert(ordering, `${locale}: collaboration bridge ordering drifted`);
+  assert(ordering, `${locale}: C2 homepage order drifted after selected work`);
+
   assertNoSalesRuntime(await page.content(), `${locale} homepage`);
-  return {status: response.status(), primaryPaths: 3, collaborationBridge: true};
+  return {
+    status: response.status(),
+    proofFacts: 4,
+    selectedProjects: 3,
+    primaryNavigationItems: primaryNavItems.length,
+    collaborationBridge: true,
+  };
 }
 
 async function verifyContacts(page) {
