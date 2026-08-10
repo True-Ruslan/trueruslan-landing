@@ -67,6 +67,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/sources-knowledge-base-smoke.cjs 2>&1 | tee sources-knowledge-base-smoke.log
+      - name: Engineering Notes index browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/notes-index-browser-smoke.cjs 2>&1 | tee notes-index-browser-smoke.log
       - name: Project Evidence browser smoke
         shell: bash
         run: |
@@ -162,6 +167,7 @@ jobs:
           cp browser-quality.log quality-artifacts/browser-quality.log 2>/dev/null || true
           cp publications-browser-smoke.log quality-artifacts/publications-browser-smoke.log 2>/dev/null || true
           cp sources-knowledge-base-smoke.log quality-artifacts/sources-knowledge-base-smoke.log 2>/dev/null || true
+          cp notes-index-browser-smoke.log quality-artifacts/notes-index-browser-smoke.log 2>/dev/null || true
           cp project-evidence-smoke.log quality-artifacts/project-evidence-smoke.log 2>/dev/null || true
           cp villaigence-diagram-smoke.log quality-artifacts/villaigence-diagram-smoke.log 2>/dev/null || true
           cp node-zero-diagram-smoke.log quality-artifacts/node-zero-diagram-smoke.log 2>/dev/null || true
@@ -191,6 +197,7 @@ jobs:
           cp docs-html/en/projects/livingworld/index.html quality-artifacts/en-livingworld-generated.html 2>/dev/null || true
           cp docs-html/now/index.html quality-artifacts/now-generated.html 2>/dev/null || true
           cp docs-html/bibliography/index.html quality-artifacts/sources-knowledge-base-generated.html 2>/dev/null || true
+          cp docs-html/notes/index.html quality-artifacts/notes-index-generated.html 2>/dev/null || true
           cp docs-html/projects/vlezet/index.html quality-artifacts/vlezet-generated.html 2>/dev/null || true
           cp docs-html/projects/livingworld/index.html quality-artifacts/villaigence-generated.html 2>/dev/null || true
           cp docs-html/projects/node-zero/index.html quality-artifacts/node-zero-generated.html 2>/dev/null || true
@@ -200,6 +207,9 @@ jobs:
           cp artifacts/browser-summary.json quality-artifacts/browser-summary.json 2>/dev/null || true
           cp artifacts/yandex-metrica-browser-summary.json quality-artifacts/yandex-metrica-browser-summary.json 2>/dev/null || true
           cp artifacts/work-with-me-summary.json quality-artifacts/work-with-me-summary.json 2>/dev/null || true
+          cp artifacts/notes-index-summary.json quality-artifacts/notes-index-summary.json 2>/dev/null || true
+          cp artifacts/notes-index-mobile.png quality-artifacts/notes-index-mobile.png 2>/dev/null || true
+          cp artifacts/notes-index-no-js-desktop.png quality-artifacts/notes-index-no-js-desktop.png 2>/dev/null || true
           cp artifacts/work-with-me-ru-desktop.png quality-artifacts/work-with-me-ru-desktop.png 2>/dev/null || true
           cp artifacts/work-with-me-en-desktop.png quality-artifacts/work-with-me-en-desktop.png 2>/dev/null || true
           cp artifacts/work-with-me-ru-no-js-mobile.png quality-artifacts/work-with-me-ru-no-js-mobile.png 2>/dev/null || true
