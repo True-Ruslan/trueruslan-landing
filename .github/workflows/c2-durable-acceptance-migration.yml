@@ -6,6 +6,7 @@ on:
       - docs/portfolio-clarity-c2-production-acceptance
     paths:
       - '.github/workflows/c2-durable-acceptance-migration.yml'
+      - 'scripts/c2-durable-acceptance-migration.mjs'
 
 permissions:
   contents: write
