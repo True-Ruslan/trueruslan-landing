@@ -14,6 +14,8 @@ const INSPECTED_OVERRIDE_KEYS = [
   'home-mobile.png',
   'projects-desktop.png',
   'projects-mobile.png',
+  'resume-desktop.png',
+  'resume-mobile.png',
 ].sort();
 
 test('inspected visual overrides are bounded to explicitly reviewed baseline keys', () => {
@@ -40,6 +42,21 @@ test('C3 Projects overrides record the reviewed shorter scan-first layouts', () 
   );
   assert.ok(overrides['projects-desktop.png'].height < base.baselines['projects-desktop.png'].height);
   assert.ok(overrides['projects-mobile.png'].height < base.baselines['projects-mobile.png'].height);
+});
+
+test('C4 Resume overrides record the reviewed shorter scan-first layouts', () => {
+  assert.deepEqual(
+    {
+      desktop: [overrides['resume-desktop.png'].width, overrides['resume-desktop.png'].height],
+      mobile: [overrides['resume-mobile.png'].width, overrides['resume-mobile.png'].height],
+    },
+    {
+      desktop: [1440, 3631],
+      mobile: [390, 4964],
+    },
+  );
+  assert.ok(overrides['resume-desktop.png'].height < base.baselines['resume-desktop.png'].height);
+  assert.ok(overrides['resume-mobile.png'].height < base.baselines['resume-mobile.png'].height);
 });
 
 test('visual harness merges only baseline entries and retains global thresholds from the canonical config', () => {

@@ -1,65 +1,39 @@
 # Work with me
 
-I am a backend engineer. My primary professional area is Java/backend, integrations, data-intensive services, reliability and engineering automation. I also take selected AI/LLM integration work where authority boundaries matter, and I keep Teaching & Mentoring as a full secondary professional line.
-
-This page is not a generic service catalogue. It is a compact way to decide whether your problem overlaps with work I can approach credibly and with explicit engineering boundaries.
+I help when the goal is a concrete technical outcome: backend and integrations, AI tooling, or teaching with practical engineering context.
 
 <div data-tr-collaboration-availability></div>
 
-## Engineering
+<div class="tr-resume-grid tr-work-tracks">
+  <section class="tr-resume-panel" data-tr-work-track="backend">
+    <h2>Backend engineering</h2>
+    <p>Java/Spring services, APIs and integrations, data flow, Kafka, databases, reliability, tests and CI/CD.</p>
+    <p><strong>Good fit:</strong> evolving a service, architecture review, integration work, a bounded technical audit or a focused remediation plan.</p>
+  </section>
+  <section class="tr-resume-panel" data-tr-work-track="ai-tooling">
+    <h2>AI tooling</h2>
+    <p>LLM/MCP integrations, developer tools and agentic workflows with explicit authority boundaries, validation and fallback behavior.</p>
+    <p><strong>Good fit:</strong> when AI needs to become part of an engineering system rather than only a model demo.</p>
+  </section>
+  <section class="tr-resume-panel" data-tr-work-track="teaching">
+    <h2>Teaching & Mentoring</h2>
+    <p>Java, Spring, backend, architecture, testing, code review and learning or portfolio projects.</p>
+    <p><strong>Good fit:</strong> an individual review, development plan, project feedback or practical learning material.</p>
+  </section>
+</div>
 
-A good reason to start a conversation is a concrete technical outcome where system boundaries matter as much as implementation:
+## How we work
 
-- design or evolve a backend service, API or integration;
-- investigate an architecture or reliability risk and turn the result into a reviewable change;
-- design data flow, service interaction, messaging or storage boundaries;
-- integrate LLM/AI capabilities without turning probabilistic output into unrestricted authority;
-- strengthen tests, CI/CD, release gates, observability or engineering reproducibility;
-- review a bounded codebase or subsystem and produce a focused remediation plan.
-
-I prefer work where the expected result, acceptance criteria and ownership boundary can be made explicit before implementation expands.
-
-## Startup / individual projects
-
-I can contribute to small products, prototypes and individual projects when the work benefits from one engineer carrying context from architecture through a bounded implementation.
-
-This is not an “anything goes” offer. If the problem is adjacent to backend, integrations, AI tooling, developer tools, technical platforms or engineering automation, describe the real constraint rather than trying to fit it into a preset package.
-
-## Teaching & Mentoring
-
-Teaching and mentoring is a separate professional line:
-
-- Java, backend development and the Spring ecosystem;
-- project design and review for learning or portfolio work;
-- code review with reasoning rather than only corrections;
-- an individual development plan;
-- architecture, testing and modern AI-assisted developer workflows;
-- technical learning material and practical assignments.
-
-The goal is not a list of “correct answers”, but a clearer and more reproducible engineering decision process.
-
-## Expert contribution
-
-In a limited scope I am also open to adjacent formats: technical reviews, expert articles, material review, developer-tooling consultation and focused engineering discussions.
-
-## How the work moves
-
-**Context → Scope → Estimate → Implementation → Handover**
-
-1. **Context.** You describe the problem, current state, desired outcome and important constraints.
-2. **Scope.** We separate the required result from optional improvements and make the boundary explicit.
-3. **Estimate.** Once the scope is clear, timing, format and cost can be proposed responsibly.
-4. **Implementation.** Work proceeds in reviewable increments with tests and explicit acceptance criteria where they apply.
-5. **Handover.** The result is transferred with enough context to verify it: what changed, how to check it, and which risks or limitations remain.
-
-## When this is likely a good fit
-
-This is a good fit when you value explicit boundaries, reviewable evidence, careful handling of uncertainty and direct technical communication.
-
-It is probably not a fit when the process requires an instant fixed quote before the problem is understood, guarantees without technical verification, or an unbounded “build anything” engagement.
-
-## Close to the boundary, but not an exact match?
-
-You can still describe it. Relevant adjacent requests in software, technology, education and technical content are considered from the actual context rather than from an inflated public service list.
+<ol class="tr-work-process">
+  <li data-tr-work-step="context"><strong>Context & Scope.</strong> You describe the problem, desired outcome and constraints; we separate the required result from optional improvements.</li>
+  <li data-tr-work-step="implementation"><strong>Estimate & Implementation.</strong> Once the scope is clear, we agree on format and estimate, then work in small reviewable increments.</li>
+  <li data-tr-work-step="handover"><strong>Handover.</strong> I transfer the result with verification steps and explicitly documented remaining risks.</li>
+</ol>
 
 <div data-tr-collaboration-handoff></div>
+
+## Boundaries
+
+- I do not provide a fixed quote before the context and scope are understood.
+- I do not take unbounded “build anything” engagements without a defined outcome and acceptance criteria.
+- If a request is adjacent to these areas rather than an exact match, describe the actual constraint; the decision depends on context.

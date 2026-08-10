@@ -138,6 +138,23 @@ html[data-tr-page='resume'] .tr-resume-hero {
   font: 600 .82rem/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+.tr-resume-impact {
+  margin: .45rem 0 0;
+  padding-left: 1.15rem;
+}
+
+.tr-resume-impact li {
+  line-height: 1.5;
+}
+
+.tr-resume-impact li + li {
+  margin-top: .28rem;
+}
+
+.tr-resume-stack-line {
+  font-size: .88rem;
+}
+
 .tr-resume-timeline {
   --tr-resume-axis-x: 7.5px;
   position: relative;
@@ -221,11 +238,54 @@ html[data-tr-page='resume'] .tr-resume-hero {
     justify-content: center;
   }
 
+  .tr-resume-stack-groups {
+    gap: .55rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tr-resume-stack-groups .tr-resume-panel {
+    display: grid;
+    grid-template-columns: minmax(6.7rem, .72fr) minmax(0, 1.45fr);
+    gap: .7rem;
+    align-items: start;
+    padding: .8rem .9rem;
+    border-radius: 12px;
+  }
+
+  .tr-resume-stack-groups .tr-resume-panel h3 {
+    margin: 0;
+    font-size: .92rem;
+    line-height: 1.35;
+  }
+
+  .tr-resume-stack-groups .tr-resume-panel p {
+    font-size: .82rem;
+    line-height: 1.45;
+  }
+
+  .tr-resume-item {
+    padding-bottom: 1rem;
+  }
+
+  .tr-resume-impact {
+    margin-top: .35rem;
+    padding-left: 1rem;
+  }
+
+  .tr-resume-impact li {
+    line-height: 1.42;
+  }
+
+  .tr-resume-stack-line {
+    font-size: .8rem;
+    line-height: 1.45 !important;
+  }
+
   .tr-resume-pdf-shell {
     padding: .35rem;
   }
 
   .tr-resume-pdf-shell iframe {
-    min-height: 620px;
+    min-height: 440px;
   }
 }
