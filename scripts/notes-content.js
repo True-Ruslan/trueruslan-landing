@@ -124,9 +124,14 @@ function injectNotesIndexNoJavaScriptFallback(html, content) {
 export function applyNotesIndex(outputDir, notes, target = 'landing/notes.html') {
   const relativePath = target.replaceAll('/', path.sep);
   const htmlPath = path.join(outputDir, relativePath);
-  if (!fs.existsSync(htmlPath)) throw new Error(`generated Notes index page not found: ${target}`);
+  let html;
+  try {
+    html = fs.readFileSync(htmlPath, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') throw new Error(`generated Notes index page not found: ${target}`);
+    throw error;
+  }
 
-  const html = fs.readFileSync(htmlPath, 'utf8');
   const marker = /<div[^>]*data-tr-notes-index-placeholder(?:=["'][^"']*["'])?[^>]*>\s*<\/div>/i;
   const content = renderNotesIndex(notes);
   const transformed = transformGeneratedContent(
