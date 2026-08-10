@@ -2,12 +2,9 @@
 
 **Vlezet** — local-first конструктор планировок, в котором реальную квартиру можно собрать из стен, проёмов и мебели, проверить размеры и площади, посмотреть схему в 3D и использовать распознавание плана как редактируемую помощь, а не как источник истины.
 
-
 [Репозиторий на GitHub ↗](https://github.com/True-Ruslan/vlezet)
 
 ![Граница между распознаванием и авторитетной геометрией Vlezet](../../assets/diagrams/vlezet-recognition-authority.svg)
-
-<div data-tr-project-timeline="vlezet"></div>
 
 ## Коротко
 
@@ -23,6 +20,8 @@
 <dt>Статус</dt>
 <dd><span data-tr-project-status="vlezet"></span></dd>
 </dl>
+
+<div data-tr-project-timeline="vlezet"></div>
 
 <!-- case-study:problem -->
 ## Проблема: план квартиры должен оставаться точным после первого впечатления

@@ -2,14 +2,11 @@
 
 **VillAIgence** — MCA-derived мод для Minecraft 1.21.1, который вырос из AI-диалогов с жителями в эксперимент над устойчивым обществом NPC: с текстом и голосом, Memory 2.0, отношениями, операторским контекстом и действиями, которые остаются под контролем сервера.
 
-
 [Репозиторий на GitHub ↗](https://github.com/True-Ruslan/villAIgence)
 
 Внутренние имена `LivingWorld / livingworld` остаются compatibility-sensitive частью движка, конфигурации и world-local data. Публичное имя проекта изменилось, но mod id `mca`, Java package root, `config/livingworld.json` и `<world>/livingworld/` не переименовываются без отдельной миграции.
 
 ![VillAIgence authority and acceptance boundaries](../../assets/diagrams/villaigence-authority-and-acceptance.svg)
-
-<div data-tr-project-timeline="livingworld"></div>
 
 ## Коротко
 
@@ -25,6 +22,8 @@
 <dt>Статус</dt>
 <dd><span data-tr-project-status="livingworld"></span></dd>
 </dl>
+
+<div data-tr-project-timeline="livingworld"></div>
 
 <!-- case-study:problem -->
 ## Проблема: убедительный NPC всё равно должен подчиняться серверу

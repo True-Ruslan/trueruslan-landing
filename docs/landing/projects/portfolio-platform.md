@@ -4,9 +4,6 @@
 
 [Открыть репозиторий на GitHub ↗](https://github.com/True-Ruslan/trueruslan-landing)
 
-
-<div data-tr-project-timeline="portfolio-platform"></div>
-
 ## Коротко
 
 <dl class="tr-project-glance" data-tr-project-glance="portfolio-platform">
@@ -21,6 +18,8 @@
 <dt>Статус</dt>
 <dd><span data-tr-project-status="portfolio-platform"></span></dd>
 </dl>
+
+<div data-tr-project-timeline="portfolio-platform"></div>
 
 <!-- case-study:problem -->
 ## Проблема: портфолио должно показывать инженерное мышление, а не только список технологий
