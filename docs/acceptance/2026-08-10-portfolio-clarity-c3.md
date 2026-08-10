@@ -31,6 +31,19 @@ VillAIgence, NotchHub, TrueRuslan Landing and Vlezet each expose one shared RU/E
 
 The Projects desktop/mobile baselines were explicitly reviewed as intentionally shorter scan-first layouts. Global visual thresholds were not increased. Photo Stories test synchronization waits for active reveal transitions before Axe without changing runtime presentation.
 
+## Durable synchronization TDD
+
+Durable state was synchronized RED-first after exact production acceptance rather than pre-declaring C3 as accepted.
+
+- RED head: `0b1785ab8750115ea894aa24c0e59e769024f120`;
+- RED Build #1687 / `31389162040` — expected FAILURE;
+- unit result: **645 PASS / exactly 3 expected FAIL**;
+- all three failures belonged to the new C3 durable contract: the missing C3 ledger, missing C3/C4 durable markers, and the ledger-dependent P3.6 boundary;
+- no pre-existing test failed;
+- the deterministic one-shot migration run `31389423189` — SUCCESS and removed its temporary migration script/workflow from the final diff.
+
+The final durable PR head must pass the ordinary repository quality/security matrix before merge. This documentation synchronization does not redefine the already accepted production SHA above.
+
 ## Evidence and security boundary
 
 C3 inherited the remediated dependency base from PR #188: no high or critical audit finding was introduced by C3. The existing markdown-it moderate upstream boundary remains tracked separately under issue #82. Canonical registries remain the owners of volatile project status/current-state truth, and the single Diplodoc generated search remains the site-wide full-text search owner.
