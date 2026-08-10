@@ -1,0 +1,44 @@
+name: C5 next pointer migration
+
+on:
+  push:
+    branches:
+      - docs/portfolio-clarity-c4-production-acceptance
+    paths:
+      - .github/workflows/c4-next-pointer-migrate.yml
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: docs/portfolio-clarity-c4-production-acceptance
+          fetch-depth: 1
+
+      - name: Apply fail-closed pointer migration
+        run: |
+          set -euo pipefail
+          python3 scripts/migrate-c4-next-pointer.py
+          git diff --check
+
+      - name: Remove one-shot migration files
+        run: |
+          set -euo pipefail
+          git rm scripts/migrate-c4-next-pointer.py .github/workflows/c4-next-pointer-migrate.yml
+
+      - name: Commit durable pointer only
+        run: |
+          set -euo pipefail
+          git add docs/PROJECT_STATE.md
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'ERROR: migration produced no staged changes'; exit 1; } || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'docs: advance next slice to C5'
+          git push origin HEAD:docs/portfolio-clarity-c4-production-acceptance
