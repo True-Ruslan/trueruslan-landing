@@ -125,25 +125,30 @@ async function assertC3ProjectsHub(page, {locale = 'ru'} = {}) {
   if (!groupsAreOrdered) throw new Error(`C3 ${locale} Projects hierarchy is not Selected → Commercial → Labs in generated DOM.`);
 
   for (const slug of selectedSlugs) {
-    const status = page.locator(`[data-c3-project="${slug}"] [data-project-status="${slug}"]`);
+    const card = page.locator(`[data-c3-project="${slug}"]`);
+    const status = card.locator(`[data-project-status="${slug}"]`);
     await status.waitFor({state: 'visible'});
     if ((await status.innerText()).trim() !== expectedProjectStatus(slug)) {
       throw new Error(`${slug} C3 selected-work status drifted from Project Registry.`);
     }
 
-    const href = await page.locator(`[data-c3-project="${slug}"] a`).first().getAttribute('href');
-    const pathname = href ? new URL(href, page.url()).pathname : '';
+    const resolvedHref = await card.locator('a').first().evaluate((node) => node.href);
+    const pathname = resolvedHref ? new URL(resolvedHref).pathname : '';
     const expectedPath = locale === 'en' ? `/en/projects/${slug}/` : `/projects/${slug}/`;
     if (pathname !== expectedPath || pathname.includes('/landing/')) {
-      throw new Error(`${slug} C3 ${locale} case-study route is not canonical: ${href || 'missing href'}`);
+      throw new Error(`${slug} C3 ${locale} case-study route is not canonical: ${resolvedHref || 'missing href'}`);
     }
   }
 
-  const vlezetHref = await page.locator('[data-c3-lab="vlezet"] a').first().getAttribute('href');
-  const vlezetPathname = vlezetHref ? new URL(vlezetHref, page.url()).pathname : '';
-  const expectedVlezetPath = locale === 'en' ? '/en/projects/vlezet/' : '/projects/vlezet/';
-  if (vlezetPathname !== expectedVlezetPath || vlezetPathname.includes('/landing/')) {
-    throw new Error(`Vlezet C3 ${locale} lab route is not canonical: ${vlezetHref || 'missing href'}`);
+  for (const slug of expectedLabs) {
+    const resolvedHref = await page.locator(`[data-c3-lab="${slug}"] a`).first().evaluate((node) => node.href);
+    const pathname = resolvedHref ? new URL(resolvedHref).pathname : '';
+    const expectedPath = locale === 'en' && slug === 'vlezet'
+      ? '/en/projects/vlezet/'
+      : `/projects/${slug}/`;
+    if (pathname !== expectedPath || pathname.includes('/landing/')) {
+      throw new Error(`${slug} C3 ${locale} lab route is not canonical: ${resolvedHref || 'missing href'}`);
+    }
   }
 
   const nodeZeroText = await page.locator('[data-c3-lab="node-zero"]').innerText();
