@@ -6,6 +6,7 @@ import {
   renderAtomFeed,
   renderNoteMeta,
   renderNoteNavigation,
+  renderNotesIndex,
   validateNotesManifest,
 } from './notes-content.js';
 
@@ -54,6 +55,19 @@ test('renderNoteNavigation includes previous next and related links', () => {
   const html = renderNoteNavigation(notes[1], notes);
   assert.match(html, /first-note\.html/);
   assert.match(html, /Связанные заметки/);
+});
+
+test('renderNotesIndex is registry-derived, latest-first and compact', () => {
+  const html = renderNotesIndex(notes);
+  assert.equal((html.match(/data-tr-note-index-card=/g) ?? []).length, 2);
+  assert.ok(html.indexOf('second-note') < html.indexOf('first-note'));
+  assert.match(html, /Another note\./);
+  assert.match(html, /7 мин/);
+  assert.match(html, /datetime="2026-07-22"/);
+  assert.match(html, /landing\/notes\/second-note\.html/);
+  assert.match(html, /First &amp; note/);
+  assert.match(html, /A &lt;useful&gt; note\./);
+  assert.doesNotMatch(html, /First & note|A <useful> note/);
 });
 
 test('renderAtomFeed is deterministic, ordered by update date and XML-safe', () => {
