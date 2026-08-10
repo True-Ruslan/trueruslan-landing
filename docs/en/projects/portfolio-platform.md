@@ -4,7 +4,21 @@
 
 [Open the repository on GitHub ↗](https://github.com/True-Ruslan/trueruslan-landing)
 
-**Current status:** <span data-tr-project-status="portfolio-platform"></span>
+
+## At a glance
+
+<dl class="tr-project-glance" data-tr-project-glance="portfolio-platform">
+<dt>My contribution</dt>
+<dd>Product, architecture and quality ownership for the static-first portfolio and knowledge layer.</dd>
+<dt>Stack</dt>
+<dd>Diplodoc · Node.js · Playwright · GitHub Actions · GitHub Pages</dd>
+<dt>Challenge</dt>
+<dd>Expose engineering decisions and evidence without turning the site into a heavy application or duplicating mutable truth.</dd>
+<dt>Result</dt>
+<dd>A production static-first platform with registry-backed content, clean URLs, RU/EN and deployment-bound browser verification.</dd>
+<dt>Status</dt>
+<dd><span data-tr-project-status="portfolio-platform"></span></dd>
+</dl>
 
 <!-- case-study:problem -->
 ## Problem: a portfolio should expose engineering decisions, not only technologies

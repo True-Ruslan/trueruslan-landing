@@ -2,9 +2,22 @@
 
 **NotchHub** is a native macOS application that turns the area around the MacBook camera housing into a compact entry point for everyday tools. The product goal is an always-available surface that stays lightweight, local-first and independent of a dedicated cloud backend.
 
-**Current status:** <span data-tr-project-status="notchhub"></span>
-
 [GitHub repository ↗](https://github.com/True-Ruslan/notch-hub)
+
+## At a glance
+
+<dl class="tr-project-glance" data-tr-project-glance="notchhub">
+<dt>My contribution</dt>
+<dd>Solo product engineering across native macOS architecture, interaction, performance, security and release boundaries.</dd>
+<dt>Stack</dt>
+<dd>Swift 6 · SwiftUI · AppKit · macOS · XCTest</dd>
+<dt>Challenge</dt>
+<dd>Turn the MacBook notch area into a useful always-on surface without a heavy runtime or broad permissions.</dd>
+<dt>Result</dt>
+<dd>The 0.1.0 — Personal build foundation is accepted; the next interaction milestone remains separate work rather than inherited acceptance.</dd>
+<dt>Status</dt>
+<dd><span data-tr-project-status="notchhub"></span></dd>
+</dl>
 
 <div data-tr-project-timeline="notchhub"></div>
 

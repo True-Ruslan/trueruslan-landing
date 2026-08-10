@@ -90,8 +90,16 @@ test('P3.5A keeps the controlled English Vlezet flagship on the current canonica
   assert.match(meta.description, /local-first|millimetre|recognition/i);
 
   assert.match(toc, /- name: Vlezet\n\s+href: \.\/en\/projects\/vlezet\.md/);
-  assert.match(englishProjects, /\[Open English case study →\]\(projects\/vlezet\.md\)/);
-  assert.doesNotMatch(englishProjects, /\[Open case study — Russian \(RU\) →\]\(\.\.\/landing\/projects\/vlezet\.md\)/);
+  assert.match(
+    englishProjects,
+    /(?:data-c3-lab=["']vlezet["'][\s\S]*?href=["']en\/projects\/vlezet\.html["']|\[Open English case study →\]\(projects\/vlezet\.md\))/,
+    'English Projects hub must expose the canonical English Vlezet case study directly',
+  );
+  assert.doesNotMatch(
+    englishProjects,
+    /(?:data-c3-lab=["']vlezet["'][\s\S]*?href=["'](?:\.\.\/)?landing\/projects\/vlezet\.html["']|\[Open case study — Russian \(RU\) →\]\(\.\.\/landing\/projects\/vlezet\.md\))/,
+    'English Projects hub must not demote Vlezet to a Russian fallback',
+  );
 
   assert.match(copyAssets, /if \(href === 'landing\/projects\/vlezet\.html'\) return 'en\/projects\/vlezet\.html';/);
   assert.match(copyAssets, /path: 'en\/projects\/vlezet\.html', locale: 'en'/);
