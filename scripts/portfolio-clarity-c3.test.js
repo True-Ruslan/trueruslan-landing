@@ -121,18 +121,28 @@ test('C3 source surfaces expose the approved scan-first Projects hierarchy and f
   assert.doesNotMatch(platformRu, /`\/landing\/(?:projects|resume|notes)\//, 'platform case study must use root-level canonical RU routes');
 });
 
-test('C3 browser smoke owns generated-DOM acceptance for the projects hub and flagship glance layer', () => {
+test('C3 browser smoke owns the complete generated-DOM acceptance contract', () => {
   const browserSmoke = read('scripts/v03-browser-smoke.cjs');
 
-  assert.match(browserSmoke, /async function assertC3ProjectsHub\(/);
+  assert.match(browserSmoke, /async function assertC3ProjectsHub\(page, \{locale = 'ru'\} = \{\}\)/);
   assert.match(browserSmoke, /async function assertC3FlagshipGlance\(/);
+  assert.match(browserSmoke, /async function assertPlatformCanonicalNamespace\(/);
   assert.match(browserSmoke, /\[data-c3-project\]/);
   assert.match(browserSmoke, /\[data-c3-commercial/);
   assert.match(browserSmoke, /\[data-c3-lab\]/);
-  assert.match(browserSmoke, /\[data-tr-project-glance=/);
-  assert.match(browserSmoke, /await assertC3ProjectsHub\(page\)/);
-  assert.match(browserSmoke, /await assertC3FlagshipGlance\(page, 'livingworld'/);
-  assert.match(browserSmoke, /await assertC3FlagshipGlance\(page, 'notchhub'/);
-  assert.match(browserSmoke, /await assertC3FlagshipGlance\(page, 'portfolio-platform'/);
-  assert.match(browserSmoke, /await assertC3FlagshipGlance\(page, 'vlezet'/);
+  assert.match(browserSmoke, /data-c3-project-group="selected"/);
+  assert.match(browserSmoke, /data-c3-project-group="labs"/);
+  assert.match(browserSmoke, /DOCUMENT_POSITION_FOLLOWING/);
+  assert.match(browserSmoke, /requireGlance = false/);
+  assert.match(browserSmoke, /if \(requireGlance\) await assertC3FlagshipGlance/);
+
+  assert.match(browserSmoke, /pathname: '\/projects\/'[\s\S]*?assertC3ProjectsHub\(page, \{locale: 'ru'\}\)/);
+  assert.match(browserSmoke, /pathname: '\/en\/projects\/'[\s\S]*?assertC3ProjectsHub\(page, \{locale: 'en'\}\)/);
+
+  for (const slug of ['livingworld', 'notchhub', 'portfolio-platform', 'vlezet']) {
+    assert.match(browserSmoke, new RegExp(`assertC3FlagshipGlance\\(page, '${slug}'`));
+  }
+
+  assert.match(browserSmoke, /await assertPlatformCanonicalNamespace\(page\)/);
+  assert.doesNotMatch(browserSmoke, /c3FlagshipChecks[\s\S]*?axe:\s*false/);
 });
