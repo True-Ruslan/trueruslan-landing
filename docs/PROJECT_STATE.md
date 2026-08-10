@@ -604,8 +604,8 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**C4 — Professional surfaces — NEXT IMPLEMENTATION SLICE.**
+**C5 — Knowledge surfaces — NEXT IMPLEMENTATION SLICE.**
 
-P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** in parallel; it is not closed or reset by C2/C3 presentation work.
+P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** in parallel; it is not closed or reset by C2/C3/C4 presentation work.
 
 P3.6A measurement-readiness tooling уже принято на exact SHA `7cc56d024fbde53156a9136b14b00c81c6718811`. Сам P3.6 остаётся observation checkpoint: запускать его только с реальными `operator-observed` aggregate observations после минимального post-migration window, с equal-duration baseline/current windows, explicit traffic-sufficiency assessment после закрытия current window и human review. Synthetic `synthetic-pipeline-proof` не является production measurement evidence и не разрешает engagement, causality или product-impact claims.
