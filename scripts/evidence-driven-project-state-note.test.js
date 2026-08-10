@@ -69,8 +69,12 @@ test('P3.4F Note separates evidence layers and uncertainty classes', () => {
   assert.doesNotMatch(source, /последний commit[^\n]*(?:гарантирует|полностью доказывает)[^\n]*production/i);
 });
 
-test('P3.4F Note is exposed through index toc and registry-derived page metadata', () => {
-  assert.match(read('docs', 'landing', 'notes.md'), new RegExp(`${SLUG}\\.md`));
+test('P3.4F Note is exposed through registry index toc and registry-derived page metadata', () => {
+  assert.match(read('docs', 'landing', 'notes.md'), /data-tr-notes-index-placeholder/);
+  assert.ok(
+    JSON.parse(read('data', 'notes.json')).some((note) => note.slug === SLUG),
+    'missing P3.4F Note from canonical Notes Registry',
+  );
   assert.match(read('docs', 'toc.yaml'), new RegExp(`${SLUG}\\.md`));
 
   const pageMeta = loadPageMeta();
