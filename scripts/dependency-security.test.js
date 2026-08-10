@@ -140,6 +140,34 @@ test('low-risk audit packages remain on fixed patch or minor releases', () => {
   );
 });
 
+test('js-yaml and nanoid are beyond the current high-severity advisory ranges', () => {
+  const lockfile = JSON.parse(fs.readFileSync(lockfilePath, 'utf8'));
+  const violations = [];
+
+  for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'js-yaml')) {
+    const version = metadata?.version;
+    const [major] = versionParts(version);
+    const affected =
+      (major === 3 && compareVersion(version, [3, 15, 1]) < 0) ||
+      (major === 4 && compareVersion(version, [4, 3, 1]) < 0);
+    if (affected) violations.push(`${packagePath}: ${version} (GHSA-5p4m-2wfm-xmqj)`);
+  }
+
+  for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'nanoid')) {
+    const version = metadata?.version;
+    const [major] = versionParts(version);
+    if (major === 3 && compareVersion(version, [3, 3, 17]) < 0) {
+      violations.push(`${packagePath}: ${version} (GHSA-2v37-7h3g-55p8)`);
+    }
+  }
+
+  assert.deepEqual(
+    violations,
+    [],
+    `Current high-severity dependency versions remain in package-lock.json:\n${violations.join('\n')}`,
+  );
+});
+
 test('linkify-it is beyond every currently affected advisory range', () => {
   const lockfile = JSON.parse(fs.readFileSync(lockfilePath, 'utf8'));
   const violations = lockfileEntriesFor(lockfile, 'linkify-it')
