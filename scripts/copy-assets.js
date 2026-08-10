@@ -122,11 +122,7 @@ export function createNoJekyllFile(outputDir = OUTPUT_DIR) {
 }
 
 export function writeRobotsTxt(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl()) {
-  const content = `User-agent: *
-Allow: /
-
-Sitemap: ${siteUrl}/sitemap.xml
-`;
+  const content = `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`;
   fs.writeFileSync(path.join(outputDir, 'robots.txt'), content);
 }
 
@@ -153,11 +149,7 @@ export function writeSitemap(
     const loc = page ? `${siteUrl}/${page}` : `${siteUrl}/`;
     return `  <url><loc>${loc}</loc></url>`;
   }).join('\n');
-  const content = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
-</urlset>
-`;
+  const content = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
   fs.writeFileSync(path.join(outputDir, 'sitemap.xml'), content);
 }
 
@@ -354,7 +346,10 @@ export function postprocessOutput({
     })
     : [];
   const projectEvidenceStylesheetTargets = applyProjectEvidenceStylesheet(outputDir, projectEvidenceTargets);
-  const notesIndexTarget = applyNotesIndex(outputDir, notes);
+  const notesIndexGeneratedPath = path.join(outputDir, 'landing', 'notes.html');
+  const notesIndexTarget = isProductionDocs || fs.existsSync(notesIndexGeneratedPath)
+    ? applyNotesIndex(outputDir, notes)
+    : null;
   const noteTargets = applyNoteEnhancements(outputDir, notes);
   const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
   const publicationProjectLabels = new Map(projects.map(({slug, name}) => [slug, name]));
@@ -451,7 +446,7 @@ function main() {
     console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
     if (result.projectEvidenceTargets.length) console.log(`Injected ${result.projectEvidenceTargets.length} Project Evidence block(s).`);
     if (result.projectEvidenceStylesheetTargets.length) console.log(`Wired Project Evidence stylesheet into ${result.projectEvidenceStylesheetTargets.length} page(s).`);
-    console.log(`Engineering Notes index injected: ${result.notesIndexTarget}`);
+    if (result.notesIndexTarget) console.log(`Engineering Notes index injected: ${result.notesIndexTarget}`);
     console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
     console.log(`Atom feed written: ${result.feedPath}`);
     if (result.publicationShowcaseTarget) console.log(`Publications showcase injected: ${result.publicationShowcaseTarget}`);
