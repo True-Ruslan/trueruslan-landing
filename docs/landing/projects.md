@@ -1,131 +1,82 @@
 # Проекты
 
-Я держу здесь проекты, по которым самому проще всего объяснить, чем мне интересно заниматься в разработке.
+Не полный каталог, а короткая карта работ, по которым лучше всего видно мой подход: где проходит граница ответственности, что считается доказанным результатом и как проект меняется после первого рабочего прототипа.
 
-Часть из них начиналась как обычный PET-проект, часть выросла из желания проверить конкретную архитектурную идею, а часть просто дала повод разобраться с областью, в которую раньше почти не заходил. Поэтому рядом здесь оказываются backend, AI, Minecraft, native macOS и сама платформа этого портфолио.
+## Избранные проекты
 
-## Над чем я сейчас работаю серьёзнее всего
+<div class="tr-project-index-grid" data-c3-project-group="selected">
+<article class="tr-project-index-card tr-project-index-card--selected" data-c3-project="livingworld">
+<div class="tr-project-index-card__meta"><span data-tr-project-status="livingworld"></span></div>
+<h3>VillAIgence</h3>
+<p>AI-общество NPC для Minecraft, где сервер владеет истиной, памятью и действиями, а модель остаётся ограниченным источником предложений.</p>
+<ul class="tr-project-index-card__tags" aria-label="Технологии и направления"><li>Java 21</li><li>Fabric</li><li>Memory 2.0</li><li>AI security</li></ul>
+<a class="tr-project-index-card__cta" href="projects/livingworld.md">Открыть case study →</a>
+</article>
 
-### VillAIgence
+<article class="tr-project-index-card tr-project-index-card--selected" data-c3-project="notchhub">
+<div class="tr-project-index-card__meta"><span data-tr-project-status="notchhub"></span></div>
+<h3>NotchHub</h3>
+<p>Нативный local-first productivity hub для macOS вокруг челки MacBook — с упором на системное взаимодействие, производительность и узкий security surface.</p>
+<ul class="tr-project-index-card__tags" aria-label="Технологии и направления"><li>Swift 6</li><li>SwiftUI</li><li>AppKit</li><li>macOS</li></ul>
+<a class="tr-project-index-card__cta" href="projects/notchhub.md">Открыть case study →</a>
+</article>
 
-Это мой проект про AI-жителей и устойчивое общество NPC внутри Minecraft.
+<article class="tr-project-index-card tr-project-index-card--selected" data-c3-project="portfolio-platform">
+<div class="tr-project-index-card__meta"><span data-tr-project-status="portfolio-platform"></span></div>
+<h3>TrueRuslan Landing</h3>
+<p>Static-first портфолио и knowledge platform с каноническими реестрами, RU/EN, clean URLs и раздельной проверкой source, artifact, deployment и live production.</p>
+<ul class="tr-project-index-card__tags" aria-label="Технологии и направления"><li>Diplodoc</li><li>Node.js</li><li>Playwright</li><li>GitHub Pages</li></ul>
+<a class="tr-project-index-card__cta" href="projects/portfolio-platform.md">Открыть case study →</a>
+</article>
+</div>
 
-VillAIgence начался с идеи разговаривать с MCA-жителями текстом и голосом, но постепенно стал системой про server authority, долговременную идентичность, episodic и semantic Memory 2.0, отношения, операторский lore и безопасную границу между предложением модели и действием в мире.
+## Коммерческая разработка
 
-Сейчас для меня особенно важен release-процесс: source CI, exact-JAR, installed startup, focused gameplay, restart и persistent-state gates отвечают на разные вопросы и не подменяют друг друга.
+<article class="tr-project-index-card tr-project-index-card--commercial" data-c3-commercial="marketdb">
+<h3>MarketDB</h3>
+<p>Production-платформа аналитики маркетплейсов. Моя зона — backend, данные, интеграции и развитие живой системы без публикации внутренней коммерческой архитектуры.</p>
+<ul class="tr-project-index-card__tags" aria-label="Стек"><li>Java</li><li>Spring Boot</li><li>PostgreSQL</li><li>ClickHouse</li></ul>
+<a class="tr-project-index-card__cta" href="https://marketdb.pro">marketdb.pro ↗</a>
+</article>
 
-**Текущий статус:** <span data-tr-project-status="livingworld"></span>
+Больше контекста по коммерческому опыту — в разделе [Опыт](resume.md).
 
-[Подробнее о проекте →](projects/livingworld.md) · [GitHub ↗](https://github.com/True-Ruslan/villAIgence)
+## Лаборатория и эксперименты
 
----
+<div class="tr-project-index-grid tr-project-index-grid--compact" data-c3-project-group="labs">
+<article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="vlezet">
+<h3>Vlezet</h3>
+<p>Local-first планировщик квартиры с миллиметровой геометрией и recognition как проверяемой помощью, а не источником истины.</p>
+<a class="tr-project-index-card__cta" href="projects/vlezet.md">Открыть case study →</a>
+</article>
 
-### NotchHub
+<article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="node-zero">
+<h3>NODE ZERO</h3>
+<p>Психологический techno-horror про автономный AI-комплекс и систему MIRROR; репозиторий остаётся private/proprietary.</p>
+<a class="tr-project-index-card__cta" href="projects/node-zero.md">Открыть case study →</a>
+</article>
 
-Это нативный local-first productivity hub для macOS, построенный вокруг аппаратной челки MacBook.
+<article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="taskhub">
+<h3>TaskHub</h3>
+<p>Backend + AI engineering case study про сервисные границы, данные, интеграции и воспроизводимую инфраструктуру.</p>
+<a class="tr-project-index-card__cta" href="projects/taskhub.md">Открыть case study →</a>
+</article>
 
-У проекта уже принята основа `0.1.0 — Personal build`: Swift 6, SwiftUI + AppKit, App Sandbox, Hardened Runtime, измеряемая performance baseline и безопасная модель личных релизов без обязательной платной notarization. При этом текущий M1 interaction slice сознательно не выдаётся за готовый: delayed hover, haptic и deterministic panel transitions остаются в Draft PR #10 до полного CI и real-hardware acceptance.
+<article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="minichess">
+<h3>MiniChess</h3>
+<p>Компактный Java-проект про доменную логику, правила, переходы состояния и серверную проверку действий.</p>
+<a class="tr-project-index-card__cta" href="projects/minichess.md">Открыть case study →</a>
+</article>
 
-Мне здесь особенно интересна комбинация трёх требований, которые обычно начинают конфликтовать при росте desktop-приложения: приятное системное взаимодействие, минимальный ресурсный профиль и узкий security/privacy surface.
-
-**Текущий статус:** <span data-tr-project-status="notchhub"></span>
-
-[Подробнее о проекте →](projects/notchhub.md) · [GitHub ↗](https://github.com/True-Ruslan/notch-hub)
-
----
-
-### TrueRuslan Landing
-
-Это production-платформа самого портфолио и knowledge layer, который вы сейчас читаете.
-
-Здесь мне интересна не только публикация Markdown. Проект соединяет standalone homepage, Diplodoc, canonical registries, RU/EN, generated search, Project Evidence, Notes, Publications, Sources, repository-native clean URLs и несколько независимых release gates — от unit contracts и generated artifact до GitHub Pages deployment и Production Live Smoke.
-
-Отдельная инженерная задача — не смешивать уровни доказательств. Зелёный pull request не означает, что тот же SHA уже опубликован; успешный deployment не доказывает browser behavior; live smoke не подтверждает рост аудитории или мгновенную переиндексацию.
-
-**Текущий статус:** <span data-tr-project-status="portfolio-platform"></span>
-
-[Подробнее о платформе →](projects/portfolio-platform.md) · [GitHub ↗](https://github.com/True-Ruslan/trueruslan-landing)
-
----
-
-### NODE ZERO
-
-Это мой техно-хоррор о предсказании поведения человека.
-
-NODE ZERO — current game project on Unity: first-person psychological techno-horror в автономном подземном AI compute facility. Мне интереснее всего не horror как набор скримеров, а система MIRROR, которая предсказывает поведение человека и постепенно меняет доступную среду так, чтобы прогноз становился всё более вероятным.
-
-**Текущий статус:** <span data-tr-project-status="node-zero"></span>
-
-Сейчас scope намеренно небольшой: сначала нужно доказать цельный vertical slice и основной игровой цикл, а уже потом расширять объект и набор систем.
-
-[Подробнее о проекте →](projects/node-zero.md)
-
-> Репозиторий NODE ZERO закрытый и proprietary. На сайте я оставляю только то, что можно спокойно показывать публично: идею, устройство проекта на высоком уровне и принятые инженерные решения.
-
----
-
-## Другие проекты, к которым я возвращаюсь
-
-### TaskHub
-
-Backend-проект, в котором я соединяю обычную систему управления задачами с инфраструктурой и AI-интеграцией.
-
-В проекте есть Java 21 / Spring Boot, PostgreSQL и Liquibase, Redis, Kafka, ClickHouse, Docker Compose, OpenAPI и отдельная AI-интеграция через OpenRouter. Мне здесь был важен не столько сам task manager, сколько возможность пройти весь путь целиком: от доменной модели и API до инфраструктуры, наблюдаемости и воспроизводимого локального запуска.
-
-[Подробнее →](projects/taskhub.md) · [Backend GitHub ↗](https://github.com/True-Ruslan/TaskHub-backend)
-
----
-
-### MiniChess
-
-Небольшой шахматный web-проект на Java 21 / Spring Boot, где почти вся сложность находится не в инфраструктуре, а в доменной логике: допустимые ходы, очередность, шах, состояние доски и серверная проверка действий пользователя.
-
-[Подробнее →](projects/minichess.md) · [GitHub ↗](https://github.com/True-Ruslan/MiniChess)
-
----
-
-### Godot Atmospheric Horror Template
-
-Основа для коротких атмосферных игр на Godot с first-person controller, interaction system, objectives, scripted events и документационным слоем. Проект также используется как эксперимент по длинной работе над game project вместе с AI-агентами без потери контекста между итерациями.
-
-[Подробнее →](projects/godot-horror-template.md) · [GitHub ↗](https://github.com/True-Ruslan/godot-simple-tamplate)
-
----
-
-### Vlezet
-
-Экспериментальный local-first конструктор планировок с миллиметровой геометрией и исследованиями CV/LLM-assisted recognition. Проект остаётся публичным и его case study сохраняется как инженерная история, но сейчас я сознательно не держу его в основном spotlight портфолио.
-
-[Открыть case study →](projects/vlezet.md) · [GitHub ↗](https://github.com/True-Ruslan/vlezet)
-
----
-
-## Коммерческая работа
-
-### MarketDB
-
-[marketdb.pro ↗](https://marketdb.pro)
-
-MarketDB — коммерческий production-проект в области аналитики маркетплейсов, с которым связана значительная часть моего backend-опыта.
-
-**Стек:** Java 17–21 · Spring Boot · PostgreSQL · ClickHouse · Yandex Data Streams
-
-**Результат:** платформа используется 100+ селлерами.
-
-Здесь я работал с backend-разработкой, данными, интеграциями, надёжностью сервисов и развитием уже живой production-системы. Подробную внутреннюю архитектуру и коммерческие детали я сознательно не публикую.
-
----
-
-## Что я обычно ищу в своих проектах
-
-Если посмотреть на них вместе, у них мало общего по предметной области, но довольно много общего по тому, что мне хочется проверить самому.
-
-Мне интересны проекты, где после первого работающего прототипа остаются вопросы: как система переживёт ошибку, где хранится состояние, что можно безопасно автоматизировать, как выпускать изменения, как не потерять архитектуру через десятки итераций.
-
-Поэтому я довольно часто продолжаю развивать проект уже после момента, когда он формально «заработал». Именно после этого обычно и начинается самая полезная для меня часть.
+<article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="godot-horror-template">
+<h3>Godot Atmospheric Horror Template</h3>
+<p>Основа для небольших атмосферных игр и эксперимент с документационно-ориентированной agent-assisted разработкой.</p>
+<a class="tr-project-index-card__cta" href="projects/godot-horror-template.md">Открыть case study →</a>
+</article>
+</div>
 
 {% note tip %}
 
-Исходный код публичных проектов лежит в [GitHub](https://github.com/True-Ruslan). Если хочется обсудить конкретный проект или решение, проще всего написать через раздел [Контакты](contacts.md).
+Исходный код публичных проектов доступен в [GitHub](https://github.com/True-Ruslan). Для обсуждения задачи или сотрудничества — [Work with me](work-with-me.md).
 
 {% endnote %}
