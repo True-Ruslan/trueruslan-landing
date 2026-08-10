@@ -122,7 +122,11 @@ export function createNoJekyllFile(outputDir = OUTPUT_DIR) {
 }
 
 export function writeRobotsTxt(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl()) {
-  const content = `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`;
+  const content = `User-agent: *
+Allow: /
+
+Sitemap: ${siteUrl}/sitemap.xml
+`;
   fs.writeFileSync(path.join(outputDir, 'robots.txt'), content);
 }
 
@@ -149,7 +153,11 @@ export function writeSitemap(
     const loc = page ? `${siteUrl}/${page}` : `${siteUrl}/`;
     return `  <url><loc>${loc}</loc></url>`;
   }).join('\n');
-  const content = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  const content = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>
+`;
   fs.writeFileSync(path.join(outputDir, 'sitemap.xml'), content);
 }
 
