@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-09**, после exact-production acceptance Work with me / private practice; P3.6 measurement ожидает внешние aggregate observations.
+> Обновлено: **2026-08-10**, после exact-production acceptance C2 — Homepage clarity; C3 — Projects and flagship summary layer является следующим implementation slice, P3.6 measurement ожидает внешние aggregate observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -447,7 +447,21 @@ Portfolio Clarity & Scanability implementation has started with a bounded produc
 - production digest `sha256:41af56c91d59b5c80134d49b1928b0fde348384334c8863ddd9c74c9f4e5c85c`;
 - production observation: `2026-08-09T08:55:33.810Z`.
 
-Next redesign slice: **C2 — Homepage structure**. C1 does not start/reset/close P3.6; the final accepted redesign remains the new presentation-baseline boundary.
+### C2 — Homepage clarity — PRODUCTION ACCEPTED
+
+Accepted production hierarchy: **Hero → Proof → Selected work → Experience → Writing → Work with me → Personal**. The first exact deployment exposed only a stale C1 production-verifier assumption; PR #184 corrected that verifier without weakening product gates.
+
+- feature PR #183 squash: `5fe5c6e15a61e54edd39e94140c7554ba19c5203`;
+- final accepted / deployed SHA: `361543c383b394d1f4cb061a97473038972340cf`;
+- verifier exact-head Build #1633 / `31341749976` — SUCCESS;
+- Pages #211 / `31342012579` — SUCCESS;
+- Pages deployment `5823994260` — success;
+- deployment-triggered Production Live #471 / `31342042518` — SUCCESS;
+- production artifact digest: `sha256:7ebdb095887ab210df33f0a743ee1af371c23dd2939f9151a7b500341b2dbce6`.
+
+C2 keeps exactly four proof facts, three selected projects and five semantic primary-navigation destinations in RU/EN. It does not start/reset/close P3.6.
+
+Next redesign slice: **C3 — Projects and flagship summary layer**. Implement Selected work → Commercial work → Labs & experiments, concise project cards, a shared flagship At a glance layer, progressive disclosure and current-state reconciliation without lifecycle promotion.
 
 ## P3.6 — Measurement checkpoint — NEXT / WAITING
 
@@ -465,4 +479,4 @@ After sufficient aggregate traffic, run the manual checkpoint with real `operato
 
 Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Confirm P3.6B real Reports API connection run `31201235872`. Confirm P3.6C production acceptance for SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, Pages run `31227641778`, deployment `5803497490`, Production Live run `31227681975` and production evidence digest `sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a`. Confirm the accepted presentation refinement for SHA `4395128144c069663e67c660e5b549cfca851ae8`, Pages run `31260596290`, deployment `5809298234` and deployment-triggered Production Live run `31260625145`.
 
-Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Continue with **P3.6 — Measurement checkpoint — NEXT / WAITING** only when real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
+Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Continue with **C3 — Projects and flagship summary layer** as the next product implementation slice. Keep **P3.6 — Measurement checkpoint — NEXT / WAITING** parallel and untouched until real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
