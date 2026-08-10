@@ -1,0 +1,39 @@
+name: C5 copy-assets formatting cleanup
+
+on:
+  push:
+    branches:
+      - feat/portfolio-clarity-c5-knowledge-surfaces
+    paths:
+      - .github/workflows/c5-copy-assets-format-cleanup.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: feat/portfolio-clarity-c5-knowledge-surfaces
+          fetch-depth: 1
+
+      - name: Revert non-C5 formatting noise
+        run: |
+          set -euo pipefail
+          python3 scripts/revert-c5-copy-assets-formatting.py
+          git diff --check
+
+      - name: Commit only source cleanup
+        run: |
+          set -euo pipefail
+          git rm scripts/revert-c5-copy-assets-formatting.py
+          git add scripts/copy-assets.js
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: remove non-C5 copy-assets formatting noise'
+          git push origin HEAD:feat/portfolio-clarity-c5-knowledge-surfaces
