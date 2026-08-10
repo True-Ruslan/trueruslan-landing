@@ -88,7 +88,9 @@ async function checkPage(browser, baseUrl, {
   }
 }
 
-async function assertC3ProjectsHub(page) {
+async function assertC3ProjectsHub(page, {locale = 'ru'} = {}) {
+  if (!['ru', 'en'].includes(locale)) throw new Error(`Unsupported C3 Projects locale: ${locale}`);
+
   const selectedSlugs = await page.locator('[data-c3-project]').evaluateAll(
     (nodes) => nodes.map((node) => node.getAttribute('data-c3-project')),
   );
@@ -112,23 +114,41 @@ async function assertC3ProjectsHub(page) {
   }
   if (selectedSlugs.includes('vlezet')) throw new Error('C3 must keep Vlezet outside the selected-work spotlight.');
 
+  const groupsAreOrdered = await page.evaluate(() => {
+    const selected = document.querySelector('[data-c3-project-group="selected"]');
+    const commercial = document.querySelector('[data-c3-commercial="marketdb"]');
+    const labs = document.querySelector('[data-c3-project-group="labs"]');
+    if (!selected || !commercial || !labs) return false;
+    return Boolean(selected.compareDocumentPosition(commercial) & Node.DOCUMENT_POSITION_FOLLOWING)
+      && Boolean(commercial.compareDocumentPosition(labs) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  if (!groupsAreOrdered) throw new Error(`C3 ${locale} Projects hierarchy is not Selected → Commercial → Labs in generated DOM.`);
+
   for (const slug of selectedSlugs) {
     const status = page.locator(`[data-c3-project="${slug}"] [data-project-status="${slug}"]`);
     await status.waitFor({state: 'visible'});
     if ((await status.innerText()).trim() !== expectedProjectStatus(slug)) {
       throw new Error(`${slug} C3 selected-work status drifted from Project Registry.`);
     }
+
+    const href = await page.locator(`[data-c3-project="${slug}"] a`).first().getAttribute('href');
+    const pathname = href ? new URL(href, page.url()).pathname : '';
+    const expectedPath = locale === 'en' ? `/en/projects/${slug}/` : `/projects/${slug}/`;
+    if (pathname !== expectedPath || pathname.includes('/landing/')) {
+      throw new Error(`${slug} C3 ${locale} case-study route is not canonical: ${href || 'missing href'}`);
+    }
+  }
+
+  const vlezetHref = await page.locator('[data-c3-lab="vlezet"] a').first().getAttribute('href');
+  const vlezetPathname = vlezetHref ? new URL(vlezetHref, page.url()).pathname : '';
+  const expectedVlezetPath = locale === 'en' ? '/en/projects/vlezet/' : '/projects/vlezet/';
+  if (vlezetPathname !== expectedVlezetPath || vlezetPathname.includes('/landing/')) {
+    throw new Error(`Vlezet C3 ${locale} lab route is not canonical: ${vlezetHref || 'missing href'}`);
   }
 
   const nodeZeroText = await page.locator('[data-c3-lab="node-zero"]').innerText();
   if (!/private|proprietary/i.test(nodeZeroText)) {
     throw new Error('NODE ZERO C3 lab card lost its private/proprietary boundary.');
-  }
-
-  const href = await page.locator('a[href*="projects/portfolio-platform"]').first().getAttribute('href');
-  const pathname = href ? new URL(href, page.url()).pathname : '';
-  if (!pathname.endsWith('/projects/portfolio-platform/') || pathname.includes('/landing/')) {
-    throw new Error(`Projects hub does not expose canonical portfolio platform route: ${href || 'missing'}`);
   }
 }
 
@@ -149,6 +169,15 @@ async function assertC3FlagshipGlance(page, slug, {expectTimeline = false} = {})
     throw new Error(`${slug} C3 glance status drifted from Project Registry.`);
   }
 
+  const glancePrecedesDeepDive = await page.evaluate((projectSlug) => {
+    const summary = document.querySelector(`[data-tr-project-glance="${projectSlug}"]`);
+    const headings = [...document.querySelectorAll('main.dc-doc-page__content h2')];
+    const deepDive = headings.find((heading) => !['Коротко', 'At a glance'].includes((heading.textContent || '').trim()));
+    if (!summary || !deepDive) return false;
+    return Boolean(summary.compareDocumentPosition(deepDive) & Node.DOCUMENT_POSITION_FOLLOWING);
+  }, slug);
+  if (!glancePrecedesDeepDive) throw new Error(`${slug} C3 glance must precede the first deep-dive section.`);
+
   if (expectTimeline) {
     const timeline = page.locator('.tr-project-timeline').first();
     await timeline.waitFor({state: 'visible'});
@@ -159,6 +188,15 @@ async function assertC3FlagshipGlance(page, slug, {expectTimeline = false} = {})
       return Boolean(summary.compareDocumentPosition(projectTimeline) & Node.DOCUMENT_POSITION_FOLLOWING);
     }, slug);
     if (!glancePrecedesTimeline) throw new Error(`${slug} C3 glance must precede the project timeline in generated DOM.`);
+  }
+}
+
+async function assertPlatformCanonicalNamespace(page) {
+  const codeBlocks = await page.locator('pre code').allInnerTexts();
+  const canonicalBlock = codeBlocks.find((text) => text.includes('/projects/') && text.includes('/resume/') && text.includes('/notes/'));
+  if (!canonicalBlock) throw new Error('TrueRuslan Landing is missing the root-level canonical route example block.');
+  for (const stale of ['/landing/projects/', '/landing/resume/', '/landing/notes/']) {
+    if (canonicalBlock.includes(stale)) throw new Error(`TrueRuslan Landing still presents ${stale} as a current canonical route.`);
   }
 }
 
@@ -193,6 +231,7 @@ async function assertNormalizedCaseStudy(page, {
   relatedHrefFragments,
   requireTimeline = true,
   requireEvidence = true,
+  requireGlance = false,
 }) {
   const document = page.locator('main.dc-doc-page__content');
   await document.waitFor({state: 'visible'});
@@ -204,6 +243,7 @@ async function assertNormalizedCaseStudy(page, {
     throw new Error(`${slug} case-study status drifted from Project Registry: ${actualStatus}`);
   }
 
+  if (requireGlance) await assertC3FlagshipGlance(page, slug, {expectTimeline: requireTimeline});
   await assertOrderedHeadings(page, slug, orderedHeadings);
   const text = await document.innerText();
   for (const marker of requiredText) {
@@ -235,47 +275,18 @@ async function main() {
       pathname: '/projects/',
       heading: 'Проекты',
       verify: async (page) => {
-        await assertC3ProjectsHub(page);
+        await assertC3ProjectsHub(page, {locale: 'ru'});
       },
     });
 
-    const c3FlagshipChecks = [
-      {
-        slug: 'c3-livingworld-ru', pathname: '/projects/livingworld/', heading: 'VillAIgence',
-        verify: async (page) => { await assertC3FlagshipGlance(page, 'livingworld', {expectTimeline: true}); },
+    await checkPage(browser, serverRuntime.baseUrl, {
+      slug: 'projects-registry-status-en',
+      pathname: '/en/projects/',
+      heading: 'Projects',
+      verify: async (page) => {
+        await assertC3ProjectsHub(page, {locale: 'en'});
       },
-      {
-        slug: 'c3-livingworld-en', pathname: '/en/projects/livingworld/', heading: 'VillAIgence',
-        verify: async (page) => { await assertC3FlagshipGlance(page, 'livingworld'); },
-      },
-      {
-        slug: 'c3-notchhub-ru', pathname: '/projects/notchhub/', heading: 'NotchHub',
-        verify: async (page) => { await assertC3FlagshipGlance(page, 'notchhub', {expectTimeline: true}); },
-      },
-      {
-        slug: 'c3-notchhub-en', pathname: '/en/projects/notchhub/', heading: 'NotchHub',
-        verify: async (page) => { await assertC3FlagshipGlance(page, 'notchhub'); },
-      },
-      {
-        slug: 'c3-portfolio-platform-ru', pathname: '/projects/portfolio-platform/', heading: 'TrueRuslan Landing',
-        verify: async (page) => { await assertC3FlagshipGlance(page, 'portfolio-platform', {expectTimeline: true}); },
-      },
-      {
-        slug: 'c3-portfolio-platform-en', pathname: '/en/projects/portfolio-platform/', heading: 'TrueRuslan Landing',
-        verify: async (page) => { await assertC3FlagshipGlance(page, 'portfolio-platform'); },
-      },
-      {
-        slug: 'c3-vlezet-ru', pathname: '/projects/vlezet/', heading: 'Vlezet',
-        verify: async (page) => { await assertC3FlagshipGlance(page, 'vlezet', {expectTimeline: true}); },
-      },
-      {
-        slug: 'c3-vlezet-en', pathname: '/en/projects/vlezet/', heading: 'Vlezet',
-        verify: async (page) => { await assertC3FlagshipGlance(page, 'vlezet'); },
-      },
-    ];
-    for (const check of c3FlagshipChecks) {
-      await checkPage(browser, serverRuntime.baseUrl, {...check, axe: false});
-    }
+    });
 
     await checkPage(browser, serverRuntime.baseUrl, {
       slug: 'now',
@@ -338,6 +349,7 @@ async function main() {
         orderedHeadings: ['Проблема', 'Ограничения', 'Текущая lifecycle', 'Архитектура', 'альтернативы', 'Что подтверждено', 'Известные ограничения', 'Следующий принятый шаг', 'Связанные материалы', 'Что бы я сделал иначе'],
         requiredText: ['0.2.0+1.21.1', '7 PASS / 0 FAIL', 'VAI-M2-INST-005', 'VAI-CONCUR-004', 'PR #110', 'PR #123', 'PR #125', 'Draft/RED', 'SYSTEM_OBSERVED'],
         relatedHrefFragments: ['server-authoritative-ai-npcs', 'source-tests-to-installed-acceptance', 'restart-persistence-is-a-product-contract'],
+        requireGlance: true,
       }),
     });
 
@@ -350,6 +362,7 @@ async function main() {
         orderedHeadings: ['Проблема', 'Ограничения', 'Текущая lifecycle', 'Архитектура', 'альтернативы', 'Что подтверждено', 'Известные ограничения', 'Следующий принятый шаг', 'Связанные материалы', 'Что бы я сделал иначе'],
         requiredText: ['M7.8B', 'M7.8C', 'PR #42', 'PR #44', 'PR #45', 'PR #52', 'usefulness acceptance', 'Assisted Tracing', 'ACTIVE DEVELOPMENT'],
         relatedHrefFragments: ['probabilistic-proposals-deterministic-authority', 'green-ci-is-not-product-verification'],
+        requireGlance: true,
       }),
     });
 
@@ -364,7 +377,35 @@ async function main() {
         relatedHrefFragments: ['server-authoritative-ai-npcs', 'llm-output-is-a-protocol-boundary', '/projects/livingworld'],
         requireTimeline: false,
         requireEvidence: false,
+        requireGlance: true,
       }),
+    });
+
+    await checkPage(browser, serverRuntime.baseUrl, {
+      slug: 'c3-vlezet-en',
+      pathname: '/en/projects/vlezet/',
+      heading: 'Vlezet',
+      verify: async (page) => {
+        await assertC3FlagshipGlance(page, 'vlezet');
+      },
+    });
+
+    await checkPage(browser, serverRuntime.baseUrl, {
+      slug: 'c3-notchhub-ru',
+      pathname: '/projects/notchhub/',
+      heading: 'NotchHub',
+      verify: async (page) => {
+        await assertC3FlagshipGlance(page, 'notchhub', {expectTimeline: true});
+      },
+    });
+
+    await checkPage(browser, serverRuntime.baseUrl, {
+      slug: 'c3-notchhub-en',
+      pathname: '/en/projects/notchhub/',
+      heading: 'NotchHub',
+      verify: async (page) => {
+        await assertC3FlagshipGlance(page, 'notchhub');
+      },
     });
 
     for (const project of [
@@ -378,6 +419,8 @@ async function main() {
         verify: async (page) => {
           await assertProjectTimeline(page, project.slug);
           if (project.slug === 'portfolio-platform') {
+            await assertC3FlagshipGlance(page, 'portfolio-platform', {expectTimeline: true});
+            await assertPlatformCanonicalNamespace(page);
             const evidence = page.locator('[data-project-evidence="portfolio-platform"]');
             await evidence.waitFor({state: 'visible'});
             const evidenceText = await evidence.innerText();
@@ -399,6 +442,7 @@ async function main() {
       pathname: '/en/projects/portfolio-platform/',
       heading: 'TrueRuslan Landing',
       verify: async (page) => {
+        await assertC3FlagshipGlance(page, 'portfolio-platform');
         const status = page.locator('[data-project-status="portfolio-platform"]');
         await status.waitFor({state: 'visible'});
         if ((await status.innerText()).trim() !== expectedProjectStatus('portfolio-platform')) {
@@ -412,7 +456,7 @@ async function main() {
       },
     });
 
-    console.log('Portfolio browser, accessibility, registry, navigation, Notes, normalized flagships, timeline and platform case-study smoke passed.');
+    console.log('Portfolio browser, accessibility, registry, navigation, Notes, C3 Projects/flagship summaries, timelines and platform case-study smoke passed.');
   } finally {
     if (browser) await browser.close();
     await serverRuntime.stop();
