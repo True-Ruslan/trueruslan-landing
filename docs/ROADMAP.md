@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-10**, после exact-production acceptance C3 — Projects and flagship summary layer; C4 — Professional surfaces является следующим implementation slice, P3.6 measurement ожидает внешние aggregate observations.
+> Обновлено: **2026-08-10**, после exact-production acceptance C4 — Professional surfaces; C5 — Knowledge surfaces является следующим implementation slice, P3.6 measurement ожидает внешние aggregate observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -480,7 +480,23 @@ Accepted production hierarchy: **Selected work → Commercial work → Labs & ex
 
 C3 preserves project lifecycle/evidence ownership and does not start, reset or close P3.6.
 
-Next redesign slice: **C4 — Professional surfaces**. Apply the approved scan-first contracts to Experience, Work with me, About, Now and Contacts without changing their canonical data/privacy/URL ownership.
+### C4 — Professional surfaces — PRODUCTION ACCEPTED
+
+Accepted scan-first professional layer: Experience, Work with me, About, Now and Contacts are concise and useful on first scan while canonical mutable truth stays registry-owned. Resume keeps passive PDF/no-JS semantics and reviewed desktop/mobile presentation; generated search, privacy, SEO and clean routes remain unchanged.
+
+- PR #191 exact feature head: `90551bf476a167a589ee1b4a5fab2cb11c8cd923`;
+- exact-head Build #1712 / `31400871629` — SUCCESS;
+- CodeQL #1252 / `31400871940` — SUCCESS;
+- Dependency Review #1140 / `31400871675` — SUCCESS;
+- accepted squash / deployed SHA: `12ea58e815ebf09bcc5915e92a715cd3bfed5241`;
+- Pages #216 / `31401684624` — SUCCESS;
+- Pages deployment `5834505086` — success;
+- deployment-triggered Production Live #482 / `31402338027` — SUCCESS;
+- production artifact digest: `sha256:8548b1740dd7d8e746feaedcc08ce6b227df786fa4646b4b7018e9bb1928f264`.
+
+C4 does not start, reset or close P3.6 Measurement.
+
+Next redesign slice: **C5 — Knowledge surfaces**. Apply the approved scan-first hierarchy to Engineering Notes, Publications, Sources and Engineering Map without creating parallel registries/search ownership or collapsing evidence depth.
 
 ## P3.6 — Measurement checkpoint — NEXT / WAITING
 
@@ -498,4 +514,4 @@ After sufficient aggregate traffic, run the manual checkpoint with real `operato
 
 Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Confirm P3.6B real Reports API connection run `31201235872`. Confirm P3.6C production acceptance for SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, Pages run `31227641778`, deployment `5803497490`, Production Live run `31227681975` and production evidence digest `sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a`. Confirm the accepted presentation refinement for SHA `4395128144c069663e67c660e5b549cfca851ae8`, Pages run `31260596290`, deployment `5809298234` and deployment-triggered Production Live run `31260625145`.
 
-Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Continue with **C4 — Professional surfaces** as the next product implementation slice. Keep **P3.6 — Measurement checkpoint — NEXT / WAITING** parallel and untouched until real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
+Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Confirm C4 exact production acceptance for SHA `12ea58e815ebf09bcc5915e92a715cd3bfed5241`, Pages run `31401684624`, deployment `5834505086` and Production Live run `31402338027`. Continue with **C5 — Knowledge surfaces** as the next product implementation slice. Keep **P3.6 — Measurement checkpoint — NEXT / WAITING** parallel and untouched until real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
