@@ -538,3 +538,126 @@ html[data-tr-page='bibliography'] .tr-source-card__external {
   main,.tr-terminal,.tr-reveal,.tr-card,.tr-cta { opacity: 1 !important; transform: none !important; }
   body::after { display: none; }
 }
+
+
+/* Portfolio Clarity C3 */
+.tr-project-index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.tr-project-index-card {
+  min-width: 0;
+  padding: 1.1rem;
+  border: 1px solid var(--tr-border);
+  border-radius: var(--tr-radius);
+  background: linear-gradient(145deg, rgba(23, 28, 36, .9), rgba(17, 21, 28, .82));
+}
+
+.tr-project-index-card--selected {
+  border-color: var(--tr-border-strong);
+}
+
+.tr-project-index-card--commercial {
+  max-width: 52rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.tr-project-index-grid--compact {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+
+.tr-project-index-card--compact {
+  padding: .95rem 1rem;
+}
+
+.tr-project-index-card h3 {
+  margin-top: .2rem;
+  margin-bottom: .55rem;
+}
+
+.tr-project-index-card p {
+  margin: 0 0 .85rem;
+  color: var(--tr-muted);
+}
+
+.tr-project-index-card__meta {
+  min-height: 1.7rem;
+  margin-bottom: .35rem;
+}
+
+.tr-project-index-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin: .8rem 0 .9rem;
+  padding: 0;
+  list-style: none;
+}
+
+.tr-project-index-card__tags li {
+  padding: .22rem .5rem;
+  border: 1px solid var(--tr-border);
+  border-radius: 999px;
+  color: var(--tr-muted);
+  font-size: .78rem;
+}
+
+.tr-project-index-card__cta {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 650;
+}
+
+.tr-project-glance {
+  display: grid;
+  grid-template-columns: minmax(8rem, .7fr) minmax(0, 2fr);
+  gap: 0;
+  margin: 1rem 0 1.75rem;
+  border: 1px solid var(--tr-border);
+  border-radius: var(--tr-radius);
+  overflow: hidden;
+  background: rgba(17, 21, 28, .66);
+}
+
+.tr-project-glance dt,
+.tr-project-glance dd {
+  min-width: 0;
+  margin: 0;
+  padding: .72rem .9rem;
+  border-bottom: 1px solid var(--tr-border);
+}
+
+.tr-project-glance dt {
+  color: var(--tr-muted);
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.tr-project-glance dd {
+  overflow-wrap: anywhere;
+}
+
+.tr-project-glance dt:last-of-type,
+.tr-project-glance dd:last-of-type {
+  border-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .tr-project-glance {
+    grid-template-columns: 1fr;
+  }
+
+  .tr-project-glance dt {
+    padding-bottom: .2rem;
+    border-bottom: 0;
+  }
+
+  .tr-project-glance dd {
+    padding-top: .2rem;
+  }
+}

@@ -2,13 +2,27 @@
 
 **Vlezet** — local-first конструктор планировок, в котором реальную квартиру можно собрать из стен, проёмов и мебели, проверить размеры и площади, посмотреть схему в 3D и использовать распознавание плана как редактируемую помощь, а не как источник истины.
 
-**Текущий статус:** <span data-tr-project-status="vlezet"></span>
 
 [Репозиторий на GitHub ↗](https://github.com/True-Ruslan/vlezet)
 
 ![Граница между распознаванием и авторитетной геометрией Vlezet](../../assets/diagrams/vlezet-recognition-authority.svg)
 
 <div data-tr-project-timeline="vlezet"></div>
+
+## Коротко
+
+<dl class="tr-project-glance" data-tr-project-glance="vlezet">
+<dt>Моя роль</dt>
+<dd>Product/domain architecture: geometry authority, editing model, recognition boundaries и acceptance strategy.</dd>
+<dt>Стек</dt>
+<dd>TypeScript · Next.js · Geometry · Computer vision · Three.js</dd>
+<dt>Задача</dt>
+<dd>Сделать план квартиры точным и редактируемым, а распознавание — полезной подсказкой без права незаметно менять authoritative geometry.</dd>
+<dt>Результат</dt>
+<dd>M7.8B остаётся принятой границей; автоматический следующий путь не прошёл usefulness acceptance, поэтому текущая bounded direction — Assisted Tracing.</dd>
+<dt>Статус</dt>
+<dd><span data-tr-project-status="vlezet"></span></dd>
+</dl>
 
 <!-- case-study:problem -->
 ## Проблема: план квартиры должен оставаться точным после первого впечатления

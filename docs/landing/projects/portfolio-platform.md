@@ -4,9 +4,23 @@
 
 [Открыть репозиторий на GitHub ↗](https://github.com/True-Ruslan/trueruslan-landing)
 
-**Текущий статус:** <span data-tr-project-status="portfolio-platform"></span>
 
 <div data-tr-project-timeline="portfolio-platform"></div>
+
+## Коротко
+
+<dl class="tr-project-glance" data-tr-project-glance="portfolio-platform">
+<dt>Моя роль</dt>
+<dd>Product, architecture и quality ownership всего static-first портфолио и knowledge layer.</dd>
+<dt>Стек</dt>
+<dd>Diplodoc · Node.js · Playwright · GitHub Actions · GitHub Pages</dd>
+<dt>Задача</dt>
+<dd>Показывать инженерное мышление и доказательства без превращения сайта в тяжёлое приложение или набор дублирующихся источников истины.</dd>
+<dt>Результат</dt>
+<dd>Production static-first платформа с registry-backed контентом, clean URLs, RU/EN и deployment-bound browser verification.</dd>
+<dt>Статус</dt>
+<dd><span data-tr-project-status="portfolio-platform"></span></dd>
+</dl>
 
 <!-- case-study:problem -->
 ## Проблема: портфолио должно показывать инженерное мышление, а не только список технологий
@@ -79,10 +93,10 @@ Cloudflare Web Analytics используется только как optional a
 
 ```text
 /
-/landing/projects/
-/landing/projects/portfolio-platform/
-/landing/resume/
-/landing/notes/
+/projects/
+/projects/portfolio-platform/
+/resume/
+/notes/
 /en/
 /en/projects/portfolio-platform/
 /_search/ru/

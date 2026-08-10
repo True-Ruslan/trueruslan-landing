@@ -2,11 +2,25 @@
 
 **NotchHub** — нативное macOS-приложение, которое превращает область вокруг аппаратной челки MacBook в компактную точку доступа к повседневным инструментам. Базовая идея — постоянно доступный, но лёгкий по ресурсам интерфейс, который остаётся локальным и не требует отдельного облачного backend.
 
-**Текущий статус:** <span data-tr-project-status="notchhub"></span>
 
 [Репозиторий на GitHub ↗](https://github.com/True-Ruslan/notch-hub)
 
 <div data-tr-project-timeline="notchhub"></div>
+
+## Коротко
+
+<dl class="tr-project-glance" data-tr-project-glance="notchhub">
+<dt>Моя роль</dt>
+<dd>Solo product engineering: native macOS architecture, interaction model, performance, security и release boundary.</dd>
+<dt>Стек</dt>
+<dd>Swift 6 · SwiftUI · AppKit · macOS · XCTest</dd>
+<dt>Задача</dt>
+<dd>Превратить область вокруг челки MacBook в полезный always-on интерфейс без тяжёлого runtime и широких разрешений.</dd>
+<dt>Результат</dt>
+<dd>Принята основа 0.1.0 — Personal build; следующий interaction milestone развивается отдельно и не считается завершённым автоматически.</dd>
+<dt>Статус</dt>
+<dd><span data-tr-project-status="notchhub"></span></dd>
+</dl>
 
 <!-- case-study:problem -->
 ## Проблема: полезный always-on интерфейс не должен становиться ещё одним тяжёлым приложением
