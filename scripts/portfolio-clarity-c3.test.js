@@ -139,9 +139,25 @@ test('C3 browser smoke owns the complete generated-DOM acceptance contract', () 
   assert.match(browserSmoke, /pathname: '\/projects\/'[\s\S]*?assertC3ProjectsHub\(page, \{locale: 'ru'\}\)/);
   assert.match(browserSmoke, /pathname: '\/en\/projects\/'[\s\S]*?assertC3ProjectsHub\(page, \{locale: 'en'\}\)/);
 
-  for (const slug of ['livingworld', 'notchhub', 'portfolio-platform', 'vlezet']) {
-    assert.match(browserSmoke, new RegExp(`assertC3FlagshipGlance\\(page, '${slug}'`));
-  }
+  assert.match(
+    browserSmoke,
+    /pathname: '\/projects\/livingworld\/'[\s\S]*?slug: 'livingworld'[\s\S]*?requireGlance: true/,
+    'RU VillAIgence normalized acceptance must require the shared glance invariant',
+  );
+  assert.match(
+    browserSmoke,
+    /pathname: '\/en\/projects\/livingworld\/'[\s\S]*?slug: 'livingworld'[\s\S]*?requireGlance: true/,
+    'EN VillAIgence normalized acceptance must require the shared glance invariant',
+  );
+  assert.match(
+    browserSmoke,
+    /pathname: '\/projects\/vlezet\/'[\s\S]*?slug: 'vlezet'[\s\S]*?requireGlance: true/,
+    'RU Vlezet normalized acceptance must require the shared glance invariant',
+  );
+  assert.match(browserSmoke, /pathname: '\/en\/projects\/vlezet\/'[\s\S]*?assertC3FlagshipGlance\(page, 'vlezet'/);
+  assert.match(browserSmoke, /pathname: '\/projects\/notchhub\/'[\s\S]*?assertC3FlagshipGlance\(page, 'notchhub'/);
+  assert.match(browserSmoke, /pathname: '\/en\/projects\/notchhub\/'[\s\S]*?assertC3FlagshipGlance\(page, 'notchhub'/);
+  assert.match(browserSmoke, /assertC3FlagshipGlance\(page, 'portfolio-platform'/);
 
   assert.match(browserSmoke, /await assertPlatformCanonicalNamespace\(page\)/);
   assert.doesNotMatch(browserSmoke, /c3FlagshipChecks[\s\S]*?axe:\s*false/);
