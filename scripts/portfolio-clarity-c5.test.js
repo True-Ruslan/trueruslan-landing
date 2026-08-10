@@ -41,6 +41,11 @@ test('C5 Engineering Notes index derives compact cards from the canonical Notes 
   }
   assert.match(module, /export function renderNotesIndex\(/);
   assert.match(module, /export function applyNotesIndex\(/);
+  const applyNotesIndexStart = indexOfOrFail(module, 'export function applyNotesIndex(', 'applyNotesIndex');
+  const applyNotesIndexEnd = indexOfOrFail(module, 'export function renderNoteNavigation(', 'renderNoteNavigation');
+  const applyNotesIndexSource = module.slice(applyNotesIndexStart, applyNotesIndexEnd);
+  assert.doesNotMatch(applyNotesIndexSource, /existsSync\(/, 'Notes index must read the generated target directly without a TOCTOU precheck');
+  assert.match(applyNotesIndexSource, /readFileSync\(htmlPath/);
   assert.match(build, /applyNotesIndex/);
   assert.match(workflow, /node scripts\/notes-index-browser-smoke\.cjs/);
   assert.match(workflow, /notes-index-browser-smoke\.log/);
