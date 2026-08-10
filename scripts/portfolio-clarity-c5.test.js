@@ -28,6 +28,7 @@ test('C5 Engineering Notes index derives compact cards from the canonical Notes 
   const source = read('docs/landing/notes.md');
   const module = read('scripts/notes-content.js');
   const build = read('scripts/copy-assets.js');
+  const workflow = read('.github/workflows/build.yml');
   const notes = JSON.parse(read('data/notes.json'));
 
   assert.match(source, /data-tr-notes-index-placeholder/);
@@ -41,6 +42,8 @@ test('C5 Engineering Notes index derives compact cards from the canonical Notes 
   assert.match(module, /export function renderNotesIndex\(/);
   assert.match(module, /export function applyNotesIndex\(/);
   assert.match(build, /applyNotesIndex/);
+  assert.match(workflow, /node scripts\/notes-index-browser-smoke\.cjs/);
+  assert.match(workflow, /notes-index-browser-smoke\.log/);
   assert.equal(fs.existsSync(path.join(ROOT, 'data', 'notes-index.json')), false, 'C5 may not add a second Notes index registry');
 });
 
