@@ -177,11 +177,14 @@ async function assertC3FlagshipGlance(page, slug, {expectTimeline = false} = {})
   const glancePrecedesDeepDive = await page.evaluate((projectSlug) => {
     const summary = document.querySelector(`[data-tr-project-glance="${projectSlug}"]`);
     const headings = [...document.querySelectorAll('main.dc-doc-page__content h2')];
-    const deepDive = headings.find((heading) => !['Коротко', 'At a glance'].includes((heading.textContent || '').trim()));
+    const deepDive = headings.find((heading) => (
+      !heading.closest('.tr-project-timeline')
+      && !['korotko', 'at-a-glance'].includes(heading.id)
+    ));
     if (!summary || !deepDive) return false;
     return Boolean(summary.compareDocumentPosition(deepDive) & Node.DOCUMENT_POSITION_FOLLOWING);
   }, slug);
-  if (!glancePrecedesDeepDive) throw new Error(`${slug} C3 glance must precede the first deep-dive section.`);
+  if (!glancePrecedesDeepDive) throw new Error(`${slug} C3 glance must precede the first narrative deep-dive section.`);
 
   if (expectTimeline) {
     const timeline = page.locator('.tr-project-timeline').first();
