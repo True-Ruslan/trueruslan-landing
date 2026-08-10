@@ -73,6 +73,21 @@ Production Live #467 is retained as useful negative evidence. The deployed C2 pr
 
 The final acceptance is therefore tied to `361543c383b394d1f4cb061a97473038972340cf`, not to the earlier feature merge alone.
 
+## Durable synchronization TDD
+
+The durable-state update was also performed RED-first rather than rewriting the ledgers without a contract.
+
+- RED head: `9523de8749ab5d2c294541ffba99a9b2f828c4ae`;
+- RED Build #1636 / `31371981062` — **expected FAILURE**;
+- unit result: **639 PASS / exactly 1 expected FAIL**;
+- the only failure was the new C2 durable-acceptance assertion requiring `PROJECT_STATE.md`, `ROADMAP.md` and `CHANGELOG.md` to record C2 and advance the redesign to C3;
+- Dependency Review #1064 / `31371981054` — **SUCCESS** on the RED head;
+- deterministic durable migration run `31372467517` — **SUCCESS** after a fail-closed duplicated-anchor correction;
+- roadmap new-session alignment migration run `31372771271` — **SUCCESS**;
+- temporary migration scripts/workflows removed themselves from the final diff.
+
+The final PR head must still pass the ordinary repository quality/security matrix before this ledger change is merged. Green PR CI is repository acceptance for the documentation update; it does not redefine the already accepted C2 production SHA above.
+
 ## Measurement boundary
 
 C2 remains an intermediate redesign slice. It **does not start, reset or close P3.6 Measurement**, and no engagement, conversion or causal product-impact claim is inferred from C2 shipping.
