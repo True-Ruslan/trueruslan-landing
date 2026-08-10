@@ -130,8 +130,8 @@ test('case study is wired into hubs, navigation, metadata and RU/EN pairing', ()
   const i18n = readJson(files.i18n);
   const meta = readJson(files.meta);
 
-  assert.match(ruHub, /projects\/portfolio-platform\.md/);
-  assert.match(enHub, /projects\/portfolio-platform\.md/);
+  assert.match(ruHub, /projects\/portfolio-platform\.html/);
+  assert.match(enHub, /projects\/portfolio-platform\.html/);
   assert.match(toc, /\.\/landing\/projects\/portfolio-platform\.md/);
   assert.match(toc, /\.\/en\/projects\/portfolio-platform\.md/);
 
