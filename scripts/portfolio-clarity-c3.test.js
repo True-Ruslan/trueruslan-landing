@@ -34,6 +34,11 @@ function assertOrdered(source, markers, label) {
 function assertProjectHub({path: relativePath, headings}) {
   const source = read(relativePath);
   assertOrdered(source, headings, relativePath);
+  assert.doesNotMatch(
+    source,
+    /<a\b[^>]*href=["'][^"']+\.md(?:[?#][^"']*)?["']/i,
+    `${relativePath} raw C3 card anchors must target generated .html files so clean-url projection can publish canonical directory routes`,
+  );
 
   const selected = section(source, headings[0], headings[1]);
   assert.deepEqual(
