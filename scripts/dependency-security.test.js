@@ -128,7 +128,7 @@ test('low-risk audit packages remain on fixed patch or minor releases', () => {
 
   for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'js-yaml')) {
     const [major] = versionParts(metadata?.version);
-    if (major === 4 && compareVersion(metadata?.version, [4, 3, 0]) < 0) {
+    if (major === 4 && compareVersion(metadata?.version, [4, 3, 1]) < 0) {
       violations.push(`${packagePath}: ${metadata?.version ?? 'unknown'}`);
     }
   }
@@ -138,6 +138,13 @@ test('low-risk audit packages remain on fixed patch or minor releases', () => {
     [],
     `Affected low-risk dependency versions remain in package-lock.json:\n${violations.join('\n')}`,
   );
+});
+
+test('js-yaml and nanoid patch overrides own the current high-severity remediation', () => {
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  assert.equal(packageJson.overrides?.['js-yaml@3'], '3.15.1');
+  assert.equal(packageJson.overrides?.['js-yaml@4'], '4.3.1');
+  assert.equal(packageJson.overrides?.['nanoid@3'], '3.3.17');
 });
 
 test('js-yaml and nanoid are beyond the current high-severity advisory ranges', () => {
