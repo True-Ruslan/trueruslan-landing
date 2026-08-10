@@ -42,8 +42,8 @@ replaceOnce(
 );
 replaceOnce(
   'docs/PROJECT_STATE.md',
-  '**P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**',
-  '**C3 — Projects and flagship summary layer — NEXT IMPLEMENTATION SLICE.**\n\nP3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** in parallel; it is not closed or reset by C2/C3 presentation work.',
+  'Continue with:\n\n**P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**',
+  'Continue with:\n\n**C3 — Projects and flagship summary layer — NEXT IMPLEMENTATION SLICE.**\n\nP3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** in parallel; it is not closed or reset by C2/C3 presentation work.',
 );
 
 const roadmapBlock = `### C2 — Homepage clarity — PRODUCTION ACCEPTED
