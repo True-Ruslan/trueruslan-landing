@@ -4,7 +4,7 @@ I am a backend engineer interested in systems that remain understandable and ver
 
 ## Engineer
 
-My commercial work is mainly Java/Spring backend, integrations, data and reliability. I pay close attention to sources of truth, ownership boundaries, tests, migrations, CI/CD and reproducible delivery.
+My commercial work is mainly Java/Spring backend, integrations, data and reliability. My current stack includes **Java 21–25, Spring Boot 3.5–4, PostgreSQL, ClickHouse, Kafka and MinIO**. I pay close attention to sources of truth, ownership boundaries, tests, migrations, CI/CD and reproducible delivery.
 
 I use AI and LLMs as engineering tools: in commercial work I contribute to AI-tool adoption and a corporate MCP server, while personal projects let me test more complex agentic systems. I care less about model “magic” than about how the capability is bounded, validated and integrated into the system around it.
 
