@@ -10,6 +10,7 @@ import {applyI18n, loadI18nManifest} from './i18n.js';
 import {
   applyFeedDiscovery,
   applyNoteEnhancements,
+  applyNotesIndex,
   loadNotesManifest,
   writeAtomFeed,
 } from './notes-content.js';
@@ -353,6 +354,7 @@ export function postprocessOutput({
     })
     : [];
   const projectEvidenceStylesheetTargets = applyProjectEvidenceStylesheet(outputDir, projectEvidenceTargets);
+  const notesIndexTarget = applyNotesIndex(outputDir, notes);
   const noteTargets = applyNoteEnhancements(outputDir, notes);
   const feedPath = writeAtomFeed(outputDir, notes, siteUrl);
   const publicationProjectLabels = new Map(projects.map(({slug, name}) => [slug, name]));
@@ -416,6 +418,7 @@ export function postprocessOutput({
     timelineTargets,
     projectEvidenceTargets,
     projectEvidenceStylesheetTargets,
+    notesIndexTarget,
     noteTargets,
     feedPath,
     feedDiscoveryUpdated,
@@ -448,6 +451,7 @@ function main() {
     console.log(`Injected ${result.timelineTargets.length} project timeline(s).`);
     if (result.projectEvidenceTargets.length) console.log(`Injected ${result.projectEvidenceTargets.length} Project Evidence block(s).`);
     if (result.projectEvidenceStylesheetTargets.length) console.log(`Wired Project Evidence stylesheet into ${result.projectEvidenceStylesheetTargets.length} page(s).`);
+    console.log(`Engineering Notes index injected: ${result.notesIndexTarget}`);
     console.log(`Enhanced ${result.noteTargets.length} Engineering Note page(s).`);
     console.log(`Atom feed written: ${result.feedPath}`);
     if (result.publicationShowcaseTarget) console.log(`Publications showcase injected: ${result.publicationShowcaseTarget}`);
