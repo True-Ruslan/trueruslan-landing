@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-10**, после exact-production acceptance C2 — Homepage clarity; C3 — Projects and flagship summary layer является следующим implementation slice, P3.6 measurement ожидает внешние aggregate observations.
+> Обновлено: **2026-08-10**, после exact-production acceptance C3 — Projects and flagship summary layer; C4 — Professional surfaces является следующим implementation slice, P3.6 measurement ожидает внешние aggregate observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -461,7 +461,26 @@ Accepted production hierarchy: **Hero → Proof → Selected work → Experience
 
 C2 keeps exactly four proof facts, three selected projects and five semantic primary-navigation destinations in RU/EN. It does not start/reset/close P3.6.
 
-Next redesign slice: **C3 — Projects and flagship summary layer**. Implement Selected work → Commercial work → Labs & experiments, concise project cards, a shared flagship At a glance layer, progressive disclosure and current-state reconciliation without lifecycle promotion.
+### C3 — Projects and flagship summary layer — PRODUCTION ACCEPTED
+
+Accepted production hierarchy: **Selected work → Commercial work → Labs & experiments**. Selected work is exactly VillAIgence, NotchHub and TrueRuslan Landing; MarketDB is the bounded commercial proof; Vlezet and lower-priority projects remain directly reachable without equal spotlight weight. VillAIgence, NotchHub, TrueRuslan Landing and Vlezet each expose a shared five-field registry-backed `Коротко / At a glance` layer before the deep-dive/evidence layer.
+
+- PR #189 integrated head: `d58e4fe53e53ab52c59d63222642c87f36aa4662`;
+- integrated exact-head Build #1686 / `31385511275` — SUCCESS;
+- CodeQL #1224 / `31385511279` — SUCCESS;
+- Dependency Review #1114 / `31385511434` — SUCCESS;
+- quality artifact `9061720498`, digest `sha256:254e5a9ffadc5327777fcd9b65a149bfc5f3b75a1d4c08d7a87fa8ddbe3e5e59`;
+- accepted squash / deployed SHA: `c54fd7c0e3554ffb6063fecfaa8135d02e9a6679`;
+- Pages #214 / `31388753309` — SUCCESS;
+- Pages deployment `5832077852` — success;
+- Pages artifact `9062771335`, digest `sha256:e1781720e49e152b8d6dcc9ee1f34e1a718116ee5cac70c091358c01b28b40ed`;
+- Pages verification reports `9062785516`, digest `sha256:2b2344c7a8f5e584293285af757dce9ddaa05aec657176995c0f284791f0dbe2`;
+- deployment-triggered Production Live #478 / `31388848079` — SUCCESS;
+- production artifact `9062864420`, digest `sha256:413205da34291556eabae8bf4d7f46f2af04be4fc63ce9cd42d8da801730c544`.
+
+C3 preserves project lifecycle/evidence ownership and does not start, reset or close P3.6.
+
+Next redesign slice: **C4 — Professional surfaces**. Apply the approved scan-first contracts to Experience, Work with me, About, Now and Contacts without changing their canonical data/privacy/URL ownership.
 
 ## P3.6 — Measurement checkpoint — NEXT / WAITING
 
@@ -479,4 +498,4 @@ After sufficient aggregate traffic, run the manual checkpoint with real `operato
 
 Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Confirm P3.6B real Reports API connection run `31201235872`. Confirm P3.6C production acceptance for SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, Pages run `31227641778`, deployment `5803497490`, Production Live run `31227681975` and production evidence digest `sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a`. Confirm the accepted presentation refinement for SHA `4395128144c069663e67c660e5b549cfca851ae8`, Pages run `31260596290`, deployment `5809298234` and deployment-triggered Production Live run `31260625145`.
 
-Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Continue with **C3 — Projects and flagship summary layer** as the next product implementation slice. Keep **P3.6 — Measurement checkpoint — NEXT / WAITING** parallel and untouched until real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
+Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Continue with **C4 — Professional surfaces** as the next product implementation slice. Keep **P3.6 — Measurement checkpoint — NEXT / WAITING** parallel and untouched until real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
