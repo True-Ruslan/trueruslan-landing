@@ -180,6 +180,17 @@ async function assertArchiveAndLightbox(page, name, baseUrl) {
   await root.waitFor({state: 'hidden'});
 }
 
+async function waitForVisibleRevealTransitions(page) {
+  await page.evaluate(async () => {
+    const revealAnimations = [...document.querySelectorAll('.tr-reveal.is-visible')]
+      .flatMap((node) => node.getAnimations())
+      .filter((animation) => animation.playState !== 'finished');
+    await Promise.all(revealAnimations.map((animation) => animation.finished.catch(() => undefined)));
+  });
+  await page.waitForFunction(() => [...document.querySelectorAll('.tr-reveal.is-visible')]
+    .every((node) => Number.parseFloat(getComputedStyle(node).opacity) >= 0.999));
+}
+
 async function assertLegacyRedirect(page, name, baseUrl) {
   await page.goto(`${baseUrl}${LEGACY_ROUTE}`, {waitUntil: 'domcontentloaded'});
   await page.waitForURL(new RegExp(`${CANONICAL_ROUTE.replaceAll('/', '\\/')}$`), {timeout: 5000});
@@ -233,6 +244,7 @@ async function runScenario(browser, baseUrl, name, viewport, reducedMotion = 'no
     const overflow = (await assertNoHorizontalOverflow(page, name)).overflow;
     const shell = await assertSharedShell(page, name, viewport);
     await assertArchiveAndLightbox(page, name, baseUrl);
+    await waitForVisibleRevealTransitions(page);
 
     const axe = await new AxeBuilder({page}).analyze();
     const serious = blockingAxeViolations(axe);

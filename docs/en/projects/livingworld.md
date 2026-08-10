@@ -2,13 +2,27 @@
 
 **VillAIgence** is an MCA-derived Minecraft 1.21.1 mod that grew from AI-assisted villager dialogue into an experiment in persistent NPC society: text and voice interaction, Memory 2.0, relationships, operator-authored context and bounded server-owned actions.
 
-<span data-tr-project-status="livingworld"></span>
 
 [GitHub repository ↗](https://github.com/True-Ruslan/villAIgence)
 
 The internal `LivingWorld / livingworld` names remain compatibility-sensitive engine, configuration and world-data identities. The public project name changed without silently renaming the `mca` mod id, Java package root or `<world>/livingworld/` storage.
 
 ![VillAIgence authority and acceptance boundaries](../../assets/diagrams/villaigence-authority-and-acceptance.svg)
+
+## At a glance
+
+<dl class="tr-project-glance" data-tr-project-glance="livingworld">
+<dt>My contribution</dt>
+<dd>Architecture for the server-authoritative AI/NPC system, Memory 2.0, provider boundaries and release engineering.</dd>
+<dt>Stack</dt>
+<dd>Java 21 · Fabric · Minecraft 1.21.1 · Voice/STT/TTS · Memory 2.0</dd>
+<dt>Challenge</dt>
+<dd>Make AI-driven NPCs convincing without giving the model authority over world state, memory or actions.</dd>
+<dt>Result</dt>
+<dd>Official 0.2.0+1.21.1 with bounded installed Memory 2.0 acceptance; later semantic-memory work remains a separate boundary.</dd>
+<dt>Status</dt>
+<dd><span data-tr-project-status="livingworld"></span></dd>
+</dl>
 
 <!-- case-study:problem -->
 ## Problem: a convincing NPC must still obey the server

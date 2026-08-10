@@ -1,79 +1,78 @@
 # Projects
 
-This is a curated English overview of my public engineering work. Project status is derived from the same canonical registry as the Russian site; I do not maintain a separate English status model.
+A short map of the work that best shows how I approach engineering: where authority lives, what counts as verified, and what changes after the first working prototype.
 
-**VillAIgence**, **NotchHub** and **TrueRuslan Landing** are the current English flagship case studies. Other projects remain directly reachable without occupying the main spotlight.
+## Selected work
 
-## VillAIgence — server-authoritative AI society
+<div class="tr-project-index-grid" data-c3-project-group="selected">
+<article class="tr-project-index-card tr-project-index-card--selected" data-c3-project="livingworld">
+<div class="tr-project-index-card__meta"><span data-tr-project-status="livingworld"></span></div>
+<h3>VillAIgence</h3>
+<p>An AI society layer for Minecraft where the server owns truth, memory and actions while the model remains a bounded source of proposals.</p>
+<ul class="tr-project-index-card__tags" aria-label="Technologies and areas"><li>Java 21</li><li>Fabric</li><li>Memory 2.0</li><li>AI security</li></ul>
+<a class="tr-project-index-card__cta" href="en/projects/livingworld.html">Open case study →</a>
+</article>
 
-<span data-tr-project-status="livingworld"></span>
+<article class="tr-project-index-card tr-project-index-card--selected" data-c3-project="notchhub">
+<div class="tr-project-index-card__meta"><span data-tr-project-status="notchhub"></span></div>
+<h3>NotchHub</h3>
+<p>A native local-first macOS productivity hub around the MacBook notch, focused on system interaction, resource efficiency and a narrow security surface.</p>
+<ul class="tr-project-index-card__tags" aria-label="Technologies and areas"><li>Swift 6</li><li>SwiftUI</li><li>AppKit</li><li>macOS</li></ul>
+<a class="tr-project-index-card__cta" href="en/projects/notchhub.html">Open case study →</a>
+</article>
 
-An MCA-derived Minecraft 1.21.1 system that combines text and voice NPC dialogue, immutable server-owned context, episodic and semantic Memory 2.0, relationships, operator lore, bounded external providers and exact-artifact acceptance gates.
-
-[Open English case study →](projects/livingworld.md)
-
-Repository: [True-Ruslan/villAIgence ↗](https://github.com/True-Ruslan/villAIgence)
-
-## NotchHub — local-first macOS productivity
-
-<span data-tr-project-status="notchhub"></span>
-
-A native Swift 6 / SwiftUI + AppKit productivity hub built around the MacBook notch. Its accepted `0.1.0 — Personal build` foundation keeps App Sandbox, Hardened Runtime, explicit performance budgets and a narrow local-first security boundary. Current M1 interaction work remains clearly separate in Draft PR #10 until deterministic and target-Mac acceptance is complete.
-
-[Open English case study →](projects/notchhub.md)
-
-Repository: [True-Ruslan/notch-hub ↗](https://github.com/True-Ruslan/notch-hub)
-
-## TrueRuslan Landing — static-first portfolio platform
-
-<span data-tr-project-status="portfolio-platform"></span>
-
-The production platform behind this portfolio: a standalone homepage plus Diplodoc knowledge pages, canonical registries, RU/EN pairing, generated search, repository-native clean URLs and separate evidence layers for exact-head CI, generated artifacts, GitHub Pages deployment and live browser verification.
-
-[Open English case study →](projects/portfolio-platform.md)
-
-Repository: [True-Ruslan/trueruslan-landing ↗](https://github.com/True-Ruslan/trueruslan-landing)
-
-## Other public work
-
-### NODE ZERO — narrative systems and techno-horror
-
-<span data-tr-project-status="node-zero"></span>
-
-A Unity techno-horror project built around reusable gameplay systems, authored sequences and a prediction system called MIRROR. The public repository intentionally exposes only a bounded part of the project.
-
-[Open case study — Russian (RU) →](../landing/projects/node-zero.md)
-
-### TaskHub — backend + AI experiments
-
-A backend-oriented project space for API design, data, integrations and AI-assisted engineering experiments.
-
-[Open case study — Russian (RU) →](../landing/projects/taskhub.md)
-
-### MiniChess — domain logic
-
-A compact project focused on domain modeling, deterministic rules and testable application logic.
-
-[Open case study — Russian (RU) →](../landing/projects/minichess.md)
-
-### Godot Atmospheric Horror Template
-
-A reusable Godot foundation for small atmospheric horror prototypes, including scene structure, interaction patterns and asset conventions.
-
-[Open case study — Russian (RU) →](../landing/projects/godot-horror-template.md)
-
-### Vlezet — apartment geometry research
-
-Vlezet remains a public local-first apartment-planning and recognition research project. Its case study and engineering history remain available, but it is intentionally not part of the current portfolio spotlight.
-
-[Open English case study →](projects/vlezet.md)
-
-Repository: [True-Ruslan/vlezet ↗](https://github.com/True-Ruslan/vlezet)
+<article class="tr-project-index-card tr-project-index-card--selected" data-c3-project="portfolio-platform">
+<div class="tr-project-index-card__meta"><span data-tr-project-status="portfolio-platform"></span></div>
+<h3>TrueRuslan Landing</h3>
+<p>A static-first portfolio and knowledge platform with canonical registries, RU/EN, clean URLs and separate source, artifact, deployment and live-production verification.</p>
+<ul class="tr-project-index-card__tags" aria-label="Technologies and areas"><li>Diplodoc</li><li>Node.js</li><li>Playwright</li><li>GitHub Pages</li></ul>
+<a class="tr-project-index-card__cta" href="en/projects/portfolio-platform.html">Open case study →</a>
+</article>
+</div>
 
 ## Commercial work
 
-My commercial backend work includes production systems at MarketDB and earlier enterprise/integration work around Sber/SBBOL and the Creatio/Terrasoft ecosystem. I intentionally do not expose proprietary architecture or internal implementation details in public case studies.
+<article class="tr-project-index-card tr-project-index-card--commercial" data-c3-commercial="marketdb">
+<h3>MarketDB</h3>
+<p>A production marketplace-analytics platform. My work covered backend engineering, data, integrations and the evolution of a live system without exposing proprietary architecture.</p>
+<ul class="tr-project-index-card__tags" aria-label="Stack"><li>Java</li><li>Spring Boot</li><li>PostgreSQL</li><li>ClickHouse</li></ul>
+<a class="tr-project-index-card__cta" href="https://marketdb.pro">marketdb.pro ↗</a>
+</article>
 
----
+For broader commercial context, see [Experience](resume.md).
 
-For more context about how I approach engineering, see [About](about.md) or [Experience](resume.md).
+## Labs & experiments
+
+<div class="tr-project-index-grid tr-project-index-grid--compact" data-c3-project-group="labs">
+<article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="vlezet">
+<h3>Vlezet</h3>
+<p>A local-first apartment planner with millimetre geometry and recognition treated as reviewable assistance rather than authority.</p>
+<a class="tr-project-index-card__cta" href="en/projects/vlezet.html">Open case study →</a>
+</article>
+
+<article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="node-zero">
+<h3>NODE ZERO</h3>
+<p>A psychological techno-horror project around an autonomous AI facility and the MIRROR prediction system; the repository remains private/proprietary.</p>
+<a class="tr-project-index-card__cta" href="landing/projects/node-zero.html">Open case study — Russian (RU) →</a>
+</article>
+
+<article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="taskhub">
+<h3>TaskHub</h3>
+<p>A backend + AI engineering case study about service boundaries, data, integrations and reproducible infrastructure.</p>
+<a class="tr-project-index-card__cta" href="landing/projects/taskhub.html">Open case study — Russian (RU) →</a>
+</article>
+
+<article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="minichess">
+<h3>MiniChess</h3>
+<p>A compact Java project focused on domain rules, state transitions and server-side validation.</p>
+<a class="tr-project-index-card__cta" href="landing/projects/minichess.html">Open case study — Russian (RU) →</a>
+</article>
+
+<article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="godot-horror-template">
+<h3>Godot Atmospheric Horror Template</h3>
+<p>A reusable foundation for small atmospheric games and documentation-driven, agent-assisted development experiments.</p>
+<a class="tr-project-index-card__cta" href="landing/projects/godot-horror-template.html">Open case study — Russian (RU) →</a>
+</article>
+</div>
+
+For engineering context beyond projects, see [About](about.md), [Experience](resume.md), or [Work with me](work-with-me.md).

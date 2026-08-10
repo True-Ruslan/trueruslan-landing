@@ -2,11 +2,25 @@
 
 **Vlezet** is a local-first apartment planner for reconstructing a real home from walls, openings and furniture, checking dimensions and areas, viewing the result in 3D, and using plan recognition as editable assistance rather than as a source of truth.
 
-**Current status:** <span data-tr-project-status="vlezet"></span>
 
 [Open the repository on GitHub ↗](https://github.com/True-Ruslan/vlezet)
 
 ![Boundary between recognition proposals and authoritative Vlezet geometry](../../assets/diagrams/vlezet-recognition-authority.svg)
+
+## At a glance
+
+<dl class="tr-project-glance" data-tr-project-glance="vlezet">
+<dt>My contribution</dt>
+<dd>Product and domain architecture for geometry authority, editing, recognition boundaries and acceptance strategy.</dd>
+<dt>Stack</dt>
+<dd>TypeScript · Next.js · Geometry · Computer vision · Three.js</dd>
+<dt>Challenge</dt>
+<dd>Keep an apartment plan precise and editable while recognition stays assistance rather than an authority that silently rewrites geometry.</dd>
+<dt>Result</dt>
+<dd>M7.8B remains the accepted boundary; the automatic follow-up path failed usefulness acceptance, so Assisted Tracing is the current bounded direction.</dd>
+<dt>Status</dt>
+<dd><span data-tr-project-status="vlezet"></span></dd>
+</dl>
 
 <!-- case-study:problem -->
 ## Problem: an apartment plan must remain accurate after the first impression
