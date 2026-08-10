@@ -58,7 +58,7 @@ test('PROJECT_STATE records P3.6A readiness acceptance without claiming P3.6 mea
   assert.doesNotMatch(state, /P3\.6 — Measurement checkpoint — DONE/);
   assert.match(
     state,
-    /## 6\. Approved next product slice[\s\S]*Continue with:[\s\S]*\*\*C3 — Projects and flagship summary layer — NEXT IMPLEMENTATION SLICE\.\*\*[\s\S]*P3\.6 remains \*\*NEXT \/ WAITING FOR EXTERNAL EVIDENCE\*\* in parallel/,
+    /## 6\. Approved next product slice[\s\S]*Continue with:[\s\S]*\*\*C4 — Professional surfaces — NEXT IMPLEMENTATION SLICE\.\*\*[\s\S]*P3\.6 remains \*\*NEXT \/ WAITING FOR EXTERNAL EVIDENCE\*\* in parallel/,
   );
   assert.doesNotMatch(state, /\*\*P3\.5C — English Publications — NEXT\*\*/);
   assertEvidence(state, 'PROJECT_STATE');
