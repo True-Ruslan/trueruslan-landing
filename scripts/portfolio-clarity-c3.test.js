@@ -120,3 +120,19 @@ test('C3 source surfaces expose the approved scan-first Projects hierarchy and f
   const platformRu = read('docs/landing/projects/portfolio-platform.md');
   assert.doesNotMatch(platformRu, /`\/landing\/(?:projects|resume|notes)\//, 'platform case study must use root-level canonical RU routes');
 });
+
+test('C3 browser smoke owns generated-DOM acceptance for the projects hub and flagship glance layer', () => {
+  const browserSmoke = read('scripts/v03-browser-smoke.cjs');
+
+  assert.match(browserSmoke, /async function assertC3ProjectsHub\(/);
+  assert.match(browserSmoke, /async function assertC3FlagshipGlance\(/);
+  assert.match(browserSmoke, /\[data-c3-project\]/);
+  assert.match(browserSmoke, /\[data-c3-commercial/);
+  assert.match(browserSmoke, /\[data-c3-lab\]/);
+  assert.match(browserSmoke, /\[data-tr-project-glance=/);
+  assert.match(browserSmoke, /await assertC3ProjectsHub\(page\)/);
+  assert.match(browserSmoke, /await assertC3FlagshipGlance\(page, 'livingworld'/);
+  assert.match(browserSmoke, /await assertC3FlagshipGlance\(page, 'notchhub'/);
+  assert.match(browserSmoke, /await assertC3FlagshipGlance\(page, 'portfolio-platform'/);
+  assert.match(browserSmoke, /await assertC3FlagshipGlance\(page, 'vlezet'/);
+});
