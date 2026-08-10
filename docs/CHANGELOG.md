@@ -1,8 +1,24 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-09**, после exact-production acceptance Work with me / private practice; P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-10**, после exact-production acceptance C2 — Homepage clarity; P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-10 — C2 Homepage clarity — PRODUCTION ACCEPTED
+
+- Implemented the approved C2 fast-scan homepage hierarchy in RU/EN: **Hero → Proof → Selected work → Experience → Writing → Work with me → Personal**.
+- Replaced first-scan Layer-3 evidence density with four concise professional proof facts and kept the spotlight to three selected projects.
+- Kept exactly five semantic primary-navigation destinations; Contacts remains secondary and directly reachable.
+- Preserved canonical registries, no-JavaScript content, generated search, canonical clean routes, privacy/Metrica and SEO contracts.
+- Feature PR #183 squash: `5fe5c6e15a61e54edd39e94140c7554ba19c5203`; exact-head Build #1631 / `31341099744` — SUCCESS, 636 tests and all 31 quality stages.
+- First C2 Pages #210 / `31341477318` deployed successfully, but deployment-triggered Production Live #467 / `31341502294` failed only because the Work with me production verifier still required removed C1 homepage cards.
+- PR #184 corrected that verifier with RED-first coverage; exact-head Build #1633 / `31341749976`, CodeQL #1167 and Dependency Review #1061 — SUCCESS.
+- Final accepted / deployed SHA: `361543c383b394d1f4cb061a97473038972340cf`.
+- Final Pages #211 / `31342012579` — SUCCESS; deployment `5823994260`; Pages artifact `9046113610`, digest `sha256:c1d3dfec2f2c171ad4d224c04bb4765ef2d7d5099e2feacb6ee3bab35cb88ea1`.
+- Deployment-triggered Production Live #471 / `31342042518` — SUCCESS; artifact `9046144255`, digest `sha256:7ebdb095887ab210df33f0a743ee1af371c23dd2939f9151a7b500341b2dbce6`.
+- Exact production Work with me/C2 evidence reports RU/EN `proofFacts=4`, `selectedProjects=3`, `primaryNavigationItems=5`, with no product-side browser errors on that surface.
+
+C2 remains an intermediate redesign slice and does not start, reset or close P3.6 Measurement. Next implementation slice: **C3 — Projects and flagship summary layer**.
 
 ## 2026-08-09 — C1 Presentation foundation — PRODUCTION ACCEPTED
 

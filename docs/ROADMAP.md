@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-09**, после exact-production acceptance Work with me / private practice; P3.6 measurement ожидает внешние aggregate observations.
+> Обновлено: **2026-08-10**, после exact-production acceptance C2 — Homepage clarity; C3 — Projects and flagship summary layer является следующим implementation slice, P3.6 measurement ожидает внешние aggregate observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -447,7 +447,21 @@ Portfolio Clarity & Scanability implementation has started with a bounded produc
 - production digest `sha256:41af56c91d59b5c80134d49b1928b0fde348384334c8863ddd9c74c9f4e5c85c`;
 - production observation: `2026-08-09T08:55:33.810Z`.
 
-Next redesign slice: **C2 — Homepage structure**. C1 does not start/reset/close P3.6; the final accepted redesign remains the new presentation-baseline boundary.
+### C2 — Homepage clarity — PRODUCTION ACCEPTED
+
+Accepted production hierarchy: **Hero → Proof → Selected work → Experience → Writing → Work with me → Personal**. The first exact deployment exposed only a stale C1 production-verifier assumption; PR #184 corrected that verifier without weakening product gates.
+
+- feature PR #183 squash: `5fe5c6e15a61e54edd39e94140c7554ba19c5203`;
+- final accepted / deployed SHA: `361543c383b394d1f4cb061a97473038972340cf`;
+- verifier exact-head Build #1633 / `31341749976` — SUCCESS;
+- Pages #211 / `31342012579` — SUCCESS;
+- Pages deployment `5823994260` — success;
+- deployment-triggered Production Live #471 / `31342042518` — SUCCESS;
+- production artifact digest: `sha256:7ebdb095887ab210df33f0a743ee1af371c23dd2939f9151a7b500341b2dbce6`.
+
+C2 keeps exactly four proof facts, three selected projects and five semantic primary-navigation destinations in RU/EN. It does not start/reset/close P3.6.
+
+Next redesign slice: **C3 — Projects and flagship summary layer**. Implement Selected work → Commercial work → Labs & experiments, concise project cards, a shared flagship At a glance layer, progressive disclosure and current-state reconciliation without lifecycle promotion.
 
 ## P3.6 — Measurement checkpoint — NEXT / WAITING
 

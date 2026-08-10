@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-09**, после exact-production acceptance Work with me / private practice; P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-10**, после exact-production acceptance C2 — Homepage clarity; P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -312,6 +312,26 @@ The first runtime slice of **Portfolio Clarity & Scanability** is production-acc
 
 The durable acceptance ledger is `docs/acceptance/2026-08-09-portfolio-clarity-c1.md`. This is an isolated foundation slice, not the final redesign measurement baseline: **P3.6 — Measurement checkpoint — NEXT / WAITING** remains unchanged until the full accepted redesign and its new observation window exist.
 
+### C2 — Homepage clarity — PRODUCTION ACCEPTED
+
+The second runtime slice of **Portfolio Clarity & Scanability** is production-accepted. RU/EN homepage presentation now follows the fast-scan hierarchy **Hero → Proof → Selected work → Experience → Writing → Work with me → Personal** while canonical project/evidence truth, no-JavaScript behavior, generated search, privacy and SEO ownership remain unchanged.
+
+- feature PR #183 squash: `5fe5c6e15a61e54edd39e94140c7554ba19c5203`;
+- final verifier PR #184 squash / deployed SHA: `361543c383b394d1f4cb061a97473038972340cf`;
+- verifier exact-head Build #1633 / `31341749976` — SUCCESS;
+- final Pages #211 / `31342012579` — SUCCESS;
+- Pages deployment `5823994260` — success;
+- Pages artifact `9046113610`, digest `sha256:c1d3dfec2f2c171ad4d224c04bb4765ef2d7d5099e2feacb6ee3bab35cb88ea1`;
+- deployment-triggered Production Live #471 / `31342042518` — SUCCESS;
+- production artifact `9046144255`, digest `sha256:7ebdb095887ab210df33f0a743ee1af371c23dd2939f9151a7b500341b2dbce6`;
+- production homepage acceptance: RU/EN `proofFacts=4`, `selectedProjects=3`, `primaryNavigationItems=5`.
+
+The first C2 deployment was product-correct but Production Live #467 exposed a stale C1-only Work with me verifier. PR #184 corrected only that verification contract; final acceptance is therefore tied to exact deployed SHA `361543c383b394d1f4cb061a97473038972340cf` and deployment `5823994260`.
+
+Durable ledger: `docs/acceptance/2026-08-10-portfolio-clarity-c2.md`. C2 does not start, reset or close P3.6 Measurement.
+
+Next redesign slice: **C3 — Projects and flagship summary layer**.
+
 ## 3. External project evidence boundaries
 
 Content Freshness observation от **2026-08-08** был вручную reconciled с текущими репозиториями. Новые release/PR/activity signals обновляют evidence snapshot, но сами по себе не повышают lifecycle и не заменяют product-owner/installed acceptance.
@@ -547,6 +567,8 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.**
+**C3 — Projects and flagship summary layer — NEXT IMPLEMENTATION SLICE.**
+
+P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** in parallel; it is not closed or reset by C2/C3 presentation work.
 
 P3.6A measurement-readiness tooling уже принято на exact SHA `7cc56d024fbde53156a9136b14b00c81c6718811`. Сам P3.6 остаётся observation checkpoint: запускать его только с реальными `operator-observed` aggregate observations после минимального post-migration window, с equal-duration baseline/current windows, explicit traffic-sufficiency assessment после закрытия current window и human review. Synthetic `synthetic-pipeline-proof` не является production measurement evidence и не разрешает engagement, causality или product-impact claims.
