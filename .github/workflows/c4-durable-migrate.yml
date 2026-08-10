@@ -1,0 +1,44 @@
+name: C4 durable state migration
+
+on:
+  push:
+    branches:
+      - docs/portfolio-clarity-c4-production-acceptance
+    paths:
+      - .github/workflows/c4-durable-migrate.yml
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: docs/portfolio-clarity-c4-production-acceptance
+          fetch-depth: 1
+
+      - name: Apply fail-closed migration
+        run: |
+          set -euo pipefail
+          python3 scripts/migrate-c4-durable-state.py
+          git diff --check
+
+      - name: Remove one-shot migration files
+        run: |
+          set -euo pipefail
+          git rm scripts/migrate-c4-durable-state.py .github/workflows/c4-durable-migrate.yml
+
+      - name: Commit durable state only
+        run: |
+          set -euo pipefail
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md docs/acceptance/2026-08-10-portfolio-clarity-c4.md
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'ERROR: migration produced no staged changes'; exit 1; } || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'docs: record C4 production acceptance'
+          git push origin HEAD:docs/portfolio-clarity-c4-production-acceptance
