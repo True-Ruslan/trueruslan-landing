@@ -66,7 +66,14 @@ function assertFlagshipGlance(relativePath, slug, locale) {
   );
   const match = source.match(glancePattern);
   assert.ok(match, `${relativePath} must expose one registry-backed flagship glance block`);
-  assert.ok(source.indexOf(match[0]) < problemIndex, `${relativePath} glance block must precede the deep-dive sections`);
+  const glanceIndex = source.indexOf(match[0]);
+  assert.ok(glanceIndex < problemIndex, `${relativePath} glance block must precede the deep-dive sections`);
+
+  const timelineIndex = source.indexOf(`data-tr-project-timeline="${slug}"`);
+  if (timelineIndex !== -1) {
+    assert.ok(glanceIndex < timelineIndex, `${relativePath} glance block must precede the project timeline`);
+  }
+
   assert.equal((source.match(new RegExp(`data-tr-project-glance=["']${slug}["']`, 'g')) ?? []).length, 1);
 
   if (locale === 'ru') {
