@@ -1,8 +1,30 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-10**, после exact-production acceptance C3 — Projects and flagship summary layer; P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-10**, после exact-production acceptance C4 — Professional surfaces; P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-10 — C4 Professional surfaces — PRODUCTION ACCEPTED
+
+- Reworked RU/EN Experience into a concise hero, direct contact action, five grouped stack areas and impact-first role summaries; removed the duplicated Profile/flat technology wall.
+- Reduced RU/EN Work with me to exactly three useful tracks, canonical availability, three implementation steps, direct handoff and explicit boundaries.
+- Reduced RU/EN About to three concise personal-professional sections while preserving current Java/Spring and AI/MCP facts without duplicating full Experience/Projects narratives.
+- Moved the canonical generated Now snapshot before meta explanation in RU/EN; `data/now.json` and Project Registry remain authoritative.
+- Made Telegram/email immediate on Contacts while profiles and qualification remain secondary; collaboration renderer still does not own Contacts.
+- Reviewed the intentional Resume visual change before acceptance; final desktop/mobile samples are `1440×3631` / `390×4964` with unchanged global visual thresholds.
+- PR #191 exact head: `90551bf476a167a589ee1b4a5fab2cb11c8cd923`;
+- exact-head Build #1712 / `31400871629` — SUCCESS;
+- quality artifact `9067791638`, digest `sha256:0699049422b719281dbb68980bcde478a0adbd37dfad03ac19b69280ab32151c`;
+- CodeQL #1252 / `31400871940` — SUCCESS;
+- Dependency Review #1140 / `31400871675` — SUCCESS;
+- accepted squash / deployed SHA: `12ea58e815ebf09bcc5915e92a715cd3bfed5241`;
+- Pages #216 / `31401684624` — SUCCESS;
+- Pages deployment `5834505086` — success;
+- Pages artifact `9067905904`, digest `sha256:b1ed622b6b40f7b4fbec5e11afa161ca40eb53337fdfb9f7cc625d7fef4d1d4e`;
+- deployment-triggered Production Live #482 / `31402338027` — SUCCESS;
+- production artifact `9068239234`, digest `sha256:8548b1740dd7d8e746feaedcc08ce6b227df786fa4646b4b7018e9bb1928f264`.
+
+C4 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim. Next implementation slice: **C5 — Knowledge surfaces**.
 
 ## 2026-08-10 — C3 Projects and flagship summary layer — PRODUCTION ACCEPTED
 

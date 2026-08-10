@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-10**, после exact-production acceptance C3 — Projects and flagship summary layer; P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-10**, после exact-production acceptance C4 — Professional surfaces; P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -349,7 +349,25 @@ The third runtime slice of **Portfolio Clarity & Scanability** is production-acc
 
 Durable ledger: `docs/acceptance/2026-08-10-portfolio-clarity-c3.md`. C3 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim.
 
-Next redesign slice: **C4 — Professional surfaces**.
+### C4 — Professional surfaces — PRODUCTION ACCEPTED
+
+The fourth runtime slice of **Portfolio Clarity & Scanability** is production-accepted. Experience, Work with me, About, Now and Contacts now use the approved scan-first professional presentation while canonical collaboration/Now/project registries, no-JavaScript semantics, one Diplodoc search owner, privacy/SEO and clean-route ownership remain unchanged.
+
+- PR #191 exact feature head: `90551bf476a167a589ee1b4a5fab2cb11c8cd923`;
+- exact-head Build #1712 / `31400871629` — SUCCESS;
+- quality artifact `9067791638`, digest `sha256:0699049422b719281dbb68980bcde478a0adbd37dfad03ac19b69280ab32151c`;
+- CodeQL #1252 / `31400871940` — SUCCESS;
+- Dependency Review #1140 / `31400871675` — SUCCESS;
+- accepted squash / deployed SHA: `12ea58e815ebf09bcc5915e92a715cd3bfed5241`;
+- Pages #216 / `31401684624` — SUCCESS;
+- Pages deployment `5834505086` — success;
+- Pages artifact `9067905904`, digest `sha256:b1ed622b6b40f7b4fbec5e11afa161ca40eb53337fdfb9f7cc625d7fef4d1d4e`;
+- deployment-triggered Production Live #482 / `31402338027` — SUCCESS;
+- production artifact `9068239234`, digest `sha256:8548b1740dd7d8e746feaedcc08ce6b227df786fa4646b4b7018e9bb1928f264`.
+
+Durable ledger: `docs/acceptance/2026-08-10-portfolio-clarity-c4.md`. C4 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim.
+
+Next redesign slice: **C5 — Knowledge surfaces**.
 
 ## 3. External project evidence boundaries
 
