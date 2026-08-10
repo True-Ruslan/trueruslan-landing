@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-10**, после exact-production acceptance C2 — Homepage clarity; P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-10**, после exact-production acceptance C3 — Projects and flagship summary layer; P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -330,7 +330,26 @@ The first C2 deployment was product-correct but Production Live #467 exposed a s
 
 Durable ledger: `docs/acceptance/2026-08-10-portfolio-clarity-c2.md`. C2 does not start, reset or close P3.6 Measurement.
 
-Next redesign slice: **C3 — Projects and flagship summary layer**.
+### C3 — Projects and flagship summary layer — PRODUCTION ACCEPTED
+
+The third runtime slice of **Portfolio Clarity & Scanability** is production-accepted. RU/EN Projects now use **Selected work → Commercial work → Labs & experiments**, while the four public flagships — VillAIgence, NotchHub, TrueRuslan Landing and Vlezet — expose one shared five-field `Коротко / At a glance` layer before deep evidence. Canonical registries continue to own volatile project status and evidence truth.
+
+- PR #189 integrated head: `d58e4fe53e53ab52c59d63222642c87f36aa4662`;
+- integrated exact-head Build #1686 / `31385511275` — SUCCESS;
+- CodeQL #1224 / `31385511279` — SUCCESS;
+- Dependency Review #1114 / `31385511434` — SUCCESS;
+- quality artifact `9061720498`, digest `sha256:254e5a9ffadc5327777fcd9b65a149bfc5f3b75a1d4c08d7a87fa8ddbe3e5e59`;
+- accepted squash / deployed SHA: `c54fd7c0e3554ffb6063fecfaa8135d02e9a6679`;
+- Pages #214 / `31388753309` — SUCCESS;
+- Pages deployment `5832077852` — success;
+- Pages artifact `9062771335`, digest `sha256:e1781720e49e152b8d6dcc9ee1f34e1a718116ee5cac70c091358c01b28b40ed`;
+- Pages verification reports `9062785516`, digest `sha256:2b2344c7a8f5e584293285af757dce9ddaa05aec657176995c0f284791f0dbe2`;
+- deployment-triggered Production Live #478 / `31388848079` — SUCCESS;
+- production artifact `9062864420`, digest `sha256:413205da34291556eabae8bf4d7f46f2af04be4fc63ce9cd42d8da801730c544`.
+
+Durable ledger: `docs/acceptance/2026-08-10-portfolio-clarity-c3.md`. C3 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim.
+
+Next redesign slice: **C4 — Professional surfaces**.
 
 ## 3. External project evidence boundaries
 
@@ -567,7 +586,7 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**C3 — Projects and flagship summary layer — NEXT IMPLEMENTATION SLICE.**
+**C4 — Professional surfaces — NEXT IMPLEMENTATION SLICE.**
 
 P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** in parallel; it is not closed or reset by C2/C3 presentation work.
 

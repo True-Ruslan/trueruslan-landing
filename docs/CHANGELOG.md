@@ -1,8 +1,30 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-10**, после exact-production acceptance C2 — Homepage clarity; P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-10**, после exact-production acceptance C3 — Projects and flagship summary layer; P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-10 — C3 Projects and flagship summary layer — PRODUCTION ACCEPTED
+
+- Rebuilt RU/EN Projects into **Selected work → Commercial work → Labs & experiments**.
+- Kept the spotlight to VillAIgence, NotchHub and TrueRuslan Landing; MarketDB is public-safe commercial proof, while Vlezet remains directly reachable without returning to the spotlight.
+- Added one shared five-field registry-backed `Коротко / At a glance` layer to VillAIgence, NotchHub, TrueRuslan Landing and Vlezet in RU/EN before deep evidence.
+- Preserved NODE ZERO private/proprietary boundaries, canonical project/evidence ownership, clean routes, one Diplodoc search owner, no-JavaScript semantics, privacy, SEO and accessibility.
+- Reviewed only the intentionally changed Projects desktop/mobile visual baselines; global visual thresholds remain unchanged.
+- PR #189 integrated head: `d58e4fe53e53ab52c59d63222642c87f36aa4662`;
+- integrated exact-head Build #1686 / `31385511275` — SUCCESS;
+- CodeQL #1224 / `31385511279` — SUCCESS;
+- Dependency Review #1114 / `31385511434` — SUCCESS;
+- quality artifact `9061720498`, digest `sha256:254e5a9ffadc5327777fcd9b65a149bfc5f3b75a1d4c08d7a87fa8ddbe3e5e59`;
+- accepted squash / deployed SHA: `c54fd7c0e3554ffb6063fecfaa8135d02e9a6679`;
+- Pages #214 / `31388753309` — SUCCESS;
+- Pages deployment `5832077852` — success;
+- Pages artifact `9062771335`, digest `sha256:e1781720e49e152b8d6dcc9ee1f34e1a718116ee5cac70c091358c01b28b40ed`;
+- Pages verification reports `9062785516`, digest `sha256:2b2344c7a8f5e584293285af757dce9ddaa05aec657176995c0f284791f0dbe2`;
+- deployment-triggered Production Live #478 / `31388848079` — SUCCESS;
+- production artifact `9062864420`, digest `sha256:413205da34291556eabae8bf4d7f46f2af04be4fc63ce9cd42d8da801730c544`.
+
+C3 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim. Next implementation slice: **C4 — Professional surfaces**.
 
 ## 2026-08-10 — C2 Homepage clarity — PRODUCTION ACCEPTED
 
