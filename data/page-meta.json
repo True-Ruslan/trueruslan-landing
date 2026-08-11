@@ -6,11 +6,7 @@
     "description": "Java, Spring Boot, distributed systems, DevOps, AI engineering, проекты, инженерные заметки и web-CV Руслана Немыкина.",
     "displayTitle": "RUSLAN NEMYKIN",
     "kicker": "BACKEND ENGINEER",
-    "tags": [
-      "JAVA",
-      "DISTRIBUTED SYSTEMS",
-      "AI ENGINEERING"
-    ],
+    "tags": ["JAVA", "DISTRIBUTED SYSTEMS", "AI ENGINEERING"],
     "accent": "cyan"
   },
   {
@@ -20,11 +16,7 @@
     "description": "Engineering case studies: backend, distributed systems, AI agents, game architecture и production-oriented development.",
     "displayTitle": "ENGINEERING PROJECTS",
     "kicker": "CASE STUDIES",
-    "tags": [
-      "BACKEND",
-      "AI",
-      "GAMEDEV"
-    ],
+    "tags": ["BACKEND", "AI", "GAMEDEV"],
     "accent": "violet"
   },
   {
@@ -34,11 +26,7 @@
     "description": "Case study точного local-first планировщика квартиры: millimetre geometry, rooms and areas, furniture fit, editable CV/LLM recognition Draft и explicit Apply authority.",
     "displayTitle": "VLEZET",
     "kicker": "GEOMETRY AND RECOGNITION",
-    "tags": [
-      "TYPESCRIPT",
-      "GEOMETRY",
-      "COMPUTER VISION"
-    ],
+    "tags": ["TYPESCRIPT", "GEOMETRY", "COMPUTER VISION"],
     "accent": "cyan"
   },
   {
@@ -48,12 +36,7 @@
     "description": "Case study local-first macOS utility around the MacBook notch: SwiftUI/AppKit boundaries, accepted 0.1.0 personal foundation, security and performance gates, with M1 interaction work still in development.",
     "displayTitle": "NOTCHHUB",
     "kicker": "NATIVE MACOS PRODUCTIVITY",
-    "tags": [
-      "SWIFT 6",
-      "SWIFTUI",
-      "APPKIT",
-      "PERFORMANCE"
-    ],
+    "tags": ["SWIFT 6", "SWIFTUI", "APPKIT", "PERFORMANCE"],
     "accent": "cyan"
   },
   {
@@ -63,11 +46,7 @@
     "description": "Evidence-first case study static engineering portfolio platform: Diplodoc, canonical registries, clean URLs, GitHub Pages and deployment-driven production verification.",
     "displayTitle": "TRUERUSLAN PLATFORM",
     "kicker": "STATIC-FIRST PLATFORM",
-    "tags": [
-      "DIPLODOC",
-      "GITHUB PAGES",
-      "QUALITY GATES"
-    ],
+    "tags": ["DIPLODOC", "GITHUB PAGES", "QUALITY GATES"],
     "accent": "green"
   },
   {
@@ -77,11 +56,7 @@
     "description": "Текущий инженерный фокус Руслана Немыкина: активные проекты, темы изучения и технические заметки в работе.",
     "displayTitle": "NOW",
     "kicker": "CURRENT FOCUS",
-    "tags": [
-      "BUILDING",
-      "LEARNING",
-      "WRITING"
-    ],
+    "tags": ["BUILDING", "LEARNING", "WRITING"],
     "accent": "cyan"
   },
   {
@@ -91,11 +66,7 @@
     "description": "Current engineering focus of Ruslan Nemykin: active projects, what I am learning and technical writing in progress.",
     "displayTitle": "NOW",
     "kicker": "CURRENT FOCUS",
-    "tags": [
-      "BUILDING",
-      "LEARNING",
-      "WRITING"
-    ],
+    "tags": ["BUILDING", "LEARNING", "WRITING"],
     "accent": "cyan"
   },
   {
@@ -105,11 +76,7 @@
     "description": "Интерактивная карта связей между Java/backend, distributed systems, reliability, AI engineering, GameDev, реальными проектами и техническими заметками.",
     "displayTitle": "ENGINEERING MAP",
     "kicker": "SKILLS TO SYSTEMS",
-    "tags": [
-      "JAVA",
-      "AI",
-      "RELIABILITY"
-    ],
+    "tags": ["JAVA", "AI", "RELIABILITY"],
     "accent": "violet"
   },
   {
@@ -119,11 +86,7 @@
     "description": "Как Руслан Немыкин подходит к backend-разработке, distributed systems, reliability, AI-инструментам, преподаванию и личным инженерным проектам.",
     "displayTitle": "ABOUT",
     "kicker": "ENGINEERING PROFILE",
-    "tags": [
-      "BACKEND",
-      "SYSTEMS",
-      "AI"
-    ],
+    "tags": ["BACKEND", "SYSTEMS", "AI"],
     "accent": "violet"
   },
   {
@@ -133,11 +96,7 @@
     "description": "Web-CV Java backend-разработчика с 5+ годами опыта: Spring Boot, Kafka, PostgreSQL, Oracle, ClickHouse, интеграции, AI/MCP, преподавание и исследовательская работа.",
     "displayTitle": "ENGINEERING RESUME",
     "kicker": "RUSLAN NEMYKIN",
-    "tags": [
-      "JAVA",
-      "SPRING",
-      "DEVOPS"
-    ],
+    "tags": ["JAVA", "SPRING", "DEVOPS"],
     "accent": "cyan"
   },
   {
@@ -147,11 +106,7 @@
     "description": "Личный визуальный архив Руслана Немыкина: фотоистории о поездках, учёбе, событиях, людях и обычных моментах вне кода.",
     "displayTitle": "PHOTO STORIES",
     "kicker": "VISUAL ARCHIVE",
-    "tags": [
-      "STORIES",
-      "MOMENTS",
-      "ARCHIVE"
-    ],
+    "tags": ["STORIES", "MOMENTS", "ARCHIVE"],
     "accent": "violet"
   },
   {
@@ -161,11 +116,7 @@
     "description": "Case study Minecraft AI NPC system: text and voice dialogue, Memory 2.0, operator lore, bounded server actions, security and exact-artifact acceptance gates.",
     "displayTitle": "VILLAIGENCE",
     "kicker": "SERVER-AUTHORITATIVE AI",
-    "tags": [
-      "MINECRAFT",
-      "MEMORY 2.0",
-      "AI SECURITY"
-    ],
+    "tags": ["MINECRAFT", "MEMORY 2.0", "AI SECURITY"],
     "accent": "green"
   },
   {
@@ -175,11 +126,7 @@
     "description": "Case study психологического techno-horror проекта: Unity architecture, reusable gameplay systems, facility state, authored sequences и MIRROR prediction loop.",
     "displayTitle": "NODE ZERO",
     "kicker": "NARRATIVE SYSTEMS",
-    "tags": [
-      "UNITY",
-      "SYSTEM DESIGN",
-      "AGENTIC WORKFLOW"
-    ],
+    "tags": ["UNITY", "SYSTEM DESIGN", "AGENTIC WORKFLOW"],
     "accent": "violet"
   },
   {
@@ -189,11 +136,7 @@
     "description": "Практические инженерные заметки о backend, AI systems, архитектуре, reliability, quality gates и agentic development.",
     "displayTitle": "ENGINEERING NOTES",
     "kicker": "TECHNICAL WRITING",
-    "tags": [
-      "ARCHITECTURE",
-      "RELIABILITY",
-      "AI SYSTEMS"
-    ],
+    "tags": ["ARCHITECTURE", "RELIABILITY", "AI SYSTEMS"],
     "accent": "cyan"
   },
   {
@@ -203,11 +146,7 @@
     "description": "Технические и научные статьи, доклады, интервью, конференции и публикации Руслана Немыкина на внешних площадках.",
     "displayTitle": "PUBLICATIONS",
     "kicker": "EXTERNAL WORK",
-    "tags": [
-      "ARTICLES",
-      "TALKS",
-      "RESEARCH"
-    ],
+    "tags": ["ARTICLES", "TALKS", "RESEARCH"],
     "accent": "green"
   },
   {
@@ -217,11 +156,7 @@
     "description": "Инженерный разбор performance/hydration trade-off: standalone landing page как быстрый presentation layer и Diplodoc как knowledge runtime.",
     "displayTitle": "RUNTIME BOUNDARY",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "PERFORMANCE",
-      "HYDRATION",
-      "DIPLODOC"
-    ],
+    "tags": ["PERFORMANCE", "HYDRATION", "DIPLODOC"],
     "accent": "violet"
   },
   {
@@ -231,11 +166,7 @@
     "description": "Как соединить generated-site integrity, Playwright, Axe, Lighthouse, cross-browser smoke и visual regression в один release gate.",
     "displayTitle": "QUALITY GATES",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "CI",
-      "PLAYWRIGHT",
-      "LIGHTHOUSE"
-    ],
+    "tags": ["CI", "PLAYWRIGHT", "LIGHTHOUSE"],
     "accent": "green"
   },
   {
@@ -245,11 +176,7 @@
     "description": "Архитектурные принципы AI NPC systems: session ownership, voice/text ingress, provider orchestration, memory boundaries и authorized actions.",
     "displayTitle": "AI NPC PIPELINE",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "AI AGENTS",
-      "VOICE",
-      "SECURITY"
-    ],
+    "tags": ["AI AGENTS", "VOICE", "SECURITY"],
     "accent": "cyan"
   },
   {
@@ -259,11 +186,7 @@
     "description": "Разбор UI-регрессии: reveal threshold, геометрия очень высокого элемента, misleading fullscreen symptom и browser regression test.",
     "displayTitle": "INTERSECTION REGRESSION",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "BROWSER",
-      "REGRESSION",
-      "UI"
-    ],
+    "tags": ["BROWSER", "REGRESSION", "UI"],
     "accent": "violet"
   },
   {
@@ -273,11 +196,7 @@
     "description": "Sources Registry, Diplodoc hydration state и semantic no-JS fallback как практическая граница static-first architecture.",
     "displayTitle": "STATIC-FIRST SOURCES",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "STATIC-FIRST",
-      "NO-JS",
-      "DIPLODOC"
-    ],
+    "tags": ["STATIC-FIRST", "NO-JS", "DIPLODOC"],
     "accent": "cyan"
   },
   {
@@ -287,11 +206,7 @@
     "description": "Bounded evidence scope, automated/manual proof и freshness: почему зелёный pipeline не должен автоматически становиться широким product claim.",
     "displayTitle": "CI IS NOT VERIFICATION",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "CI",
-      "EVIDENCE",
-      "RELIABILITY"
-    ],
+    "tags": ["CI", "EVIDENCE", "RELIABILITY"],
     "accent": "green"
   },
   {
@@ -301,11 +216,7 @@
     "description": "Structured LLM output как внешний protocol boundary: strict JSON, type validation, coercion, bounded fallback и отдельная authorization граница.",
     "displayTitle": "LLM PROTOCOL BOUNDARY",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "AI",
-      "PROTOCOLS",
-      "VALIDATION"
-    ],
+    "tags": ["AI", "PROTOCOLS", "VALIDATION"],
     "accent": "violet"
   },
   {
@@ -315,11 +226,7 @@
     "description": "VillAIgence release-engineering case study: source tests, package identity, GameTests, exact production-JAR startup/restart, rollback and bounded cumulative acceptance.",
     "displayTitle": "INSTALLED ACCEPTANCE",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "RELEASE ENGINEERING",
-      "CI",
-      "RELIABILITY"
-    ],
+    "tags": ["RELEASE ENGINEERING", "CI", "RELIABILITY"],
     "accent": "green"
   },
   {
@@ -329,11 +236,7 @@
     "description": "Vlezet and VillAIgence case study: immutable proposal identities, deterministic validation, current-state revalidation and atomic authoritative mutation.",
     "displayTitle": "DETERMINISTIC AUTHORITY",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "AI",
-      "AUTHORITY",
-      "VALIDATION"
-    ],
+    "tags": ["AI", "AUTHORITY", "VALIDATION"],
     "accent": "violet"
   },
   {
@@ -343,11 +246,7 @@
     "description": "VillAIgence persistence case study: controlled shutdown, exact-artifact restart, six canonical stores, schema/read-back, identity isolation and user-visible continuity.",
     "displayTitle": "RESTART AND PERSISTENCE",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "PERSISTENCE",
-      "RECOVERY",
-      "RELIABILITY"
-    ],
+    "tags": ["PERSISTENCE", "RECOVERY", "RELIABILITY"],
     "accent": "green"
   },
   {
@@ -357,11 +256,7 @@
     "description": "TrueRuslan Landing delivery case study: repository readiness, generated artifact, exact GitHub Pages deployment, Production Live Smoke and bounded external observation.",
     "displayTitle": "DEPLOYMENT VERIFICATION",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "DEPLOYMENT",
-      "VERIFICATION",
-      "GITHUB PAGES"
-    ],
+    "tags": ["DEPLOYMENT", "VERIFICATION", "GITHUB PAGES"],
     "accent": "cyan"
   },
   {
@@ -371,11 +266,7 @@
     "description": "TrueRuslan Landing routing case study: repository-native directory URLs, Diplodoc base/depth migration, static legacy compatibility and bounded search-engine observation.",
     "displayTitle": "CLEAN URL CONTRACT",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "CLEAN URLS",
-      "GITHUB PAGES",
-      "STATIC-FIRST"
-    ],
+    "tags": ["CLEAN URLS", "GITHUB PAGES", "STATIC-FIRST"],
     "accent": "green"
   },
   {
@@ -385,11 +276,7 @@
     "description": "Vlezet hybrid recognition case study: deterministic local Draft, immutable proposal identity, fail-closed sanitation, current-state revalidation and explicit atomic Apply.",
     "displayTitle": "HYBRID RECOGNITION",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "COMPUTER VISION",
-      "AI",
-      "AUTHORITY"
-    ],
+    "tags": ["COMPUTER VISION", "AI", "AUTHORITY"],
     "accent": "cyan"
   },
   {
@@ -399,11 +286,7 @@
     "description": "VillAIgence release-engineering case study: GameTests, exact production-JAR, provider-client automation and installed canaries as separate acceptance layers.",
     "displayTitle": "GAMETESTS VS INSTALLED",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "GAMETESTS",
-      "ACCEPTANCE",
-      "RELEASE ENGINEERING"
-    ],
+    "tags": ["GAMETESTS", "ACCEPTANCE", "RELEASE ENGINEERING"],
     "accent": "green"
   },
   {
@@ -413,25 +296,17 @@
     "description": "TrueRuslan Landing resume case study: PDF validity, passive delivery, semantic equivalence, current profile truth and accessibility as separate evidence layers.",
     "displayTitle": "PDF VALIDITY VS MEANING",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "PDF",
-      "VALIDATION",
-      "SEMANTICS"
-    ],
+    "tags": ["PDF", "VALIDATION", "SEMANTICS"],
     "accent": "cyan"
   },
   {
     "path": "en/index.html",
     "card": "home-en",
-    "title": "Ruslan Nemykin — Java Backend Engineer",
+    "title": "Ruslan Nemykin — Backend Engineer",
     "description": "Engineering portfolio of Ruslan Nemykin: Java backend, distributed systems, DevOps, AI engineering, projects and technical notes.",
     "displayTitle": "RUSLAN NEMYKIN",
-    "kicker": "JAVA BACKEND ENGINEER",
-    "tags": [
-      "JAVA",
-      "DISTRIBUTED SYSTEMS",
-      "AI ENGINEERING"
-    ],
+    "kicker": "BACKEND ENGINEER",
+    "tags": ["JAVA", "DISTRIBUTED SYSTEMS", "AI ENGINEERING"],
     "accent": "cyan"
   },
   {
@@ -441,25 +316,17 @@
     "description": "How Ruslan Nemykin approaches backend engineering, distributed systems, reliability, AI tools, teaching and personal projects.",
     "displayTitle": "ABOUT",
     "kicker": "ENGINEERING PROFILE",
-    "tags": [
-      "BACKEND",
-      "SYSTEMS",
-      "AI"
-    ],
+    "tags": ["BACKEND", "SYSTEMS", "AI"],
     "accent": "violet"
   },
   {
     "path": "en/resume.html",
     "card": "resume-en",
-    "title": "Experience — Ruslan Nemykin",
+    "title": "Resume — Ruslan Nemykin",
     "description": "Java backend engineer with more than 5 years of commercial experience across Spring Boot systems, Kafka, PostgreSQL, Oracle, ClickHouse, integrations and AI/MCP tooling.",
-    "displayTitle": "ENGINEERING EXPERIENCE",
+    "displayTitle": "ENGINEERING RESUME",
     "kicker": "RUSLAN NEMYKIN",
-    "tags": [
-      "JAVA",
-      "SPRING",
-      "DEVOPS"
-    ],
+    "tags": ["JAVA", "SPRING", "DEVOPS"],
     "accent": "cyan"
   },
   {
@@ -469,11 +336,7 @@
     "description": "Engineering projects and case studies across backend systems, AI agents, game architecture and production-oriented development.",
     "displayTitle": "ENGINEERING PROJECTS",
     "kicker": "CASE STUDIES",
-    "tags": [
-      "BACKEND",
-      "AI",
-      "GAMEDEV"
-    ],
+    "tags": ["BACKEND", "AI", "GAMEDEV"],
     "accent": "violet"
   },
   {
@@ -483,11 +346,7 @@
     "description": "English case study of a server-authoritative Minecraft society layer with text and voice dialogue, Memory 2.0, operator lore, security and exact-artifact acceptance gates.",
     "displayTitle": "VILLAIGENCE",
     "kicker": "SERVER-AUTHORITATIVE AI",
-    "tags": [
-      "MINECRAFT",
-      "MEMORY 2.0",
-      "AI SECURITY"
-    ],
+    "tags": ["MINECRAFT", "MEMORY 2.0", "AI SECURITY"],
     "accent": "green"
   },
   {
@@ -497,11 +356,7 @@
     "description": "English case study of a local-first apartment planner with millimetre geometry, derived rooms, furniture fit and reviewable CV/LLM recognition Drafts.",
     "displayTitle": "VLEZET",
     "kicker": "GEOMETRY AND RECOGNITION",
-    "tags": [
-      "TYPESCRIPT",
-      "GEOMETRY",
-      "COMPUTER VISION"
-    ],
+    "tags": ["TYPESCRIPT", "GEOMETRY", "COMPUTER VISION"],
     "accent": "cyan"
   },
   {
@@ -511,12 +366,7 @@
     "description": "English case study of a local-first native macOS utility around the MacBook notch, with an accepted 0.1.0 personal foundation and M1 interaction hardening still in development.",
     "displayTitle": "NOTCHHUB",
     "kicker": "NATIVE MACOS PRODUCTIVITY",
-    "tags": [
-      "SWIFT 6",
-      "SWIFTUI",
-      "APPKIT",
-      "PERFORMANCE"
-    ],
+    "tags": ["SWIFT 6", "SWIFTUI", "APPKIT", "PERFORMANCE"],
     "accent": "cyan"
   },
   {
@@ -526,11 +376,7 @@
     "description": "English evidence-first case study of a static portfolio and knowledge platform with clean URLs, canonical registries, GitHub Pages and live production verification.",
     "displayTitle": "TRUERUSLAN PLATFORM",
     "kicker": "STATIC-FIRST PLATFORM",
-    "tags": [
-      "DIPLODOC",
-      "GITHUB PAGES",
-      "QUALITY GATES"
-    ],
+    "tags": ["DIPLODOC", "GITHUB PAGES", "QUALITY GATES"],
     "accent": "green"
   },
   {
@@ -540,11 +386,7 @@
     "description": "Session ownership, voice/text convergence, provider orchestration, memory boundaries, cancellation, fallback and authorized actions.",
     "displayTitle": "AI NPC PIPELINE",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "AI AGENTS",
-      "VOICE",
-      "SECURITY"
-    ],
+    "tags": ["AI AGENTS", "VOICE", "SECURITY"],
     "accent": "cyan"
   },
   {
@@ -554,11 +396,7 @@
     "description": "Structured LLM output as an external protocol boundary: strict parsing, type validation, domain constraints, proposal semantics and bounded fallback.",
     "displayTitle": "LLM PROTOCOL BOUNDARY",
     "kicker": "ENGINEERING NOTE",
-    "tags": [
-      "AI",
-      "PROTOCOLS",
-      "VALIDATION"
-    ],
+    "tags": ["AI", "PROTOCOLS", "VALIDATION"],
     "accent": "violet"
   },
   {
@@ -568,11 +406,7 @@
     "description": "Published work by Ruslan Nemykin: technical articles and externally verifiable publications with canonical source links.",
     "displayTitle": "PUBLICATIONS",
     "kicker": "PUBLISHED WORK",
-    "tags": [
-      "ARTICLES",
-      "RESEARCH",
-      "TALKS"
-    ],
+    "tags": ["ARTICLES", "RESEARCH", "TALKS"],
     "accent": "cyan"
   },
   {
@@ -582,11 +416,7 @@
     "description": "Инженерная практика Руслана Немыкина: backend, интеграции, AI engineering, технические аудиты, Teaching & Mentoring и прямое обсуждение задач с явными границами.",
     "displayTitle": "WORK WITH ME",
     "kicker": "ENGINEERING PRACTICE",
-    "tags": [
-      "BACKEND",
-      "AI",
-      "MENTORING"
-    ],
+    "tags": ["BACKEND", "AI", "MENTORING"],
     "accent": "green"
   },
   {
@@ -596,11 +426,7 @@
     "description": "Evidence-led private engineering practice: backend systems, integrations, AI engineering, technical review, Teaching & Mentoring and direct bounded collaboration.",
     "displayTitle": "WORK WITH ME",
     "kicker": "ENGINEERING PRACTICE",
-    "tags": [
-      "BACKEND",
-      "AI",
-      "MENTORING"
-    ],
+    "tags": ["BACKEND", "AI", "MENTORING"],
     "accent": "green"
   }
 ]
