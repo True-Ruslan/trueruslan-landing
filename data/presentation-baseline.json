@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "slice": "C7",
+  "status": "pending-production-acceptance",
+  "measurementMode": "context-only",
+  "resetsCleanUrlMeasurement": false,
+  "cleanUrlMigrationAt": "2026-08-05T00:00:00Z",
+  "acceptedAt": null,
+  "deployedSha": null,
+  "pagesDeploymentId": null,
+  "productionLiveRunId": null
+}
