@@ -11,6 +11,7 @@ on:
       - 'data/page-meta.json'
       - 'scripts/distribution-readiness.js'
       - 'scripts/distribution-readiness.test.js'
+      - 'scripts/launch-distribution-contract.test.js'
       - 'docs/DISTRIBUTION.md'
       - '.github/workflows/distribution-readiness.yml'
 
