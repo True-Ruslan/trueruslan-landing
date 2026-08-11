@@ -38,31 +38,58 @@ function fixture() {
   };
 }
 
-test('parseMeasurementReportArgs accepts input output and observation threshold', () => {
+function presentationBaselineFixture() {
+  return {
+    schemaVersion: 1,
+    slice: 'C7',
+    status: 'pending-production-acceptance',
+    measurementMode: 'context-only',
+    resetsCleanUrlMeasurement: false,
+    cleanUrlMigrationAt: '2026-08-05T00:00:00Z',
+    acceptedAt: null,
+    deployedSha: null,
+    pagesDeploymentId: null,
+    productionLiveRunId: null,
+  };
+}
+
+test('parseMeasurementReportArgs accepts input baseline output and observation threshold', () => {
   assert.deepEqual(parseMeasurementReportArgs([
     '--input', 'observations.json',
+    '--presentation-baseline', 'data/presentation-baseline.json',
     '--output-dir', 'artifacts',
     '--minimum-observation-days', '10',
   ]), {
     inputPath: 'observations.json',
+    presentationBaselinePath: 'data/presentation-baseline.json',
     outputDir: 'artifacts',
     minimumObservationDays: 10,
   });
 
   assert.throws(() => parseMeasurementReportArgs(['--minimum-observation-days', '0']), /positive integer/i);
+  assert.throws(() => parseMeasurementReportArgs(['--presentation-baseline']), /requires a path/i);
   assert.throws(() => parseMeasurementReportArgs(['--unknown', 'x']), /unknown argument/i);
 });
 
-test('runMeasurementCheckpointReport writes only derived JSON and Markdown evidence', () => {
+test('runMeasurementCheckpointReport writes derived evidence with bounded presentation provenance', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-measurement-report-'));
   try {
     const inputPath = path.join(root, 'private-observations.json');
+    const presentationBaselinePath = path.join(root, 'presentation-baseline.json');
     const outputDir = path.join(root, 'out');
     fs.writeFileSync(inputPath, JSON.stringify(fixture()), 'utf8');
+    fs.writeFileSync(presentationBaselinePath, JSON.stringify(presentationBaselineFixture()), 'utf8');
 
-    const result = runMeasurementCheckpointReport({inputPath, outputDir, minimumObservationDays: 10});
+    const result = runMeasurementCheckpointReport({
+      inputPath,
+      presentationBaselinePath,
+      outputDir,
+      minimumObservationDays: 10,
+    });
     assert.equal(result.report.status, 'ready-for-human-review');
     assert.equal(result.report.evidence.class, 'operator-observed');
+    assert.equal(result.report.cleanUrlMigrationAt, '2026-08-05T00:00:00Z');
+    assert.deepEqual(result.report.presentationBaseline, presentationBaselineFixture());
     assert.equal(path.basename(result.jsonPath), 'measurement-checkpoint-report.json');
     assert.equal(path.basename(result.markdownPath), 'measurement-checkpoint-report.md');
     assert.equal(fs.existsSync(result.jsonPath), true);
@@ -72,30 +99,67 @@ test('runMeasurementCheckpointReport writes only derived JSON and Markdown evide
     const stored = JSON.parse(fs.readFileSync(result.jsonPath, 'utf8'));
     assert.equal(stored.claims.automaticConclusionsAllowed, false);
     assert.equal(stored.comparisons.cloudflarePageviews.delta, 30);
+    assert.equal(stored.presentationBaseline.measurementMode, 'context-only');
+    assert.equal(stored.presentationBaseline.resetsCleanUrlMeasurement, false);
     assert.equal(JSON.stringify(stored).includes('sessionId'), false);
 
     const markdown = fs.readFileSync(result.markdownPath, 'utf8');
     assert.match(markdown, /Evidence class: \*\*operator-observed\*\*/);
     assert.match(markdown, /ready-for-human-review/);
+    assert.match(markdown, /Presentation baseline: \*\*C7 \/ pending-production-acceptance\*\*/);
+    assert.match(markdown, /does not reset the clean-URL measurement boundary/i);
     assert.match(markdown, /No automatic engagement conclusion/);
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
 });
 
-test('runMeasurementCheckpointReport fails closed on missing or malformed input', () => {
+test('runMeasurementCheckpointReport fails closed on missing or malformed inputs', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-measurement-invalid-'));
   try {
+    const baselinePath = path.join(root, 'presentation-baseline.json');
+    fs.writeFileSync(baselinePath, JSON.stringify(presentationBaselineFixture()), 'utf8');
+
     assert.throws(
-      () => runMeasurementCheckpointReport({inputPath: path.join(root, 'missing.json'), outputDir: root}),
+      () => runMeasurementCheckpointReport({
+        inputPath: path.join(root, 'missing.json'),
+        presentationBaselinePath: baselinePath,
+        outputDir: root,
+      }),
       /measurement observations input/i,
     );
 
     const malformedPath = path.join(root, 'malformed.json');
     fs.writeFileSync(malformedPath, '{not-json', 'utf8');
     assert.throws(
-      () => runMeasurementCheckpointReport({inputPath: malformedPath, outputDir: root}),
+      () => runMeasurementCheckpointReport({
+        inputPath: malformedPath,
+        presentationBaselinePath: baselinePath,
+        outputDir: root,
+      }),
       /measurement observations input/i,
+    );
+
+    const inputPath = path.join(root, 'observations.json');
+    fs.writeFileSync(inputPath, JSON.stringify(fixture()), 'utf8');
+    assert.throws(
+      () => runMeasurementCheckpointReport({
+        inputPath,
+        presentationBaselinePath: path.join(root, 'missing-baseline.json'),
+        outputDir: root,
+      }),
+      /presentation baseline/i,
+    );
+
+    const malformedBaselinePath = path.join(root, 'malformed-baseline.json');
+    fs.writeFileSync(malformedBaselinePath, '{not-json', 'utf8');
+    assert.throws(
+      () => runMeasurementCheckpointReport({
+        inputPath,
+        presentationBaselinePath: malformedBaselinePath,
+        outputDir: root,
+      }),
+      /presentation baseline/i,
     );
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
