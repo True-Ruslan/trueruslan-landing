@@ -59,25 +59,15 @@ Voice is transport. A failed TTS stage must not erase a useful text response, an
 Authenticated redirects, unsafe endpoints, malformed JSON, oversized bodies and unbounded waits fail closed. Source tests, GameTests, exact production-JAR startup/restart, package identity, release publication and installed acceptance answer different questions.
 
 <!-- case-study:current-state -->
-## Current lifecycle and accepted boundary
+## Current lifecycle and acceptance boundary
 
-The current official release is **`0.2.0+1.21.1`**.
+The public lifecycle remains **release-candidate — ACCEPTANCE IN PROGRESS**. The current official installed release is **0.2.0+1.21.1**; the byte-identical clean-world candidate passed the required installed set at **7 PASS / 0 FAIL**. `VAI-M2-INST-005` remains NOT TESTED / automated evidence only and `VAI-CONCUR-004` remains NOT TESTED / DEFERRED.
 
-Accepted evidence includes:
+Post-release source development continued as a separate evidence layer. PR #125 merged bounded PLAYER_TOLD BELIEF candidate extraction without creating an AI-to-FACT authority path. PR #153 merged causal nearby NPC↔NPC social mutation with the full source suite green. These source milestones do not automatically expand installed acceptance.
 
-- the M11 automated risk catalogue, Fabric GameTests and exact production-JAR gates;
-- merged PR #110 for one monotonic STT → Chat retries → optional TTS deadline and exactly-once dialogue/relationship effects;
-- the Memory 2.0-only clean cutover;
-- PR #120 and the immutable 0.2 release boundary;
-- a byte-identical installed candidate with SHA-256 `56293f86634b50b2def044429aac6f2cf0d197eb16ac1e60224708f7b3333aee`;
-- **7 PASS / 0 FAIL** across the required clean-world installed Memory 2.0 cases;
-- `VAI-M2-INST-005` explicitly **NOT TESTED / AUTOMATED EVIDENCE ONLY**;
-- `VAI-CONCUR-004` explicitly **NOT TESTED / DEFERRED**;
-- merged PR #123 for controlled BELIEF admission, with `SYSTEM_OBSERVED` kept outside the BELIEF path and FACT authority remaining server-owned.
+The current development boundary is **Draft PR #155**, the Personality / social snapshot consolidation follow-up. Until its own TDD/review/merge and any separate installed/release acceptance, it remains pending source evidence.
 
-The public lifecycle remains **release candidate — ACCEPTANCE IN PROGRESS** because publication and bounded installed acceptance do not silently complete every deferred category or future Memory 2.0 slice.
-
-Active development is Draft PR #125. It is a TDD **Draft/RED** slice for bounded `PLAYER_TOLD` BELIEF candidate extraction in the existing structured Chat response. The model may propose bounded statement strings only; the server fixes provenance, NPC owner, player identity and source event. There is no second provider request and no AI→FACT path.
+Release identity, source capability and installed gameplay acceptance therefore remain separate facts.
 
 <!-- case-study:decisions -->
 ## Architecture and key decisions

@@ -95,9 +95,9 @@ Accepted routes:
 /en/projects/livingworld/
 ```
 
-Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`. M7.8B remains the accepted recognition slice. The later automatic M7.8C path failed representative product-owner usefulness acceptance on 2026-08-08: PR #42 is closed unmerged, stacked PR #44/#45 are closed unmerged R&D evidence, and PR #52 is the new **Draft design-only Assisted Tracing gate** with no accepted product code yet.
+Vlezet remains `pre-production` / `ACTIVE DEVELOPMENT`. M7.8B remains the accepted recognition slice; later automatic M7.8C R&D stayed closed-unmerged. PR #52 is now closed unmerged/superseded, **M8.1 is product-owner accepted and merged via PR #85**, and **M8.2 PR #87 is the current Draft product boundary** with scenarios 01–07 passed but a focused clipboard retest still pending. No merge/release/lifecycle promotion is claimed for M8.2 before that retest and explicit closure.
 
-VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`. The current official release is `0.2.0+1.21.1`; the byte-identical clean-world candidate passed the required installed Memory 2.0 suite **7 PASS / 0 FAIL**, while `VAI-M2-INST-005` remains NOT TESTED / automated evidence only and `VAI-CONCUR-004` remains NOT TESTED / DEFERRED. PR #110 and PR #123 are merged bounded evidence; PR #125 is the current Draft/RED PLAYER_TOLD BELIEF candidate-extraction slice and is not accepted product truth.
+VillAIgence remains `release-candidate` / `ACCEPTANCE IN PROGRESS`. The current official release is `0.2.0+1.21.1`; the byte-identical clean-world candidate passed the required installed Memory 2.0 suite **7 PASS / 0 FAIL**, while `VAI-M2-INST-005` remains NOT TESTED / automated evidence only and `VAI-CONCUR-004` remains NOT TESTED / DEFERRED. Post-release source work advanced independently: PR #125 is merged bounded BELIEF-extraction evidence, PR #153 merged causal NPC↔NPC social mutation, and PR #155 is the current Draft Personality/social-snapshot follow-up. None of these source milestones expands installed 0.2.0 acceptance.
 
 ## P3.4 — Grounded Engineering Notes — DONE
 

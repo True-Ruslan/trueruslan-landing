@@ -4,12 +4,18 @@
     "name": "Vlezet",
     "status": "pre-production",
     "statusLabel": "ACTIVE DEVELOPMENT",
-    "summary": "Precise local-first apartment planning with authoritative millimetre geometry, explainable furniture fit and reviewable CV/LLM recognition.",
+    "summary": "Precise local-first apartment planning with authoritative millimetre geometry, manual editing and precision drawing, explainable furniture fit and reviewable CV/LLM assistance.",
     "featured": false,
     "active": true,
     "visibility": "public",
     "href": "landing/projects/vlezet.html",
-    "tags": ["TypeScript", "Next.js", "Geometry", "Computer vision", "Three.js"],
+    "tags": [
+      "TypeScript",
+      "Next.js",
+      "Geometry",
+      "Computer vision",
+      "Three.js"
+    ],
     "links": {
       "github": "https://github.com/True-Ruslan/vlezet"
     },
@@ -25,12 +31,20 @@
     "active": true,
     "visibility": "public",
     "href": "landing/projects/livingworld.html",
-    "tags": ["Minecraft", "Fabric", "Java 21", "Memory 2.0", "AI security"],
+    "tags": [
+      "Minecraft",
+      "Fabric",
+      "Java 21",
+      "Memory 2.0",
+      "AI security"
+    ],
     "links": {
       "github": "https://github.com/True-Ruslan/villAIgence"
     },
     "timeline": "livingworld",
-    "noteSlugs": ["server-authoritative-ai-npcs"]
+    "noteSlugs": [
+      "server-authoritative-ai-npcs"
+    ]
   },
   {
     "slug": "notchhub",
@@ -42,7 +56,13 @@
     "active": true,
     "visibility": "public",
     "href": "landing/projects/notchhub.html",
-    "tags": ["Swift 6", "SwiftUI", "AppKit", "macOS", "Performance"],
+    "tags": [
+      "Swift 6",
+      "SwiftUI",
+      "AppKit",
+      "macOS",
+      "Performance"
+    ],
     "links": {
       "github": "https://github.com/True-Ruslan/notch-hub"
     },
@@ -58,7 +78,12 @@
     "active": true,
     "visibility": "private",
     "href": "landing/projects/node-zero.html",
-    "tags": ["Unity 6", "C#", "URP", "Narrative systems"],
+    "tags": [
+      "Unity 6",
+      "C#",
+      "URP",
+      "Narrative systems"
+    ],
     "timeline": "node-zero"
   },
   {
@@ -71,7 +96,13 @@
     "active": true,
     "visibility": "public",
     "href": "landing/projects/portfolio-platform.html",
-    "tags": ["Static HTML", "Diplodoc", "Playwright", "Lighthouse", "CI"],
+    "tags": [
+      "Static HTML",
+      "Diplodoc",
+      "Playwright",
+      "Lighthouse",
+      "CI"
+    ],
     "links": {
       "github": "https://github.com/True-Ruslan/trueruslan-landing"
     },
@@ -92,7 +123,12 @@
     "active": false,
     "visibility": "public",
     "href": "landing/projects/taskhub.html",
-    "tags": ["Java", "Spring", "Backend", "AI"]
+    "tags": [
+      "Java",
+      "Spring",
+      "Backend",
+      "AI"
+    ]
   },
   {
     "slug": "minichess",
@@ -104,7 +140,11 @@
     "active": false,
     "visibility": "public",
     "href": "landing/projects/minichess.html",
-    "tags": ["Java", "Domain logic", "Testing"]
+    "tags": [
+      "Java",
+      "Domain logic",
+      "Testing"
+    ]
   },
   {
     "slug": "godot-horror-template",
@@ -116,6 +156,10 @@
     "active": false,
     "visibility": "public",
     "href": "landing/projects/godot-horror-template.html",
-    "tags": ["Godot", "GameDev", "Agentic workflow"]
+    "tags": [
+      "Godot",
+      "GameDev",
+      "Agentic workflow"
+    ]
   }
 ]

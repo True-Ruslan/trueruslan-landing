@@ -64,31 +64,15 @@ Three.js-визуализация read-only. У неё нет собственн
 <!-- case-study:current-state -->
 ## Текущая lifecycle- и acceptance-граница
 
-В `main` приняты и смержены milestones **M0–M7.8B**.
+Публичный lifecycle остаётся **pre-production — ACTIVE DEVELOPMENT**. Исторически принятая recognition-граница M7.8B не переписывается более поздними экспериментами.
 
-Уже работают:
+8 августа automatic M7.8C не прошёл product-owner usefulness acceptance; PR #42/#44/#45 остались closed-unmerged R&D evidence. Design-only PR #52 позже также был закрыт unmerged и больше не является current boundary.
 
-- стены, топология, комнаты, проёмы, размеры и площади в миллиметрах;
-- мебель, exact transforms и collision/door/clearance diagnostics;
-- semantic Undo/Redo;
-- local projects, autosave, backup, import/export и PNG;
-- reference-plan import, calibration и tracing;
-- editable local/OpenRouter candidates с explicit Apply;
-- deterministic read-only 3D projection;
-- bounded planning alternatives с Preview и revalidated atomic Apply;
-- responsive editor shell, inspectors, onboarding и furniture-fit workflow;
-- versioned recognition benchmark;
-- M7.8B region-first wall extraction, bounded topology и verification-only AI.
+Следующая принятая продуктовая ступень — **M8.1**: PR #85 прошёл product-owner acceptance **9/9** и merged. Он закрепляет manual editing / precision drawing как актуальную принятую editor-функциональность без promotion в production lifecycle.
 
-M7.8B принят с известными ограничениями. На representative source система вернула 27 local wall candidates, 19 AI-confirmed и 8 pending review. Принятые Source geometry F1 и Source topology F1 составили `0.837989`.
+Текущий product slice — **M8.2, Draft PR #87**. Сценарии 01–07 прошли, но focused clipboard retest остаётся pending. До этого retest, exact-head CI и explicit product-owner closure M8.2 не считается merged/released/accepted.
 
-После этого автоматический M7.8C путь был доведён до сильных deterministic gates, но **не прошёл product-owner usefulness acceptance** на исходном плане квартиры. 8 августа PR #42 был закрыт unmerged после representative retest. Связанные stacked PR #44 (real-fixture benchmark) и PR #45 (hybrid proposal recovery) также закрыты unmerged и сохранены только как R&D evidence.
-
-Это важная отрицательная проверка: зелёные benchmark/CI не превратили систему в достаточно полезный продукт. Результат не отменяет принятого M7.8B, но закрывает автоматический путь как текущую acceptance boundary.
-
-Следующая bounded direction — **Assisted Tracing**. Draft PR #52 является design-only gate из свежего `main`: пользователь сам выбирает тип объекта и указывает предполагаемую геометрию, а локальный анализ reference image может только безопасно уточнить ephemeral preview. На этом этапе product code ещё не принят.
-
-Публичный lifecycle остаётся **pre-production — ACTIVE DEVELOPMENT**.
+Canonical Project Evidence и timeline ниже являются владельцами изменчивых run/PR границ; этот case study не создаёт второй lifecycle source of truth.
 
 <!-- case-study:decisions -->
 ## Архитектура и ключевые решения

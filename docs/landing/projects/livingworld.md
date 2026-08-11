@@ -75,25 +75,13 @@ Authenticated redirects, небезопасные endpoint, loopback/SSRF-пут
 <!-- case-study:current-state -->
 ## Текущая lifecycle- и acceptance-граница
 
-Текущий официальный release — **`0.2.0+1.21.1`**.
+Публичный lifecycle остаётся **release-candidate — ACCEPTANCE IN PROGRESS**. Текущий официальный installed release — **0.2.0+1.21.1**; byte-identical clean-world candidate прошёл обязательный installed set **7 PASS / 0 FAIL**. `VAI-M2-INST-005` остаётся NOT TESTED / automated evidence only, `VAI-CONCUR-004` — NOT TESTED / DEFERRED.
 
-Его delivery boundary подтверждён несколькими независимыми слоями:
+После release source development продолжился отдельным evidence layer. PR #125 merged bounded PLAYER_TOLD BELIEF candidate extraction без AI-to-FACT authority. PR #153 merged causal nearby NPC↔NPC social mutation with the full source suite green. Эти source milestones не расширяют installed acceptance автоматически.
 
-- PR #103 и последующие M11 automation slices сформировали risk-based catalogue, real Fabric GameTests и exact production-JAR gates;
-- PR #104 доказал production-JAR startup/restart вне Loom/dev classpath;
-- PR #110 смержен после exact-head проверки одного monotonic STT → Chat retries → optional TTS deadline и exactly-once dialogue/relationship effects;
-- PR #119 перевёл persistent dialogue на Memory 2.0-only clean cutover;
-- PR #120 подготовил и опубликовал exact `0.2.0+1.21.1` release boundary;
-- установленный byte-identical candidate с SHA-256 `56293f86634b50b2def044429aac6f2cf0d197eb16ac1e60224708f7b3333aee` прошёл обязательные clean-world Memory 2.0 сценарии **7 PASS / 0 FAIL**;
-- `VAI-M2-INST-005` остаётся **NOT TESTED / AUTOMATED EVIDENCE ONLY**;
-- `VAI-CONCUR-004` остаётся **NOT TESTED / DEFERRED**;
-- PR #123 смержен с provenance-safe BELIEF admission: `PLAYER_TOLD`, `NPC_TOLD`, `INFERRED` не получают FACT authority, а `SYSTEM_OBSERVED` остаётся отдельной server-owned границей.
+Текущий development boundary — **Draft PR #155**, Personality / social snapshot consolidation. До собственного TDD/review/merge и отдельной installed/release acceptance эта работа остаётся pending source evidence.
 
-Эти результаты позволяют считать `0.2.0` официальным релизом с принятым bounded installed Memory 2.0 result. Они **не** означают, что все отложенные installed сценарии автоматически стали PASS или что любой следующий Memory 2.0 slice уже принят.
-
-Публичный lifecycle поэтому пока остаётся **release candidate — ACCEPTANCE IN PROGRESS**.
-
-Активная разработка сейчас отделена от принятого `0.2.0`. Draft PR #125 — TDD slice для bounded `PLAYER_TOLD` BELIEF candidate extraction внутри существующего structured Chat response. Его текущая boundary — **Draft/RED**: production extraction behaviour ещё не является accepted product truth. Модель может предложить только bounded statement strings; сервер фиксирует provenance, owner NPC, player identity и source MemoryEvent. Второй provider request и AI→FACT path запрещены.
+Так release identity, source capability и installed gameplay acceptance остаются разными фактами.
 
 <!-- case-study:decisions -->
 ## Архитектура и ключевые решения
