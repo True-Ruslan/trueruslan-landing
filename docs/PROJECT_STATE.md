@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-11**, после exact-production acceptance C5 — Knowledge surfaces; P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-11**, после exact-production acceptance C6 — final EN/SEO reconciliation; P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -386,7 +386,26 @@ The fifth runtime slice of **Portfolio Clarity & Scanability** is production-acc
 
 Durable ledger: `docs/acceptance/2026-08-11-portfolio-clarity-c5.md`. C5 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim.
 
-Next redesign slice: **C6 — final EN/SEO reconciliation**.
+### C6 — final EN/SEO reconciliation — PRODUCTION ACCEPTED
+
+The sixth runtime slice of **Portfolio Clarity & Scanability** is production-accepted. Canonical i18n acceptance now covers all 13 controlled RU/EN pairs from one manifest, English discovery copy and paired links are reconciled, existing metadata ownership is browser-verified on EN surfaces, and one bilingual Person JSON-LD identity is shared across RU/EN home.
+
+- feature PR #195 exact head: `3104089b500e1f680117eb86e14347f3a7309b35`;
+- feature Build #1783 / `31471924720` — SUCCESS;
+- feature squash: `3bed9077ea02f50d1e2d0bb13cc3430174486a7e`;
+- production-verifier correction PR #196 exact head: `ffadb765ac29ffad4988727c980be7bffc0dd58a`;
+- correction Build #1785 / `31473097553` — SUCCESS;
+- accepted squash / exact deployed SHA: `4751e14f4464b1c55153bf8803d7367d67b5fa7b`;
+- Pages #221 / `31473635637` — SUCCESS;
+- github-pages deployment `5847044248` — success;
+- deployment-triggered Production Live #493 / `31473689705` — SUCCESS;
+- production-live artifact `9094397196`, digest `sha256:1d3c3b4cb6f068b2bb9e755ea17cc466f7afe4306e899d690b1d63c3ce5ec27f`.
+
+The first feature deployment was not promoted: Production Live #490 exposed only a stale deployed English Now search query after the C6 copy change. PR #196 corrected that production verifier with RED-first coverage; final Production Live #493 executed P3.5B and every other deployment-only gate successfully on exact SHA `4751e14f4464b1c55153bf8803d7367d67b5fa7b`.
+
+Durable ledger: `docs/acceptance/2026-08-11-portfolio-clarity-c6.md`. C6 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim.
+
+Next redesign slice: **C7 — production baseline + P3.6 handoff**.
 
 ## 3. External project evidence boundaries
 
@@ -623,7 +642,7 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**C6 — final EN/SEO reconciliation — NEXT IMPLEMENTATION SLICE.**
+**C7 — production baseline + P3.6 handoff — NEXT IMPLEMENTATION SLICE.**
 
 P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** in parallel; it is not closed or reset by C2/C3/C4/C5 presentation work.
 

@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-11**, после exact-production acceptance C5 — Knowledge surfaces; C6 — final EN/SEO reconciliation является следующим implementation slice, P3.6 measurement ожидает внешние aggregate observations.
+> Обновлено: **2026-08-11**, после exact-production acceptance C6 — final EN/SEO reconciliation; C7 — production baseline + P3.6 handoff является следующим implementation slice, P3.6 measurement ожидает внешние aggregate observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -63,6 +63,7 @@
 - P3.6C consent-gated Yandex Metrica browser collection — PR #158 / PRODUCTION ACCEPTED.
 - Homepage/Experience/NotchHub presentation refinement — PR #167/#168 / PRODUCTION ACCEPTED.
 - Portfolio Clarity C5 — Knowledge surfaces — PR #193 / PRODUCTION ACCEPTED.
+- Portfolio Clarity C6 — final EN/SEO reconciliation — PR #195/#196 / PRODUCTION ACCEPTED.
 
 ---
 
@@ -518,7 +519,26 @@ production digest:               sha256:4e3349bdbb8b44326049750074810b3f6ed150e7
 
 C5 does not start, reset or close P3.6 Measurement.
 
-Next redesign slice: **C6 — final EN/SEO reconciliation**.
+### C6 — final EN/SEO reconciliation — PRODUCTION ACCEPTED
+
+Accepted outcome: one canonical 13-pair RU/EN manifest drives browser acceptance; EN discovery copy and paired links are reconciled; `data/page-meta.json` remains the sole metadata owner; one bilingual Person JSON-LD identity covers RU/EN home; generated Diplodoc search remains the sole site-wide search owner; exact production acceptance includes the focused deployed English Now search-oracle correction.
+
+- feature PR #195 exact head: `3104089b500e1f680117eb86e14347f3a7309b35`;
+- feature Build #1783 / `31471924720` — SUCCESS;
+- feature squash: `3bed9077ea02f50d1e2d0bb13cc3430174486a7e`;
+- production-verifier correction PR #196 exact head: `ffadb765ac29ffad4988727c980be7bffc0dd58a`;
+- correction Build #1785 / `31473097553` — SUCCESS;
+- accepted squash / exact deployed SHA: `4751e14f4464b1c55153bf8803d7367d67b5fa7b`;
+- Pages #221 / `31473635637` — SUCCESS;
+- github-pages deployment `5847044248` — success;
+- deployment-triggered Production Live #493 / `31473689705` — SUCCESS;
+- production-live artifact `9094397196`, digest `sha256:1d3c3b4cb6f068b2bb9e755ea17cc466f7afe4306e899d690b1d63c3ce5ec27f`.
+
+The first feature deployment was deliberately not accepted because Production Live #490 exposed the stale deployed P3.5B query. Final exact SHA `4751e14f4464b1c55153bf8803d7367d67b5fa7b` passed Pages #221, deployment `5847044248` and deployment-triggered Production Live #493 with P3.5B and all downstream deployment-only gates executed successfully.
+
+C6 does not start, reset or close P3.6 Measurement.
+
+Next redesign slice: **C7 — production baseline + P3.6 handoff**.
 
 ## P3.6 — Measurement checkpoint — NEXT / WAITING
 
@@ -536,4 +556,4 @@ After sufficient aggregate traffic, run the manual checkpoint with real `operato
 
 Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Confirm P3.6B real Reports API connection run `31201235872`. Confirm P3.6C production acceptance for SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, Pages run `31227641778`, deployment `5803497490`, Production Live run `31227681975` and production evidence digest `sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a`. Confirm the accepted presentation refinement for SHA `4395128144c069663e67c660e5b549cfca851ae8`, Pages run `31260596290`, deployment `5809298234` and deployment-triggered Production Live run `31260625145`.
 
-Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Confirm C4 exact production acceptance for SHA `12ea58e815ebf09bcc5915e92a715cd3bfed5241`, Pages run `31401684624`, deployment `5834505086` and Production Live run `31402338027`. Confirm C5 exact production acceptance for SHA `00900e832d69356bbccaa874f1b625876dad1e21`, Pages run `31466807721`, deployment `5845809144` and Production Live run `31466868392`. Continue with **C6 — final EN/SEO reconciliation** as the next product implementation slice. Keep **P3.6 — Measurement checkpoint — NEXT / WAITING** parallel and untouched until real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
+Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Confirm C4 exact production acceptance for SHA `12ea58e815ebf09bcc5915e92a715cd3bfed5241`, Pages run `31401684624`, deployment `5834505086` and Production Live run `31402338027`. Confirm C5 exact production acceptance for SHA `00900e832d69356bbccaa874f1b625876dad1e21`, Pages run `31466807721`, deployment `5845809144` and Production Live run `31466868392`. Continue with **C7 — production baseline + P3.6 handoff** as the next product implementation slice. Keep **P3.6 — Measurement checkpoint — NEXT / WAITING** parallel and untouched until real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
