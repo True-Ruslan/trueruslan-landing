@@ -1,4 +1,5 @@
 name: C6 page-meta format repair
+# Registered-trigger commit: the workflow already exists in the parent revision.
 
 on:
   push:
