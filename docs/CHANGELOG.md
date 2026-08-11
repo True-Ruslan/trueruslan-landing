@@ -1,8 +1,29 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-11**, после exact-production acceptance C5 — Knowledge surfaces; P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-11**, после exact-production acceptance C6 — final EN/SEO reconciliation; P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-11 — C6 final EN/SEO reconciliation — PRODUCTION ACCEPTED
+
+- Replaced the stale hard-coded i18n browser pair list with canonical `data/i18n.json` ownership, so all **13 controlled RU/EN pairs** are covered by generated canonical/hreflang/no-JavaScript acceptance.
+- Reconciled top-level English Projects/Now and professional links into natural user-facing copy, using paired EN routes where available and explicit labels for intentional RU-only deep links.
+- Kept `data/page-meta.json` as the sole canonical metadata owner while adding generated browser coverage for EN home/Experience canonical metadata/OpenGraph.
+- Extended one Person JSON-LD identity across RU and EN home with `alternateName: Ruslan Nemykin`; no second structured-data identity was introduced.
+- Preserved one Diplodoc generated search owner. C6 updated the EN Now search oracle from removed implementation-oriented copy to stable user-facing `short snapshot`.
+- The first exact feature deployment passed Pages but Production Live #490 exposed the same stale phrase in the deployment-only P3.5B verifier. PR #196 corrected only that verifier query plus its regression contract; no product/runtime behavior changed.
+- feature PR #195 exact head: `3104089b500e1f680117eb86e14347f3a7309b35`;
+- feature Build #1783 / `31471924720` — SUCCESS;
+- feature squash: `3bed9077ea02f50d1e2d0bb13cc3430174486a7e`;
+- production-verifier correction PR #196 exact head: `ffadb765ac29ffad4988727c980be7bffc0dd58a`;
+- correction Build #1785 / `31473097553` — SUCCESS;
+- accepted squash / exact deployed SHA: `4751e14f4464b1c55153bf8803d7367d67b5fa7b`;
+- Pages #221 / `31473635637` — SUCCESS;
+- github-pages deployment `5847044248` — success;
+- deployment-triggered Production Live #493 / `31473689705` — SUCCESS;
+- production-live artifact `9094397196`, digest `sha256:1d3c3b4cb6f068b2bb9e755ea17cc466f7afe4306e899d690b1d63c3ce5ec27f`.
+
+C6 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim. Next implementation slice: **C7 — production baseline + P3.6 handoff**.
 
 ## 2026-08-11 — C5 Knowledge surfaces — PRODUCTION ACCEPTED
 
