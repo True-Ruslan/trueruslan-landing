@@ -2,16 +2,48 @@
   {
     "project": "vlezet",
     "status": "verified",
-    "lastVerified": "2026-08-08",
+    "lastVerified": "2026-08-11",
     "versions": [
-      {"label": "Web application", "value": "Next.js 16 + React + TypeScript"},
-      {"label": "2D projection", "value": "Konva / react-konva"},
-      {"label": "3D projection", "value": "Three.js"},
-      {"label": "Persistence", "value": "IndexedDB"},
-      {"label": "Canonical geometry", "value": "millimetres"},
-      {"label": "Accepted recognition slice", "value": "M7.8B"},
-      {"label": "Automatic M7.8C result", "value": "product-owner usefulness FAIL / closed unmerged"},
-      {"label": "Next acceptance boundary", "value": "Assisted Tracing design gate and product-owner acceptance"}
+      {
+        "label": "Web application",
+        "value": "Next.js 16 + React + TypeScript"
+      },
+      {
+        "label": "2D projection",
+        "value": "Konva / react-konva"
+      },
+      {
+        "label": "3D projection",
+        "value": "Three.js"
+      },
+      {
+        "label": "Persistence",
+        "value": "IndexedDB"
+      },
+      {
+        "label": "Canonical geometry",
+        "value": "millimetres"
+      },
+      {
+        "label": "Accepted recognition slice",
+        "value": "M7.8B"
+      },
+      {
+        "label": "Automatic M7.8C result",
+        "value": "product-owner usefulness FAIL / closed unmerged"
+      },
+      {
+        "label": "Next acceptance boundary",
+        "value": "Assisted Tracing design gate and product-owner acceptance"
+      },
+      {
+        "label": "Accepted editor slice",
+        "value": "M8.1 — product-owner accepted and merged"
+      },
+      {
+        "label": "Active product slice",
+        "value": "M8.2 top toolbar — Draft; focused clipboard retest pending"
+      }
     ],
     "signals": [
       {
@@ -71,30 +103,85 @@
       {
         "kind": "pr",
         "mode": "automated",
-        "label": "Assisted Tracing design gate PR #52",
-        "state": "pending",
+        "label": "Assisted Tracing design gate PR #52 — closed unmerged",
+        "state": "unavailable",
         "url": "https://github.com/True-Ruslan/vlezet/pull/52",
-        "observedAt": "2026-08-08",
-        "scope": "PR #52 is an open Draft design gate from fresh main with no product code yet. It records the pivot to Assisted Tracing: the user explicitly chooses or draws geometry, local reference-image analysis may refine only the current ephemeral preview when evidence is unambiguous, ambiguous evidence abstains, and no AI/network dependency is introduced. M7.8B remains the accepted recognition slice until a later implementation receives its own TDD, browser and product-owner acceptance."
+        "observedAt": "2026-08-11",
+        "scope": "PR #52 is closed unmerged and superseded by later accepted editor work. It remains historical design/R&D evidence only; it is not the current acceptance boundary and does not change the pre-production lifecycle."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M8.1 precision drawing PR #85",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/85",
+        "observedAt": "2026-08-09",
+        "scope": "PR #85 was product-owner accepted and merged after the M8.1 acceptance set passed 9/9. It establishes the current accepted editor slice for precision drawing/manual editing without promoting Vlezet beyond pre-production."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M8.2 top toolbar Draft PR #87",
+        "state": "pending",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/87",
+        "observedAt": "2026-08-11",
+        "scope": "PR #87 is the current Draft M8.2 product slice. Product-owner scenarios 01–07 passed, while the focused clipboard retest remains pending; no merge, release or product-owner closure is claimed before that retest."
       }
     ]
   },
   {
     "project": "livingworld",
     "status": "verified",
-    "lastVerified": "2026-08-08",
+    "lastVerified": "2026-08-11",
     "versions": [
-      {"label": "Public name", "value": "VillAIgence"},
-      {"label": "Minecraft Java", "value": "1.21.1"},
-      {"label": "Java", "value": "21"},
-      {"label": "Primary package", "value": "Fabric"},
-      {"label": "Compatibility build", "value": "NeoForge"},
-      {"label": "Persistent context", "value": "Memory 2.0 + Operator Lore"},
-      {"label": "Current official release", "value": "0.2.0+1.21.1"},
-      {"label": "Installed 0.2.0 result", "value": "7 PASS / 0 FAIL"},
-      {"label": "Deferred installed boundaries", "value": "VAI-M2-INST-005 NOT TESTED; VAI-CONCUR-004 NOT TESTED / DEFERRED"},
-      {"label": "Controlled semantic boundary", "value": "BELIEF admission accepted; FACT requires SYSTEM_OBSERVED"},
-      {"label": "Active development slice", "value": "bounded PLAYER_TOLD BELIEF candidate extraction — Draft/RED"}
+      {
+        "label": "Public name",
+        "value": "VillAIgence"
+      },
+      {
+        "label": "Minecraft Java",
+        "value": "1.21.1"
+      },
+      {
+        "label": "Java",
+        "value": "21"
+      },
+      {
+        "label": "Primary package",
+        "value": "Fabric"
+      },
+      {
+        "label": "Compatibility build",
+        "value": "NeoForge"
+      },
+      {
+        "label": "Persistent context",
+        "value": "Memory 2.0 + Operator Lore"
+      },
+      {
+        "label": "Current official release",
+        "value": "0.2.0+1.21.1"
+      },
+      {
+        "label": "Installed 0.2.0 result",
+        "value": "7 PASS / 0 FAIL"
+      },
+      {
+        "label": "Deferred installed boundaries",
+        "value": "VAI-M2-INST-005 NOT TESTED; VAI-CONCUR-004 NOT TESTED / DEFERRED"
+      },
+      {
+        "label": "Controlled semantic boundary",
+        "value": "BELIEF admission accepted; FACT requires SYSTEM_OBSERVED"
+      },
+      {
+        "label": "Active development slice",
+        "value": "Personality / social snapshot consolidation — Draft PR #155"
+      },
+      {
+        "label": "Latest merged source capability",
+        "value": "causal NPC↔NPC social mutation — PR #153 merged"
+      }
     ],
     "signals": [
       {
@@ -217,11 +304,29 @@
       {
         "kind": "pr",
         "mode": "automated",
-        "label": "PLAYER_TOLD BELIEF candidate extraction Draft PR #125",
-        "state": "pending",
+        "label": "PLAYER_TOLD BELIEF candidate extraction PR #125",
+        "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/125",
         "observedAt": "2026-08-08",
-        "scope": "PR #125 is an open Draft TDD slice for bounded PLAYER_TOLD BELIEF candidate extraction in the existing structured chat response. Its current development boundary is RED/pending and not accepted product truth. The model may propose bounded statement strings only; the server fixes provenance, owner, player identity and source event, and there is no AI-to-FACT path or second provider request."
+        "scope": "PR #125 is merged bounded source evidence for PLAYER_TOLD BELIEF candidate extraction. Server-owned provenance and FACT authority remain unchanged. This source capability does not expand the installed 0.2.0 acceptance set or resolve deferred installed boundaries."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Causal NPC↔NPC social mutation PR #153",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/153",
+        "observedAt": "2026-08-11",
+        "scope": "PR #153 merged causal nearby NPC-to-NPC social influence with the full source acceptance suite green (620/620 tests and 146 gates). This is post-release source capability only; the official installed release remains 0.2.0+1.21.1 with 7 PASS / 0 FAIL and the documented NOT TESTED boundaries."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Personality / social snapshot Draft PR #155",
+        "state": "pending",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/155",
+        "observedAt": "2026-08-11",
+        "scope": "PR #155 is the current Draft TDD follow-up consolidating personality/social snapshot state. It is development evidence only and is not an installed release, cumulative acceptance or lifecycle promotion."
       }
     ]
   },
@@ -230,10 +335,22 @@
     "status": "stale",
     "lastVerified": "2026-07-14",
     "versions": [
-      {"label": "Unity", "value": "6000.3.0f1"},
-      {"label": "URP", "value": "17.3.0"},
-      {"label": "Input System", "value": "1.16.0"},
-      {"label": "Target build", "value": "Windows x86_64 IL2CPP"}
+      {
+        "label": "Unity",
+        "value": "6000.3.0f1"
+      },
+      {
+        "label": "URP",
+        "value": "17.3.0"
+      },
+      {
+        "label": "Input System",
+        "value": "1.16.0"
+      },
+      {
+        "label": "Target build",
+        "value": "Windows x86_64 IL2CPP"
+      }
     ],
     "signals": [
       {
@@ -257,15 +374,44 @@
   {
     "project": "portfolio-platform",
     "status": "verified",
-    "lastVerified": "2026-08-08",
+    "lastVerified": "2026-08-11",
     "versions": [
-      {"label": "Delivery model", "value": "static-first + build-time intelligence"},
-      {"label": "Knowledge build", "value": "Diplodoc"},
-      {"label": "Hosting", "value": "GitHub Pages"},
-      {"label": "Canonical domain", "value": "trueruslan.ru"},
-      {"label": "Public route model", "value": "repository-native directory URLs"},
-      {"label": "Search", "value": "Diplodoc generated local index"},
-      {"label": "Analytics", "value": "optional aggregate Cloudflare Web Analytics + explicit-consent Yandex Metrica"}
+      {
+        "label": "Delivery model",
+        "value": "static-first + build-time intelligence"
+      },
+      {
+        "label": "Knowledge build",
+        "value": "Diplodoc"
+      },
+      {
+        "label": "Hosting",
+        "value": "GitHub Pages"
+      },
+      {
+        "label": "Canonical domain",
+        "value": "trueruslan.ru"
+      },
+      {
+        "label": "Public route model",
+        "value": "repository-native directory URLs"
+      },
+      {
+        "label": "Search",
+        "value": "Diplodoc generated local index"
+      },
+      {
+        "label": "Analytics",
+        "value": "optional aggregate Cloudflare Web Analytics + explicit-consent Yandex Metrica"
+      },
+      {
+        "label": "Portfolio Clarity redesign",
+        "value": "C7 — production accepted"
+      },
+      {
+        "label": "Measurement checkpoint",
+        "value": "P3.6 — NEXT / WAITING FOR EXTERNAL EVIDENCE"
+      }
     ],
     "signals": [
       {
@@ -330,6 +476,33 @@
         "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31227681975",
         "observedAt": "2026-08-08",
         "scope": "Production Live Smoke #288 resolved the exact successful Pages deployment and verified the real-site pre-consent boundary without granting consent or sending test telemetry. The production Yandex pre-consent smoke passed with zero Yandex provider requests before consent."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Portfolio Clarity C7 PR #198",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/198",
+        "observedAt": "2026-08-11",
+        "scope": "PR #198 delivered the tracked context-only presentation baseline and P3.6 handoff without resetting the clean-URL observation clock or creating a second measurement owner. Exact production acceptance is tied to deployed SHA 134043fa2bb5f6612266a04eab2853f71b207328."
+      },
+      {
+        "kind": "build",
+        "mode": "automated",
+        "label": "C7 GitHub Pages #223",
+        "state": "published",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31516118934",
+        "observedAt": "2026-08-11",
+        "scope": "Pages #223 successfully published exact C7 SHA 134043fa2bb5f6612266a04eab2853f71b207328 as deployment 5855067883."
+      },
+      {
+        "kind": "ci",
+        "mode": "automated",
+        "label": "C7 Production Live #498",
+        "state": "passed",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31516213818",
+        "observedAt": "2026-08-11",
+        "scope": "Deployment-triggered Production Live #498 passed all production-only gates for exact deployed C7 SHA 134043fa2bb5f6612266a04eab2853f71b207328. P3.6 measurement remains NEXT / WAITING and no product-impact claim is inferred."
       }
     ]
   }

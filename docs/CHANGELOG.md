@@ -4,6 +4,14 @@
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
+## 2026-08-11 — Content Freshness reconciliation — CURRENT EXTERNAL EVIDENCE
+
+- Reconciled the three repository-drift warnings from issue #78 against current GitHub state instead of promoting freshness automatically.
+- Vlezet stays `pre-production / ACTIVE DEVELOPMENT`: PR #52 is closed unmerged/superseded, M8.1 PR #85 is product-owner accepted/merged, and M8.2 PR #87 remains Draft with the focused clipboard retest pending.
+- VillAIgence stays `release-candidate / ACCEPTANCE IN PROGRESS`: official installed `0.2.0+1.21.1` remains `7 PASS / 0 FAIL` with explicit NOT TESTED boundaries; post-release source capability includes merged PR #153 while PR #155 remains Draft.
+- Portfolio Platform stays production and records C7 exact production acceptance as the latest controlled evidence; P3.6 remains NEXT / WAITING.
+- Advanced controlled `lastVerified` to 2026-08-11 only after manual reconciliation. Issue #78 may close only after a post-merge default-branch Content Freshness run reports zero findings.
+
 ## 2026-08-11 — C7 production baseline + P3.6 handoff — PRODUCTION ACCEPTED
 
 - Added one tracked `data/presentation-baseline.json` as `context-only` provenance for the existing P3.6 Measurement Checkpoint, separate from private operator observations and readiness analysis.

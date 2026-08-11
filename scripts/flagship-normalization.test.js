@@ -48,12 +48,13 @@ test('P3.3 preserves canonical lifecycle labels and routes', () => {
   assert.equal(livingworld.href, 'landing/projects/livingworld.html');
 });
 
-test('Vlezet keeps M7.8B accepted after automatic M7.8C fails and Assisted Tracing becomes the pending design boundary', () => {
+test('Vlezet preserves M7.8B history while M8.1 is accepted and M8.2 is the pending product boundary', () => {
   const evidence = evidenceMap().get('vlezet');
-  assert.equal(evidence.lastVerified, '2026-08-08');
+  assert.equal(evidence.lastVerified, '2026-08-11');
   assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted recognition slice' && value === 'M7.8B'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Automatic M7.8C result' && /FAIL.*closed unmerged/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Next acceptance boundary' && /Assisted Tracing/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted editor slice' && /M8\.1.*accepted.*merged/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.2.*Draft.*retest pending/i.test(value)));
 
   const failed = findSignal(evidence, 'Automatic M7.8C');
   assert.equal(failed.state, 'failed');
@@ -68,23 +69,34 @@ test('Vlezet keeps M7.8B accepted after automatic M7.8C fails and Assisted Traci
   assertIncludesAll(hybrid.scope, ['closed unmerged', 'R&D evidence', 'not an acceptance'], 'Vlezet hybrid R&D scope');
 
   const assisted = findSignal(evidence, 'Assisted Tracing design gate');
-  assert.equal(assisted.state, 'pending');
-  assertIncludesAll(assisted.scope, ['open Draft design gate', 'no product code', 'ephemeral preview', 'M7.8B'], 'Vlezet Assisted Tracing scope');
+  assert.equal(assisted.state, 'unavailable');
+  assertIncludesAll(assisted.scope, ['closed unmerged', 'superseded', 'historical design/R&D evidence'], 'Vlezet Assisted Tracing historical scope');
+
+  const acceptedEditor = findSignal(evidence, 'M8.1 precision drawing PR #85');
+  assert.equal(acceptedEditor.state, 'merged');
+  assert.match(acceptedEditor.scope, /product-owner accepted.*9\/9|9\/9.*product-owner accepted/i);
+
+  const active = findSignal(evidence, 'M8.2 top toolbar Draft PR #87');
+  assert.equal(active.state, 'pending');
+  assert.match(active.scope, /01–07.*passed/i);
+  assert.match(active.scope, /clipboard retest.*pending/i);
 
   const history = readJson('data/project-history/vlezet.json');
   assert.equal(history.filter(({state}) => state === 'current').length, 1);
   assert.equal(history.filter(({state}) => state === 'next').length, 1);
-  assert.match(history.find(({state}) => state === 'current').title, /Assisted Tracing/i);
+  assert.match(history.find(({state}) => state === 'current').title, /M8\.2.*Draft/i);
+  assert.match(history.find(({state}) => state === 'next').description, /clipboard retest/i);
 });
 
-test('VillAIgence keeps official 0.2 release and installed acceptance separate from Draft BELIEF extraction', () => {
+test('VillAIgence preserves official 0.2 installed acceptance while later source capability advances independently', () => {
   const evidence = evidenceMap().get('livingworld');
-  assert.equal(evidence.lastVerified, '2026-08-08');
+  assert.equal(evidence.lastVerified, '2026-08-11');
   assert.ok(evidence.versions.some(({label, value}) => label === 'Current official release' && value === '0.2.0+1.21.1'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Installed 0.2.0 result' && value === '7 PASS / 0 FAIL'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Deferred installed boundaries' && value.includes('VAI-M2-INST-005') && value.includes('VAI-CONCUR-004')));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Controlled semantic boundary' && /BELIEF.*FACT.*SYSTEM_OBSERVED/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Active development slice' && /Draft\/RED/.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Latest merged source capability' && /causal NPC↔NPC social mutation.*#153/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Active development slice' && /Personality.*social snapshot.*Draft.*#155/i.test(value)));
 
   const release = findSignal(evidence, 'Official 0.2.0+1.21.1');
   assert.equal(release.state, 'published');
@@ -99,17 +111,27 @@ test('VillAIgence keeps official 0.2 release and installed acceptance separate f
   assert.equal(admission.state, 'merged');
   assertIncludesAll(admission.scope, ['BELIEF', 'SYSTEM_OBSERVED', 'FACT'], 'VillAIgence belief-admission scope');
 
-  const pending = findSignal(evidence, 'BELIEF candidate extraction Draft PR #125');
+  const extraction = findSignal(evidence, 'PLAYER_TOLD BELIEF candidate extraction PR #125');
+  assert.equal(extraction.state, 'merged');
+  assert.match(extraction.scope, /Server-owned provenance.*FACT authority remain unchanged/i);
+
+  const social = findSignal(evidence, 'Causal NPC↔NPC social mutation PR #153');
+  assert.equal(social.state, 'merged');
+  assert.match(social.scope, /620\/620 tests.*146 gates/i);
+  assert.match(social.scope, /post-release source capability/i);
+
+  const pending = findSignal(evidence, 'Personality / social snapshot Draft PR #155');
   assert.equal(pending.state, 'pending');
-  assertIncludesAll(pending.scope, ['open Draft', 'RED', 'not accepted product truth', 'no AI-to-FACT path'], 'VillAIgence PR #125 pending scope');
+  assert.match(pending.scope, /Draft TDD/i);
+  assert.match(pending.scope, /not an installed release/i);
 
   const history = readJson('data/project-history/livingworld.json');
   assert.equal(history.filter(({state}) => state === 'current').length, 1);
   assert.equal(history.filter(({state}) => state === 'next').length, 1);
-  assert.match(history.find(({state}) => state === 'current').title, /BELIEF candidate extraction/i);
+  assert.match(history.find(({state}) => state === 'current').title, /Personality.*social snapshot.*Draft/i);
 });
 
-test('normalized case studies expose bounded related material and do not promote pending work', () => {
+test('normalized case studies expose current bounded related material and do not promote pending work', () => {
   const livingworldRu = read('docs/landing/projects/livingworld.md');
   const livingworldEn = read('docs/en/projects/livingworld.md');
   const vlezetRu = read('docs/landing/projects/vlezet.md');
@@ -123,8 +145,8 @@ test('normalized case studies expose bounded related material and do not promote
     'restart-persistence-is-a-product-contract',
     '0.2.0+1.21.1',
     '7 PASS / 0 FAIL',
-    'PR #123',
-    'PR #125',
+    'PR #153',
+    'PR #155',
     'Draft',
   ], 'RU VillAIgence case study');
 
@@ -137,8 +159,8 @@ test('normalized case studies expose bounded related material and do not promote
     '../../landing/projects/livingworld.md',
     '0.2.0+1.21.1',
     '7 PASS / 0 FAIL',
-    'PR #123',
-    'PR #125',
+    'PR #153',
+    'PR #155',
   ], 'EN VillAIgence case study');
   assert.doesNotMatch(
     livingworldEn,
@@ -150,27 +172,22 @@ test('normalized case studies expose bounded related material and do not promote
     'probabilistic-proposals-deterministic-authority',
     'green-ci-is-not-product-verification',
     'M7.8B',
-    'Assisted Tracing',
-    'PR #52',
-    'PR #42',
-    'PR #44',
-    'PR #45',
+    'M8.1',
+    'M8.2',
+    'PR #85',
+    'PR #87',
   ], 'RU Vlezet case study');
 
   assertIncludesAll(vlezetEn, [
     'probabilistic-proposals-deterministic-authority',
     'green-ci-is-not-product-verification',
     'M7.8B',
-    'Assisted Tracing',
-    'PR #52',
-    'PR #42',
-    'PR #44',
-    'PR #45',
-    'closed unmerged',
-    'usefulness acceptance',
+    'M8.1',
+    'M8.2',
+    'PR #85',
+    'PR #87',
+    'focused clipboard retest',
   ], 'EN Vlezet case study');
-  assert.doesNotMatch(vlezetEn, /PR #42 remains Draft work awaiting/i);
-  assert.doesNotMatch(vlezetEn, /next acceptance boundary is \*\*M7\.8C/i);
 
   const positivePromotion = /(?:is|является|стал(?:а)?)\s+(?:fully\s+accepted|production-ready)|полностью\s+принят(?:а|о)?/i;
   for (const source of [livingworldRu, livingworldEn, vlezetRu, vlezetEn]) {

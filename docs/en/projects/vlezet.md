@@ -63,33 +63,15 @@ The Three.js view is read-only. It has no independent coordinate store, furnitur
 <!-- case-study:current-state -->
 ## Current lifecycle and acceptance boundary
 
-Milestones **M0 through M7.8B** are accepted in the main product line.
+The public lifecycle remains **pre-production — ACTIVE DEVELOPMENT**. The historically accepted M7.8B recognition boundary is not rewritten by later experiments.
 
-The accepted product includes:
+On 8 August the automatic M7.8C direction failed product-owner usefulness acceptance; PR #42/#44/#45 stayed closed-unmerged R&D evidence. Design-only PR #52 was later closed unmerged as well and is no longer the current boundary.
 
-- walls, topology, rooms, openings, dimensions and areas in millimetres;
-- furniture with exact transforms and collision, door-zone and clearance diagnostics;
-- semantic Undo and Redo;
-- local projects, autosave, backup, import, export and PNG output;
-- reference-plan import, calibration and tracing;
-- editable local candidates with explicit Apply;
-- a deterministic read-only 3D projection;
-- bounded planning alternatives with Preview and revalidated atomic Apply;
-- a responsive editor shell, inspectors, onboarding and furniture-fit workflow;
-- a versioned recognition benchmark;
-- M7.8B region-first wall extraction, bounded topology and verification-only AI.
+The next accepted product step is **M8.1**: PR #85 passed product-owner acceptance **9/9** and merged. It establishes manual editing / precision drawing as the current accepted editor slice without promoting the project to production.
 
-M7.8B was accepted with known limitations. On its representative source it produced 27 local wall candidates: 19 were AI-confirmed and 8 remained pending review. Accepted Source geometry F1 and Source topology F1 were both `0.837989`.
+The active product slice is **M8.2, Draft PR #87**. Scenarios 01–07 passed, while a focused clipboard retest remains pending. Until that retest, exact-head CI and explicit product-owner closure, M8.2 is not represented as merged, released or accepted.
 
-The later automatic M7.8C direction is now explicitly recorded as **product-owner usefulness FAIL / closed unmerged**. PR #42 was closed unmerged after the 2026-08-08 representative retest showed that the automatic opening / host-wall path was still not useful enough despite green deterministic gates.
-
-PR #44 and PR #45 were also **closed unmerged** with that strategy pivot. Their benchmark and proposal-safety work remains useful R&D evidence, but neither slice was accepted into the product boundary.
-
-The current pending design boundary is **Assisted Tracing design gate and product-owner acceptance** in Draft PR #52. PR #52 starts from fresh main and intentionally contains no accepted product implementation yet. It defines a user-directed interaction model, local-only optional raster assistance, abstention on ambiguous evidence, and no mandatory AI or network path.
-
-PR #42, PR #44 and PR #45 therefore remain historical failed / unavailable R&D evidence; PR #52 is pending design evidence. None of them changes the accepted M7.8B boundary by repository activity alone.
-
-The public lifecycle remains **pre-production — ACTIVE DEVELOPMENT**.
+Canonical Project Evidence and the timeline below own volatile PR/run truth; this case study does not create a second lifecycle source of truth.
 
 <!-- case-study:decisions -->
 ## Architecture and key decisions

@@ -45,13 +45,33 @@
     "date": "2026-08",
     "title": "Bounded PLAYER_TOLD BELIEF candidate extraction — Draft/RED",
     "description": "PR #125 is the current TDD slice. It proposes bounded PLAYER_TOLD statement candidates inside the existing structured chat response without a second provider request. The server still owns provenance, NPC/player/source identity and admission; the current Draft/RED state is development evidence and not accepted product truth.",
-    "state": "current",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/villAIgence/pull/125"
   },
   {
     "date": "NEXT",
     "title": "Make bounded BELIEF extraction green without weakening authority",
     "description": "Complete the PR #125 RED→GREEN contract for successful, empty, malformed and retry cases; prove fail-soft provider behavior and exactly-once semantic persistence; preserve current observed FACT over conflicting BELIEF. Only after that move to trustworthy causal relationship reasons and longer-horizon memory work.",
+    "state": "past"
+  },
+  {
+    "date": "2026-08",
+    "title": "Post-release causal NPC↔NPC social mutation merged",
+    "description": "PR #153 merged causal nearby NPC social influence with 620/620 tests and 146 source gates green. It is accepted source capability, not a new installed release; official installed acceptance stays 0.2.0+1.21.1 at 7 PASS / 0 FAIL with explicit NOT TESTED boundaries.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/153"
+  },
+  {
+    "date": "2026-08",
+    "title": "Personality / social snapshot consolidation — Draft",
+    "description": "PR #155 is the current Draft TDD follow-up for personality/social snapshot state. It remains development evidence and cannot expand installed acceptance, release identity or lifecycle status.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/155"
+  },
+  {
+    "date": "NEXT",
+    "title": "Finish PR #155 without collapsing source and installed evidence",
+    "description": "Complete the TDD contract and source review for PR #155. Any later release or installed acceptance must use its own exact-artifact and installed gates; deferred VAI-M2-INST-005 and VAI-CONCUR-004 remain explicit until directly tested.",
     "state": "next"
   }
 ]

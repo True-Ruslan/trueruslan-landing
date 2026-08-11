@@ -534,7 +534,7 @@ production artifact:            8930571510
 production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13
 ```
 
-Routes: `/landing/projects/livingworld/`, `/landing/projects/vlezet/`, `/en/projects/livingworld/`. Historical P3.3 acceptance keeps M7.8B and later recognition work as separate evidence layers; current reconciliation records PR #42/#44/#45 as closed-unmerged and PR #52 as the pending Assisted Tracing design gate.
+Routes: `/landing/projects/livingworld/`, `/landing/projects/vlezet/`, `/en/projects/livingworld/`. Historical P3.3 acceptance remains unchanged, while the 2026-08-11 controlled reconciliation advances current external truth without lifecycle promotion: Vlezet keeps M7.8B as accepted recognition history, records M8.1 PR #85 as product-owner accepted/merged and M8.2 PR #87 as Draft with focused clipboard retest pending; VillAIgence keeps official installed 0.2.0+1.21.1 at 7 PASS / 0 FAIL, records merged source capability through PR #153 and keeps PR #155 Draft/pending.
 
 ### P3.4 — Grounded Engineering Notes — DONE
 
@@ -597,7 +597,7 @@ production artifact:            8940409941
 production digest:              sha256:9cb66c8e3b2b432c9bbdd160542f3b5566e1e3e21f3be07711f16d5f95fae700
 ```
 
-Accepted M7.8B remains separate from later unaccepted recognition R&D. The representative retest later rejected automatic M7.8C usefulness; PR #42/#44/#45 are closed unmerged, while PR #52 is a new pending design-only Assisted Tracing boundary. This later reconciliation does not rewrite P3.4C's historical production acceptance.
+Accepted M7.8B remains separate from later recognition R&D. The representative retest rejected automatic M7.8C usefulness and PR #42/#44/#45 stayed closed unmerged. Later product development advanced separately: PR #52 is now closed unmerged/superseded, M8.1 PR #85 is product-owner accepted/merged, and M8.2 PR #87 is Draft with focused clipboard retest pending. This reconciliation updates current evidence without rewriting P3.4C's historical production acceptance or promoting Vlezet beyond pre-production.
 
 #### P3.4D — GameTests versus installed gameplay acceptance — DONE
 
@@ -648,7 +648,7 @@ production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a091
 ## 5. Operational boundaries
 
 - `issue #111` — authenticated Yandex/search-engine observation;
-- `issue #78` — 2026-08-08 external-project evidence reconciliation выполнен в canonical data; default-branch Content Freshness refresh должен подтвердить отсутствие оставшихся findings после merge;
+- `issue #78` — 2026-08-11 controlled reconciliation updates Vlezet, VillAIgence and Portfolio Platform canonical evidence without lifecycle promotion; close only after the post-merge default-branch Content Freshness run reports 0 findings;
 - `issue #82` — Diplodoc/markdown-it blocker; review on or after **2026-08-17**;
 - no `npm audit fix --force`, local shim or unreviewed fork;
 - no legacy cleanup before observed crawler replacement.
