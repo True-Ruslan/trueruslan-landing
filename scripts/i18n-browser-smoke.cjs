@@ -19,7 +19,8 @@ function generatedHtmlPathToPublicRoute(value) {
   if (!normalized.endsWith('.html')) throw new Error(`unsupported i18n generated path: ${value}`);
   if (normalized === 'index.html') return '/';
   normalized = normalized.slice(0, -'.html'.length);
-  if (normalized.startsWith('landing/')) normalized = normalized.slice('landing/'.length);
+  const segments = normalized.split('/');
+  if (segments[0] === 'landing') normalized = segments.slice(1).join('/');
   if (normalized.endsWith('/index')) normalized = normalized.slice(0, -'/index'.length);
   return `/${normalized}/`.replace(/\/{2,}/g, '/');
 }

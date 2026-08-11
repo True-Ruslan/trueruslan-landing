@@ -107,8 +107,12 @@ test('P3.5C keeps one generated search and integrates English Publications throu
   assert.match(searchSmoke, /syntax overhead/);
   assert.match(searchSmoke, /en\/publications\//);
 
+  const i18nManifest = JSON.parse(read('data/i18n.json'));
   const i18nSmoke = read('scripts/i18n-browser-smoke.cjs');
-  assert.match(i18nSmoke, /id: 'publications'/);
+  assert.ok(i18nManifest.some((pair) => pair.id === 'publications'
+    && pair.ru === 'landing/publications.html'
+    && pair.en === 'en/publications.html'));
+  assert.match(i18nSmoke, /data['"]?,?['"]?\s*[,\/]?\s*i18n\.json|data\/i18n\.json/);
 
   assert.equal(exists('scripts/production-p3-5c-english-publications-smoke.cjs'), true);
   const workflow = read('.github/workflows/production-live.yml');

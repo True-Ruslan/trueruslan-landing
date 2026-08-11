@@ -6,7 +6,7 @@
   <p class="tr-resume-lead">I have 5+ years of commercial backend experience across product services, integrations, data-intensive systems and legacy modernization. My main focus is Java/Spring, reliability, data and engineering automation.</p>
 
   <div class="tr-resume-actions">
-    <a href="mailto:hi@true-ruslan.ru">Email me →</a>
+    <a href="mailto:hi@true-ruslan.ru">Contact by email →</a>
     <a href="https://github.com/True-Ruslan" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
     <a href="https://raw.githubusercontent.com/True-Ruslan/trueruslan-landing/master/docs/assets/documents/cv.pdf" data-tr-resume-link target="_blank" rel="noopener noreferrer">PDF resume ↗</a>
   </div>
