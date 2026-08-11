@@ -1,0 +1,39 @@
+name: C6 compatibility oracle migration
+
+on:
+  push:
+    branches:
+      - feat/portfolio-clarity-c6-en-seo
+    paths:
+      - .github/workflows/c6-compat-oracles-migrate.yml
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: feat/portfolio-clarity-c6-en-seo
+          fetch-depth: 1
+
+      - name: Apply fail-closed compatibility migration
+        run: |
+          set -euo pipefail
+          python3 scripts/migrate-c6-compat-oracles.py
+          git diff --check
+
+      - name: Commit permanent compatibility updates
+        run: |
+          set -euo pipefail
+          git rm scripts/migrate-c6-compat-oracles.py
+          git add docs/en/now.md docs/en/resume.md scripts/i18n-browser-smoke.cjs scripts/portfolio-p3-5a-english-vlezet.test.js scripts/portfolio-p3-5b-english-now.test.js scripts/portfolio-p3-5c-english-publications.test.js
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'test: reconcile C6 compatibility oracles'
+          git push origin HEAD:feat/portfolio-clarity-c6-en-seo
