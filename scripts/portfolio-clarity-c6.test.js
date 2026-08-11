@@ -35,15 +35,15 @@ test('C6 gives every controlled English route one canonical page-metadata owner'
     assert.ok(entry.description.length >= 50, `${pair.en}: description too short`);
   }
 
-  assert.equal(metadata.get('en/index.html').title, 'Ruslan Nemykin — Java Backend Engineer');
-  assert.equal(metadata.get('en/resume.html').title, 'Experience — Ruslan Nemykin');
+  assert.equal(metadata.get('en/index.html').title, 'Ruslan Nemykin — Backend Engineer');
+  assert.equal(metadata.get('en/resume.html').title, 'Resume — Ruslan Nemykin');
 });
 
 test('C6 metadata browser gate covers the English homepage through canonical generated metadata', () => {
   const smoke = read('scripts/metadata-smoke.cjs');
   assert.match(smoke, /path:\s*['"]\/en\/['"]/);
   assert.match(smoke, /card:\s*['"]home-en['"]/);
-  assert.match(smoke, /Ruslan Nemykin — Java Backend Engineer/);
+  assert.match(smoke, /Ruslan Nemykin — Backend Engineer/);
 });
 
 test('C6 reconciles Person structured data across RU and EN home surfaces', () => {
