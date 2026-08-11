@@ -61,35 +61,41 @@ test('portfolio platform registry owns a dedicated public case-study route and t
   ]);
 });
 
-test('portfolio platform evidence separates current P3.6C deployment proof from open P3.6 measurement', () => {
+test('portfolio platform evidence records C7 production acceptance while P3.6 measurement remains open', () => {
   const evidence = readJson(files.evidence);
   const snapshot = evidence.find(({project}) => project === 'portfolio-platform');
 
   assert.ok(snapshot, 'portfolio-platform evidence snapshot must exist');
   assert.equal(snapshot.status, 'verified');
-  assert.equal(snapshot.lastVerified, '2026-08-08');
+  assert.equal(snapshot.lastVerified, '2026-08-11');
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Public route model' && value.includes('directory')));
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Hosting' && value === 'GitHub Pages'));
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Analytics' && /Cloudflare.*Yandex Metrica/i.test(value)));
+  assert.ok(snapshot.versions.some(({label, value}) => label === 'Portfolio Clarity redesign' && /C7.*production accepted/i.test(value)));
+  assert.ok(snapshot.versions.some(({label, value}) => label === 'Measurement checkpoint' && /P3\.6.*NEXT.*WAITING/i.test(value)));
 
   const p36c = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/pull/158');
-  assert.ok(p36c, 'missing P3.6C implementation evidence');
+  assert.ok(p36c, 'missing historical P3.6C implementation evidence');
   assert.equal(p36c.state, 'merged');
   assert.match(p36c.scope, /explicit-consent|consent/i);
-  assert.match(p36c.scope, /zero Yandex requests before consent/i);
   assert.match(p36c.scope, /P3\.6 measurement remains open/i);
 
-  const pages = snapshot.signals.find(({label}) => label.includes('P3.6C GitHub Pages deployment #187'));
-  assert.ok(pages, 'missing current Pages deployment evidence');
-  assert.equal(pages.state, 'published');
-  assert.match(pages.scope, /9bccf042fa6f9ce3ab289c7d023077c137ab238c/);
-  assert.match(pages.scope, /5803497490/);
+  const c7 = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/pull/198');
+  assert.ok(c7, 'missing C7 feature evidence');
+  assert.equal(c7.state, 'merged');
+  assert.match(c7.scope, /context-only presentation baseline/i);
+  assert.match(c7.scope, /134043fa2bb5f6612266a04eab2853f71b207328/);
 
-  const live = snapshot.signals.find(({label}) => label.includes('P3.6C Production Live Smoke #288'));
-  assert.ok(live, 'missing current Production Live evidence');
+  const pages = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31516118934');
+  assert.ok(pages, 'missing C7 Pages evidence');
+  assert.equal(pages.state, 'published');
+  assert.match(pages.scope, /5855067883/);
+
+  const live = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31516213818');
+  assert.ok(live, 'missing C7 Production Live evidence');
   assert.equal(live.state, 'passed');
-  assert.match(live.scope, /exact successful Pages deployment/i);
-  assert.match(live.scope, /zero Yandex provider requests before consent/i);
+  assert.match(live.scope, /P3\.6 measurement remains NEXT \/ WAITING/i);
+  assert.match(live.scope, /no product-impact claim/i);
 });
 
 test('RU and EN case studies follow the evidence-first flagship contract', () => {
@@ -149,10 +155,17 @@ test('case study is wired into hubs, navigation, metadata and RU/EN pairing', ()
   assert.match(copyAssets, /en\/projects\/portfolio-platform\.html/);
 });
 
-test('portfolio platform history keeps accepted, current and next states distinct', () => {
+test('portfolio platform history keeps historical acceptance, C7 current and P3.6 next states distinct', () => {
   const history = readJson(files.history);
-  assert.equal(history.filter(({state}) => state === 'current').length, 1);
+  const current = history.filter(({state}) => state === 'current');
+  const next = history.filter(({state}) => state === 'next');
+
+  assert.equal(current.length, 1);
+  assert.equal(next.length, 1);
   assert.ok(history.some(({state, title}) => state === 'past' && /clean URL/i.test(title)));
-  assert.ok(history.some(({state, title}) => state === 'current' && /P3\.2|case study/i.test(title)));
-  assert.ok(history.some(({state, title}) => state === 'next' && /P3\.3|normalization/i.test(title)));
+  assert.ok(history.some(({state, title}) => state === 'past' && /P3\.2|case study/i.test(title)));
+  assert.match(current[0].title, /C7.*production baseline/i);
+  assert.match(current[0].description, /P3\.6.*NEXT|WAITING/i);
+  assert.match(next[0].title, /P3\.6.*WAITING/i);
+  assert.match(next[0].description, /operator-observed aggregate evidence/i);
 });
