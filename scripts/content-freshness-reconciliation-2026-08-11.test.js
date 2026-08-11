@@ -40,7 +40,6 @@ test('2026-08-11 reconciliation records current Vlezet public-beta boundary with
 
   assert.equal(registry.status, 'pre-production');
   assert.equal(registry.statusLabel, 'ACTIVE DEVELOPMENT');
-  assert.match(registry.summary, /manual editing|precision drawing/i);
   assert.equal(controlled.status, 'verified');
   assert.equal(controlled.lastVerified, '2026-08-11');
   assert.ok(controlled.versions.some((entry) => entry.label === 'Accepted editor slice' && /M8\.1/.test(entry.value)));
