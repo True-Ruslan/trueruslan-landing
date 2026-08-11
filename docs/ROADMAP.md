@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-11**, после exact-production acceptance C6 — final EN/SEO reconciliation; C7 — production baseline + P3.6 handoff является следующим implementation slice, P3.6 measurement ожидает внешние aggregate observations.
+> Обновлено: **2026-08-11**, после exact-production acceptance C7 — production baseline + P3.6 handoff; Portfolio Clarity redesign implementation sequence завершён, P3.6 measurement ожидает реальные aggregate observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
@@ -64,6 +64,7 @@
 - Homepage/Experience/NotchHub presentation refinement — PR #167/#168 / PRODUCTION ACCEPTED.
 - Portfolio Clarity C5 — Knowledge surfaces — PR #193 / PRODUCTION ACCEPTED.
 - Portfolio Clarity C6 — final EN/SEO reconciliation — PR #195/#196 / PRODUCTION ACCEPTED.
+- Portfolio Clarity C7 — production baseline + P3.6 handoff — PR #198 / PRODUCTION ACCEPTED.
 
 ---
 
@@ -538,7 +539,26 @@ The first feature deployment was deliberately not accepted because Production Li
 
 C6 does not start, reset or close P3.6 Measurement.
 
-Next redesign slice: **C7 — production baseline + P3.6 handoff**.
+### C7 — production baseline + P3.6 handoff — PRODUCTION ACCEPTED
+
+The final runtime slice of **Portfolio Clarity & Scanability** is production-accepted. One tracked presentation baseline is retained as `context-only` provenance for the existing P3.6 Measurement Checkpoint; it remains separate from operator observations, does not alter readiness, and does not create a second analytics or measurement source of truth.
+
+- PR #198 exact feature head: `6a511b8f7cc102cdcc1b00f1dda26bc57fdefae3`;
+- exact-head Build #1799 / `31515510234` — SUCCESS;
+- quality artifact `9111068659`, digest `sha256:528e13cbe2883644c4673ce18bd0475b8acb87bb81b98e7ad806953bacc27e24`;
+- Measurement Checkpoint #174 / `31515510155` — SUCCESS;
+- measurement artifact `9110870252`, digest `sha256:6aeca4695acb1cae8933a852ee6ad8fc1323a80208a90cb7abb0084afdbd229c`;
+- accepted squash / exact deployed SHA: `134043fa2bb5f6612266a04eab2853f71b207328`;
+- Pages #223 / `31516118934` — SUCCESS;
+- github-pages deployment `5855067883` — success;
+- Pages artifact `9111122104`, digest `sha256:22471106f7981d7cfd8b8d7245aeea0db140c1a2c3fc0fb7b092ca30e5814e41`;
+- Pages production verification reports `9111138147`, digest `sha256:f3bf385afa7b727cd62a26ccdbeef5d64eb711e516c4a90e993d7a7c7f9e6b75`;
+- deployment-triggered Production Live #498 / `31516213818` — SUCCESS;
+- production artifact `9111213502`, digest `sha256:fcacde8fd83e068fe094c05a0da07a23bb8ba88a42e15d87507cf5d8ccc1a1d8`.
+
+`data/presentation-baseline.json` is now `production-accepted`. Its `measurementMode=context-only`, `resetsCleanUrlMeasurement=false`, and `cleanUrlMigrationAt=2026-08-05T00:00:00Z` preserve the original clean-URL observation clock rather than resetting it at the end of the redesign.
+
+Durable ledger: `docs/acceptance/2026-08-11-portfolio-clarity-c7.md`. C7 completes the Portfolio Clarity redesign implementation sequence only. P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** for real equal-duration `operator-observed` aggregates, explicit traffic-sufficiency assessment and human review. C7 makes no engagement, conversion, SEO or causal product-impact claim.
 
 ## P3.6 — Measurement checkpoint — NEXT / WAITING
 
@@ -556,4 +576,4 @@ After sufficient aggregate traffic, run the manual checkpoint with real `operato
 
 Open durable state and Portfolio 1.0 specification. Check actual PRs, exact-head CI, Pages deployment and Production Live Smoke. Confirm P3.4F feature and exact production acceptance for SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`, Pages run `31110585951`, deployment `5781321808` and Production Live run `31110583631`. Preserve issue #111, issue #82 and issue #78 boundaries. Confirm P3.5A exact production acceptance for SHA `17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87`, Pages run `31155442788`, deployment `5790177102` and Production Live run `31155442779`. Confirm P3.5B exact production acceptance for SHA `96ea3ec5de18d99a811405b36a5b60066d9c374c`, Pages run `31161876484`, deployment `5791352097` and Production Live run `31161925498`. Confirm P3.5C exact production acceptance for SHA `f189d100785f0aea363df306fb7a923c06ee61a2`, Pages run `31180427543`, deployment `5794904843` and Production Live run `31180478038`. Confirm P3.6A Measurement readiness acceptance for SHA `7cc56d024fbde53156a9136b14b00c81c6718811`, post-merge Measurement Checkpoint run `31185967995`, Pages run `31185967012`, deployment `5795968137` and Production Live run `31186078593`. Confirm P3.6B real Reports API connection run `31201235872`. Confirm P3.6C production acceptance for SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`, Pages run `31227641778`, deployment `5803497490`, Production Live run `31227681975` and production evidence digest `sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a`. Confirm the accepted presentation refinement for SHA `4395128144c069663e67c660e5b549cfca851ae8`, Pages run `31260596290`, deployment `5809298234` and deployment-triggered Production Live run `31260625145`.
 
-Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Confirm C4 exact production acceptance for SHA `12ea58e815ebf09bcc5915e92a715cd3bfed5241`, Pages run `31401684624`, deployment `5834505086` and Production Live run `31402338027`. Confirm C5 exact production acceptance for SHA `00900e832d69356bbccaa874f1b625876dad1e21`, Pages run `31466807721`, deployment `5845809144` and Production Live run `31466868392`. Continue with **C7 — production baseline + P3.6 handoff** as the next product implementation slice. Keep **P3.6 — Measurement checkpoint — NEXT / WAITING** parallel and untouched until real `operator-observed` aggregate evidence satisfies the documented window and human-review boundaries.
+Then reconcile current external project evidence before making product claims: Vlezet must keep M7.8B accepted while PR #42/#44/#45 stay closed-unmerged and PR #52 remains a pending design-only Assisted Tracing boundary until its own acceptance; VillAIgence must keep official `0.2.0+1.21.1`, installed `7 PASS / 0 FAIL`, explicit NOT TESTED boundaries and Draft/RED PR #125 separate. Confirm C4 exact production acceptance for SHA `12ea58e815ebf09bcc5915e92a715cd3bfed5241`, Pages run `31401684624`, deployment `5834505086` and Production Live run `31402338027`. Confirm C5 exact production acceptance for SHA `00900e832d69356bbccaa874f1b625876dad1e21`, Pages run `31466807721`, deployment `5845809144` and Production Live run `31466868392`. The Portfolio Clarity redesign implementation sequence is complete through **C7 — production baseline + P3.6 handoff**. Keep **P3.6 — Measurement checkpoint — NEXT / WAITING** untouched until real `operator-observed` aggregate evidence satisfies the documented equal-duration window, traffic-sufficiency and human-review boundaries.

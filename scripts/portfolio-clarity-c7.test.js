@@ -11,19 +11,28 @@ const readJson = (relativePath) => JSON.parse(read(relativePath));
 const BASELINE_PATH = 'data/presentation-baseline.json';
 const HANDOFF_PATH = 'docs/keystone/specs/2026-08-11-portfolio-clarity-c7-baseline-handoff.md';
 
-test('C7 owns one pending canonical presentation baseline before exact production acceptance', () => {
+test('C7 owns one canonical presentation baseline across the production acceptance lifecycle', () => {
   assert.ok(fs.existsSync(path.join(ROOT, BASELINE_PATH)), `${BASELINE_PATH} must exist`);
   const baseline = readJson(BASELINE_PATH);
 
   assert.equal(baseline.schemaVersion, 1);
-  assert.equal(baseline.status, 'pending-production-acceptance');
+  assert.ok(['pending-production-acceptance', 'production-accepted'].includes(baseline.status));
   assert.equal(baseline.slice, 'C7');
   assert.equal(baseline.measurementMode, 'context-only');
   assert.equal(baseline.resetsCleanUrlMeasurement, false);
-  assert.equal(baseline.acceptedAt, null);
-  assert.equal(baseline.deployedSha, null);
-  assert.equal(baseline.pagesDeploymentId, null);
-  assert.equal(baseline.productionLiveRunId, null);
+  assert.equal(baseline.cleanUrlMigrationAt, '2026-08-05T00:00:00Z');
+
+  if (baseline.status === 'pending-production-acceptance') {
+    assert.equal(baseline.acceptedAt, null);
+    assert.equal(baseline.deployedSha, null);
+    assert.equal(baseline.pagesDeploymentId, null);
+    assert.equal(baseline.productionLiveRunId, null);
+  } else {
+    assert.match(baseline.acceptedAt, /^\d{4}-\d{2}-\d{2}T/);
+    assert.match(baseline.deployedSha, /^[0-9a-f]{40}$/i);
+    assert.match(baseline.pagesDeploymentId, /^[1-9][0-9]*$/);
+    assert.match(baseline.productionLiveRunId, /^[1-9][0-9]*$/);
+  }
 });
 
 test('C7 measurement reporting loads presentation baseline separately from operator observations', () => {
@@ -70,5 +79,9 @@ test('C7 finalization remains production-gated rather than self-accepting on a P
   assert.match(handoff, /exact Pages deployment/i);
   assert.match(handoff, /deployment-triggered Production Live/i);
   assert.match(handoff, /durable acceptance/i);
-  assert.equal(baseline.status, 'pending-production-acceptance');
+  assert.ok(['pending-production-acceptance', 'production-accepted'].includes(baseline.status));
+  if (baseline.status === 'production-accepted') {
+    assert.match(handoff, /Accepted production evidence/i);
+    assert.match(handoff, new RegExp(baseline.deployedSha));
+  }
 });
