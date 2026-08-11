@@ -1,6 +1,6 @@
 # Projects
 
-A short map of the work that best shows how I approach engineering: where authority lives, what counts as verified, and what changes after the first working prototype.
+A curated set of projects showing how I design backend, AI and product systems, make trade-offs, and move prototypes toward reliable software.
 
 ## Selected work
 

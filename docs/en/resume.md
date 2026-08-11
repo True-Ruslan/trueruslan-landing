@@ -6,7 +6,7 @@
   <p class="tr-resume-lead">I have 5+ years of commercial backend experience across product services, integrations, data-intensive systems and legacy modernization. My main focus is Java/Spring, reliability, data and engineering automation.</p>
 
   <div class="tr-resume-actions">
-    <a href="../landing/contacts.html">Contact →</a>
+    <a href="mailto:hi@true-ruslan.ru">Email me →</a>
     <a href="https://github.com/True-Ruslan" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
     <a href="https://raw.githubusercontent.com/True-Ruslan/trueruslan-landing/master/docs/assets/documents/cv.pdf" data-tr-resume-link target="_blank" rel="noopener noreferrer">PDF resume ↗</a>
   </div>
@@ -113,7 +113,7 @@
 
 ## Teaching & research
 
-I teach software module development and testing and conduct postgraduate research. External work is collected under [Publications](../landing/publications.html), while original engineering analysis lives in Engineering Notes.
+I teach software module development and testing and conduct postgraduate research. External work is collected under [Publications](publications.md), while original engineering analysis is available in [Engineering Notes (RU)](../landing/notes.md).
 
 ## Resume
 

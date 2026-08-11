@@ -73,6 +73,7 @@ test('buildPersonJsonLd reflects current engineering positioning', () => {
   const schema = buildPersonJsonLd('https://example.test');
 
   assert.equal(schema.jobTitle, 'Backend Engineer / Java Developer');
+  assert.equal(schema.alternateName, 'Ruslan Nemykin');
   assert.ok(schema.knowsAbout.includes('Java'));
   assert.ok(schema.knowsAbout.includes('Distributed Systems'));
   assert.equal(schema.url, 'https://example.test/');

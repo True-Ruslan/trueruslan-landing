@@ -213,6 +213,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
   assert.equal(result.ogCards.length, 1);
   assert.equal(result.metadataUpdated, 1);
   assert.equal(result.personSchemaInjected, true);
+  assert.deepEqual(result.personSchemaTargets, ['index.html']);
   assert.equal(result.analytics.enabled, true);
   assert.equal(result.analytics.provider, 'cloudflare-web-analytics');
   assert.ok(result.analytics.updated.includes('index.html'));

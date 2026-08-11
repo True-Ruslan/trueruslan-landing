@@ -172,12 +172,25 @@ export function normalizeSearchPages(outputDir = OUTPUT_DIR) {
   return htmlFiles.length;
 }
 
-export function applyPersonSchemaToIndex(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl()) {
-  const indexPath = path.join(outputDir, 'index.html');
-  if (!fs.existsSync(indexPath)) return false;
-  const html = fs.readFileSync(indexPath, 'utf8');
-  fs.writeFileSync(indexPath, injectPersonSchemaIntoHtml(html, siteUrl), 'utf8');
+function injectPersonSchemaTarget(outputDir, relativePath, siteUrl, {required = true} = {}) {
+  const htmlPath = path.join(outputDir, ...relativePath.split('/'));
+  let html;
+  try {
+    html = fs.readFileSync(htmlPath, 'utf8');
+  } catch (error) {
+    if (!required && error?.code === 'ENOENT') return false;
+    if (error?.code === 'ENOENT') throw new Error(`Person schema target not found: ${relativePath}`);
+    throw error;
+  }
+  fs.writeFileSync(htmlPath, injectPersonSchemaIntoHtml(html, siteUrl), 'utf8');
   return true;
+}
+
+export function applyPersonSchemaToHomes(outputDir = OUTPUT_DIR, siteUrl = getSiteUrl(), {includeEnglish = false} = {}) {
+  const targets = [];
+  if (injectPersonSchemaTarget(outputDir, 'index.html', siteUrl)) targets.push('index.html');
+  if (includeEnglish && injectPersonSchemaTarget(outputDir, 'en/index.html', siteUrl)) targets.push('en/index.html');
+  return targets;
 }
 
 function resolveStylesheetHref(html, relativePath) {
@@ -404,7 +417,8 @@ export function postprocessOutput({
   const ogCards = writeOgCards(outputDir, pageMeta);
   const metadataUpdated = applyPageMeta(outputDir, pageMeta, siteUrl);
   const i18nTargets = i18nPairs ? applyI18n(outputDir, i18nPairs, siteUrl) : [];
-  const personSchemaInjected = applyPersonSchemaToIndex(outputDir, siteUrl);
+  const personSchemaTargets = applyPersonSchemaToHomes(outputDir, siteUrl, {includeEnglish: Boolean(i18nPairs)});
+  const personSchemaInjected = personSchemaTargets.includes('index.html');
   const feedDiscoveryUpdated = applyFeedDiscovery(outputDir, siteUrl);
   const analytics = analyticsPolicy
     ? applyAnalytics(outputDir, analyticsPolicy, analyticsToken)
@@ -436,6 +450,7 @@ export function postprocessOutput({
     metadataUpdated,
     i18nTargets,
     personSchemaInjected,
+    personSchemaTargets,
     analytics,
   };
 }

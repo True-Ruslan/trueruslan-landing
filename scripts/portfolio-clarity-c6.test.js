@@ -20,7 +20,8 @@ test('C6 i18n browser acceptance derives every controlled pair from the canonica
   assert.equal(manifest.length, 13, 'controlled bilingual milestone unexpectedly changed');
   assert.match(browserSmoke, /data\/i18n\.json/);
   assert.doesNotMatch(browserSmoke, /const\s+PAIRS\s*=\s*\[/, 'browser acceptance may not maintain a second hard-coded i18n pair list');
-  assert.match(browserSmoke, /work-with-me/);
+  assert.ok(manifest.some((pair) => pair.id === 'work-with-me'), 'canonical manifest must include work-with-me');
+  assert.match(browserSmoke, /generatedHtmlPathToPublicRoute/);
 });
 
 test('C6 gives every controlled English route one canonical page-metadata owner', () => {
