@@ -27,13 +27,13 @@
     "evidenceBoundary": "Lifecycle и acceptance каждого проекта принадлежат canonical Project Registry/Evidence; Draft и pending work не считаются принятыми автоматически."
   },
   {
-    "id": "vlezet-case-study",
-    "pagePath": "landing/projects/vlezet.html",
+    "id": "notchhub-case-study",
+    "pagePath": "landing/projects/notchhub.html",
     "priority": 4,
     "audiences": ["engineer", "recruiter"],
     "channels": ["github", "habr", "telegram", "direct"],
-    "framing": "Local-first geometry editor: точные размеры, deterministic validation, recognition experiments и explicit mutation authority.",
-    "evidenceBoundary": "Vlezet остаётся pre-production / ACTIVE DEVELOPMENT; M7.8B — принятая историческая recognition boundary, а более новое editor work следует canonical Project Evidence и не продвигается из Draft автоматически."
+    "framing": "Native local-first macOS productivity hub around the MacBook notch: SwiftUI/AppKit boundaries, interaction design, security and performance gates.",
+    "evidenceBoundary": "NotchHub остаётся pre-production / M1 IN DEVELOPMENT; accepted 0.1.0 Personal foundation отделён от текущего interaction hardening и незавершённая M1 work не продвигается автоматически."
   },
   {
     "id": "villaigence-case-study",
