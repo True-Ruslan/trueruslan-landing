@@ -102,7 +102,7 @@ async function verifySearch(page) {
   assert(response?.ok(), `generated search returned HTTP ${response?.status() ?? 'none'}`);
   const input = page.locator('.tr-search-input').first();
   const button = page.locator('.tr-search-button').first();
-  await input.fill('deliberately bounded snapshot of current engineering focus');
+  await input.fill('short snapshot');
   await button.click();
   await page.waitForFunction(() => [...document.querySelectorAll('a')]
     .some((link) => (link.getAttribute('href') || '').includes('en/now/')), null, {timeout: 10000});
