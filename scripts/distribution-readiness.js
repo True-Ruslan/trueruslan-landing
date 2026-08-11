@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {toPublicRoute} from './clean-urls.js';
+
 const MODULE_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(MODULE_PATH), '..');
 const DEFAULT_TARGETS_PATH = path.join(ROOT, 'data', 'distribution-targets.json');
@@ -86,9 +88,19 @@ function canonicalUrl(siteUrl, pagePath) {
   if (parsedOrigin.origin !== DEFAULT_SITE_URL || parsedOrigin.pathname !== '/' || parsedOrigin.search || parsedOrigin.hash) {
     throw new Error(`siteUrl must match the canonical production origin ${DEFAULT_SITE_URL}.`);
   }
-  if (pagePath === 'index.html') return `${parsedOrigin.origin}/`;
-  if (pagePath.endsWith('/index.html')) return `${parsedOrigin.origin}/${pagePath.slice(0, -'index.html'.length)}`;
-  return `${parsedOrigin.origin}/${pagePath}`;
+
+  const projected = toPublicRoute(pagePath, parsedOrigin.href);
+  const resolved = new URL(projected, parsedOrigin.href);
+  if (resolved.origin !== parsedOrigin.origin || resolved.search || resolved.hash) {
+    throw new Error(`Distribution route escaped the canonical production origin: ${pagePath}`);
+  }
+  if (/\.html(?:$|\/)/.test(resolved.pathname) || resolved.pathname.startsWith('/landing/')) {
+    throw new Error(`Distribution route did not project to a clean public URL: ${pagePath}`);
+  }
+  if (resolved.pathname !== '/' && !resolved.pathname.endsWith('/')) {
+    throw new Error(`Distribution route must use a directory-style public URL: ${pagePath}`);
+  }
+  return resolved.href;
 }
 
 export function validateDistributionTargets(rawTargets, {pageMeta} = {}) {
@@ -246,6 +258,8 @@ export function renderDistributionRunbook({targets, profiles}) {
     '',
     '- Use only the canonical URLs rendered above.',
     '- Keep every claim inside its recorded evidence boundary.',
+    '- Treat this registry as launch/share preparation, not evidence that an announcement was published or received traffic.',
+    '- Publish manually and deliberately; this repository does not auto-post to GitHub, Habr, Telegram or other external channels.',
     '- Update a public profile deliberately, then verify the rendered backlink.',
     '- Record new profile evidence before changing `verified`, `stale` or `unverified` state.',
     '',
