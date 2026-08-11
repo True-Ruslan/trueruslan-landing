@@ -1,22 +1,21 @@
 name: C6 search oracle repair
-# Registered-trigger commit for metadata diff cleanup.
+# One-shot metadata diff cleanup; pull_request is used because this PR head reliably receives that event.
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/portfolio-clarity-c6-en-seo
-    paths:
-      - .github/workflows/c6-search-oracle-repair.yml
+      - master
 
 permissions:
   contents: write
 
 jobs:
   repair:
+    if: github.head_ref == 'feat/portfolio-clarity-c6-en-seo'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Checkout exact branch with history
+      - name: Checkout exact feature branch with history
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: feat/portfolio-clarity-c6-en-seo
