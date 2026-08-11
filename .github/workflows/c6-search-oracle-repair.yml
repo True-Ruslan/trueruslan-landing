@@ -1,4 +1,5 @@
 name: C6 search oracle repair
+# Registered-trigger commit for metadata diff cleanup.
 
 on:
   push:
