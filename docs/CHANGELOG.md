@@ -1,8 +1,29 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-11**, после exact-production acceptance C6 — final EN/SEO reconciliation; P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-11**, после exact-production acceptance C7 — production baseline + P3.6 handoff; redesign implementation sequence завершён, P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-11 — C7 production baseline + P3.6 handoff — PRODUCTION ACCEPTED
+
+- Added one tracked `data/presentation-baseline.json` as `context-only` provenance for the existing P3.6 Measurement Checkpoint, separate from private operator observations and readiness analysis.
+- Kept `cleanUrlMigrationAt=2026-08-05T00:00:00Z` and `resetsCleanUrlMeasurement=false`; C7 did not restart the observation clock.
+- Extended the existing measurement report/workflow with an explicit tracked `--presentation-baseline` input without adding a secret, second analytics owner or second observation schema.
+- Preserved the existing P3.6 rules: real evidence remains equal-duration `operator-observed` aggregates plus explicit traffic sufficiency and human review.
+- PR #198 exact feature head: `6a511b8f7cc102cdcc1b00f1dda26bc57fdefae3`;
+- exact-head Build #1799 / `31515510234` — SUCCESS;
+- quality artifact `9111068659`, digest `sha256:528e13cbe2883644c4673ce18bd0475b8acb87bb81b98e7ad806953bacc27e24`;
+- Measurement Checkpoint #174 / `31515510155` — SUCCESS;
+- measurement artifact `9110870252`, digest `sha256:6aeca4695acb1cae8933a852ee6ad8fc1323a80208a90cb7abb0084afdbd229c`;
+- accepted squash / exact deployed SHA: `134043fa2bb5f6612266a04eab2853f71b207328`;
+- Pages #223 / `31516118934` — SUCCESS;
+- github-pages deployment `5855067883` — success;
+- Pages artifact `9111122104`, digest `sha256:22471106f7981d7cfd8b8d7245aeea0db140c1a2c3fc0fb7b092ca30e5814e41`;
+- Pages production verification reports `9111138147`, digest `sha256:f3bf385afa7b727cd62a26ccdbeef5d64eb711e516c4a90e993d7a7c7f9e6b75`;
+- deployment-triggered Production Live #498 / `31516213818` — SUCCESS;
+- production artifact `9111213502`, digest `sha256:fcacde8fd83e068fe094c05a0da07a23bb8ba88a42e15d87507cf5d8ccc1a1d8`.
+
+C7 completes the Portfolio Clarity redesign implementation sequence only. P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** and no engagement, conversion, SEO or causal product-impact claim is made.
 
 ## 2026-08-11 — C6 final EN/SEO reconciliation — PRODUCTION ACCEPTED
 

@@ -1,6 +1,6 @@
 # Portfolio Clarity C7 — production baseline + P3.6 handoff
 
-Status: **pending-production-acceptance**
+Status: **production-accepted**
 
 ## Purpose
 
@@ -55,3 +55,22 @@ Repository CI or a PR artifact cannot self-accept C7. Finalization requires all 
 4. a separate **durable acceptance** update that changes the presentation baseline from pending only after the production proof exists and records the exact accepted identities in `PROJECT_STATE.md`, `ROADMAP.md`, `CHANGELOG.md`, and the C7 acceptance ledger.
 
 Until those gates are complete, C7 remains pending and P3.6 remains open.
+
+## Accepted production evidence
+
+The production gate is now satisfied for the C7 feature squash. The historical pre-acceptance state was `pending-production-acceptance`; it advanced only after the exact deployed evidence below existed.
+
+- PR #198 exact feature head: `6a511b8f7cc102cdcc1b00f1dda26bc57fdefae3`;
+- exact-head Build #1799 / `31515510234` — SUCCESS;
+- quality artifact `9111068659`, digest `sha256:528e13cbe2883644c4673ce18bd0475b8acb87bb81b98e7ad806953bacc27e24`;
+- Measurement Checkpoint #174 / `31515510155` — SUCCESS;
+- measurement artifact `9110870252`, digest `sha256:6aeca4695acb1cae8933a852ee6ad8fc1323a80208a90cb7abb0084afdbd229c`;
+- accepted squash / exact deployed SHA: `134043fa2bb5f6612266a04eab2853f71b207328`;
+- Pages #223 / `31516118934` — SUCCESS;
+- github-pages deployment `5855067883` — success;
+- Pages artifact `9111122104`, digest `sha256:22471106f7981d7cfd8b8d7245aeea0db140c1a2c3fc0fb7b092ca30e5814e41`;
+- Pages production verification reports `9111138147`, digest `sha256:f3bf385afa7b727cd62a26ccdbeef5d64eb711e516c4a90e993d7a7c7f9e6b75`;
+- deployment-triggered Production Live #498 / `31516213818` — SUCCESS;
+- production artifact `9111213502`, digest `sha256:fcacde8fd83e068fe094c05a0da07a23bb8ba88a42e15d87507cf5d8ccc1a1d8`.
+
+The accepted presentation baseline remains `context-only`, keeps `resetsCleanUrlMeasurement=false`, and preserves `cleanUrlMigrationAt=2026-08-05T00:00:00Z`. This acceptance does not close P3.6: real evidence remains `operator-observed`, equal-duration, traffic-sufficient and subject to human review. No causal engagement, conversion, SEO or product-impact conclusion is authorized.

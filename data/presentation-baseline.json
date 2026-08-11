@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "slice": "C7",
-  "status": "pending-production-acceptance",
+  "status": "production-accepted",
   "measurementMode": "context-only",
   "resetsCleanUrlMeasurement": false,
   "cleanUrlMigrationAt": "2026-08-05T00:00:00Z",
-  "acceptedAt": null,
-  "deployedSha": null,
-  "pagesDeploymentId": null,
-  "productionLiveRunId": null
+  "acceptedAt": "2026-08-11T17:12:43Z",
+  "deployedSha": "134043fa2bb5f6612266a04eab2853f71b207328",
+  "pagesDeploymentId": "5855067883",
+  "productionLiveRunId": "31516213818"
 }

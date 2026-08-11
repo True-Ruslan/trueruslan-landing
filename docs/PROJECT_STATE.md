@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-11**, после exact-production acceptance C6 — final EN/SEO reconciliation; P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-11**, после exact-production acceptance C7 — production baseline + P3.6 handoff; redesign implementation sequence завершён, P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -405,7 +405,26 @@ The first feature deployment was not promoted: Production Live #490 exposed only
 
 Durable ledger: `docs/acceptance/2026-08-11-portfolio-clarity-c6.md`. C6 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim.
 
-Next redesign slice: **C7 — production baseline + P3.6 handoff**.
+### C7 — production baseline + P3.6 handoff — PRODUCTION ACCEPTED
+
+The final runtime slice of **Portfolio Clarity & Scanability** is production-accepted. One tracked presentation baseline is retained as `context-only` provenance for the existing P3.6 Measurement Checkpoint; it remains separate from operator observations, does not alter readiness, and does not create a second analytics or measurement source of truth.
+
+- PR #198 exact feature head: `6a511b8f7cc102cdcc1b00f1dda26bc57fdefae3`;
+- exact-head Build #1799 / `31515510234` — SUCCESS;
+- quality artifact `9111068659`, digest `sha256:528e13cbe2883644c4673ce18bd0475b8acb87bb81b98e7ad806953bacc27e24`;
+- Measurement Checkpoint #174 / `31515510155` — SUCCESS;
+- measurement artifact `9110870252`, digest `sha256:6aeca4695acb1cae8933a852ee6ad8fc1323a80208a90cb7abb0084afdbd229c`;
+- accepted squash / exact deployed SHA: `134043fa2bb5f6612266a04eab2853f71b207328`;
+- Pages #223 / `31516118934` — SUCCESS;
+- github-pages deployment `5855067883` — success;
+- Pages artifact `9111122104`, digest `sha256:22471106f7981d7cfd8b8d7245aeea0db140c1a2c3fc0fb7b092ca30e5814e41`;
+- Pages production verification reports `9111138147`, digest `sha256:f3bf385afa7b727cd62a26ccdbeef5d64eb711e516c4a90e993d7a7c7f9e6b75`;
+- deployment-triggered Production Live #498 / `31516213818` — SUCCESS;
+- production artifact `9111213502`, digest `sha256:fcacde8fd83e068fe094c05a0da07a23bb8ba88a42e15d87507cf5d8ccc1a1d8`.
+
+`data/presentation-baseline.json` is now `production-accepted`. Its `measurementMode=context-only`, `resetsCleanUrlMeasurement=false`, and `cleanUrlMigrationAt=2026-08-05T00:00:00Z` preserve the original clean-URL observation clock rather than resetting it at the end of the redesign.
+
+Durable ledger: `docs/acceptance/2026-08-11-portfolio-clarity-c7.md`. C7 completes the Portfolio Clarity redesign implementation sequence only. P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** for real equal-duration `operator-observed` aggregates, explicit traffic-sufficiency assessment and human review. C7 makes no engagement, conversion, SEO or causal product-impact claim.
 
 ## 3. External project evidence boundaries
 
@@ -638,12 +657,10 @@ production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a091
 
 ## 6. Approved next product slice
 
-Portfolio 1.0 remains **IN PROGRESS**.
+Portfolio 1.0 implementation is **COMPLETE THROUGH C7**; measurement acceptance remains separate.
 
-Continue with:
+**Portfolio Clarity redesign implementation sequence — COMPLETE through C7.**
 
-**C7 — production baseline + P3.6 handoff — NEXT IMPLEMENTATION SLICE.**
-
-P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** in parallel; it is not closed or reset by C2/C3/C4/C5 presentation work.
+P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; it was not closed or reset by C2/C3/C4/C5/C6/C7 presentation work.
 
 P3.6A measurement-readiness tooling уже принято на exact SHA `7cc56d024fbde53156a9136b14b00c81c6718811`. Сам P3.6 остаётся observation checkpoint: запускать его только с реальными `operator-observed` aggregate observations после минимального post-migration window, с equal-duration baseline/current windows, explicit traffic-sufficiency assessment после закрытия current window и human review. Synthetic `synthetic-pipeline-proof` не является production measurement evidence и не разрешает engagement, causality или product-impact claims.
