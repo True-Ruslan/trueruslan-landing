@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-10**, после exact-production acceptance C4 — Professional surfaces; P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-11**, после exact-production acceptance C5 — Knowledge surfaces; P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -367,7 +367,26 @@ The fourth runtime slice of **Portfolio Clarity & Scanability** is production-ac
 
 Durable ledger: `docs/acceptance/2026-08-10-portfolio-clarity-c4.md`. C4 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim.
 
-Next redesign slice: **C5 — Knowledge surfaces**.
+### C5 — Knowledge surfaces — PRODUCTION ACCEPTED
+
+The fifth runtime slice of **Portfolio Clarity & Scanability** is production-accepted. Engineering Notes, Publications RU/EN, Engineering Map and Sources now use the approved scan-first knowledge presentation without creating parallel registries or a second site-wide search owner.
+
+- PR #193 exact feature head: `f99c4534932a86e6cac0876b4a082639786d4ad9`;
+- exact-head Build #1754 / `31437853159` — SUCCESS;
+- quality artifact `9081845821`, digest `sha256:1aad891494f773059237052fedecddbc7ea0d41b6160d007d1e5bfdd1a2313e8`;
+- CodeQL #1296 / `31437853182` — SUCCESS;
+- Dependency Review #1182 / `31437853183` — SUCCESS;
+- accepted squash / deployed SHA: `00900e832d69356bbccaa874f1b625876dad1e21`;
+- Pages #218 / `31466807721` — SUCCESS;
+- github-pages deployment `5845809144` — success;
+- Pages artifact `9091830845`, digest `sha256:d21cea0af2c20f8e20c4218244481d5127717c3e02c31816804a290f8dfd25b6`;
+- Pages production verification reports `9091833853`, digest `sha256:606c1516529640b51cab480dd0e8a8b9347072c3a2be9b33f032419cf38e6179`;
+- deployment-triggered Production Live #486 / `31466868392` — SUCCESS;
+- production artifact `9091881791`, digest `sha256:4e3349bdbb8b44326049750074810b3f6ed150e7b6b8922bf75aee43354d93b0`.
+
+Durable ledger: `docs/acceptance/2026-08-11-portfolio-clarity-c5.md`. C5 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim.
+
+Next redesign slice: **C6 — final EN/SEO reconciliation**.
 
 ## 3. External project evidence boundaries
 
@@ -604,8 +623,8 @@ Portfolio 1.0 remains **IN PROGRESS**.
 
 Continue with:
 
-**C5 — Knowledge surfaces — NEXT IMPLEMENTATION SLICE.**
+**C6 — final EN/SEO reconciliation — NEXT IMPLEMENTATION SLICE.**
 
-P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** in parallel; it is not closed or reset by C2/C3/C4 presentation work.
+P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** in parallel; it is not closed or reset by C2/C3/C4/C5 presentation work.
 
 P3.6A measurement-readiness tooling уже принято на exact SHA `7cc56d024fbde53156a9136b14b00c81c6718811`. Сам P3.6 остаётся observation checkpoint: запускать его только с реальными `operator-observed` aggregate observations после минимального post-migration window, с equal-duration baseline/current windows, explicit traffic-sufficiency assessment после закрытия current window и human review. Synthetic `synthetic-pipeline-proof` не является production measurement evidence и не разрешает engagement, causality или product-impact claims.
