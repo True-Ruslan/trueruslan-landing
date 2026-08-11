@@ -1,0 +1,49 @@
+name: C6 durable acceptance migration
+
+on:
+  push:
+    branches:
+      - docs/portfolio-clarity-c6-durable-acceptance
+    paths:
+      - .github/workflows/c6-durable-migrate.yml
+      - scripts/migrate-c6-durable-acceptance.py
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact feature branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: docs/portfolio-clarity-c6-durable-acceptance
+          fetch-depth: 0
+
+      - name: Apply fail-closed durable migration
+        run: |
+          set -euo pipefail
+          python3 scripts/migrate-c6-durable-acceptance.py
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('docs/CHANGELOG.md')
+          text = path.read_text(encoding='utf-8')
+          old = '\n- - feature PR #195 exact head:'
+          if text.count(old) != 1:
+              raise SystemExit(f'expected one changelog bullet normalization marker, found {text.count(old)}')
+          path.write_text(text.replace(old, '\n- feature PR #195 exact head:', 1), encoding='utf-8')
+          PY
+          git diff --check
+
+      - name: Commit durable state only
+        run: |
+          set -euo pipefail
+          git rm scripts/migrate-c6-durable-acceptance.py
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md docs/acceptance/2026-08-11-portfolio-clarity-c6.md
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'docs: record C6 production acceptance'
+          git push origin HEAD:docs/portfolio-clarity-c6-durable-acceptance
