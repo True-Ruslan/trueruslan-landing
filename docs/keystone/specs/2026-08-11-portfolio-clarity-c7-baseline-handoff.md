@@ -49,7 +49,7 @@ The existing measurement report remains responsible for refusing automatic engag
 
 Repository CI or a PR artifact cannot self-accept C7. Finalization requires all of the following on the exact merged C7 SHA:
 
-1. successful exact **Pages deployment** with a concrete deployment ID;
+1. successful exact Pages deployment with a concrete deployment ID;
 2. successful **deployment-triggered Production Live** verification against that deployed SHA;
 3. review of the resulting production evidence and artifact identity;
 4. a separate **durable acceptance** update that changes the presentation baseline from pending only after the production proof exists and records the exact accepted identities in `PROJECT_STATE.md`, `ROADMAP.md`, `CHANGELOG.md`, and the C7 acceptance ledger.
