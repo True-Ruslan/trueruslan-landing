@@ -111,7 +111,7 @@
       },
       {
         "kind": "pr",
-        "mode": "manual",
+        "mode": "automated",
         "label": "M8.1 precision drawing PR #85",
         "state": "merged",
         "url": "https://github.com/True-Ruslan/vlezet/pull/85",
@@ -120,7 +120,7 @@
       },
       {
         "kind": "pr",
-        "mode": "manual",
+        "mode": "automated",
         "label": "M8.2 top toolbar Draft PR #87",
         "state": "pending",
         "url": "https://github.com/True-Ruslan/vlezet/pull/87",
