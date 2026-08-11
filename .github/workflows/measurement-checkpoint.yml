@@ -11,18 +11,22 @@ on:
   pull_request:
     paths:
       - '.github/workflows/measurement-checkpoint.yml'
+      - 'data/presentation-baseline.json'
       - 'scripts/measurement-checkpoint.js'
       - 'scripts/measurement-checkpoint-report.js'
       - 'scripts/measurement-checkpoint*.test.js'
+      - 'scripts/portfolio-clarity-c7.test.js'
       - 'scripts/yandex-metrica-*.js'
   push:
     branches:
       - master
     paths:
       - '.github/workflows/measurement-checkpoint.yml'
+      - 'data/presentation-baseline.json'
       - 'scripts/measurement-checkpoint.js'
       - 'scripts/measurement-checkpoint-report.js'
       - 'scripts/measurement-checkpoint*.test.js'
+      - 'scripts/portfolio-clarity-c7.test.js'
       - 'scripts/yandex-metrica-*.js'
 
 permissions:
@@ -145,6 +149,7 @@ jobs:
         run: |
           node scripts/measurement-checkpoint-report.js \
             --input "$MEASUREMENT_INPUT" \
+            --presentation-baseline data/presentation-baseline.json \
             --output-dir "$MEASUREMENT_OUTPUT" \
             --minimum-observation-days "$MINIMUM_OBSERVATION_DAYS"
 
