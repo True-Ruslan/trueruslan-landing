@@ -34,14 +34,14 @@
 - Evidence boundary: Lifecycle и acceptance каждого проекта принадлежат canonical Project Registry/Evidence; Draft и pending work не считаются принятыми автоматически.
 - [ ] Post-update verification
 
-### 4. Vlezet — Geometry and Recognition Case Study
+### 4. NotchHub — Native macOS Productivity Hub
 
-- ID: `vlezet-case-study`
-- Canonical URL: https://trueruslan.ru/projects/vlezet/
+- ID: `notchhub-case-study`
+- Canonical URL: https://trueruslan.ru/projects/notchhub/
 - Audiences: `engineer`, `recruiter`
 - Channels: `github`, `habr`, `telegram`, `direct`
-- Framing: Local-first geometry editor: точные размеры, deterministic validation, recognition experiments и explicit mutation authority.
-- Evidence boundary: Vlezet остаётся pre-production / ACTIVE DEVELOPMENT; M7.8B — принятая историческая recognition boundary, а более новое editor work следует canonical Project Evidence и не продвигается из Draft автоматически.
+- Framing: Native local-first macOS productivity hub around the MacBook notch: SwiftUI/AppKit boundaries, interaction design, security and performance gates.
+- Evidence boundary: NotchHub остаётся pre-production / M1 IN DEVELOPMENT; accepted 0.1.0 Personal foundation отделён от текущего interaction hardening и незавершённая M1 work не продвигается автоматически.
 - [ ] Post-update verification
 
 ### 5. VillAIgence — Server-Authoritative AI Society
