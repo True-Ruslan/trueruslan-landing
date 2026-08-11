@@ -6,18 +6,19 @@ import test from 'node:test';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const EVIDENCE_PATH = path.join(ROOT, 'data', 'project-evidence.json');
 
-test('Vlezet repository drift records the failed automatic path and pending assisted tracing pivot without lifecycle promotion', () => {
+test('Vlezet keeps failed M7.8C history while M8.1 is accepted and M8.2 remains pending', () => {
   const evidence = JSON.parse(fs.readFileSync(EVIDENCE_PATH, 'utf8'));
   const vlezet = evidence.find((entry) => entry.project === 'vlezet');
 
   assert.ok(vlezet, 'missing Vlezet evidence snapshot');
   assert.equal(vlezet.status, 'verified');
-  assert.equal(vlezet.lastVerified, '2026-08-08');
+  assert.equal(vlezet.lastVerified, '2026-08-11');
 
   const versions = new Map(vlezet.versions.map(({label, value}) => [label, value]));
   assert.equal(versions.get('Accepted recognition slice'), 'M7.8B');
   assert.match(versions.get('Automatic M7.8C result'), /FAIL.*closed unmerged/i);
-  assert.match(versions.get('Next acceptance boundary'), /Assisted Tracing/i);
+  assert.match(versions.get('Accepted editor slice'), /M8\.1.*product-owner accepted.*merged/i);
+  assert.match(versions.get('Active product slice'), /M8\.2.*Draft.*clipboard.*pending/i);
 
   const m78c = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/42');
   assert.ok(m78c, 'missing bounded M7.8C failure signal');
@@ -29,33 +30,36 @@ test('Vlezet repository drift records the failed automatic path and pending assi
   assert.match(m78c.scope, /product-owner.*failed usefulness acceptance/i);
   assert.match(m78c.scope, /M7\.8B/i);
 
-  const benchmark = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/44');
-  assert.ok(benchmark, 'missing bounded real-fixture R&D signal');
-  assert.equal(benchmark.state, 'unavailable');
-  assert.equal(benchmark.observedAt, '2026-08-08');
-  assert.match(benchmark.scope, /closed unmerged/i);
-  assert.match(benchmark.scope, /R&D evidence/i);
-  assert.match(benchmark.scope, /not product-owner accepted/i);
-
-  const hybrid = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/45');
-  assert.ok(hybrid, 'missing bounded hybrid R&D signal');
-  assert.equal(hybrid.state, 'unavailable');
-  assert.equal(hybrid.observedAt, '2026-08-08');
-  assert.match(hybrid.scope, /closed unmerged/i);
-  assert.match(hybrid.scope, /R&D evidence/i);
-  assert.match(hybrid.scope, /authoritative geometry authority/i);
-
   const assisted = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/52');
-  assert.ok(assisted, 'missing Assisted Tracing design gate');
-  assert.equal(assisted.state, 'pending');
-  assert.equal(assisted.observedAt, '2026-08-08');
-  assert.match(assisted.scope, /open Draft design gate/i);
-  assert.match(assisted.scope, /no product code/i);
-  assert.match(assisted.scope, /ephemeral preview/i);
-  assert.match(assisted.scope, /no AI\/network dependency/i);
+  assert.ok(assisted, 'missing historical Assisted Tracing signal');
+  assert.equal(assisted.state, 'unavailable');
+  assert.equal(assisted.observedAt, '2026-08-11');
+  assert.match(assisted.scope, /closed unmerged/i);
+  assert.match(assisted.scope, /superseded/i);
+  assert.match(assisted.scope, /historical design\/R&D evidence/i);
+
+  const accepted = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/85');
+  assert.ok(accepted, 'missing M8.1 accepted editor signal');
+  assert.equal(accepted.kind, 'pr');
+  assert.equal(accepted.mode, 'automated');
+  assert.equal(accepted.state, 'merged');
+  assert.equal(accepted.observedAt, '2026-08-09');
+  assert.match(accepted.scope, /product-owner accepted/i);
+  assert.match(accepted.scope, /9\/9/);
+  assert.match(accepted.scope, /pre-production/i);
+
+  const active = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/87');
+  assert.ok(active, 'missing M8.2 Draft signal');
+  assert.equal(active.kind, 'pr');
+  assert.equal(active.mode, 'automated');
+  assert.equal(active.state, 'pending');
+  assert.equal(active.observedAt, '2026-08-11');
+  assert.match(active.scope, /01–07.*passed/i);
+  assert.match(active.scope, /clipboard retest.*pending/i);
+  assert.match(active.scope, /no merge, release or product-owner closure/i);
 
   assert.doesNotMatch(
-    [m78c.scope, benchmark.scope, hybrid.scope, assisted.scope].join('\n'),
-    /M7\.8C.*product-owner accepted|M7\.8C.*squash-merged|Assisted Tracing.*production-ready/i,
+    [m78c.scope, assisted.scope, accepted.scope, active.scope].join('\n'),
+    /M7\.8C.*product-owner accepted|M8\.2.*production-ready|M8\.2.*released/i,
   );
 });
