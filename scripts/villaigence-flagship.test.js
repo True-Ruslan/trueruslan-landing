@@ -111,7 +111,7 @@ test('VillAIgence evidence separates official release, installed acceptance, mer
   assert.ok(extraction, 'missing PR #125 extraction evidence');
   assert.equal(extraction.state, 'merged');
   assert.match(extraction.scope, /PLAYER_TOLD BELIEF|candidate extraction/i);
-  assert.match(extraction.scope, /no AI-to-FACT path/i);
+  assert.match(extraction.scope, /Server-owned provenance.*FACT authority remain unchanged/i);
 
   const social = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/153');
   assert.ok(social, 'missing PR #153 source capability evidence');

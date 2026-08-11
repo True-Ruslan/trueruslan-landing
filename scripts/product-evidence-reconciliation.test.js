@@ -81,7 +81,7 @@ test('freshness reconciliation records 2026-08-11 current truth without promotin
 
   assert.equal(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/123').state, 'merged');
   assert.equal(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/125').state, 'merged');
-  assert.match(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/125').scope, /no AI-to-FACT path/i);
+  assert.match(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/125').scope, /Server-owned provenance.*FACT authority remain unchanged/i);
   assert.equal(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/153').state, 'merged');
   assert.match(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/153').scope, /620\/620 tests.*146 gates/i);
   assert.equal(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/155').state, 'pending');

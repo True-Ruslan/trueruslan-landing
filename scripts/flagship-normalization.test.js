@@ -113,7 +113,7 @@ test('VillAIgence preserves official 0.2 installed acceptance while later source
 
   const extraction = findSignal(evidence, 'PLAYER_TOLD BELIEF candidate extraction PR #125');
   assert.equal(extraction.state, 'merged');
-  assert.match(extraction.scope, /no AI-to-FACT path/i);
+  assert.match(extraction.scope, /Server-owned provenance.*FACT authority remain unchanged/i);
 
   const social = findSignal(evidence, 'Causal NPC↔NPC social mutation PR #153');
   assert.equal(social.state, 'merged');
