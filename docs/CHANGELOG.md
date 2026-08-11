@@ -1,8 +1,30 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-10**, после exact-production acceptance C4 — Professional surfaces; P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-11**, после exact-production acceptance C5 — Knowledge surfaces; P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-11 — C5 Knowledge surfaces — PRODUCTION ACCEPTED
+
+- Replaced the hand-authored Engineering Notes mini-catalogue with a compact latest-first index derived from canonical `data/notes.json`; added semantic no-JavaScript output and a dedicated registry/count/order/overflow/Axe browser gate.
+- Reordered Publications RU/EN so Featured and generated catalogue precede methodology framing without changing bibliographic ownership.
+- Moved Engineering Map before taxonomy explanation, verified the reading guide after real scroll and reviewed only the intentional map-first desktop/mobile visual overrides (`1440×1465` / `390×2817`) with unchanged global thresholds.
+- Moved Sources searchable/filterable knowledge utility before meta framing while preserving the existing Sources Registry and page-local filter ownership.
+- Resolved the Advanced Security TOCTOU finding in the new Notes index postprocessor with direct read + explicit `ENOENT` handling and regression coverage.
+- PR #193 exact head: `f99c4534932a86e6cac0876b4a082639786d4ad9`;
+- final exact-head Build #1754 / `31437853159` — SUCCESS;
+- quality artifact `9081845821`, digest `sha256:1aad891494f773059237052fedecddbc7ea0d41b6160d007d1e5bfdd1a2313e8`;
+- CodeQL #1296 / `31437853182` — SUCCESS;
+- Dependency Review #1182 / `31437853183` — SUCCESS;
+- accepted squash / deployed SHA: `00900e832d69356bbccaa874f1b625876dad1e21`;
+- Pages #218 / `31466807721` — SUCCESS;
+- Pages deployment `5845809144` — success;
+- Pages artifact `9091830845`, digest `sha256:d21cea0af2c20f8e20c4218244481d5127717c3e02c31816804a290f8dfd25b6`;
+- Pages verification reports `9091833853`, digest `sha256:606c1516529640b51cab480dd0e8a8b9347072c3a2be9b33f032419cf38e6179`;
+- deployment-triggered Production Live #486 / `31466868392` — SUCCESS;
+- production artifact `9091881791`, digest `sha256:4e3349bdbb8b44326049750074810b3f6ed150e7b6b8922bf75aee43354d93b0`.
+
+C5 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim. Next implementation slice: **C6 — final EN/SEO reconciliation**.
 
 ## 2026-08-10 — C4 Professional surfaces — PRODUCTION ACCEPTED
 
