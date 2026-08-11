@@ -43,6 +43,25 @@ async function runScenario(browser, baseUrl, name, viewport) {
       throw new Error(`${name}: selected VillAIgence node detail did not update`);
     }
 
+    const guide = page.getByRole('heading', {name: 'Как я сам читаю эту карту', exact: true});
+    if (await guide.count() !== 1) throw new Error(`${name}: Engineering Map reading guide heading is missing`);
+    const guideFollowsGraph = await guide.evaluate((heading) => {
+      const graph = document.querySelector('[data-tr-engineering-graph-root]');
+      return Boolean(graph && (graph.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING));
+    });
+    if (!guideFollowsGraph) throw new Error(`${name}: Engineering Map reading guide must follow the graph`);
+
+    await guide.scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => {
+      const heading = document.querySelector('#kak-ya-sam-chitayu-etu-kartu');
+      if (!heading) return false;
+      return heading.classList.contains('is-visible') && Number.parseFloat(getComputedStyle(heading).opacity || '1') >= 0.99;
+    }, {timeout: 5000});
+    const guideContext = await guide.locator('xpath=following-sibling::*[1]').innerText();
+    if (!guideContext.includes('Technology') || !guideContext.includes('Project') || !guideContext.includes('Note')) {
+      throw new Error(`${name}: Engineering Map reading guide taxonomy is not readable after scroll`);
+    }
+
     const overflow = (await assertNoHorizontalOverflow(page, name)).overflow;
 
     const axe = await new AxeBuilder({page}).include('.tr-engineering-graph').analyze();
@@ -52,7 +71,15 @@ async function runScenario(browser, baseUrl, name, viewport) {
 
     await captureScreenshot(page, `engineering-map-${name}.png`);
 
-    return {name, nodes: await nodes.count(), filters: await filters.count(), seriousAxeViolations: serious.length, overflow};
+    return {
+      name,
+      nodes: await nodes.count(),
+      filters: await filters.count(),
+      guideAfterGraph: guideFollowsGraph,
+      guideVisibleAfterScroll: true,
+      seriousAxeViolations: serious.length,
+      overflow,
+    };
   } finally {
     await runtime.close();
   }

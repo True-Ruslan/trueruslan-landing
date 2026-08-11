@@ -84,6 +84,72 @@ function noteHref(slug) {
   return `landing/notes/${escapeHtml(slug)}.html`;
 }
 
+function orderedNotes(notes) {
+  return [...notes].sort((a, b) => b.updated.localeCompare(a.updated) || b.published.localeCompare(a.published) || a.slug.localeCompare(b.slug));
+}
+
+export function renderNotesIndex(notes) {
+  validateNotesManifest(notes, {requireFiles: false});
+  const cards = orderedNotes(notes).map((note) => `<article class="tr-note-index-card" data-tr-note-index-card="${escapeHtml(note.slug)}">
+  <div class="tr-note-index-card__meta">
+    <time datetime="${escapeHtml(note.updated)}">${escapeHtml(note.updated)}</time>
+    <span>${escapeHtml(String(note.readingMinutes))} мин</span>
+  </div>
+  <h2><a href="${noteHref(note.slug)}">${escapeHtml(note.title)}</a></h2>
+  <p>${escapeHtml(note.description)}</p>
+  <div class="tr-note-index-card__tags" aria-label="Темы">${note.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('')}</div>
+</article>`).join('\n');
+
+  return `<section class="tr-notes-index" data-tr-notes-index aria-label="Engineering Notes">
+${cards}
+</section>`;
+}
+
+function injectNotesIndexNoJavaScriptFallback(html, content) {
+  if (/data-tr-notes-index-noscript/i.test(html)) return html;
+  const rootMarker = /<div\s+id=["']root["']\s*>\s*<\/div>/i;
+  if (!rootMarker.test(html)) {
+    throw new Error('Engineering Notes index could not place the no-JavaScript fallback: #root host not found.');
+  }
+  const fallback = `<noscript data-tr-notes-index-noscript>
+  <main class="tr-notes-index-noscript">
+    <h1>Engineering Notes</h1>
+    <p>Короткие инженерные разборы из реальной разработки.</p>
+    ${content}
+  </main>
+</noscript>`;
+  return html.replace(rootMarker, (rootHost) => `${rootHost}\n${fallback}`);
+}
+
+export function applyNotesIndex(outputDir, notes, target = 'landing/notes.html') {
+  const relativePath = target.replaceAll('/', path.sep);
+  const htmlPath = path.join(outputDir, relativePath);
+  let html;
+  try {
+    html = fs.readFileSync(htmlPath, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') throw new Error(`generated Notes index page not found: ${target}`);
+    throw error;
+  }
+
+  const marker = /<div[^>]*data-tr-notes-index-placeholder(?:=["'][^"']*["'])?[^>]*>\s*<\/div>/i;
+  const content = renderNotesIndex(notes);
+  const transformed = transformGeneratedContent(
+    html,
+    (contentHtml) => marker.test(contentHtml) ? contentHtml.replace(marker, content) : contentHtml,
+    'Engineering Notes index',
+  );
+  if (!transformed.source) {
+    throw new Error('Engineering Notes index placeholder not found in rendered DOM or Diplodoc state payload.');
+  }
+
+  const finalHtml = transformed.source === 'diplodoc-state'
+    ? injectNotesIndexNoJavaScriptFallback(transformed.html, content)
+    : transformed.html;
+  fs.writeFileSync(htmlPath, finalHtml, 'utf8');
+  return target;
+}
+
 export function renderNoteNavigation(note, notes) {
   const index = notes.findIndex((candidate) => candidate.slug === note.slug);
   const previous = index > 0 ? notes[index - 1] : null;
@@ -146,7 +212,7 @@ export function renderAtomFeed(notes, siteUrl) {
   validateNotesManifest(notes, {requireFiles: false});
   const base = siteUrl.trim().replace(/\/$/, '');
   if (!/^https:\/\//.test(base)) throw new Error('siteUrl must be an https URL for feed generation.');
-  const ordered = [...notes].sort((a, b) => b.updated.localeCompare(a.updated) || a.slug.localeCompare(b.slug));
+  const ordered = orderedNotes(notes);
   const feedUpdated = ordered[0].updated;
   const entries = ordered.map((note) => `  <entry>
     <title>${escapeXml(note.title)}</title>

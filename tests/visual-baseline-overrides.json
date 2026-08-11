@@ -28,5 +28,15 @@
     "width": 390,
     "height": 4964,
     "rgbDeflateBase64": "eNr7/O3X52+/bt19yMHFTwziF5ZERgLC0oIissIiciIiiiKiSiKiyqKiKqJiqjCkIiilBETKWkZQpGkIRgbKGhCkr6QORHpABDHQ1Nzmw+fvELveffx69cYdIENDSz8tIwfIxXQPn6AESYiTWwCC3rz/DCSDQ6NiE1IVlNTdPH0h4jLyys9evtU3NIOrhCNLa3tMQWohv4DQi1dufPn+e+ny1UC3vXr7ESgIFKHQWFLDh+zwJBJx8wkLisoQiYCKSVXPwcXHzglEvEQgPqBiAEBOXh8="
+  },
+  "engineering-map-desktop.png": {
+    "width": 1440,
+    "height": 1465,
+    "rgbDeflateBase64": "eNrj5BbgpCUS1bWAIJ+TH/iFJeGIoEYOTn4BESkwkr734Cm/sBSMK4VszuxLd6FauAS4uAW5+ES5hSR4RGV4RKS4BMS5eEWA4ljtBZqvomUCVABUBrRCTMtU18wB03xk9exAxCXIwSvEySfCwSvCwSPEDhYsuv7VNC4P3V9cMAR0FY8QECGJYPcvQgEawhpEXAIkqUc2/8v331jVc3DRNjFQgvikFIlBpBoLAH63Nzk="
+  },
+  "engineering-map-mobile.png": {
+    "width": 390,
+    "height": 2817,
+    "rgbDeflateBase64": "eNq10rsNwjAQANAO+y6fO5PYhiQUiIoF2ARGYw0aNsgaDMPZJgkSRUIR6ck6308uDBnDyozvBNmWXGv8IWHXsWs5ZIaqbaQZ2QPZCTswwodgYnVZCyCHsYSSpFBCsxuBYC8NaaeO23RRQxiMZwwwAvok0zXsLyqVVxpII+uMFZKQIFEJDtdQZaVpIxkgqvZhcE5qBuSF0tRf/fKSWeXW52xzqgvjlvR/W/vzlM3xL2nq3r/AXOB0e/aP353XczfGb3UVMSo="
   }
 }

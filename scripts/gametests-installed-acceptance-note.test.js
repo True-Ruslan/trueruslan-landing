@@ -84,8 +84,12 @@ test('GameTests acceptance Note separates automated, exact-artifact and installe
   assert.doesNotMatch(source, /physical microphone[^\n]*(?:автоматизирован|automated)/i);
 });
 
-test('GameTests acceptance Note is exposed through index toc and page metadata', () => {
-  assert.match(read('docs', 'landing', 'notes.md'), new RegExp(`${SLUG}\\.md`));
+test('GameTests acceptance Note is exposed through registry index toc and page metadata', () => {
+  assert.match(read('docs', 'landing', 'notes.md'), /data-tr-notes-index-placeholder/);
+  assert.ok(
+    JSON.parse(read('data', 'notes.json')).some((note) => note.slug === SLUG),
+    'missing P3.4D GameTests Note from canonical Notes Registry',
+  );
   assert.match(read('docs', 'toc.yaml'), new RegExp(`${SLUG}\\.md`));
 
   const pageMeta = JSON.parse(read('data', 'page-meta.json'));
