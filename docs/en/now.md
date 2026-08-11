@@ -2,6 +2,6 @@
 
 <div data-tr-now-placeholder></div>
 
-This is not a roadmap or a list of promises; it is a short snapshot of my current engineering focus.
+A short snapshot, not a roadmap, of what I am building, learning and writing about now.
 
-If this page and a detailed case study differ, the project page remains the deeper context source and project status comes from the shared Project Registry.
+Project pages remain the deeper context source when a topic needs more detail; current project status stays consistent across the site.

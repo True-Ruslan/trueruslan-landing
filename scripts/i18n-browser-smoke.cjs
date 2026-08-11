@@ -1,3 +1,6 @@
+const fs = require('node:fs');
+const path = require('node:path');
+
 const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cjs');
 const {startStaticServer} = require('./quality-harness/static-server.cjs');
 const {createScenarioPage} = require('./quality-harness/browser.cjs');
@@ -11,20 +14,29 @@ const SITE_PATH = '/trueruslan-landing';
 const {chromium} = requireQualityTool('playwright', 'Minimal RU EN smoke tool');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Minimal RU EN smoke tool');
 
-const PAIRS = [
-  {id: 'home', ru: '/', en: '/en/'},
-  {id: 'about', ru: '/about/', en: '/en/about/'},
-  {id: 'resume', ru: '/resume/', en: '/en/resume/'},
-  {id: 'projects', ru: '/projects/', en: '/en/projects/'},
-  {id: 'now', ru: '/now/', en: '/en/now/'},
-  {id: 'publications', ru: '/publications/', en: '/en/publications/'},
-  {id: 'livingworld', ru: '/projects/livingworld/', en: '/en/projects/livingworld/'},
-  {id: 'vlezet', ru: '/projects/vlezet/', en: '/en/projects/vlezet/'},
-  {id: 'notchhub', ru: '/projects/notchhub/', en: '/en/projects/notchhub/'},
-  {id: 'portfolio-platform', ru: '/projects/portfolio-platform/', en: '/en/projects/portfolio-platform/'},
-  {id: 'note-ai-npcs', ru: '/notes/server-authoritative-ai-npcs/', en: '/en/notes/server-authoritative-ai-npcs/'},
-  {id: 'note-llm-protocol-boundary', ru: '/notes/llm-output-is-a-protocol-boundary/', en: '/en/notes/llm-output-is-a-protocol-boundary/'},
-];
+function generatedHtmlPathToPublicRoute(value) {
+  let normalized = String(value).replaceAll('\\', '/').replace(/^\/+/, '');
+  if (!normalized.endsWith('.html')) throw new Error(`unsupported i18n generated path: ${value}`);
+  if (normalized === 'index.html') return '/';
+  normalized = normalized.slice(0, -'.html'.length);
+  const segments = normalized.split('/');
+  if (segments[0] === 'landing') normalized = segments.slice(1).join('/');
+  if (normalized.endsWith('/index')) normalized = normalized.slice(0, -'/index'.length);
+  return `/${normalized}/`.replace(/\/{2,}/g, '/');
+}
+
+function loadControlledPairs() {
+  const manifestPath = path.join(__dirname, '..', 'data', 'i18n.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  if (!Array.isArray(manifest) || manifest.length === 0) throw new Error('data/i18n.json must contain controlled pairs');
+  return manifest.map(({id, ru, en}) => ({
+    id,
+    ru: generatedHtmlPathToPublicRoute(ru),
+    en: generatedHtmlPathToPublicRoute(en),
+  }));
+}
+
+const PAIRS = loadControlledPairs();
 
 const EXTERNALS = Object.freeze({
   github: 'https://github.com/True-Ruslan',

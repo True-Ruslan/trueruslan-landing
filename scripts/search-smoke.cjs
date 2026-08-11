@@ -211,13 +211,13 @@ async function assertEnglishVlezetSearchCoverage(page) {
 async function assertEnglishNowSearchCoverage(page) {
   const input = page.locator('.tr-search-input').first();
   const button = page.locator('.tr-search-button').first();
-  const query = 'current engineering focus';
+  const query = 'short snapshot';
 
   await input.fill(query);
   await button.click();
   await page.waitForFunction(() => {
     const body = document.body.innerText.toLocaleLowerCase('en');
-    const hasPhrase = body.includes('current engineering focus');
+    const hasPhrase = body.includes('short snapshot');
     const hasEnglishNowRoute = [...document.querySelectorAll('a')]
       .some((link) => (link.getAttribute('href') || '').includes('en/now/'));
     return hasPhrase && hasEnglishNowRoute;

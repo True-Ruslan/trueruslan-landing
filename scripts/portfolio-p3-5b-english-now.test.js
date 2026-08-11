@@ -88,8 +88,12 @@ test('English now is covered by browser, generated-search and exact-deployment g
   assert.match(copyAssets, /locale: 'en'/);
   assert.match(copyAssets, /hrefTransform: englishProjectHref/);
 
+  const i18nManifest = JSON.parse(read('data/i18n.json'));
   const i18nSmoke = read('scripts/i18n-browser-smoke.cjs');
-  assert.match(i18nSmoke, /id: 'now'/);
+  assert.ok(i18nManifest.some((pair) => pair.id === 'now'
+    && pair.ru === 'landing/now.html'
+    && pair.en === 'en/now.html'));
+  assert.match(i18nSmoke, /data['"]?,?['"]?\s*[,\/]?\s*i18n\.json|data\/i18n\.json/);
   assert.match(i18nSmoke, /data-tr-now-noscript=\\?"en\\?"/);
   assert.match(i18nSmoke, /Current work/);
 

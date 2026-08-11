@@ -9,6 +9,8 @@ const {chromium} = requireQualityTool('playwright');
 
 const pages = [
   {path: '/', title: 'Руслан Немыкин — Backend Engineer', card: 'home'},
+  {path: '/en/', title: 'Ruslan Nemykin — Backend Engineer', card: 'home-en'},
+  {path: '/en/resume/', title: 'Resume — Ruslan Nemykin', card: 'resume-en'},
   {path: '/projects/', title: 'Проекты — Руслан Немыкин', card: 'projects'},
   {path: '/engineering-map/', title: 'Engineering Map — Руслан Немыкин', card: 'engineering-map'},
   {path: '/resume/', title: 'Резюме — Руслан Немыкин', card: 'resume'},

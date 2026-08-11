@@ -8,7 +8,7 @@ My commercial work is mainly Java/Spring backend, integrations, data and reliabi
 
 I use AI and LLMs as engineering tools: in commercial work I contribute to AI-tool adoption and a corporate MCP server, while personal projects let me test more complex agentic systems. I care less about model “magic” than about how the capability is bounded, validated and integrated into the system around it.
 
-For concrete roles and stack, see [Resume](resume.md). For shipped and experimental systems, start with [Projects](projects.md).
+For concrete roles and stack, see [Experience](resume.md). For shipped and experimental systems, start with [Projects](projects.md).
 
 ## Teaching & research
 
@@ -20,4 +20,4 @@ Teaching is useful to my engineering work because explaining a decision forces t
 
 I am interested in philosophy, history, technology, travel and photography. That material stays a separate personal layer of the site rather than part of the professional catalogue.
 
-Technical reading is collected under Sources, published external work under Publications, and original engineering analysis under Engineering Notes.
+Technical reading is collected under [Sources (RU)](../landing/bibliography.md), published external work under [Publications](publications.md), and original engineering analysis under [Engineering Notes (RU)](../landing/notes.md).

@@ -39,6 +39,7 @@ export function buildPersonJsonLd(siteUrl = getSiteUrl()) {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: 'Руслан Немыкин',
+    alternateName: 'Ruslan Nemykin',
     url: `${siteUrl}/`,
     jobTitle: 'Backend Engineer / Java Developer',
     knowsAbout: [
