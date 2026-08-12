@@ -12,7 +12,10 @@ on:
       - 'scripts/distribution-readiness.js'
       - 'scripts/distribution-readiness.test.js'
       - 'scripts/launch-distribution-contract.test.js'
+      - 'scripts/launch-pack.js'
+      - 'scripts/launch-pack.test.js'
       - 'docs/DISTRIBUTION.md'
+      - 'docs/keystone/specs/2026-08-12-controlled-launch-pack.md'
       - '.github/workflows/distribution-readiness.yml'
 
 permissions:
@@ -42,13 +45,15 @@ jobs:
         run: |
           set -o pipefail
           node scripts/distribution-readiness.js --check-runbook 2>&1 | tee distribution-readiness.log
+          node scripts/launch-pack.js 2>&1 | tee launch-pack.log
 
-      - name: Preserve generator log
+      - name: Preserve generator logs
         if: always()
         shell: bash
         run: |
           mkdir -p distribution-artifacts
           cp distribution-readiness.log distribution-artifacts/distribution-readiness.log 2>/dev/null || true
+          cp launch-pack.log distribution-artifacts/launch-pack.log 2>/dev/null || true
 
       - name: Upload distribution readiness evidence
         if: always()
