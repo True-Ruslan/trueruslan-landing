@@ -30,16 +30,16 @@
 </article>
 </div>
 
-## Коммерческая разработка
+## Исторический коммерческий контекст
 
 <article class="tr-project-index-card tr-project-index-card--commercial" data-c3-commercial="marketdb">
 <h3>MarketDB</h3>
-<p>Production-платформа аналитики маркетплейсов. Моя зона — backend, данные, интеграции и развитие живой системы без публикации внутренней коммерческой архитектуры.</p>
+<p><strong>Статус:</strong> закрыт. Исторический самостоятельный коммерческий startup-проект: production-платформа аналитики маркетплейсов. Моя зона включала backend, данные, интеграции и развитие живой системы без публикации внутренней коммерческой архитектуры.</p>
 <ul class="tr-project-index-card__tags" aria-label="Стек"><li>Java</li><li>Spring Boot</li><li>PostgreSQL</li><li>ClickHouse</li></ul>
 <a class="tr-project-index-card__cta" href="https://marketdb.pro">marketdb.pro ↗</a>
 </article>
 
-Больше контекста по коммерческому опыту — в разделе [Опыт](resume.md).
+Текущая коммерческая работа — QWEP; подробности по ролям и стеку — в разделе [Опыт](resume.md).
 
 ## Лаборатория и эксперименты
 
