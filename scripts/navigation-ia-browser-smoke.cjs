@@ -105,7 +105,8 @@ async function keyboardExpandGroup(sidebar, page, label, pathname) {
     throw new Error(`Sidebar group ${pathname} has unexpected label: ${text}`);
   }
 
-  const marker = `nav-ia-${label.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
+  const markerPart = pathname.replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase();
+  const marker = `nav-ia-${markerPart}`;
   const state = await link.evaluate((node, dataMarker) => {
     const item = node.closest('li') || node.parentElement;
     if (!item) return {control: false, expanded: null};
