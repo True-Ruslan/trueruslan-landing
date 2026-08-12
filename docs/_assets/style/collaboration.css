@@ -116,6 +116,7 @@
 }
 
 .tr-work-process > li {
+  display: block;
   min-width: 0;
   padding-top: 0.9rem;
   border-top: 1px solid var(--tr-collaboration-border);
@@ -123,7 +124,7 @@
   list-style: none !important;
 }
 
-ol.tr-work-process > li::marker {
+.tr-work-process > li::marker {
   content: "" !important;
 }
 
