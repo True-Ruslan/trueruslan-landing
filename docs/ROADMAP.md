@@ -1,8 +1,17 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-12**, launch distribution, launch preview metadata и P4.1A Search Discovery production-accepted; P3.6 measurement и P4.1B external evidence ожидают реальные observations.
+> Обновлено: **2026-08-12**, launch/discovery и maintenance baseline reconciled; P3.6 measurement и P4.1B external evidence ожидают реальные observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-12 accepted maintenance baseline
+
+- PR #205 / `94a3748e5fd82ac707f2bcc69e4cab255ba217e5`: CodeQL Action v4.37.6; Build #1887 / 31579461177 — SUCCESS; CodeQL #1435 / 31579461126 — SUCCESS; Pages #230 / 31580165353 — SUCCESS; Production Live Smoke #511 / 31580165196 — SUCCESS.
+- PR #185 — **CLOSED UNMERGED / SECURITY BLOCKED** at `c4e6b8dd87f224ed92dca8598d8d49737bea1d0f`: functional CI green, but Dependency Audit #222 / 31580402634 reported **7 moderate / 0 high / 0 critical**; issue #82 — OPEN blocker, next review **2026-08-17**.
+- PR #207 — **CLOSED UNMERGED**: regenerated candidate has byte-identical `package-lock.json` blob `dac054d274e48ce93828e97b83d09cc121024575`, therefore inherits the same #82 blocker.
+- PR #206 / `ef40c960e1849ee0551cb478d0cd71a3f69ef601`: removed Dependabot unmanaged labels; TDD RED Build #1890 / 31581385552 — expected FAILURE; final Build #1891 / 31581517909 — SUCCESS; 715 PASS / 0 FAIL; Pages #231 / 31582194873 — SUCCESS; Production Live Smoke #515 / 31582244697 — SUCCESS.
+- Dependency maintenance must remain fail-closed: functional green does not override an increased known-vulnerability footprint.
+- P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; `2026-08-05T00:00:00Z` remains the clean-URL observation clock. **P4.1B — NEXT**, **P4.1C — WAITING**.
 
 ## 2026-08-12 accepted launch / discovery baseline
 
