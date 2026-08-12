@@ -64,14 +64,27 @@
   {
     "date": "2026-08",
     "title": "Personality / social snapshot consolidation — Draft",
-    "description": "PR #155 is the current Draft TDD follow-up for personality/social snapshot state. It remains development evidence and cannot expand installed acceptance, release identity or lifecycle status.",
-    "state": "current",
+    "description": "PR #155 is the current Draft TDD follow-up for personality/social snapshot state. It remains development evidence and cannot expand installed acceptance, release identity or lifecycle status. PR #155 subsequently merged as source capability; this historical Draft boundary did not itself publish or install a new release.",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/villAIgence/pull/155"
   },
   {
     "date": "NEXT",
     "title": "Finish PR #155 without collapsing source and installed evidence",
-    "description": "Complete the TDD contract and source review for PR #155. Any later release or installed acceptance must use its own exact-artifact and installed gates; deferred VAI-M2-INST-005 and VAI-CONCUR-004 remain explicit until directly tested.",
+    "description": "Complete the TDD contract and source review for PR #155. Any later release or installed acceptance must use its own exact-artifact and installed gates; deferred VAI-M2-INST-005 and VAI-CONCUR-004 remain explicit until directly tested. This earlier PR #155 completion boundary was superseded after the source slice merged and later 0.3 convergence work advanced; installed acceptance remained unchanged.",
+    "state": "past"
+  },
+  {
+    "date": "2026-08",
+    "title": "0.3 release convergence contract merged — release not published",
+    "description": "PRs #158/#159/#160 advanced personality/social dialogue source integration and defined the 0.3 release convergence contract. All referenced source/security/soak/dry-run gates passed, but release publication was skipped. Official installed acceptance remains 0.2.0+1.21.1 at 7 PASS / 0 FAIL with explicit NOT TESTED boundaries.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/160"
+  },
+  {
+    "date": "NEXT",
+    "title": "Create explicit 0.3 release-request/candidate",
+    "description": "Create the separate 0.3.0+1.21.1 release-request/candidate only through the repository release contract. A later tag/release and installed acceptance must use exact-artifact and installed gates; no source convergence evidence may promote 0.3 automatically.",
     "state": "next"
   }
 ]

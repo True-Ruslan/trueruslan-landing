@@ -43,14 +43,27 @@
   {
     "date": "2026-08",
     "title": "M8.2 top toolbar — Draft / focused retest pending",
-    "description": "PR #87 is the current Draft product slice. Scenarios 01–07 passed in product-owner testing, while the focused clipboard retest is still pending. No merge, release or product-owner closure is claimed before that retest.",
-    "state": "current",
+    "description": "PR #87 is the current Draft product slice. Scenarios 01–07 passed in product-owner testing, while the focused clipboard retest is still pending. No merge, release or product-owner closure is claimed before that retest. This was the earlier bounded M8.2 state and was superseded by the broader 2026-08-12 precision/structural Draft evidence; it was not accepted by this transition.",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/vlezet/pull/87"
   },
   {
     "date": "NEXT",
     "title": "Close the M8.2 clipboard retest and acceptance boundary",
-    "description": "Run the focused clipboard retest, reconcile only observed defects, then require exact-head CI and explicit product-owner closure before merge or any lifecycle promotion.",
+    "description": "Run the focused clipboard retest, reconcile only observed defects, then require exact-head CI and explicit product-owner closure before merge or any lifecycle promotion. This clipboard-only next-step wording was superseded by the broader focused manual product-owner retest boundary; it was not automatically completed.",
+    "state": "past"
+  },
+  {
+    "date": "2026-08",
+    "title": "M8.2 precision drawing and structural editing — Draft",
+    "description": "PR #87 remains Draft on exact head 789f1de8eae92eebc8988a41f07439927431fb8b. Automated .NET/npm/CI and Chromium/WebKit evidence is green, but the focused manual product-owner retest remains pending. No merge, release, lifecycle promotion or acceptance is claimed.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/87"
+  },
+  {
+    "date": "NEXT",
+    "title": "Complete focused M8.2 product-owner retest",
+    "description": "Run the focused manual product-owner retest against the current Draft, reconcile only observed defects, then require fresh exact-head automation and explicit product-owner acceptance before Ready/merge or any lifecycle promotion.",
     "state": "next"
   }
 ]
