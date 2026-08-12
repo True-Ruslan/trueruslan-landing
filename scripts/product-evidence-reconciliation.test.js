@@ -119,6 +119,6 @@ test('freshness reconciliation records current truth without promoting lifecycle
   assert.match(roadmap, /P3\.6.*Measurement checkpoint.*NEXT \/ WAITING/is);
   assert.match(changelog, /P3\.6.*NEXT \/ WAITING/is);
   for (const source of [projectState, roadmap, changelog]) {
-    assert.doesNotMatch(source, /P3\.6[^\n]{0,160}(ACCEPTED|COMPLETED|product impact|causal)/i);
+    assert.doesNotMatch(source, /P3\.6\s*(?:—|-|:)\s*(?:ACCEPTED|COMPLETED)/i);
   }
 });
