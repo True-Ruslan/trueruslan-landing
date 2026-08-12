@@ -1,8 +1,17 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-12**, launch/discovery и maintenance evidence reconciled; P3.6 measurement и P4.1B external evidence остаются открытыми.
+> Обновлено: **2026-08-12**, current evidence и P4.1B intake tooling reconciled; P3.6 measurement и реальные P4.1B external observations остаются открытыми.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-12 — Current evidence reconciliation + P4.1B intake tooling
+
+- PR #209 reconciled current Vlezet, VillAIgence and Portfolio Platform evidence without promoting lifecycle or external acceptance. Final exact-head Build #1914 / 31597254382 — SUCCESS with **723 PASS / 0 FAIL**; Content Freshness #191, CodeQL #1465 and Dependency Review #1336 — SUCCESS; squash `ccf1996ced5c90511812ad435bb5829df56d30b3`; Pages #233 / 31598153664 and Production Live #519 / 31598218971 — SUCCESS.
+- PR #210 added P4.1B intake tooling for explicit operator-supplied aggregate Google Search Console / Yandex Webmaster observations: strict provenance/metric/same-property validation, RU/EN and clean-vs-legacy reporting, indexing findings, ignored private inputs and SHA-256-bound local reports. Raw export adapters remain intentionally deferred until an actual operator export/API response exists.
+- PR #210 exact head `c5153ee6e9d55e44507a0a11ef302fd54a0aa6af`; Build #1922 / 31599699918 — SUCCESS with **731 PASS / 0 FAIL**; CodeQL #1474, Dependency Review #1344 and Dependency Audit #227 — SUCCESS; quality artifact `9142767935`, digest `sha256:64d4f70f291c6fb6403ca6a2db635f3db132f64d91314faef4198d59ed20a866`.
+- PR #210 squash / deployed SHA `6083e4d950d74b272cce199fedccc730dfcc4fed`; Pages #234 / 31600575541 — SUCCESS; Production Live Smoke #520 / 31600575540 — SUCCESS; post-merge CodeQL #1475 / 31600575547 — SUCCESS.
+- P4.1A remains **READY / 11 strategic surfaces / 21 clean routes / 0 findings / externalEvidence=not-collected**. Ordinary Build does not produce a P4.1B external-evidence artifact.
+- **P4.1B intake tooling is accepted; real external evidence collection/review remains NEXT. P4.1C remains WAITING. P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE**; no search-performance, CTR, ranking, engagement or causal product-impact claim was introduced.
 
 ## 2026-08-12 — Maintenance evidence reconciliation
 
