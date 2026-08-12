@@ -27,11 +27,19 @@ test('N3 gives Work with me a lighter bounded surface and rhythm contract', () =
   for (const source of [ru, en]) {
     assert.ok(source.includes('class="tr-resume-grid tr-work-tracks"'), 'work tracks must keep their bounded page primitive');
     assert.ok(source.includes('class="tr-work-process"'), 'work process must keep its bounded page primitive');
+    assert.deepEqual(
+      [...source.matchAll(/data-tr-work-order="([0-9]{2})"/g)].map((match) => match[1]),
+      ['01', '02', '03'],
+      'work process must expose one stable visible order without relying on nested list counters',
+    );
   }
   assert.ok(css.includes('.tr-work-tracks .tr-resume-panel'), 'work-track panels need bounded styling');
   assert.ok(css.includes('.tr-work-process'), 'work process needs bounded rhythm styling');
   assert.ok(css.includes('--tr-collaboration-surface'), 'collaboration surfaces need a shared light surface token');
   assert.ok(css.includes('--tr-collaboration-border'), 'collaboration borders need a shared lighter border token');
+  assert.match(css, /\.tr-work-process\s*\{[\s\S]*?list-style:\s*none\s*!important/);
+  assert.match(css, /\.tr-work-process\s*>\s*li::marker\s*\{[\s\S]*?content:\s*["']{2}/);
+  assert.match(css, /content:\s*attr\(data-tr-work-order\)/);
 });
 
 test('N3b replaces the Now technical callout with a readable RU/EN public intro', () => {
