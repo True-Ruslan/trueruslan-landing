@@ -137,3 +137,13 @@ test('all current canonical RU/EN pairs retain source ownership and TOC build ow
     }
   }
 });
+
+test('Build owns a dedicated navigation IA browser acceptance gate and preserves its log', () => {
+  const smokePath = path.join(ROOT, 'scripts', 'navigation-ia-browser-smoke.cjs');
+  assert.equal(fs.existsSync(smokePath), true, 'navigation IA browser smoke must exist');
+
+  const workflow = read('.github/workflows/build.yml');
+  assert.match(workflow, /- name: Navigation IA browser smoke/);
+  assert.match(workflow, /node scripts\/navigation-ia-browser-smoke\.cjs/);
+  assert.match(workflow, /cp navigation-ia-browser-smoke\.log quality-artifacts\/navigation-ia-browser-smoke\.log/);
+});
