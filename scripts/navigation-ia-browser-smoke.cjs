@@ -23,8 +23,8 @@ const ABOUT_LINKS = Object.freeze([
   ['Контакты', '/contacts/'],
 ]);
 
-function normalizedPathname(href, pageUrl) {
-  return new URL(href, pageUrl).pathname;
+async function resolvedPathname(link) {
+  return link.evaluate((node) => new URL(node.href).pathname);
 }
 
 async function findSidebar(page) {
@@ -45,7 +45,7 @@ async function findSidebar(page) {
   throw new Error('Could not locate the generated Diplodoc sidebar by canonical route ownership.');
 }
 
-async function linkByCanonicalPath(container, page, pathname, {name} = {}) {
+async function linkByCanonicalPath(container, pathname, {name} = {}) {
   const links = container.locator('a');
   const count = await links.count();
   for (let index = 0; index < count; index += 1) {
@@ -54,8 +54,7 @@ async function linkByCanonicalPath(container, page, pathname, {name} = {}) {
       const text = (await link.innerText().catch(() => '')).trim();
       if (text !== name) continue;
     }
-    const href = await link.getAttribute('href');
-    if (href && normalizedPathname(href, page.url()) === pathname) return link;
+    if (await resolvedPathname(link) === pathname) return link;
   }
   throw new Error(`Sidebar is missing ${name || pathname} → ${pathname}.`);
 }
@@ -132,7 +131,7 @@ async function keyboardExpandGroup(sidebar, page, label) {
 async function assertDiscoverableLinks(sidebar, page, pairs, groupLabel) {
   const disclosure = await keyboardExpandGroup(sidebar, page, groupLabel);
   for (const [label, pathname] of pairs) {
-    const link = await linkByCanonicalPath(sidebar, page, pathname, {name: label});
+    const link = await linkByCanonicalPath(sidebar, pathname, {name: label});
     if (!(await link.isVisible())) {
       throw new Error(`${label} is not discoverable after expanding ${groupLabel}.`);
     }
@@ -155,8 +154,9 @@ async function assertMaterialsPage(browser, baseUrl, viewport, suffix) {
       const link = main.getByRole('link', {name: label, exact: true}).first();
       if (await link.count() !== 1) throw new Error(`Materials hub is missing ${label}.`);
       const href = await link.getAttribute('href');
-      if (!href || normalizedPathname(href, page.url()) !== pathname) {
-        throw new Error(`Materials ${label} route is not canonical: ${href || 'missing href'}`);
+      const resolved = await resolvedPathname(link);
+      if (resolved !== pathname) {
+        throw new Error(`Materials ${label} route is not canonical: ${href || 'missing href'} resolved to ${resolved}`);
       }
     }
 
@@ -198,15 +198,16 @@ async function assertSidebarAndLanguage(browser, baseUrl) {
     const english = language.locator('a[hreflang="en"]').first();
     await english.waitFor({state: 'visible'});
     const englishHref = await english.getAttribute('href');
-    if (!englishHref || normalizedPathname(englishHref, page.url()) !== '/en/projects/') {
-      throw new Error(`Projects language counterpart drifted: ${englishHref || 'missing href'}`);
+    const englishPath = await resolvedPathname(english);
+    if (englishPath !== '/en/projects/') {
+      throw new Error(`Projects language counterpart drifted: ${englishHref || 'missing href'} resolved to ${englishPath}`);
     }
 
     await assertNoHorizontalOverflow(page, 'Projects navigation IA');
     await assertNoBlockingAxe({page, label: 'Projects navigation IA', AxeBuilder, artifactName: 'axe-navigation-ia-projects.json'});
     diagnostics.assertClean('Projects navigation IA');
     await captureScreenshot(page, 'navigation-ia-sidebar-desktop.png');
-    return {materialsDisclosure, notesDisclosure, aboutDisclosure, englishPath: '/en/projects/'};
+    return {materialsDisclosure, notesDisclosure, aboutDisclosure, englishPath};
   } finally {
     await runtime.close();
   }
