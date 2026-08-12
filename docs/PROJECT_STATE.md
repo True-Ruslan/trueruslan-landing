@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-12**, после current evidence reconciliation и production acceptance P4.1B intake tooling; P3.6 measurement и реальные P4.1B external observations остаются открытыми.
+> Последнее смысловое обновление: **2026-08-12**, после production acceptance реального Google Search Console adapter и controlled launch pack; P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, actual launch — `not-published`, P3.6 — WAITING.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -12,6 +12,42 @@
 4. `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
 Repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance остаются разными фактами.
+
+## 0.3 2026-08-12 — Real GSC baseline + controlled launch pack
+
+### P4.1B Google Search Console adapter — PRODUCTION ACCEPTED
+
+```text
+PR #213 squash / deployed SHA:   831535461f3c72d53e3510574ae7ae9c52ab54f6
+Build:                           #1933 — SUCCESS
+CodeQL:                          #1487 — SUCCESS
+Dependency Review:               #1355 — SUCCESS
+Pages:                           #236 / 31606858974 — SUCCESS
+Production Live Smoke:           #524 / 31606858968 — SUCCESS
+follow-up Production Live:       #525 / 31606948825 — SUCCESS
+```
+
+На реальном authenticated/operator-supplied Google Search Console Search Performance export реализован первый raw adapter без guessed schema. Сам export остаётся private и не коммитится. Текущие observations образуют только **sparse pre-public-launch / clean-URL-migration baseline**: query evidence пока пустое, а legacy URL visibility ещё наблюдается. Этого недостаточно для стабильных CTR/ranking/engagement или causal SEO выводов.
+
+**P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**, но не DONE и не measurement acceptance.
+
+### Controlled launch pack — PRODUCTION ACCEPTED / NOT PUBLISHED
+
+```text
+PR #214 squash / deployed SHA:   bed23ac0330ca112b94259998adcd8187203988a
+Build:                           #1939 / 31610400124 — SUCCESS
+Distribution Readiness:          #185 / 31610400129 — SUCCESS
+launch pack:                     10 targets / 38 manual drafts / not-published
+CodeQL:                          #1494 / 31610400405 — SUCCESS
+Dependency Review:               #1361 / 31610400141 — SUCCESS
+Pages:                           #237 / 31611168208 — SUCCESS
+Production Live Smoke:           #526 / 31611168202 — SUCCESS
+follow-up Production Live:       #527 / 31611259926 — SUCCESS
+```
+
+Launch pack остаётся derived/manual-only/read-only preparation layer поверх canonical Distribution Readiness. Он не аутентифицируется во внешних каналах, не постит, не планирует публикации, не добавляет UTM и не меняет publication state. **Фактический controlled launch ещё не опубликован (`not-published`)**.
+
+Следующий внешний шаг — deliberate manual controlled launch, после которого нужно накопить реальные external observations до любых evidence-backed SEO/copy решений. **P4.1C остаётся WAITING. P3.6 остаётся NEXT / WAITING FOR EXTERNAL EVIDENCE**, а clean-URL observation clock не сбрасывается: `2026-08-05T00:00:00Z`.
 
 ## 0.2 2026-08-12 — Current evidence reconciliation + P4.1B intake tooling
 
@@ -47,7 +83,7 @@ externalEvidence:                not-collected
 
 P4.1B intake tooling accepts only explicit operator-supplied aggregate Google Search Console / Yandex Webmaster observations, validates same-property URLs and bounded metrics, ties local reports to the exact input SHA-256 and keeps real files under ignored `private/search-discovery/`. Ordinary `npm test` and Build do not collect or fabricate external evidence.
 
-Raw CSV/API adapters intentionally wait for an actual operator export/API response; upstream shapes are not guessed. **P4.1B intake tooling is accepted, but real external evidence collection/review remains NEXT. P4.1C remains WAITING. P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE**, and the clean-URL observation clock remains `2026-08-05T00:00:00Z`.
+PR #210 intentionally deferred raw adapters until a real operator export/API shape existed; PR #213 subsequently implemented the observed Google Search Console CSV adapter without guessing upstream schema. **P4.1B review is now IN PROGRESS / SPARSE PRE-LAUNCH BASELINE. P4.1C remains WAITING. P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE**, and the clean-URL observation clock remains `2026-08-05T00:00:00Z`.
 
 ## 0.1 2026-08-12 — Current maintenance acceptance / dependency blocker
 
@@ -93,7 +129,7 @@ Production Live Smoke:          #515 / 31582244697 — SUCCESS
 
 Dependabot unmanaged labels (`dependencies`, `security`, `github-actions`) больше не запрашиваются без repository-owned manifest/provisioning path. Реальные post-merge npm и GitHub Actions Dependabot runs `31582199568` и `31582199031` завершились SUCCESS; новый #207 создан без removed labels и без label-warning comments.
 
-Maintenance не меняет продуктовую или external-evidence семантику: P3.6 остаётся **NEXT / WAITING FOR EXTERNAL EVIDENCE**, clean-URL clock `2026-08-05T00:00:00Z` не сбрасывается, P4.1B остаётся **NEXT**, P4.1C — **WAITING**.
+Maintenance не меняет продуктовую или external-evidence семантику: P3.6 остаётся **NEXT / WAITING FOR EXTERNAL EVIDENCE**, clean-URL clock `2026-08-05T00:00:00Z` не сбрасывается, P4.1B review — **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**, P4.1C — **WAITING**.
 
 ## 0. 2026-08-12 — Current launch / discovery acceptance
 
@@ -134,7 +170,7 @@ discovery readiness:            11 strategic surfaces / 21 clean routes / 0 find
 externalEvidence:               not-collected
 ```
 
-P4.1A доказывает repository/build/deployment readiness, а не Search Console или Yandex Webmaster performance. **P4.1B — NEXT** только после реальных external observations; **P4.1C — WAITING** и остаётся evidence-gated. P3.6 остаётся **NEXT / WAITING FOR EXTERNAL EVIDENCE**; исходный clean-URL observation clock `2026-08-05T00:00:00Z` не сбрасывается.
+P4.1A доказывает repository/build/deployment readiness, а не Search Console или Yandex Webmaster performance. **P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE** после первого реального GSC export; дальнейшие conclusions ждут накопления observations; **P4.1C — WAITING** и остаётся evidence-gated. P3.6 остаётся **NEXT / WAITING FOR EXTERNAL EVIDENCE**; исходный clean-URL observation clock `2026-08-05T00:00:00Z` не сбрасывается.
 
 ---
 
