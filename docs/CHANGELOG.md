@@ -1,8 +1,17 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-12**, launch distribution, launch preview metadata и P4.1A Search Discovery production-accepted; P3.6 measurement и P4.1B external evidence остаются открытыми.
+> Обновлено: **2026-08-12**, launch/discovery и maintenance evidence reconciled; P3.6 measurement и P4.1B external evidence остаются открытыми.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-12 — Maintenance evidence reconciliation
+
+- PR #205 accepted the CodeQL Action v4.37.6 pin on exact deployed SHA `94a3748e5fd82ac707f2bcc69e4cab255ba217e5`: Build #1887 / 31579461177 — SUCCESS; CodeQL #1435 / 31579461126 — SUCCESS; Pages #230 / 31580165353 — SUCCESS; Production Live Smoke #511 / 31580165196 — SUCCESS. No query/language/permission/schedule semantics changed.
+- Recreated PR #185 at `c4e6b8dd87f224ed92dca8598d8d49737bea1d0f` passed Build #1889, CodeQL #1438 and Dependency Review #1311, but Dependency Audit #222 / 31580402634 reported **7 moderate / 0 high / 0 critical** versus the accepted issue #82 baseline of 6 package records. PR #185 was therefore **CLOSED UNMERGED / SECURITY BLOCKED**; issue #82 remains OPEN blocker with next review **2026-08-17**.
+- PR #206 removed explicit Dependabot unmanaged labels only; RED Build #1890 / 31581385552 failed the new regression contract as expected, final Build #1891 / 31581517909 — SUCCESS with **715 PASS / 0 FAIL**, CodeQL #1440 and Dependency Review #1313 — SUCCESS, Pages #231 / 31582194873 — SUCCESS, Production Live Smoke #515 / 31582244697 — SUCCESS.
+- Post-merge Dependabot npm run `31582199568` and GitHub Actions run `31582199031` both completed SUCCESS. They created PR #207 without the removed labels or label-warning comments, proving the configuration fix operationally.
+- PR #207 was **CLOSED UNMERGED** because its `package-lock.json` blob `dac054d274e48ce93828e97b83d09cc121024575` is byte-identical to rejected #185 and inherits the same issue #82 blocker.
+- No P3.6 or P4.1 external-evidence state changed: clean-URL clock remains `2026-08-05T00:00:00Z`, P4.1B remains **NEXT**, P4.1C remains **WAITING**.
 
 ## 2026-08-12 — Launch / Discovery production reconciliation
 

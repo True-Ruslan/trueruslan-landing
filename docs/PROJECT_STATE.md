@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-12**, после production acceptance launch distribution, launch preview metadata и P4.1A Search Discovery readiness; P3.6 measurement и P4.1B external evidence остаются открытыми.
+> Последнее смысловое обновление: **2026-08-12**, после production acceptance launch/discovery и maintenance reconciliation; P3.6 measurement и P4.1B external evidence остаются открытыми.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -12,6 +12,52 @@
 4. `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
 Repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance остаются разными фактами.
+
+## 0.1 2026-08-12 — Current maintenance acceptance / dependency blocker
+
+### CodeQL Action 4.37.6 — PRODUCTION ACCEPTED
+
+```text
+PR #205 squash / deployed SHA:  94a3748e5fd82ac707f2bcc69e4cab255ba217e5
+Build:                          #1887 / 31579461177 — SUCCESS
+CodeQL:                         #1435 / 31579461126 — SUCCESS
+Pages:                          #230 / 31580165353 — SUCCESS
+Production Live Smoke:          #511 / 31580165196 — SUCCESS
+```
+
+CodeQL `init` и `analyze` используют pin v4.37.6; permissions, query set, language scope, runner и schedule не менялись. Post-merge CodeQL #1437 и scheduled Production Live #513 также завершились SUCCESS на том же exact SHA.
+
+### Diplodoc dependency candidate — CLOSED UNMERGED / SECURITY BLOCKED
+
+```text
+PR #185 — CLOSED UNMERGED / SECURITY BLOCKED
+candidate head:                 c4e6b8dd87f224ed92dca8598d8d49737bea1d0f
+Build:                          #1889 / 31580402647 — SUCCESS
+CodeQL:                         #1438 / 31580402681 — SUCCESS
+Dependency Review:              #1311 / 31580402632 — SUCCESS
+Dependency Audit:               #222 / 31580402634 — 7 moderate / 0 high / 0 critical
+```
+
+Functional acceptance была зелёной, но candidate увеличивал package-level footprint двух известных `markdown-it` advisories с 6 до 7 records. Поэтому issue #82 — OPEN blocker; exit criteria не выполнены, следующий review остаётся **2026-08-17**, без forced `npm audit fix`, shim или fork.
+
+PR #207 — CLOSED UNMERGED: Dependabot после config fix сгенерировал тот же dependency candidate; его `package-lock.json` byte-identical PR #185, blob `dac054d274e48ce93828e97b83d09cc121024575`, поэтому повторный merge запрещён тем же issue #82 boundary.
+
+### Dependabot configuration — PRODUCTION ACCEPTED
+
+```text
+PR #206 squash / deployed SHA:  ef40c960e1849ee0551cb478d0cd71a3f69ef601
+TDD RED Build:                  #1890 / 31581385552 — expected FAILURE
+Build:                          #1891 / 31581517909 — SUCCESS
+unit tests:                     715 PASS / 0 FAIL
+CodeQL:                         #1440 / 31581517924 — SUCCESS
+Dependency Review:              #1313 / 31581517896 — SUCCESS
+Pages:                          #231 / 31582194873 — SUCCESS
+Production Live Smoke:          #515 / 31582244697 — SUCCESS
+```
+
+Dependabot unmanaged labels (`dependencies`, `security`, `github-actions`) больше не запрашиваются без repository-owned manifest/provisioning path. Реальные post-merge npm и GitHub Actions Dependabot runs `31582199568` и `31582199031` завершились SUCCESS; новый #207 создан без removed labels и без label-warning comments.
+
+Maintenance не меняет продуктовую или external-evidence семантику: P3.6 остаётся **NEXT / WAITING FOR EXTERNAL EVIDENCE**, clean-URL clock `2026-08-05T00:00:00Z` не сбрасывается, P4.1B остаётся **NEXT**, P4.1C — **WAITING**.
 
 ## 0. 2026-08-12 — Current launch / discovery acceptance
 
