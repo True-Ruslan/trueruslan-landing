@@ -95,7 +95,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.65fr) minmax(220px, .75fr);
   gap: clamp(1.5rem, 4vw, 3.5rem);
-  align-items: end;
+  align-items: center;
   padding: clamp(1.4rem, 3vw, 2rem) 0;
   border-top: 1px solid rgba(156, 169, 184, .14);
 }
