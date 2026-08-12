@@ -1,0 +1,51 @@
+name: Temporary Prelaunch Evidence Reconciliation
+
+on:
+  push:
+    branches:
+      - docs/reconcile-prelaunch-evidence
+    paths:
+      - 'scripts/reconcile-prelaunch-evidence-state.js'
+      - '.github/workflows/prelaunch-evidence-reconciliation.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prelaunch-evidence-reconciliation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reconcile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: docs/reconcile-prelaunch-evidence
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+
+      - name: Reconcile durable state
+        run: node scripts/reconcile-prelaunch-evidence-state.js
+
+      - name: Verify reconciliation contract
+        run: |
+          git diff --check
+          node --test scripts/prelaunch-evidence-state-reconciliation.test.js
+
+      - name: Commit durable state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md
+          git diff --cached --quiet && { echo "No durable-state changes to commit"; exit 1; }
+          git commit -m "docs: reconcile pre-launch evidence state"
+          git push origin HEAD:docs/reconcile-prelaunch-evidence
