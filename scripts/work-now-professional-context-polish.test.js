@@ -19,6 +19,14 @@ function marketDbCard(text) {
   return text.slice(articleStart, articleEnd + '</article>'.length);
 }
 
+function cssRule(text, selector) {
+  const start = text.indexOf(`${selector} {`);
+  assert.notEqual(start, -1, `missing CSS rule ${selector}`);
+  const end = text.indexOf('}', start);
+  assert.notEqual(end, -1, `unterminated CSS rule ${selector}`);
+  return text.slice(start, end + 1);
+}
+
 test('N3 gives Work with me a lighter bounded surface and rhythm contract', () => {
   const ru = read('docs/landing/work-with-me.md');
   const en = read('docs/en/work-with-me.md');
@@ -59,6 +67,19 @@ test('N3b replaces the Now technical callout with a readable RU/EN public intro'
   const yfm = read('docs/.yfm');
   assert.ok(yfm.includes('_assets/style/now-refinement.css'), 'Diplodoc must own the Now refinement stylesheet globally');
   assert.equal(fs.existsSync(path.join(ROOT, 'docs/_assets/style/now-refinement.css')), true, 'Now refinement stylesheet must exist');
+});
+
+test('N3b keeps generated Now truth readable without a heavy internal-status panel', () => {
+  const journalCss = read('docs/_assets/style/journal.css');
+  const focus = cssRule(journalCss, '.tr-now__focus');
+
+  assert.match(focus, /max-width:\s*68ch/);
+  assert.match(focus, /line-height:\s*1\.68/);
+  assert.match(focus, /background:\s*transparent/);
+  assert.match(focus, /border-left:\s*1px solid rgba\(103,\s*232,\s*249,\s*\.28\)/);
+  assert.match(focus, /border-radius:\s*0/);
+  assert.doesNotMatch(focus, /background:\s*rgba\(15,\s*23,\s*42,\s*\.48\)/);
+  assert.doesNotMatch(focus, /border-left:\s*3px/);
 });
 
 test('N3c preserves the current QWEP resume truth without reintroducing MarketDB as employment', () => {
