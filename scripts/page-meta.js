@@ -5,12 +5,15 @@ import {fileURLToPath} from 'node:url';
 import {parse, serialize} from 'parse5';
 import * as utils from 'parse5-utils';
 
+import {toPublicRoute} from './clean-urls.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DEFAULT_MANIFEST = path.join(ROOT, 'data', 'page-meta.json');
 const DEFAULT_NOTES_MANIFEST = path.join(ROOT, 'data', 'notes.json');
 const ALLOWED_ACCENTS = new Set(['cyan', 'violet', 'green']);
 const DISPLAY_TEXT = /^[A-Z0-9 .&/+_:-]+$/;
+const SITE_NAME = 'TrueRuslan';
 
 function requireString(entry, field) {
   const value = entry?.[field];
@@ -179,11 +182,32 @@ function setDocumentTitle(head, title) {
 }
 
 function canonicalUrl(siteUrl, relativePath) {
-  if (relativePath === 'index.html') return `${siteUrl}/`;
-  if (relativePath.endsWith('/index.html')) {
-    return `${siteUrl}/${relativePath.slice(0, -'index.html'.length)}`;
+  const site = new URL(siteUrl.endsWith('/') ? siteUrl : `${siteUrl}/`);
+  if (site.protocol !== 'https:' || site.username || site.password || site.search || site.hash) {
+    throw new Error(`Invalid page metadata site URL: ${siteUrl}`);
   }
-  return `${siteUrl}/${relativePath}`;
+  if (!site.pathname.endsWith('/')) site.pathname += '/';
+
+  const projected = toPublicRoute(relativePath, site.href);
+  const resolved = new URL(projected, site.href);
+  const relativePublicPath = resolved.pathname.startsWith(site.pathname)
+    ? resolved.pathname.slice(site.pathname.length)
+    : null;
+
+  if (resolved.origin !== site.origin || resolved.search || resolved.hash || relativePublicPath === null) {
+    throw new Error(`Page metadata route escaped the configured site base: ${relativePath}`);
+  }
+  if (resolved.pathname.includes('.html') || relativePublicPath.startsWith('landing/')) {
+    throw new Error(`Page metadata route did not project to a clean public URL: ${relativePath}`);
+  }
+  if (resolved.pathname !== site.pathname && !resolved.pathname.endsWith('/')) {
+    throw new Error(`Page metadata route must use a directory-style public URL: ${relativePath}`);
+  }
+  return resolved.href;
+}
+
+function pageLocale(relativePath) {
+  return relativePath === 'en/index.html' || relativePath.startsWith('en/') ? 'en_US' : 'ru_RU';
 }
 
 export function injectPageMeta(html, entry, siteUrl) {
@@ -200,6 +224,8 @@ export function injectPageMeta(html, entry, siteUrl) {
   const canonical = canonicalUrl(normalizedSiteUrl, entry.path);
   const localImagePath = `/assets/og/${entry.card}.png`;
   const image = `${normalizedSiteUrl}${localImagePath}`;
+  const imageAlt = `${entry.displayTitle} — ${entry.kicker}`;
+  const locale = pageLocale(entry.path);
 
   utils.append(head, createMeta({name: 'description', content: entry.description}));
   utils.append(head, createCanonical(canonical));
@@ -207,14 +233,18 @@ export function injectPageMeta(html, entry, siteUrl) {
   utils.append(head, createMeta({property: 'og:description', content: entry.description}));
   utils.append(head, createMeta({property: 'og:type', content: 'website'}));
   utils.append(head, createMeta({property: 'og:url', content: canonical}));
+  utils.append(head, createMeta({property: 'og:site_name', content: SITE_NAME}));
+  utils.append(head, createMeta({property: 'og:locale', content: locale}));
   utils.append(head, createMeta({property: 'og:image', content: image}, localImagePath));
+  utils.append(head, createMeta({property: 'og:image:type', content: 'image/png'}));
   utils.append(head, createMeta({property: 'og:image:width', content: '1200'}));
   utils.append(head, createMeta({property: 'og:image:height', content: '630'}));
-  utils.append(head, createMeta({property: 'og:image:alt', content: `${entry.displayTitle} — ${entry.kicker}`}));
+  utils.append(head, createMeta({property: 'og:image:alt', content: imageAlt}));
   utils.append(head, createMeta({name: 'twitter:card', content: 'summary_large_image'}));
   utils.append(head, createMeta({name: 'twitter:title', content: entry.title}));
   utils.append(head, createMeta({name: 'twitter:description', content: entry.description}));
   utils.append(head, createMeta({name: 'twitter:image', content: image}, localImagePath));
+  utils.append(head, createMeta({name: 'twitter:image:alt', content: imageAlt}));
 
   return serialize(parsed);
 }
