@@ -37,14 +37,15 @@ test('durable state records P4.1A repository and production acceptance without i
   assert.match(durable, /externalEvidence[^\n]*not-collected/i);
 });
 
-test('P3.6 and P4.1B external-evidence boundaries remain open after intake tooling acceptance', () => {
-  assert.match(state, /P3\.6[^\n]*(?:NEXT|WAITING FOR EXTERNAL EVIDENCE)/i);
-  assert.match(roadmap, /P3\.6[^\n]*(?:NEXT|WAITING FOR EXTERNAL EVIDENCE)/i);
+test('P3.6 remains open while P4.1B advances only to sparse pre-launch review', () => {
+  assert.match(state, /P3\.6[^\n]*(?:NEXT|WAITING FOR EXTERNAL EVIDENCE|WAITING)/i);
+  assert.match(roadmap, /P3\.6[^\n]*(?:NEXT|WAITING FOR EXTERNAL EVIDENCE|WAITING)/i);
   assert.match(durable, /2026-08-05T00:00:00Z/);
   assert.match(durable, /P4\.1B intake tooling[^\n]*(?:DONE|PRODUCTION ACCEPTED|accepted)/i);
-  assert.match(state, /P4\.1B[^\n]*(?:real external evidence|collection\/review)[^\n]*NEXT/i);
-  assert.match(roadmap, /P4\.1B[^\n]*(?:real external evidence|collection\/review)[^\n]*NEXT/i);
+  assert.match(state, /P4\.1B[^\n]*(?:real external evidence review|review)[^\n]*(?:IN PROGRESS|SPARSE PRE-LAUNCH BASELINE)/i);
+  assert.match(roadmap, /P4\.1B[^\n]*(?:real external evidence review|review)[^\n]*(?:IN PROGRESS|SPARSE PRE-LAUNCH BASELINE)/i);
+  assert.match(durable, /controlled launch[^\n]*(?:not-published|NOT PUBLISHED)/i);
   assert.match(durable, /P4\.1C[^\n]*WAITING/i);
   assert.match(durable, /externalEvidence[^\n]*not-collected/i);
-  assert.doesNotMatch(durable, /P4\.1B[^\n]*(?:external evidence|collection|observations)[^\n]*(?:DONE|COMPLETED|PRODUCTION ACCEPTED)/i);
+  assert.doesNotMatch(durable, /P4\.1B[^\n]*(?:real external evidence review|evidence review)[^\n]*(?:DONE|COMPLETED|PRODUCTION ACCEPTED)/i);
 });
