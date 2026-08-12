@@ -110,7 +110,7 @@ test('current reconciliation preserves C7 history while advancing the Portfolio 
   assert.equal(current.length, 1);
   assert.equal(next.length, 1);
   assert.match(current[0].title, /launch.*discovery.*maintenance|current production baseline/i);
-  assert.match(current[0].description, /P3\.6.*NEXT|WAITING/i);
+  assert.match(current[0].description, /externalEvidence=not-collected/i);
   assert.match(next[0].description, /P3\.6|P4\.1B/i);
 });
 
