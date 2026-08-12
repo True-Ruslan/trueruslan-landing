@@ -1,8 +1,15 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-11**, P4.1A Search Discovery repository-readiness accepted on exact PR evidence; C7 остаётся production baseline, P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-12**, launch distribution, launch preview metadata и P4.1A Search Discovery production-accepted; P3.6 measurement и P4.1B external evidence остаются открытыми.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-12 — Launch / Discovery production reconciliation
+
+- PR #202 launch distribution accepted on exact deployed SHA `91c4d3d5cb464a107e3d14d8d091cf4eb0c1638f`; Pages #226 / 31572318752 — SUCCESS; Production Live Smoke #504 / 31572389064 — SUCCESS; readiness remained 10 targets / 4 profiles / 0 stale / 0 unverified.
+- PR #203 launch preview metadata accepted on exact deployed SHA `ffd420c4b2b9e42385529b7654eaaab5f0dbd9cf`; 701 PASS / 0 FAIL; Pages #227 / 31573207215 — SUCCESS; Production Live Smoke #505 / 31573207182 — SUCCESS; browser metadata scope 10 launch + 5 supplemental.
+- P4.1A PR #201 accepted on exact deployed SHA `e75a4d24a5d9f2b8ace95c9a0629e7567992741b`; Build #1879 / 31573775442 — SUCCESS; 709 PASS / 0 FAIL; Pages #228 / 31574516725 — SUCCESS; Production Live Smoke #507 / 31574516705 — SUCCESS; discovery report 11 strategic surfaces / 21 clean routes / 0 findings; externalEvidence=not-collected.
+- No search-performance, CTR, ranking, engagement or causal product-impact claim was introduced. P4.1B remains **NEXT**, P4.1C remains **WAITING**, and P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** with clean-URL clock `2026-08-05T00:00:00Z`.
 
 ## 2026-08-11 — P4.1A Search Discovery repository readiness — REPOSITORY ACCEPTED
 
