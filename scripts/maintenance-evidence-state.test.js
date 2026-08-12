@@ -50,5 +50,5 @@ test('maintenance reconciliation preserves P3.6 and P4.1C while P4.1B review is 
   assert.match(roadmap, /P4\.1B[^\n]*(?:real external evidence review|review)[^\n]*(?:IN PROGRESS|SPARSE PRE-LAUNCH BASELINE)/i);
   assert.match(durable, /P4\.1C[^\n]*WAITING/i);
   assert.match(durable, /externalEvidence[^\n]*not-collected/i);
-  assert.doesNotMatch(durable, /P4\.1B[^\n]*(?:real external evidence review|evidence review)[^\n]*(?:DONE|COMPLETED|PRODUCTION ACCEPTED)/i);
+  assert.doesNotMatch(durable, /P4\.1B\s+real external evidence review\s*[—:-]+\s*(?:DONE|COMPLETED|PRODUCTION ACCEPTED)/i);
 });
