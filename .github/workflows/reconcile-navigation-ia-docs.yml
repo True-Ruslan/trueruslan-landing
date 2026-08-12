@@ -1,0 +1,116 @@
+name: Reconcile Navigation IA Docs
+
+on:
+  push:
+    branches:
+      - docs/reconcile-navigation-ia-production
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    if: github.event.head_commit.message != 'docs: apply navigation IA production reconciliation'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: docs/reconcile-navigation-ia-production
+          fetch-depth: 1
+      - name: Reconcile durable state
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          evidence = """```text
+          PR:                              #217
+          final feature head:              3900b9ad4444c0ba529fed33fada53490033cf8b
+          exact-head Build:                #1976 / 31624469154 — SUCCESS
+          Dependency Review:               #1397 / 31624469139 — SUCCESS
+          CodeQL:                          #1533 / 31624469226 — SUCCESS
+          Distribution Readiness:          #201 / 31624469136 — SUCCESS
+          quality artifact:                9152770039
+          quality digest:                  sha256:9c41388ea300522db106809238222c80e7ef84763bbd85cc4b21f5a30675a14a
+          accepted squash / deployed SHA:  9831521d5d248fa01c491e3cec031cef07fc8ec5
+          Pages:                           #240 / 31626103994 — SUCCESS
+          Pages deployment ID:             5874711313
+          Pages artifact:                  9153170230
+          Pages artifact digest:           sha256:268dc1d0c36b6e70998cd12b10304068e703cc6d8b69c8fb4078a84cb4ed81da
+          Pages verification reports:      9153176713
+          Pages reports digest:            sha256:40dfbddb658f6f894caff1d320bf71b7d61b961835cbefcb0bfc175db4f585ac
+          Production Live Smoke:           #533 / 31626170633 — SUCCESS
+          production artifact:             9153258510
+          production digest:               sha256:a4b26ea2fbb75850b7f38d979f7888d0167f3407b6eb6566449e7384c8787fef
+          ```"""
+
+          state = Path('docs/PROJECT_STATE.md')
+          text = state.read_text(encoding='utf-8')
+          old = '> Последнее смысловое обновление: **2026-08-12**, после production acceptance реального Google Search Console adapter и controlled launch pack; P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, actual launch — `not-published`, P3.6 — WAITING.'
+          new = '> Последнее смысловое обновление: **2026-08-12**, Navigation IA #217 production-accepted на exact deployed SHA `9831521d5d248fa01c491e3cec031cef07fc8ec5`; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6 — WAITING.'
+          assert text.count(old) == 1, 'PROJECT_STATE status marker mismatch'
+          marker = '## 0.3 2026-08-12 — Real GSC baseline + controlled launch pack'
+          assert text.count(marker) == 1, 'PROJECT_STATE insertion marker mismatch'
+          section = f"""## 0.4 2026-08-12 — Navigation information architecture — PRODUCTION ACCEPTED
+
+PR #217 выровнял видимую information architecture без второго navigation runtime: корни Diplodoc sidebar теперь `Проекты → Опыт → Материалы → Работа со мной → Обо мне`. Новый RU Materials hub объединяет Publications, Engineering Map, Engineering Notes и Sources; Notes сохраняет `Все заметки` и полный существующий note tree, `Обо мне` — `Сейчас`, `Фото`, `Контакты`. Existing English TOC branch остаётся build-owned, но `hidden: true`; прямые EN routes и top-right language selector сохранены.
+
+{evidence}
+
+Deployment-triggered Production Live #533 разрешил exact successful Pages deployment и прошёл baseline production, Yandex pre-consent, Portfolio Platform, flagship normalization, English Now, English Publications, Work with me, P3.4A–F и favicon gates. Durable ledger: `docs/acceptance/2026-08-12-navigation-information-architecture.md`.
+
+Это presentation/IA acceptance, а не search-performance/product-impact evidence. Controlled launch остаётся `not-published`; **P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — NEXT / WAITING FOR EXTERNAL EVIDENCE**. Clean-URL observation clock не сбрасывается: `2026-08-05T00:00:00Z`.
+
+"""
+          state.write_text(text.replace(old, new, 1).replace(marker, section + marker, 1), encoding='utf-8')
+
+          roadmap = Path('docs/ROADMAP.md')
+          text = roadmap.read_text(encoding='utf-8')
+          old = '> Обновлено: **2026-08-12**, real GSC adapter и controlled launch pack production-accepted; P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, actual launch — `not-published`, P3.6/P4.1C остаются evidence-gated.'
+          new = '> Обновлено: **2026-08-12**, Navigation IA #217 production-accepted; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются evidence-gated.'
+          assert text.count(old) == 1, 'ROADMAP status marker mismatch'
+          marker = '## 2026-08-12 accepted real search baseline / controlled launch pack'
+          assert text.count(marker) == 1, 'ROADMAP insertion marker mismatch'
+          section = f"""## 2026-08-12 accepted Navigation information architecture
+
+- **Navigation IA cleanup — DONE / PRODUCTION ACCEPTED** via PR #217 / exact deployed SHA `9831521d5d248fa01c491e3cec031cef07fc8ec5`.
+- Visible root order is now `Проекты → Опыт → Материалы → Работа со мной → Обо мне`; Materials owns Publications, Engineering Map, Engineering Notes and Sources, while About owns Сейчас, Фото and Контакты.
+- English remains a hidden build-only TOC branch; direct EN routes and the existing language selector are preserved. No second navigation runtime, dependency, locale build or search owner was introduced.
+- Exact-head Build #1976, Dependency Review #1397, CodeQL #1533, Distribution Readiness #201 and the full browser/visual/custom-domain matrix passed before merge.
+- Pages #240 / `31626103994`, deployment `5874711313` and deployment-triggered Production Live #533 / `31626170633` are SUCCESS. Production evidence is preserved in `docs/acceptance/2026-08-12-navigation-information-architecture.md`.
+- **Next product action remains evidence/operation-led, not another ungrounded navigation rewrite**: controlled manual launch is still `not-published`; P4.1B remains sparse/in-progress; P4.1C and P3.6 remain evidence-gated. Clean-URL clock stays `2026-08-05T00:00:00Z`.
+
+"""
+          roadmap.write_text(text.replace(old, new, 1).replace(marker, section + marker, 1), encoding='utf-8')
+
+          changelog = Path('docs/CHANGELOG.md')
+          text = changelog.read_text(encoding='utf-8')
+          old = '> Обновлено: **2026-08-12**, real GSC adapter и controlled launch pack production-reconciled; P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, actual launch — `not-published`, P3.6/P4.1C остаются открытыми.'
+          new = '> Обновлено: **2026-08-12**, Navigation IA #217 production-reconciled; controlled launch остаётся `not-published`, P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются открытыми.'
+          assert text.count(old) == 1, 'CHANGELOG status marker mismatch'
+          marker = '## 2026-08-12 — Real GSC baseline + controlled launch pack'
+          assert text.count(marker) == 1, 'CHANGELOG insertion marker mismatch'
+          section = f"""## 2026-08-12 — Navigation information architecture — PRODUCTION ACCEPTED
+
+- PR #217 aligned the visible Diplodoc sidebar to five roots: `Проекты → Опыт → Материалы → Работа со мной → Обо мне`, added the RU Materials hub, nested Publications / Engineering Map / Engineering Notes / Sources, nested Сейчас / Фото / Контакты under About, and made the existing English TOC branch build-only with `hidden: true` while preserving direct EN routes and the top-right language selector.
+- TDD preserved both intentional RED stages: 751/754 PASS with three old-IA failures, then 754/755 PASS while the browser gate was intentionally missing. Final feature head `3900b9ad4444c0ba529fed33fada53490033cf8b` passed Build #1976, Dependency Review #1397, CodeQL #1533, Distribution Readiness #201 and the complete browser/visual/custom-domain matrix.
+- PR #217 squash / deployed SHA `9831521d5d248fa01c491e3cec031cef07fc8ec5`; Pages #240 / `31626103994` — SUCCESS; GitHub Pages deployment `5874711313`; deployment-triggered Production Live #533 / `31626170633` — SUCCESS. Production artifact `9153258510`, digest `sha256:a4b26ea2fbb75850b7f38d979f7888d0167f3407b6eb6566449e7384c8787fef`.
+- Durable acceptance ledger: `docs/acceptance/2026-08-12-navigation-information-architecture.md`.
+- No search-performance, engagement or causal product-impact claim is introduced. Controlled launch remains `not-published`; P4.1B remains IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C remains WAITING; P3.6 remains NEXT / WAITING; clean-URL clock remains `2026-08-05T00:00:00Z`.
+
+"""
+          changelog.write_text(text.replace(old, new, 1).replace(marker, section + marker, 1), encoding='utf-8')
+          PY
+
+          git diff --check
+          git diff -- docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md
+
+      - name: Commit reconciliation
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md
+          git commit -m 'docs: apply navigation IA production reconciliation'
+          git push origin HEAD:docs/reconcile-navigation-ia-production
