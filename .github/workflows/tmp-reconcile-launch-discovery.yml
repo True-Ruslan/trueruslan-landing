@@ -1,0 +1,73 @@
+name: Temporary launch discovery reconciliation
+
+on:
+  push:
+    branches:
+      - docs/reconcile-launch-discovery-state
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    if: ${{ !contains(github.event.head_commit.message, 'docs: apply launch discovery evidence reconciliation') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+
+      - name: Patch durable evidence docs
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'anchor missing in {path}')
+              p.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          state = 'docs/PROJECT_STATE.md'
+          replace_once(
+              state,
+              '> Последнее смысловое обновление: **2026-08-11**, после repository acceptance P4.1A Search Discovery readiness и reconciliation оставшихся narrative evidence boundaries; C7 остаётся production baseline, P3.6 measurement остаётся открытым.',
+              '> Последнее смысловое обновление: **2026-08-12**, после production acceptance launch distribution, launch preview metadata и P4.1A Search Discovery readiness; P3.6 measurement и P4.1B external evidence остаются открытыми.',
+          )
+          state_anchor = 'Repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance остаются разными фактами.\n\n'
+          state_section = '''## 0. 2026-08-12 — Current launch / discovery acceptance\n\nТри последовательных platform/discovery slice приняты на exact deployment evidence. Они улучшают readiness первого контакта и структурную discoverability, но не являются доказательством поискового трафика, CTR, ранжирования, engagement или product impact.\n\n### Launch distribution readiness — PRODUCTION ACCEPTED\n\n```text\nPR #202 squash / deployed SHA:  91c4d3d5cb464a107e3d14d8d091cf4eb0c1638f\nPages:                          #226 / 31572318752 — SUCCESS\nProduction Live Smoke:          #504 / 31572389064 — SUCCESS\ndistribution readiness:         10 targets / 4 profiles / 0 stale / 0 unverified\n```\n\nCanonical launch URLs теперь используют production clean-route owner; launch registry остаётся manual/read-only и не публикует материалы во внешние сервисы автоматически.\n\n### Launch preview metadata — PRODUCTION ACCEPTED\n\n```text\nPR #203 squash / deployed SHA:  ffd420c4b2b9e42385529b7654eaaab5f0dbd9cf\nunit tests:                     701 PASS / 0 FAIL\nPages:                          #227 / 31573207215 — SUCCESS\nProduction Live Smoke:          #505 / 31573207182 — SUCCESS\nmetadata browser scope:         10 launch + 5 supplemental\n```\n\nCanonical, Open Graph и Twitter/X preview metadata используют тот же clean-route contract; HTTPS, locale и deterministic 1200×630 preview boundaries проверяются fail-closed.\n\n### P4.1A Search Discovery readiness — PRODUCTION ACCEPTED\n\n```text\nPR #201 squash / deployed SHA:  e75a4d24a5d9f2b8ace95c9a0629e7567992741b\nBuild:                          #1879 / 31573775442 — SUCCESS\nunit tests:                     709 PASS / 0 FAIL\nPages:                          #228 / 31574516725 — SUCCESS\nProduction Live Smoke:          #507 / 31574516705 — SUCCESS\ndiscovery readiness:            11 strategic surfaces / 21 clean routes / 0 findings\nexternalEvidence:               not-collected\n```\n\nP4.1A доказывает repository/build/deployment readiness, а не Search Console или Yandex Webmaster performance. **P4.1B — NEXT** только после реальных external observations; **P4.1C — WAITING** и остаётся evidence-gated. P3.6 остаётся **NEXT / WAITING FOR EXTERNAL EVIDENCE**; исходный clean-URL observation clock `2026-08-05T00:00:00Z` не сбрасывается.\n\n---\n\n'''
+          replace_once(state, state_anchor, state_anchor + state_section)
+
+          roadmap = 'docs/ROADMAP.md'
+          replace_once(
+              roadmap,
+              '> Обновлено: **2026-08-11**, P4.1A Search Discovery repository-readiness implementation in progress; Portfolio Clarity C7 остаётся production baseline, P3.6 measurement ожидает реальные aggregate observations.',
+              '> Обновлено: **2026-08-12**, launch distribution, launch preview metadata и P4.1A Search Discovery production-accepted; P3.6 measurement и P4.1B external evidence ожидают реальные observations.',
+          )
+          roadmap_anchor = '> Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.\n\n'
+          roadmap_section = '''## 2026-08-12 accepted launch / discovery baseline\n\n- PR #202 / `91c4d3d5cb464a107e3d14d8d091cf4eb0c1638f`: Pages #226 / 31572318752 — SUCCESS; Production Live Smoke #504 / 31572389064 — SUCCESS; 10 targets / 4 profiles / 0 stale / 0 unverified.\n- PR #203 / `ffd420c4b2b9e42385529b7654eaaab5f0dbd9cf`: 701 PASS / 0 FAIL; Pages #227 / 31573207215 — SUCCESS; Production Live Smoke #505 / 31573207182 — SUCCESS; 10 launch + 5 supplemental metadata surfaces.\n- P4.1A PR #201 / `e75a4d24a5d9f2b8ace95c9a0629e7567992741b`: Build #1879 / 31573775442 — SUCCESS; 709 PASS / 0 FAIL; Pages #228 / 31574516725 — SUCCESS; Production Live Smoke #507 / 31574516705 — SUCCESS; 11 strategic surfaces / 21 clean routes / 0 findings; externalEvidence=not-collected.\n- **P4.1B — NEXT**: collect real Search Console / Yandex Webmaster observations only when meaningful external evidence exists.\n- **P4.1C — WAITING**: user-facing metadata/copy/internal-link changes require P4.1B evidence or a concrete structural finding.\n- P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; `2026-08-05T00:00:00Z` remains the clean-URL observation clock.\n\n'''
+          replace_once(roadmap, roadmap_anchor, roadmap_anchor + roadmap_section)
+
+          changelog = 'docs/CHANGELOG.md'
+          replace_once(
+              changelog,
+              '> Обновлено: **2026-08-11**, P4.1A Search Discovery repository-readiness accepted on exact PR evidence; C7 остаётся production baseline, P3.6 measurement остаётся открытым.',
+              '> Обновлено: **2026-08-12**, launch distribution, launch preview metadata и P4.1A Search Discovery production-accepted; P3.6 measurement и P4.1B external evidence остаются открытыми.',
+          )
+          changelog_anchor = '> Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.\n\n'
+          changelog_section = '''## 2026-08-12 — Launch / Discovery production reconciliation\n\n- PR #202 launch distribution accepted on exact deployed SHA `91c4d3d5cb464a107e3d14d8d091cf4eb0c1638f`; Pages #226 / 31572318752 — SUCCESS; Production Live Smoke #504 / 31572389064 — SUCCESS; readiness remained 10 targets / 4 profiles / 0 stale / 0 unverified.\n- PR #203 launch preview metadata accepted on exact deployed SHA `ffd420c4b2b9e42385529b7654eaaab5f0dbd9cf`; 701 PASS / 0 FAIL; Pages #227 / 31573207215 — SUCCESS; Production Live Smoke #505 / 31573207182 — SUCCESS; browser metadata scope 10 launch + 5 supplemental.\n- P4.1A PR #201 accepted on exact deployed SHA `e75a4d24a5d9f2b8ace95c9a0629e7567992741b`; Build #1879 / 31573775442 — SUCCESS; 709 PASS / 0 FAIL; Pages #228 / 31574516725 — SUCCESS; Production Live Smoke #507 / 31574516705 — SUCCESS; discovery report 11 strategic surfaces / 21 clean routes / 0 findings; externalEvidence=not-collected.\n- No search-performance, CTR, ranking, engagement or causal product-impact claim was introduced. P4.1B remains **NEXT**, P4.1C remains **WAITING**, and P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** with clean-URL clock `2026-08-05T00:00:00Z`.\n\n'''
+          replace_once(changelog, changelog_anchor, changelog_anchor + changelog_section)
+
+      - name: Commit reconciliation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md
+          git diff --cached --check
+          git commit -m 'docs: apply launch discovery evidence reconciliation'
+          git push origin HEAD:${GITHUB_REF_NAME}
