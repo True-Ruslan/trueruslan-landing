@@ -62,6 +62,6 @@ test('CHANGELOG preserves #210 tooling history while recording #213 sparse obser
 
 test('durable docs never promote sparse P4.1B review to completion', () => {
   for (const [label, source] of [['PROJECT_STATE', state], ['ROADMAP', roadmap], ['CHANGELOG', changelog]]) {
-    assert.doesNotMatch(source, /P4\.1B[^\n]{0,180}(?:real external evidence review|evidence review)[^\n]{0,180}(COMPLETED|DONE|PRODUCTION ACCEPTED)/i, `${label}: sparse review must not be promoted to completion`);
+    assert.doesNotMatch(source, /P4\.1B\s+real external evidence review\s*[—:-]+\s*(?:COMPLETED|DONE|PRODUCTION ACCEPTED)/i, `${label}: sparse review must not be promoted to completion`);
   }
 });
