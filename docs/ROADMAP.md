@@ -1,8 +1,17 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-12**, real GSC adapter и controlled launch pack production-accepted; P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, actual launch — `not-published`, P3.6/P4.1C остаются evidence-gated.
+> Обновлено: **2026-08-12**, Navigation IA #217 production-accepted; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются evidence-gated.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-12 accepted Navigation information architecture
+
+- **Navigation IA cleanup — DONE / PRODUCTION ACCEPTED** via PR #217 / exact deployed SHA `9831521d5d248fa01c491e3cec031cef07fc8ec5`.
+- Visible root order is now `Проекты → Опыт → Материалы → Работа со мной → Обо мне`; Materials owns Publications, Engineering Map, Engineering Notes and Sources, while About owns Сейчас, Фото and Контакты.
+- English remains a hidden build-only TOC branch; direct EN routes and the existing language selector are preserved. No second navigation runtime, dependency, locale build or search owner was introduced.
+- Exact-head Build #1976, Dependency Review #1397, CodeQL #1533, Distribution Readiness #201 and the full browser/visual/custom-domain matrix passed before merge.
+- Pages #240 / `31626103994`, deployment `5874711313` and deployment-triggered Production Live #533 / `31626170633` are SUCCESS. Production evidence is preserved in `docs/acceptance/2026-08-12-navigation-information-architecture.md`.
+- **Next product action remains evidence/operation-led, not another ungrounded navigation rewrite**: controlled manual launch is still `not-published`; P4.1B remains sparse/in-progress; P4.1C and P3.6 remain evidence-gated. Clean-URL clock stays `2026-08-05T00:00:00Z`.
 
 ## 2026-08-12 accepted real search baseline / controlled launch pack
 

@@ -1,8 +1,16 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-12**, real GSC adapter и controlled launch pack production-reconciled; P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, actual launch — `not-published`, P3.6/P4.1C остаются открытыми.
+> Обновлено: **2026-08-12**, Navigation IA #217 production-reconciled; controlled launch остаётся `not-published`, P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются открытыми.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-12 — Navigation information architecture — PRODUCTION ACCEPTED
+
+- PR #217 aligned the visible Diplodoc sidebar to five roots: `Проекты → Опыт → Материалы → Работа со мной → Обо мне`, added the RU Materials hub, nested Publications / Engineering Map / Engineering Notes / Sources, nested Сейчас / Фото / Контакты under About, and made the existing English TOC branch build-only with `hidden: true` while preserving direct EN routes and the top-right language selector.
+- TDD preserved both intentional RED stages: 751/754 PASS with three old-IA failures, then 754/755 PASS while the browser gate was intentionally missing. Final feature head `3900b9ad4444c0ba529fed33fada53490033cf8b` passed Build #1976, Dependency Review #1397, CodeQL #1533, Distribution Readiness #201 and the complete browser/visual/custom-domain matrix.
+- PR #217 squash / deployed SHA `9831521d5d248fa01c491e3cec031cef07fc8ec5`; Pages #240 / `31626103994` — SUCCESS; GitHub Pages deployment `5874711313`; deployment-triggered Production Live #533 / `31626170633` — SUCCESS. Production artifact `9153258510`, digest `sha256:a4b26ea2fbb75850b7f38d979f7888d0167f3407b6eb6566449e7384c8787fef`.
+- Durable acceptance ledger: `docs/acceptance/2026-08-12-navigation-information-architecture.md`.
+- No search-performance, engagement or causal product-impact claim is introduced. Controlled launch remains `not-published`; P4.1B remains IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C remains WAITING; P3.6 remains NEXT / WAITING; clean-URL clock remains `2026-08-05T00:00:00Z`.
 
 ## 2026-08-12 — Real GSC baseline + controlled launch pack
 
