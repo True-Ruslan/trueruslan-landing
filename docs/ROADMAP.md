@@ -1,8 +1,17 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-11**, P4.1A Search Discovery repository-readiness implementation in progress; Portfolio Clarity C7 остаётся production baseline, P3.6 measurement ожидает реальные aggregate observations.
+> Обновлено: **2026-08-12**, launch distribution, launch preview metadata и P4.1A Search Discovery production-accepted; P3.6 measurement и P4.1B external evidence ожидают реальные observations.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-12 accepted launch / discovery baseline
+
+- PR #202 / `91c4d3d5cb464a107e3d14d8d091cf4eb0c1638f`: Pages #226 / 31572318752 — SUCCESS; Production Live Smoke #504 / 31572389064 — SUCCESS; 10 targets / 4 profiles / 0 stale / 0 unverified.
+- PR #203 / `ffd420c4b2b9e42385529b7654eaaab5f0dbd9cf`: 701 PASS / 0 FAIL; Pages #227 / 31573207215 — SUCCESS; Production Live Smoke #505 / 31573207182 — SUCCESS; 10 launch + 5 supplemental metadata surfaces.
+- P4.1A PR #201 / `e75a4d24a5d9f2b8ace95c9a0629e7567992741b`: Build #1879 / 31573775442 — SUCCESS; 709 PASS / 0 FAIL; Pages #228 / 31574516725 — SUCCESS; Production Live Smoke #507 / 31574516705 — SUCCESS; 11 strategic surfaces / 21 clean routes / 0 findings; externalEvidence=not-collected.
+- **P4.1B — NEXT**: collect real Search Console / Yandex Webmaster observations only when meaningful external evidence exists.
+- **P4.1C — WAITING**: user-facing metadata/copy/internal-link changes require P4.1B evidence or a concrete structural finding.
+- P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; `2026-08-05T00:00:00Z` remains the clean-URL observation clock.
 
 ## Principles
 

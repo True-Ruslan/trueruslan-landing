@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-11**, после repository acceptance P4.1A Search Discovery readiness и reconciliation оставшихся narrative evidence boundaries; C7 остаётся production baseline, P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-12**, после production acceptance launch distribution, launch preview metadata и P4.1A Search Discovery readiness; P3.6 measurement и P4.1B external evidence остаются открытыми.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -12,6 +12,49 @@
 4. `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
 Repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance остаются разными фактами.
+
+## 0. 2026-08-12 — Current launch / discovery acceptance
+
+Три последовательных platform/discovery slice приняты на exact deployment evidence. Они улучшают readiness первого контакта и структурную discoverability, но не являются доказательством поискового трафика, CTR, ранжирования, engagement или product impact.
+
+### Launch distribution readiness — PRODUCTION ACCEPTED
+
+```text
+PR #202 squash / deployed SHA:  91c4d3d5cb464a107e3d14d8d091cf4eb0c1638f
+Pages:                          #226 / 31572318752 — SUCCESS
+Production Live Smoke:          #504 / 31572389064 — SUCCESS
+distribution readiness:         10 targets / 4 profiles / 0 stale / 0 unverified
+```
+
+Canonical launch URLs теперь используют production clean-route owner; launch registry остаётся manual/read-only и не публикует материалы во внешние сервисы автоматически.
+
+### Launch preview metadata — PRODUCTION ACCEPTED
+
+```text
+PR #203 squash / deployed SHA:  ffd420c4b2b9e42385529b7654eaaab5f0dbd9cf
+unit tests:                     701 PASS / 0 FAIL
+Pages:                          #227 / 31573207215 — SUCCESS
+Production Live Smoke:          #505 / 31573207182 — SUCCESS
+metadata browser scope:         10 launch + 5 supplemental
+```
+
+Canonical, Open Graph и Twitter/X preview metadata используют тот же clean-route contract; HTTPS, locale и deterministic 1200×630 preview boundaries проверяются fail-closed.
+
+### P4.1A Search Discovery readiness — PRODUCTION ACCEPTED
+
+```text
+PR #201 squash / deployed SHA:  e75a4d24a5d9f2b8ace95c9a0629e7567992741b
+Build:                          #1879 / 31573775442 — SUCCESS
+unit tests:                     709 PASS / 0 FAIL
+Pages:                          #228 / 31574516725 — SUCCESS
+Production Live Smoke:          #507 / 31574516705 — SUCCESS
+discovery readiness:            11 strategic surfaces / 21 clean routes / 0 findings
+externalEvidence:               not-collected
+```
+
+P4.1A доказывает repository/build/deployment readiness, а не Search Console или Yandex Webmaster performance. **P4.1B — NEXT** только после реальных external observations; **P4.1C — WAITING** и остаётся evidence-gated. P3.6 остаётся **NEXT / WAITING FOR EXTERNAL EVIDENCE**; исходный clean-URL observation clock `2026-08-05T00:00:00Z` не сбрасывается.
+
+---
 
 ---
 
