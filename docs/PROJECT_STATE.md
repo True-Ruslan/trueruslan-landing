@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-12**, после production acceptance launch/discovery и maintenance reconciliation; P3.6 measurement и P4.1B external evidence остаются открытыми.
+> Последнее смысловое обновление: **2026-08-12**, после current evidence reconciliation и production acceptance P4.1B intake tooling; P3.6 measurement и реальные P4.1B external observations остаются открытыми.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -12,6 +12,42 @@
 4. `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
 Repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance остаются разными фактами.
+
+## 0.2 2026-08-12 — Current evidence reconciliation + P4.1B intake tooling
+
+### Current evidence reconciliation — ACCEPTED
+
+```text
+PR #209 squash:                  ccf1996ced5c90511812ad435bb5829df56d30b3
+exact-head Build:                #1914 / 31597254382 — SUCCESS
+unit tests:                      723 PASS / 0 FAIL
+Content Freshness:               #191 / 31597254358 — SUCCESS
+CodeQL:                          #1465 / 31597254387 — SUCCESS
+Dependency Review:               #1336 / 31597254439 — SUCCESS
+Pages:                           #233 / 31598153664 — SUCCESS
+Production Live Smoke:           #519 / 31598218971 — SUCCESS
+```
+
+PR #209 reconciled Vlezet, VillAIgence и Portfolio Platform against current evidence without lifecycle or installed-acceptance promotion. Vlezet M8.2 remains Draft/pending focused product-owner retest; VillAIgence official installed release remains `0.2.0+1.21.1` / `7 PASS / 0 FAIL`; Portfolio P3.6 remains NEXT / WAITING.
+
+### P4.1B intake tooling — PRODUCTION ACCEPTED
+
+```text
+PR #210 exact head:              c5153ee6e9d55e44507a0a11ef302fd54a0aa6af
+PR #210 squash / deployed SHA:   6083e4d950d74b272cce199fedccc730dfcc4fed
+Build:                           #1922 / 31599699918 — SUCCESS
+unit tests:                      731 PASS / 0 FAIL
+CodeQL:                          #1474 / 31599699781 — SUCCESS
+Dependency Review:               #1344 / 31599699860 — SUCCESS
+Pages:                           #234 / 31600575541 — SUCCESS
+Production Live Smoke:           #520 / 31600575540 — SUCCESS
+post-merge CodeQL:               #1475 / 31600575547 — SUCCESS
+externalEvidence:                not-collected
+```
+
+P4.1B intake tooling accepts only explicit operator-supplied aggregate Google Search Console / Yandex Webmaster observations, validates same-property URLs and bounded metrics, ties local reports to the exact input SHA-256 and keeps real files under ignored `private/search-discovery/`. Ordinary `npm test` and Build do not collect or fabricate external evidence.
+
+Raw CSV/API adapters intentionally wait for an actual operator export/API response; upstream shapes are not guessed. **P4.1B intake tooling is accepted, but real external evidence collection/review remains NEXT. P4.1C remains WAITING. P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE**, and the clean-URL observation clock remains `2026-08-05T00:00:00Z`.
 
 ## 0.1 2026-08-12 — Current maintenance acceptance / dependency blocker
 

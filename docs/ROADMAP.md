@@ -1,8 +1,17 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-12**, launch/discovery и maintenance baseline reconciled; P3.6 measurement и P4.1B external evidence ожидают реальные observations.
+> Обновлено: **2026-08-12**, current evidence и P4.1B intake tooling production-reconciled; P3.6 measurement и реальные P4.1B external observations ожидают evidence.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-12 accepted evidence / P4.1B intake baseline
+
+- PR #209 / `ccf1996ced5c90511812ad435bb5829df56d30b3`: current Vlezet/VillAIgence/Portfolio evidence reconciled; final Build #1914 / 31597254382 — SUCCESS; **723 PASS / 0 FAIL**; Content Freshness #191 — SUCCESS; Pages #233 and Production Live #519 — SUCCESS. Lifecycle, installed-release and P3.6 boundaries were preserved.
+- **P4.1B intake tooling — DONE / PRODUCTION ACCEPTED** via PR #210 / `6083e4d950d74b272cce199fedccc730dfcc4fed`: Build #1922 / 31599699918 — SUCCESS; **731 PASS / 0 FAIL**; Pages #234 / 31600575541 — SUCCESS; Production Live #520 / 31600575540 — SUCCESS; post-merge CodeQL #1475 / 31600575547 — SUCCESS.
+- **P4.1B real external evidence collection/review — NEXT**: supply an actual authenticated Google Search Console / Yandex Webmaster export or read-only API result, validate it through the accepted intake contract, then review query/page, RU/EN, legacy-URL and indexing observations.
+- Raw export adapters are implemented only against an actual operator-provided shape; no sample metrics or guessed schemas become evidence.
+- **P4.1C — WAITING** for reviewed real P4.1B evidence or a concrete structural finding.
+- **P3.6 — NEXT / WAITING FOR EXTERNAL EVIDENCE** remains separate; clean-URL observation clock stays `2026-08-05T00:00:00Z`.
 
 ## 2026-08-12 accepted maintenance baseline
 
@@ -11,14 +20,14 @@
 - PR #207 — **CLOSED UNMERGED**: regenerated candidate has byte-identical `package-lock.json` blob `dac054d274e48ce93828e97b83d09cc121024575`, therefore inherits the same #82 blocker.
 - PR #206 / `ef40c960e1849ee0551cb478d0cd71a3f69ef601`: removed Dependabot unmanaged labels; TDD RED Build #1890 / 31581385552 — expected FAILURE; final Build #1891 / 31581517909 — SUCCESS; 715 PASS / 0 FAIL; Pages #231 / 31582194873 — SUCCESS; Production Live Smoke #515 / 31582244697 — SUCCESS.
 - Dependency maintenance must remain fail-closed: functional green does not override an increased known-vulnerability footprint.
-- P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; `2026-08-05T00:00:00Z` remains the clean-URL observation clock. **P4.1B — NEXT**, **P4.1C — WAITING**.
+- P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; `2026-08-05T00:00:00Z` remains the clean-URL observation clock. **P4.1B intake tooling — DONE / PRODUCTION ACCEPTED; P4.1B collection/review — NEXT; P4.1C — WAITING**.
 
 ## 2026-08-12 accepted launch / discovery baseline
 
 - PR #202 / `91c4d3d5cb464a107e3d14d8d091cf4eb0c1638f`: Pages #226 / 31572318752 — SUCCESS; Production Live Smoke #504 / 31572389064 — SUCCESS; 10 targets / 4 profiles / 0 stale / 0 unverified.
 - PR #203 / `ffd420c4b2b9e42385529b7654eaaab5f0dbd9cf`: 701 PASS / 0 FAIL; Pages #227 / 31573207215 — SUCCESS; Production Live Smoke #505 / 31573207182 — SUCCESS; 10 launch + 5 supplemental metadata surfaces.
 - P4.1A PR #201 / `e75a4d24a5d9f2b8ace95c9a0629e7567992741b`: Build #1879 / 31573775442 — SUCCESS; 709 PASS / 0 FAIL; Pages #228 / 31574516725 — SUCCESS; Production Live Smoke #507 / 31574516705 — SUCCESS; 11 strategic surfaces / 21 clean routes / 0 findings; externalEvidence=not-collected.
-- **P4.1B — NEXT**: collect real Search Console / Yandex Webmaster observations only when meaningful external evidence exists.
+- **P4.1B intake tooling — DONE / PRODUCTION ACCEPTED** via PR #210; **P4.1B collection/review — NEXT**: collect real Search Console / Yandex Webmaster observations only when meaningful external evidence exists.
 - **P4.1C — WAITING**: user-facing metadata/copy/internal-link changes require P4.1B evidence or a concrete structural finding.
 - P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; `2026-08-05T00:00:00Z` remains the clean-URL observation clock.
 
