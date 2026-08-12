@@ -1,0 +1,39 @@
+name: Temporary P4.1B state reconciliation
+
+on:
+  push:
+    branches:
+      - docs/reconcile-p4-1b-intake-state
+    paths:
+      - .github/workflows/reconcile-p4-1b-state.yml
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: docs/reconcile-p4-1b-intake-state
+          fetch-depth: 0
+
+      - name: Reconcile durable state files
+        run: node scripts/reconcile-p4-1b-state.cjs
+
+      - name: Verify migration diff
+        run: |
+          git diff --check
+          git diff --exit-code -- scripts/p4-1b-intake-state-reconciliation.test.js
+          git diff --name-only | sort | diff -u - <(printf '%s\n' docs/CHANGELOG.md docs/PROJECT_STATE.md docs/ROADMAP.md)
+
+      - name: Commit reconciled docs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md
+          git commit -m 'docs: reconcile accepted P4.1B intake tooling'
+          git push origin HEAD:docs/reconcile-p4-1b-intake-state
