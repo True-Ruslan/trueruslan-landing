@@ -178,8 +178,8 @@ async function assertEnglishVlezetNoJsEvidence(page) {
     'closed unmerged',
     'Assisted Tracing design gate PR #52',
     'M8.1 precision drawing PR #85',
-    'M8.2 top toolbar Draft PR #87',
-    'focused clipboard retest remains pending',
+    'M8.2 precision drawing and structural editing Draft PR #87',
+    'Focused manual product-owner retest remains pending',
   ];
   for (const marker of markers) {
     if (!text.includes(marker)) throw new Error(`vlezet: English no-JS evidence misses ${marker}`);

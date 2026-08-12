@@ -29,14 +29,21 @@
   {
     "date": "2026-08",
     "title": "C7 production baseline + P3.6 handoff accepted",
-    "description": "Portfolio Clarity C7 is production-accepted on exact deployed SHA 134043fa2bb5f6612266a04eab2853f71b207328 after Pages #223 and deployment-triggered Production Live #498. The tracked presentation baseline is context-only provenance and does not reset measurement. P3.6 remains NEXT / WAITING for real operator-observed aggregate evidence and human review.",
-    "state": "current",
+    "description": "Portfolio Clarity C7 is production-accepted on exact deployed SHA 134043fa2bb5f6612266a04eab2853f71b207328 after Pages #223 and deployment-triggered Production Live #498. The tracked presentation baseline is context-only provenance and does not reset measurement. P3.6 remains NEXT / WAITING for real operator-observed aggregate evidence and human review. C7 remains accepted historical production evidence; later launch/discovery and maintenance slices advanced the current exact production baseline without resetting P3.6.",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/198"
   },
   {
     "date": "NEXT",
     "title": "P3.6 measurement checkpoint — WAITING",
-    "description": "Wait for real equal-duration operator-observed aggregate evidence, explicit traffic-sufficiency assessment and human review. Synthetic pipeline proof or C7 acceptance cannot produce engagement, SEO or causal product-impact conclusions.",
+    "description": "P3.6 remains NEXT / WAITING for real equal-duration operator-observed aggregate evidence, explicit traffic-sufficiency assessment and human review. P4.1B is separately NEXT for real Search Console / Yandex Webmaster observations; P4.1C remains WAITING for that evidence or a concrete structural finding. Synthetic pipeline or production readiness cannot create engagement, SEO or causal product-impact conclusions.",
     "state": "next"
+  },
+  {
+    "date": "2026-08",
+    "title": "Current launch / discovery / maintenance production baseline",
+    "description": "Exact master 80195a39ac40cb5f8c97d1f8ea8bbd1f3d744613 is production-accepted after launch distribution, preview metadata, P4.1A Search Discovery readiness and maintenance reconciliation. Pages #232, Production Live #516 and CodeQL #1449 are green; P4.1A remains repository/deployment readiness only with externalEvidence=not-collected.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/208"
   }
 ]

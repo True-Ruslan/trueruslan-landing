@@ -48,13 +48,13 @@ test('P3.3 preserves canonical lifecycle labels and routes', () => {
   assert.equal(livingworld.href, 'landing/projects/livingworld.html');
 });
 
-test('Vlezet preserves M7.8B history while M8.1 is accepted and M8.2 is the pending product boundary', () => {
+test('Vlezet preserves M7.8B history while M8.1 is accepted and M8.2 remains the pending product boundary', () => {
   const evidence = evidenceMap().get('vlezet');
-  assert.equal(evidence.lastVerified, '2026-08-11');
+  assert.equal(evidence.lastVerified, '2026-08-12');
   assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted recognition slice' && value === 'M7.8B'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Automatic M7.8C result' && /FAIL.*closed unmerged/i.test(value)));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted editor slice' && /M8\.1.*accepted.*merged/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.2.*Draft.*retest pending/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.2.*precision.*structural.*Draft/i.test(value) && /retest pending/i.test(value)));
 
   const failed = findSignal(evidence, 'Automatic M7.8C');
   assert.equal(failed.state, 'failed');
@@ -76,27 +76,28 @@ test('Vlezet preserves M7.8B history while M8.1 is accepted and M8.2 is the pend
   assert.equal(acceptedEditor.state, 'merged');
   assert.match(acceptedEditor.scope, /product-owner accepted.*9\/9|9\/9.*product-owner accepted/i);
 
-  const active = findSignal(evidence, 'M8.2 top toolbar Draft PR #87');
+  const active = findSignal(evidence, 'M8.2 precision drawing and structural editing Draft PR #87');
   assert.equal(active.state, 'pending');
-  assert.match(active.scope, /01–07.*passed/i);
-  assert.match(active.scope, /clipboard retest.*pending/i);
+  assert.match(active.scope, /original seven.*passed/i);
+  assert.match(active.scope, /focused manual product-owner retest remains pending/i);
+  assert.match(active.scope, /no merge, release, lifecycle promotion or acceptance/i);
 
   const history = readJson('data/project-history/vlezet.json');
   assert.equal(history.filter(({state}) => state === 'current').length, 1);
   assert.equal(history.filter(({state}) => state === 'next').length, 1);
-  assert.match(history.find(({state}) => state === 'current').title, /M8\.2.*Draft/i);
-  assert.match(history.find(({state}) => state === 'next').description, /clipboard retest/i);
+  assert.match(history.find(({state}) => state === 'current').title, /M8\.2.*precision.*structural.*Draft/i);
+  assert.match(history.find(({state}) => state === 'next').description, /manual product-owner retest/i);
 });
 
 test('VillAIgence preserves official 0.2 installed acceptance while later source capability advances independently', () => {
   const evidence = evidenceMap().get('livingworld');
-  assert.equal(evidence.lastVerified, '2026-08-11');
+  assert.equal(evidence.lastVerified, '2026-08-12');
   assert.ok(evidence.versions.some(({label, value}) => label === 'Current official release' && value === '0.2.0+1.21.1'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Installed 0.2.0 result' && value === '7 PASS / 0 FAIL'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Deferred installed boundaries' && value.includes('VAI-M2-INST-005') && value.includes('VAI-CONCUR-004')));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Controlled semantic boundary' && /BELIEF.*FACT.*SYSTEM_OBSERVED/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Latest merged source capability' && /causal NPC↔NPC social mutation.*#153/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Active development slice' && /Personality.*social snapshot.*Draft.*#155/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Latest merged source capability' && /0\.3.*release convergence.*#160/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Active development slice' && /0\.3.*release convergence/i.test(value) && /release-request|candidate/i.test(value)));
 
   const release = findSignal(evidence, 'Official 0.2.0+1.21.1');
   assert.equal(release.state, 'published');
@@ -120,15 +121,27 @@ test('VillAIgence preserves official 0.2 installed acceptance while later source
   assert.match(social.scope, /620\/620 tests.*146 gates/i);
   assert.match(social.scope, /post-release source capability/i);
 
-  const pending = findSignal(evidence, 'Personality / social snapshot Draft PR #155');
-  assert.equal(pending.state, 'pending');
-  assert.match(pending.scope, /Draft TDD/i);
-  assert.match(pending.scope, /not an installed release/i);
+  const personality = findSignal(evidence, 'Personality / social snapshot PR #155');
+  assert.equal(personality.state, 'merged');
+  assert.match(personality.scope, /source capability/i);
+  assert.match(personality.scope, /official installed release remains 0\.2\.0\+1\.21\.1/i);
+
+  for (const label of [
+    'Personality/social dialogue integration PR #158',
+    '0.3 dialogue integration state reconciliation PR #159',
+    '0.3 release convergence contract PR #160',
+  ]) {
+    const merged = findSignal(evidence, label);
+    assert.equal(merged.state, 'merged');
+    assert.match(merged.scope, /0\.2\.0\+1\.21\.1/);
+    assert.match(merged.scope, /publication.*skipped|not a 0\.3 release|no new release/i);
+  }
 
   const history = readJson('data/project-history/livingworld.json');
   assert.equal(history.filter(({state}) => state === 'current').length, 1);
   assert.equal(history.filter(({state}) => state === 'next').length, 1);
-  assert.match(history.find(({state}) => state === 'current').title, /Personality.*social snapshot.*Draft/i);
+  assert.match(history.find(({state}) => state === 'current').title, /0\.3.*release convergence/i);
+  assert.match(history.find(({state}) => state === 'next').title, /release-request|candidate/i);
 });
 
 test('normalized case studies expose current bounded related material and do not promote pending work', () => {

@@ -32,13 +32,13 @@ function signal(snapshot, url) {
   return value;
 }
 
-function currentTimelineEntry(entries, slug) {
-  const current = entries.filter((entry) => entry.state === 'current');
-  assert.equal(current.length, 1, `${slug} must have exactly one current timeline entry`);
-  return current[0];
+function timelineEntry(entries, slug, state) {
+  const matches = entries.filter((entry) => entry.state === state);
+  assert.equal(matches.length, 1, `${slug} must have exactly one ${state} timeline entry`);
+  return matches[0];
 }
 
-test('freshness reconciliation records 2026-08-11 current truth without promoting lifecycle or measurement boundaries', () => {
+test('freshness reconciliation records current truth without promoting lifecycle, installed acceptance or measurement boundaries', () => {
   const projects = readJson('data/projects.json');
   const evidence = readJson('data/project-evidence.json');
   const vlezetHistory = readJson('data/project-history/vlezet.json');
@@ -54,10 +54,10 @@ test('freshness reconciliation records 2026-08-11 current truth without promotin
 
   assert.equal(vlezetProject.status, 'pre-production');
   assert.equal(vlezetProject.statusLabel, 'ACTIVE DEVELOPMENT');
-  assert.equal(vlezetEvidence.lastVerified, '2026-08-11');
+  assert.equal(vlezetEvidence.lastVerified, '2026-08-12');
   assert.ok(vlezetEvidence.versions.some(({label, value}) => label === 'Accepted recognition slice' && value === 'M7.8B'));
   assert.ok(vlezetEvidence.versions.some(({label, value}) => label === 'Accepted editor slice' && /M8\.1.*accepted.*merged/i.test(value)));
-  assert.ok(vlezetEvidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.2.*Draft.*clipboard.*pending/i.test(value)));
+  assert.ok(vlezetEvidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.2.*precision.*structural.*Draft/i.test(value) && /retest.*pending/i.test(value)));
 
   assert.equal(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/42').state, 'failed');
   assert.equal(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/44').state, 'unavailable');
@@ -66,48 +66,59 @@ test('freshness reconciliation records 2026-08-11 current truth without promotin
   assert.match(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/52').scope, /closed unmerged.*superseded/i);
   assert.equal(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/85').state, 'merged');
   assert.match(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/85').scope, /product-owner accepted.*9\/9|9\/9.*product-owner accepted/i);
-  assert.equal(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/87').state, 'pending');
-  assert.match(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/87').scope, /clipboard retest.*pending/i);
-  assert.match(currentTimelineEntry(vlezetHistory, 'vlezet').title, /M8\.2.*Draft/i);
+  const vlezetCurrent = signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/87');
+  assert.equal(vlezetCurrent.state, 'pending');
+  assert.equal(vlezetCurrent.observedAt, '2026-08-12');
+  assert.match(vlezetCurrent.scope, /789f1de8eae92eebc8988a41f07439927431fb8b/);
+  assert.match(vlezetCurrent.scope, /manual product-owner.*pending/i);
+  assert.match(timelineEntry(vlezetHistory, 'vlezet', 'current').title, /M8\.2.*precision.*structural.*Draft/i);
+  assert.match(timelineEntry(vlezetHistory, 'vlezet', 'next').description, /product-owner/i);
 
   assert.equal(livingworldProject.status, 'release-candidate');
   assert.equal(livingworldProject.statusLabel, 'ACCEPTANCE IN PROGRESS');
-  assert.equal(livingworldEvidence.lastVerified, '2026-08-11');
+  assert.equal(livingworldEvidence.lastVerified, '2026-08-12');
   assert.ok(livingworldEvidence.versions.some(({label, value}) => label === 'Current official release' && value === '0.2.0+1.21.1'));
   assert.ok(livingworldEvidence.versions.some(({label, value}) => label === 'Installed 0.2.0 result' && /7 PASS \/ 0 FAIL/.test(value)));
   assert.ok(livingworldEvidence.versions.some(({label, value}) => label === 'Deferred installed boundaries' && /VAI-M2-INST-005.*VAI-CONCUR-004/.test(value)));
-  assert.ok(livingworldEvidence.versions.some(({label, value}) => label === 'Latest merged source capability' && /causal NPC↔NPC social mutation.*#153/i.test(value)));
-  assert.ok(livingworldEvidence.versions.some(({label, value}) => label === 'Active development slice' && /Personality.*Draft.*#155/i.test(value)));
+  assert.ok(livingworldEvidence.versions.some(({label, value}) => label === 'Latest merged source capability' && /0\.3.*release convergence.*#160/i.test(value)));
+  assert.ok(livingworldEvidence.versions.some(({label, value}) => label === 'Active development slice' && /release convergence.*release-request|release convergence.*candidate/i.test(value)));
 
   assert.equal(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/123').state, 'merged');
   assert.equal(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/125').state, 'merged');
   assert.match(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/125').scope, /Server-owned provenance.*FACT authority remain unchanged/i);
   assert.equal(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/153').state, 'merged');
   assert.match(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/153').scope, /620\/620 tests.*146 gates/i);
-  assert.equal(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/155').state, 'pending');
-  assert.match(signal(livingworldEvidence, 'https://github.com/True-Ruslan/villAIgence/pull/155').scope, /Draft TDD/i);
-  assert.match(currentTimelineEntry(livingworldHistory, 'livingworld').title, /Personality.*social snapshot.*Draft/i);
+  for (const number of [155, 158, 159, 160]) {
+    const merged = signal(livingworldEvidence, `https://github.com/True-Ruslan/villAIgence/pull/${number}`);
+    assert.equal(merged.state, 'merged');
+    assert.match(merged.scope, /0\.2\.0\+1\.21\.1/);
+  }
+  assert.match(timelineEntry(livingworldHistory, 'livingworld', 'current').title, /0\.3.*release convergence/i);
+  assert.match(timelineEntry(livingworldHistory, 'livingworld', 'next').title, /release-request|candidate/i);
 
   assert.equal(portfolioProject.status, 'production');
-  assert.equal(portfolioEvidence.lastVerified, '2026-08-11');
+  assert.equal(portfolioProject.statusLabel, 'PRODUCTION');
+  assert.equal(portfolioEvidence.lastVerified, '2026-08-12');
   assert.ok(portfolioEvidence.versions.some(({label, value}) => label === 'Portfolio Clarity redesign' && /C7.*production accepted/i.test(value)));
   assert.ok(portfolioEvidence.versions.some(({label, value}) => label === 'Measurement checkpoint' && /P3\.6.*NEXT.*WAITING/i.test(value)));
+  assert.ok(portfolioEvidence.versions.some(({label, value}) => label === 'Current production baseline' && /80195a39ac40cb5f8c97d1f8ea8bbd1f3d744613/.test(value)));
+  assert.ok(portfolioEvidence.versions.some(({label, value}) => label === 'Search Discovery' && /externalEvidence=not-collected/i.test(value)));
   assert.equal(signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/pull/198').state, 'merged');
   assert.equal(signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31516118934').state, 'published');
   assert.equal(signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31516213818').state, 'passed');
-  assert.match(currentTimelineEntry(portfolioHistory, 'portfolio-platform').title, /C7.*production baseline/i);
-  assert.match(currentTimelineEntry(portfolioHistory, 'portfolio-platform').description, /P3\.6.*NEXT|WAITING/i);
+  assert.equal(signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31583969846').state, 'published');
+  assert.equal(signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31583969870').state, 'passed');
+  assert.equal(signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31583969801').state, 'green');
+  assert.match(timelineEntry(portfolioHistory, 'portfolio-platform', 'current').title, /launch.*discovery.*maintenance|current production baseline/i);
+  assert.match(timelineEntry(portfolioHistory, 'portfolio-platform', 'next').description, /P3\.6|P4\.1B/i);
 
   const projectState = readText('docs/PROJECT_STATE.md');
   const roadmap = readText('docs/ROADMAP.md');
   const changelog = readText('docs/CHANGELOG.md');
-  assert.match(projectState, /M8\.1.*#85.*accepted|#85.*accepted/is);
-  assert.match(projectState, /M8\.2.*#87.*Draft/is);
-  assert.match(projectState, /#153.*merged.*#155.*Draft/is);
   assert.match(projectState, /P3\.6.*NEXT \/ WAITING/is);
-  assert.match(roadmap, /M8\.1.*#85/is);
-  assert.match(roadmap, /#153.*#155/is);
   assert.match(roadmap, /P3\.6.*Measurement checkpoint.*NEXT \/ WAITING/is);
-  assert.match(changelog, /Content Freshness reconciliation.*CURRENT EXTERNAL EVIDENCE/is);
   assert.match(changelog, /P3\.6.*NEXT \/ WAITING/is);
+  for (const source of [projectState, roadmap, changelog]) {
+    assert.doesNotMatch(source, /P3\.6\s*(?:—|-|:)\s*(?:ACCEPTED|COMPLETED)/i);
+  }
 });
