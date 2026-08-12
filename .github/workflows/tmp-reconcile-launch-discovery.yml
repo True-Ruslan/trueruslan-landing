@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   reconcile:
-    if: ${{ !contains(github.event.head_commit.message, 'docs: apply launch discovery evidence reconciliation') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -24,6 +23,10 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+
+          state_path = Path('docs/PROJECT_STATE.md')
+          if '## 0. 2026-08-12 — Current launch / discovery acceptance' in state_path.read_text(encoding='utf-8'):
+              raise SystemExit(0)
 
           def replace_once(path, old, new):
               p = Path(path)
@@ -67,6 +70,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if git diff --quiet -- docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md; then
+            echo 'Durable evidence docs already reconciled.'
+            exit 0
+          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md
