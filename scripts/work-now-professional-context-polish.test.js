@@ -27,13 +27,17 @@ function marketDbCard(text) {
   return text.slice(articleStart, articleEnd + '</article>'.length);
 }
 
-test('N3 gives Work with me a page-specific generated styling hook and light surface contract', () => {
-  const collaboration = read('scripts/collaboration.js');
+test('N3 gives Work with me a lighter bounded surface and rhythm contract', () => {
+  const ru = read('docs/landing/work-with-me.md');
+  const en = read('docs/en/work-with-me.md');
   const css = read('docs/_assets/style/collaboration.css');
 
-  assert.ok(collaboration.includes('tr-work-with-me-page'), 'generated Work with me main must get a dedicated page hook');
-  assert.ok(css.includes('.tr-work-with-me-page .tr-work-tracks .tr-resume-panel'), 'work-track panels need bounded page-specific styling');
-  assert.ok(css.includes('.tr-work-with-me-page .tr-work-process'), 'work process needs bounded page-specific rhythm styling');
+  for (const source of [ru, en]) {
+    assert.ok(source.includes('class="tr-resume-grid tr-work-tracks"'), 'work tracks must keep their bounded page primitive');
+    assert.ok(source.includes('class="tr-work-process"'), 'work process must keep its bounded page primitive');
+  }
+  assert.ok(css.includes('.tr-work-tracks .tr-resume-panel'), 'work-track panels need bounded styling');
+  assert.ok(css.includes('.tr-work-process'), 'work process needs bounded rhythm styling');
   assert.ok(css.includes('--tr-collaboration-surface'), 'collaboration surfaces need a shared light surface token');
   assert.ok(css.includes('--tr-collaboration-border'), 'collaboration borders need a shared lighter border token');
 });
