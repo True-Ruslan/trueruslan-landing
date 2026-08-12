@@ -112,22 +112,25 @@
   gap: 1.25rem;
   margin: 1rem 0 2.85rem;
   padding: 0;
-  counter-reset: tr-work-step;
-  list-style: none;
+  list-style: none !important;
 }
 
-.tr-work-process li {
+.tr-work-process > li {
   min-width: 0;
   padding-top: 0.9rem;
   border-top: 1px solid var(--tr-collaboration-border);
   line-height: 1.65;
+  list-style: none !important;
 }
 
-.tr-work-process li::before {
+.tr-work-process > li::marker {
+  content: "";
+}
+
+.tr-work-process > li::before {
   display: block;
   margin-bottom: 0.55rem;
-  counter-increment: tr-work-step;
-  content: "0" counter(tr-work-step);
+  content: attr(data-tr-work-order);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
