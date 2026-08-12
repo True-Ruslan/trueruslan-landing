@@ -15,7 +15,7 @@ navigation:
         target: _self
       - text: Материалы
         type: link
-        url: landing/notes.html
+        url: landing/materials.html
         target: _self
       - text: Работа со мной
         type: link
@@ -62,60 +62,67 @@ items:
         href: ./landing/projects/godot-horror-template.md
       - name: Vlezet — Apartment Planner
         href: ./landing/projects/vlezet.md
-  - name: Сейчас
-    href: ./landing/now.md
-  - name: Engineering Map
-    href: ./landing/engineering-map.md
-  - name: Engineering Notes
-    href: ./landing/notes.md
+  - name: Опыт
+    href: ./landing/resume.md
+  - name: Материалы
+    href: ./landing/materials.md
     items:
-      - name: Runtime boundary
-        href: ./landing/notes/portfolio-runtime-boundary.md
-      - name: Static-site quality gates
-        href: ./landing/notes/static-site-quality-gates.md
-      - name: Server-authoritative AI NPCs
-        href: ./landing/notes/server-authoritative-ai-npcs.md
-      - name: LLM protocol boundary
-        href: ./landing/notes/llm-output-is-a-protocol-boundary.md
-      - name: IntersectionObserver regression
-        href: ./landing/notes/intersection-observer-giant-table.md
-      - name: Sources / no-JS
-        href: ./landing/notes/static-first-sources-no-js.md
-      - name: CI vs product verification
-        href: ./landing/notes/green-ci-is-not-product-verification.md
-      - name: Deployment vs production verification
-        href: ./landing/notes/deployment-success-is-not-production-verification.md
-      - name: Evidence-driven project state
-        href: ./landing/notes/evidence-driven-project-state.md
-      - name: Clean URLs without Cloudflare routing
-        href: ./landing/notes/clean-urls-without-cloudflare-routing.md
-      - name: Source tests → installed acceptance
-        href: ./landing/notes/source-tests-to-installed-acceptance.md
-      - name: GameTests vs installed gameplay
-        href: ./landing/notes/gametests-vs-installed-gameplay-acceptance.md
-      - name: PDF validity vs semantic completeness
-        href: ./landing/notes/passive-pdf-validation-vs-semantic-completeness.md
-      - name: Probabilistic proposals → deterministic authority
-        href: ./landing/notes/probabilistic-proposals-deterministic-authority.md
-      - name: Hybrid CV + AI recognition boundaries
-        href: ./landing/notes/hybrid-cv-ai-recognition-boundaries.md
-      - name: Restart and persistence product contract
-        href: ./landing/notes/restart-persistence-is-a-product-contract.md
-  - name: Публикации
-    href: ./landing/publications.md
+      - name: Публикации
+        href: ./landing/publications.md
+      - name: Engineering Map
+        href: ./landing/engineering-map.md
+      - name: Engineering Notes
+        href: ./landing/notes.md
+        items:
+          - name: Все заметки
+            href: ./landing/notes.md
+          - name: Runtime boundary
+            href: ./landing/notes/portfolio-runtime-boundary.md
+          - name: Static-site quality gates
+            href: ./landing/notes/static-site-quality-gates.md
+          - name: Server-authoritative AI NPCs
+            href: ./landing/notes/server-authoritative-ai-npcs.md
+          - name: LLM protocol boundary
+            href: ./landing/notes/llm-output-is-a-protocol-boundary.md
+          - name: IntersectionObserver regression
+            href: ./landing/notes/intersection-observer-giant-table.md
+          - name: Sources / no-JS
+            href: ./landing/notes/static-first-sources-no-js.md
+          - name: CI vs product verification
+            href: ./landing/notes/green-ci-is-not-product-verification.md
+          - name: Deployment vs production verification
+            href: ./landing/notes/deployment-success-is-not-production-verification.md
+          - name: Evidence-driven project state
+            href: ./landing/notes/evidence-driven-project-state.md
+          - name: Clean URLs without Cloudflare routing
+            href: ./landing/notes/clean-urls-without-cloudflare-routing.md
+          - name: Source tests → installed acceptance
+            href: ./landing/notes/source-tests-to-installed-acceptance.md
+          - name: GameTests vs installed gameplay
+            href: ./landing/notes/gametests-vs-installed-gameplay-acceptance.md
+          - name: PDF validity vs semantic completeness
+            href: ./landing/notes/passive-pdf-validation-vs-semantic-completeness.md
+          - name: Probabilistic proposals → deterministic authority
+            href: ./landing/notes/probabilistic-proposals-deterministic-authority.md
+          - name: Hybrid CV + AI recognition boundaries
+            href: ./landing/notes/hybrid-cv-ai-recognition-boundaries.md
+          - name: Restart and persistence product contract
+            href: ./landing/notes/restart-persistence-is-a-product-contract.md
+      - name: Источники
+        href: ./landing/bibliography.md
   - name: Работа со мной
     href: ./landing/work-with-me.md
   - name: Обо мне
     href: ./landing/about.md
-  - name: Опыт
-    href: ./landing/resume.md
-  - name: Источники
-    href: ./landing/bibliography.md
-  - name: Фото
-    href: ./landing/photos.md
-  - name: Контакты
-    href: ./landing/contacts.md
+    items:
+      - name: Сейчас
+        href: ./landing/now.md
+      - name: Фото
+        href: ./landing/photos.md
+      - name: Контакты
+        href: ./landing/contacts.md
   - name: English
+    hidden: true
     href: ./en/projects.md
     items:
       - name: About

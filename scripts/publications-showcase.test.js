@@ -74,21 +74,27 @@ test('C2 homepage exposes Publications through the compact Writing bridge instea
   assert.match(writing, /Инженерные материалы/);
 });
 
-test('Publications stays first-class in the content tree while primary navigation uses one Materials entry', () => {
+test('Publications stays first-class inside Materials while primary navigation uses one Materials hub entry', () => {
   const toc = read(TOC_PATH);
-  assert.match(toc, /- text: Материалы[\s\S]{0,160}url: landing\/notes\.html/);
+  assert.match(toc, /- text: Материалы[\s\S]{0,160}url: landing\/materials\.html/);
 
-  const notesIndex = toc.indexOf('  - name: Engineering Notes');
-  const publicationsIndex = toc.indexOf('  - name: Публикации');
+  const materialsIndex = toc.indexOf('  - name: Материалы');
+  const publicationsIndex = toc.indexOf('      - name: Публикации', materialsIndex);
+  const mapIndex = toc.indexOf('      - name: Engineering Map', materialsIndex);
+  const notesIndex = toc.indexOf('      - name: Engineering Notes', materialsIndex);
+  const sourcesIndex = toc.indexOf('      - name: Источники', materialsIndex);
   const aboutIndex = toc.indexOf('  - name: Обо мне');
-  assert.notEqual(notesIndex, -1);
-  assert.notEqual(publicationsIndex, -1);
-  assert.ok(publicationsIndex > notesIndex, 'Publications must follow the complete Engineering Notes tree');
-  assert.ok(publicationsIndex < aboutIndex, 'Publications must remain a first-class content surface before About');
+
+  assert.notEqual(materialsIndex, -1);
+  assert.ok(publicationsIndex > materialsIndex, 'Publications must be the first Materials child');
+  assert.ok(mapIndex > publicationsIndex, 'Engineering Map must follow Publications');
+  assert.ok(notesIndex > mapIndex, 'Engineering Notes must follow Engineering Map');
+  assert.ok(sourcesIndex > notesIndex, 'Sources must follow the complete Engineering Notes tree');
+  assert.ok(sourcesIndex < aboutIndex, 'Materials must remain before About');
   assert.match(toc, /href: \.\/landing\/publications\.md/);
 
   const home = read(HOME_TEMPLATE_PATH);
-  assert.match(home, /landing\/notes\.html">Материалы<\/a>/);
+  assert.match(home, /landing\/materials\.html">Материалы<\/a>/);
   assert.doesNotMatch(home, /<nav[^>]*tr-site-nav[\s\S]*?>[\s\S]*?<a[^>]+>Публикации<\/a>[\s\S]*?<\/nav>/);
 
   const writing = renderHomepageBridge('writing', 'ru');

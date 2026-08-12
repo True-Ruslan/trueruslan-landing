@@ -46,7 +46,7 @@ test('C3 Projects overrides record the reviewed shorter scan-first layouts', () 
   assert.ok(overrides['projects-mobile.png'].height < base.baselines['projects-mobile.png'].height);
 });
 
-test('C4 Resume overrides record the reviewed shorter scan-first layouts', () => {
+test('C4 Resume overrides preserve the reviewed scan-first layout after intentional IA footer drift', () => {
   assert.deepEqual(
     {
       desktop: [overrides['resume-desktop.png'].width, overrides['resume-desktop.png'].height],
@@ -54,7 +54,7 @@ test('C4 Resume overrides record the reviewed shorter scan-first layouts', () =>
     },
     {
       desktop: [1440, 3631],
-      mobile: [390, 4964],
+      mobile: [390, 4980],
     },
   );
   assert.ok(overrides['resume-desktop.png'].height < base.baselines['resume-desktop.png'].height);
