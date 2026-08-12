@@ -84,6 +84,6 @@ test('N3c moves MarketDB out of current commercial work while preserving it as h
 
   const ruAbout = read('docs/landing/about.md');
   const enAbout = read('docs/en/about.md');
-  assert.ok(ruAbout.includes('QWEP') && ruAbout.includes('полная занятость'), 'RU About must identify QWEP as current full-time commercial context');
+  assert.ok(ruAbout.includes('QWEP') && /полной занятости/.test(ruAbout), 'RU About must identify QWEP as current full-time commercial context');
   assert.ok(enAbout.includes('QWEP') && enAbout.includes('full-time'), 'EN About must identify QWEP as current full-time commercial context');
 });
