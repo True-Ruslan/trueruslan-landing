@@ -11,6 +11,7 @@ import {
 } from './search-discovery-external.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const SPEC_PATH = path.join(ROOT, 'docs', 'keystone', 'specs', '2026-08-12-p4-1b-external-evidence-intake.md');
 
 function validInput() {
   return {
@@ -129,13 +130,21 @@ test('external report never reinterprets P3.6 and renders an explicit evidence b
   assert.match(markdown, /strategic-route-not-indexed/i);
 });
 
-test('repository does not commit real P4.1B exports or run external collection inside ordinary npm test', () => {
+test('repository keeps P4.1B input private, opt-in and durably specified', () => {
   const gitignore = fs.readFileSync(path.join(ROOT, '.gitignore'), 'utf8');
   const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
   const policy = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'search-discovery.json'), 'utf8'));
 
   assert.match(gitignore, /^\/private\/search-discovery\/$/m);
   assert.equal(policy.externalEvidence, 'not-collected');
+  assert.equal(pkg.scripts['report:discovery:external'], 'node scripts/search-discovery-external-report.js');
   assert.doesNotMatch(pkg.scripts.test, /discovery:external|external.*search/i);
   assert.equal(fs.existsSync(path.join(ROOT, 'data', 'search-discovery-external.json')), false);
+  assert.equal(fs.existsSync(SPEC_PATH), true, 'P4.1B intake specification must remain durable');
+
+  const spec = fs.readFileSync(SPEC_PATH, 'utf8');
+  assert.match(spec, /real external evidence still not collected/i);
+  assert.match(spec, /does \*\*not\*\* close, reset, or reinterpret P3\.6/i);
+  assert.match(spec, /Raw export adapters/i);
+  assert.match(spec, /not guessed/i);
 });
