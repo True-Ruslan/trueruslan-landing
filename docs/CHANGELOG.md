@@ -1,8 +1,18 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-11**, после exact-production acceptance C7 — production baseline + P3.6 handoff; redesign implementation sequence завершён, P3.6 measurement остаётся открытым.
+> Обновлено: **2026-08-11**, P4.1A Search Discovery repository-readiness accepted on exact PR evidence; C7 остаётся production baseline, P3.6 measurement остаётся открытым.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-11 — P4.1A Search Discovery repository readiness — REPOSITORY ACCEPTED
+
+- Opened Draft PR #201 from `master@40773f4953d43174eec25e1070a5925abbb3234a` with a RED-first structural discovery contract.
+- Added `data/search-discovery.json` as bounded coverage/intent policy referencing existing canonical i18n identities rather than duplicating RU/EN paths.
+- Added deterministic readiness/report tooling for missing metadata, missing i18n pairs, non-clean strategic routes and competing cross-surface title/description duplicates.
+- Kept proper-name equality inside one RU/EN surface valid and kept RU-only secondary Sources outside the initial controlled metadata scope instead of inventing metadata solely for the audit.
+- Wired `npm run check:discovery` into the ordinary `npm test`/Build artifact path; generated evidence is `repository-readiness` only and external Search Console/Webmaster evidence remains `not-collected`.
+- P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; P4.1A does not reset its clean-URL observation clock or make search-performance/product-impact claims.
+- Exact-head acceptance evidence: `02c587d7adaca57d13cf9e68dd3babf269285d2f`; Build #1858 / `31537039625` — SUCCESS; CodeQL #1408 / `31537039524` — SUCCESS; Dependency Review #1286 / `31537039489` — SUCCESS; Dependency Audit #215 / `31537039452` — SUCCESS; quality artifact `9119360015`, digest `sha256:411410e9e3f9afecb04984de72b66bedcc6ad67d9a03f16d068ab4fb375632d3`; preserved discovery report **READY / 11 surfaces / 21 clean routes / 0 findings / externalEvidence=not-collected**.
 
 ## 2026-08-11 — Content Freshness reconciliation — CURRENT EXTERNAL EVIDENCE
 
@@ -10,7 +20,7 @@
 - Vlezet stays `pre-production / ACTIVE DEVELOPMENT`: PR #52 is closed unmerged/superseded, M8.1 PR #85 is product-owner accepted/merged, and M8.2 PR #87 remains Draft with the focused clipboard retest pending.
 - VillAIgence stays `release-candidate / ACCEPTANCE IN PROGRESS`: official installed `0.2.0+1.21.1` remains `7 PASS / 0 FAIL` with explicit NOT TESTED boundaries; post-release source capability includes merged PR #153 while PR #155 remains Draft.
 - Portfolio Platform stays production and records C7 exact production acceptance as the latest controlled evidence; P3.6 remains NEXT / WAITING.
-- Advanced controlled `lastVerified` to 2026-08-11 only after manual reconciliation. Issue #78 may close only after a post-merge default-branch Content Freshness run reports zero findings.
+- Advanced controlled `lastVerified` to 2026-08-11 only after manual reconciliation. Default-branch Content Freshness #177 later reported 0 findings and automatically closed issue #78 as completed.
 
 ## 2026-08-11 — C7 production baseline + P3.6 handoff — PRODUCTION ACCEPTED
 
