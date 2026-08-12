@@ -12,12 +12,14 @@
 }
 
 .tr-now__focus {
-  max-width: 78ch;
+  max-width: 68ch;
   margin: 0;
-  padding: 1.1rem 1.25rem;
-  border-left: 3px solid rgba(103, 232, 249, .75);
-  background: rgba(15, 23, 42, .48);
-  border-radius: 0 12px 12px 0;
+  padding: .15rem 0 .15rem 1rem;
+  border-left: 1px solid rgba(103, 232, 249, .28);
+  background: transparent;
+  border-radius: 0;
+  color: var(--tr-muted);
+  line-height: 1.68;
 }
 
 .tr-now-block {
