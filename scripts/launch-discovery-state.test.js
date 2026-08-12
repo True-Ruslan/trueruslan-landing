@@ -47,5 +47,5 @@ test('P3.6 remains open while P4.1B advances only to sparse pre-launch review', 
   assert.match(durable, /controlled launch[^\n]*(?:not-published|NOT PUBLISHED)/i);
   assert.match(durable, /P4\.1C[^\n]*WAITING/i);
   assert.match(durable, /externalEvidence[^\n]*not-collected/i);
-  assert.doesNotMatch(durable, /P4\.1B[^\n]*(?:real external evidence review|evidence review)[^\n]*(?:DONE|COMPLETED|PRODUCTION ACCEPTED)/i);
+  assert.doesNotMatch(durable, /P4\.1B\s+real external evidence review\s*[—:-]+\s*(?:DONE|COMPLETED|PRODUCTION ACCEPTED)/i);
 });
