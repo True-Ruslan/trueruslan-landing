@@ -10,7 +10,13 @@ const PORT = Number(process.env.NAVIGATION_IA_SMOKE_PORT || 4194);
 const {chromium} = requireQualityTool('playwright');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright');
 
-const ROOT_LABELS = Object.freeze(['Проекты', 'Опыт', 'Материалы', 'Работа со мной', 'Обо мне']);
+const ROOT_LINKS = Object.freeze([
+  ['Проекты', '/projects/'],
+  ['Опыт', '/resume/'],
+  ['Материалы', '/materials/'],
+  ['Работа со мной', '/work-with-me/'],
+  ['Обо мне', '/about/'],
+]);
 const MATERIAL_LINKS = Object.freeze([
   ['Публикации', '/publications/'],
   ['Engineering Map', '/engineering-map/'],
@@ -36,8 +42,7 @@ async function findSidebar(page) {
       (nodes) => nodes.map((node) => node.href),
     ).catch(() => []);
     const paths = new Set(hrefs.map((href) => new URL(href).pathname));
-    const ownsPrimary = ['/projects/', '/resume/', '/materials/', '/work-with-me/', '/about/']
-      .every((route) => paths.has(route));
+    const ownsPrimary = ROOT_LINKS.every(([, route]) => paths.has(route));
     const ownsExpandedProjectBranch = paths.has('/projects/livingworld/');
     if (ownsPrimary && ownsExpandedProjectBranch) return candidate;
   }
@@ -60,9 +65,12 @@ async function linkByCanonicalPath(container, pathname, {name} = {}) {
 
 async function assertRootOrder(sidebar) {
   const positions = [];
-  for (const label of ROOT_LABELS) {
-    const link = sidebar.getByRole('link', {name: label, exact: true}).first();
-    if (await link.count() !== 1) throw new Error(`Sidebar root is missing: ${label}`);
+  for (const [label, pathname] of ROOT_LINKS) {
+    const link = await linkByCanonicalPath(sidebar, pathname);
+    const text = (await link.innerText()).trim();
+    if (!text.includes(label)) {
+      throw new Error(`Sidebar route ${pathname} has unexpected label: ${text}`);
+    }
     positions.push(await link.evaluate((node) => {
       let position = 0;
       const walker = document.createTreeWalker(node.ownerDocument, NodeFilter.SHOW_ELEMENT);
@@ -76,21 +84,26 @@ async function assertRootOrder(sidebar) {
   }
   for (let index = 1; index < positions.length; index += 1) {
     if (positions[index] <= positions[index - 1]) {
-      throw new Error(`Sidebar root order drifted: ${ROOT_LABELS.join(' → ')}`);
+      throw new Error(`Sidebar root order drifted: ${ROOT_LINKS.map(([label]) => label).join(' → ')}`);
     }
   }
 
-  const englishLinks = sidebar.getByRole('link', {name: 'English', exact: true});
-  for (let index = 0; index < await englishLinks.count(); index += 1) {
-    if (await englishLinks.nth(index).isVisible()) {
+  const links = sidebar.locator('a');
+  for (let index = 0; index < await links.count(); index += 1) {
+    const link = links.nth(index);
+    const text = (await link.innerText().catch(() => '')).trim();
+    if (text === 'English' && await link.isVisible()) {
       throw new Error('English must not be a visible sidebar root.');
     }
   }
 }
 
-async function keyboardExpandGroup(sidebar, page, label) {
-  const link = sidebar.getByRole('link', {name: label, exact: true}).first();
-  if (await link.count() !== 1) throw new Error(`Cannot expand missing sidebar group: ${label}`);
+async function keyboardExpandGroup(sidebar, page, label, pathname) {
+  const link = await linkByCanonicalPath(sidebar, pathname);
+  const text = (await link.innerText()).trim();
+  if (!text.includes(label)) {
+    throw new Error(`Sidebar group ${pathname} has unexpected label: ${text}`);
+  }
 
   const marker = `nav-ia-${label.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
   const state = await link.evaluate((node, dataMarker) => {
@@ -111,7 +124,7 @@ async function keyboardExpandGroup(sidebar, page, label) {
     };
   }, marker);
 
-  if (!state.control || state.expanded === 'true') return {label, usedKeyboard: false};
+  if (!state.control || state.expanded === 'true') return {label, pathname, usedKeyboard: false};
 
   const control = page.locator(`[data-navigation-ia-disclosure="${marker}"]`).first();
   if (await control.count() !== 1) throw new Error(`Disclosure marker vanished for ${label}.`);
@@ -124,11 +137,11 @@ async function keyboardExpandGroup(sidebar, page, label) {
     return node.getAttribute('aria-expanded') !== 'false';
   });
   if (!expanded) throw new Error(`${label} disclosure did not expand from keyboard activation.`);
-  return {label, usedKeyboard: true};
+  return {label, pathname, usedKeyboard: true};
 }
 
-async function assertDiscoverableLinks(sidebar, page, pairs, groupLabel) {
-  const disclosure = await keyboardExpandGroup(sidebar, page, groupLabel);
+async function assertDiscoverableLinks(sidebar, page, pairs, groupLabel, groupPathname) {
+  const disclosure = await keyboardExpandGroup(sidebar, page, groupLabel, groupPathname);
   for (const [label, pathname] of pairs) {
     const link = await linkByCanonicalPath(sidebar, pathname, {name: label});
     if (!(await link.isVisible())) {
@@ -181,13 +194,13 @@ async function assertSidebarAndLanguage(browser, baseUrl) {
     const sidebar = await findSidebar(page);
     await assertRootOrder(sidebar);
 
-    const materialsDisclosure = await assertDiscoverableLinks(sidebar, page, MATERIAL_LINKS, 'Материалы');
-    const notesDisclosure = await keyboardExpandGroup(sidebar, page, 'Engineering Notes');
-    const allNotes = sidebar.getByRole('link', {name: 'Все заметки', exact: true}).first();
-    if (await allNotes.count() !== 1 || !(await allNotes.isVisible())) {
+    const materialsDisclosure = await assertDiscoverableLinks(sidebar, page, MATERIAL_LINKS, 'Материалы', '/materials/');
+    const notesDisclosure = await keyboardExpandGroup(sidebar, page, 'Engineering Notes', '/notes/');
+    const allNotes = await linkByCanonicalPath(sidebar, '/notes/', {name: 'Все заметки'});
+    if (!(await allNotes.isVisible())) {
       throw new Error('Все заметки is not discoverable under Engineering Notes.');
     }
-    const aboutDisclosure = await assertDiscoverableLinks(sidebar, page, ABOUT_LINKS, 'Обо мне');
+    const aboutDisclosure = await assertDiscoverableLinks(sidebar, page, ABOUT_LINKS, 'Обо мне', '/about/');
 
     const language = page.locator('[data-tr-language="true"]').first();
     if (await language.count() !== 1) throw new Error('Generated header lost the canonical language utility.');
