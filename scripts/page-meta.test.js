@@ -97,7 +97,7 @@ test('loadPageMeta does not duplicate an explicitly registered Note path', () =>
   assert.equal(entries[0].card, explicit.card);
 });
 
-test('injectPageMeta replaces stale metadata idempotently', () => {
+test('injectPageMeta replaces stale metadata idempotently with clean launch metadata', () => {
   const source = `<!doctype html><html><head>
     <title>Old</title>
     <meta name="description" content="old">
@@ -110,11 +110,45 @@ test('injectPageMeta replaces stale metadata idempotently', () => {
 
   assert.equal(once, twice);
   assert.match(once, /Engineering Notes — Руслан Немыкин/);
-  assert.match(once, /https:\/\/example\.test\/landing\/notes\.html/);
+  assert.match(once, /rel="canonical" href="https:\/\/example\.test\/notes\/"/);
+  assert.match(once, /property="og:url" content="https:\/\/example\.test\/notes\/"/);
+  assert.doesNotMatch(once, /https:\/\/example\.test\/landing\/notes\.html/);
   assert.match(once, /https:\/\/example\.test\/assets\/og\/notes\.png/);
+  assert.match(once, /property="og:site_name" content="TrueRuslan"/);
+  assert.match(once, /property="og:locale" content="ru_RU"/);
+  assert.match(once, /property="og:image:type" content="image\/png"/);
+  assert.match(once, /name="twitter:image:alt" content="ENGINEERING NOTES — TECHNICAL WRITING"/);
   assert.match(once, /summary_large_image/);
   assert.equal((once.match(/property="og:title"/g) ?? []).length, 1);
   assert.equal((once.match(/rel="canonical"/g) ?? []).length, 1);
+});
+
+test('injectPageMeta projects clean URLs inside a configured site subpath', () => {
+  const source = '<!doctype html><html><head><title>Old</title></head><body><h1>Resume</h1></body></html>';
+  const html = injectPageMeta(
+    source,
+    {...validEntry, path: 'landing/resume.html', card: 'resume'},
+    'https://example.test/site/',
+  );
+
+  assert.match(html, /rel="canonical" href="https:\/\/example\.test\/site\/resume\/"/);
+  assert.match(html, /property="og:url" content="https:\/\/example\.test\/site\/resume\/"/);
+  assert.match(html, /property="og:image" content="https:\/\/example\.test\/site\/assets\/og\/resume\.png"/);
+  assert.doesNotMatch(html, /\/site\/landing\/resume\.html/);
+});
+
+test('injectPageMeta canonicalizes nested English pages and emits English locale metadata', () => {
+  const source = '<!doctype html><html><head><title>Old</title></head><body><h1>English</h1></body></html>';
+  const html = injectPageMeta(
+    source,
+    {...validEntry, path: 'en/work-with-me.html', card: 'work-with-me-en'},
+    'https://example.test/site/',
+  );
+
+  assert.match(html, /rel="canonical" href="https:\/\/example\.test\/site\/en\/work-with-me\/"/);
+  assert.match(html, /property="og:url" content="https:\/\/example\.test\/site\/en\/work-with-me\/"/);
+  assert.match(html, /property="og:locale" content="en_US"/);
+  assert.doesNotMatch(html, /https:\/\/example\.test\/site\/en\/work-with-me\.html/);
 });
 
 test('injectPageMeta canonicalizes nested index pages to their public directory URL', () => {
@@ -123,5 +157,6 @@ test('injectPageMeta canonicalizes nested index pages to their public directory 
 
   assert.match(html, /rel="canonical" href="https:\/\/example\.test\/site\/en\/"/);
   assert.match(html, /property="og:url" content="https:\/\/example\.test\/site\/en\/"/);
+  assert.match(html, /property="og:locale" content="en_US"/);
   assert.doesNotMatch(html, /https:\/\/example\.test\/site\/en\/index\.html/);
 });
