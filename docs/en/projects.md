@@ -30,16 +30,16 @@ A curated set of projects showing how I design backend, AI and product systems, 
 </article>
 </div>
 
-## Commercial work
+## Historical commercial context
 
 <article class="tr-project-index-card tr-project-index-card--commercial" data-c3-commercial="marketdb">
 <h3>MarketDB</h3>
-<p>A production marketplace-analytics platform. My work covered backend engineering, data, integrations and the evolution of a live system without exposing proprietary architecture.</p>
+<p><strong>Status:</strong> closed. A historical independent commercial startup project: a production marketplace-analytics platform. My work covered backend engineering, data, integrations and the evolution of a live system without exposing proprietary architecture.</p>
 <ul class="tr-project-index-card__tags" aria-label="Stack"><li>Java</li><li>Spring Boot</li><li>PostgreSQL</li><li>ClickHouse</li></ul>
 <a class="tr-project-index-card__cta" href="https://marketdb.pro">marketdb.pro ↗</a>
 </article>
 
-For broader commercial context, see [Experience](resume.md).
+My current commercial work is at QWEP; see [Experience](resume.md) for role and stack details.
 
 ## Labs & experiments
 
