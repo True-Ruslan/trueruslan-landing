@@ -8,14 +8,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 
-function sectionFrom(text, heading) {
-  const start = text.indexOf(heading);
-  assert.notEqual(start, -1, `missing section ${heading}`);
-  const tail = text.slice(start + heading.length);
-  const nextHeading = tail.search(/\n#{2,3}\s/);
-  return nextHeading === -1 ? tail : tail.slice(0, nextHeading);
-}
-
 function marketDbCard(text) {
   const marker = 'data-c3-commercial="marketdb"';
   const markerIndex = text.indexOf(marker);
@@ -61,21 +53,20 @@ test('N3b replaces the Now technical callout with a readable RU/EN public intro'
   assert.equal(fs.existsSync(path.join(ROOT, 'docs/_assets/style/now-refinement.css')), true, 'Now refinement stylesheet must exist');
 });
 
-test('N3c keeps QWEP current full-time and makes MarketDB explicitly closed historical without inventing an end date', () => {
+test('N3c preserves the current QWEP resume truth without reintroducing MarketDB as employment', () => {
   const ruResume = read('docs/landing/resume.md');
   const enResume = read('docs/en/resume.md');
 
-  const ruQwep = sectionFrom(ruResume, '### Java backend-разработчик — QWEP');
-  const enQwep = sectionFrom(enResume, '### Java Backend Developer — QWEP');
-  assert.ok(ruQwep.includes('настоящее время') && ruQwep.includes('полная занятость'), 'RU QWEP must remain current full-time');
-  assert.ok(enQwep.includes('present') && enQwep.includes('full-time'), 'EN QWEP must remain current full-time');
-
-  const ruMarketDb = sectionFrom(ruResume, '### IT-директор / Java-разработчик — MarketDB');
-  const enMarketDb = sectionFrom(enResume, '### IT Director / Java Developer — MarketDB');
-  assert.ok(ruMarketDb.toLowerCase().includes('закрыт'), 'RU MarketDB resume entry must explicitly say closed');
-  assert.ok(!ruMarketDb.includes('настоящее время'), 'RU MarketDB must not be presented as current');
-  assert.ok(enMarketDb.toLowerCase().includes('closed'), 'EN MarketDB resume entry must explicitly say closed');
-  assert.ok(!enMarketDb.includes('present'), 'EN MarketDB must not be presented as current');
+  assert.ok(
+    ruResume.includes('QWEP · Java-разработчик, middle · сентябрь 2025 — настоящее время'),
+    'RU QWEP must remain current in the canonical resume',
+  );
+  assert.ok(
+    enResume.includes('QWEP · Middle Java Developer · September 2025 — present'),
+    'EN QWEP must remain current in the canonical resume',
+  );
+  assert.ok(!ruResume.includes('MarketDB'), 'RU canonical employment timeline must not reintroduce MarketDB as a current job');
+  assert.ok(!enResume.includes('MarketDB'), 'EN canonical employment timeline must not reintroduce MarketDB as a current job');
 });
 
 test('N3c moves MarketDB out of current commercial work while preserving it as history and aligns About copy', () => {
