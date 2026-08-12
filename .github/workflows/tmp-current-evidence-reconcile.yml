@@ -1,0 +1,35 @@
+name: Temporary current evidence reconciliation
+
+on:
+  push:
+    branches:
+      - docs/reconcile-content-freshness-2026-08-12
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+
+      - name: Reconcile controlled evidence
+        run: python3 scripts/tmp-current-evidence-reconcile.py
+
+      - name: Commit controlled evidence
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/project-evidence.json data/project-history/vlezet.json data/project-history/livingworld.json data/project-history/portfolio-platform.json
+          if git diff --cached --quiet; then
+            echo "No evidence changes required"
+            exit 0
+          fi
+          git commit -m "docs: reconcile current project evidence"
+          git push
