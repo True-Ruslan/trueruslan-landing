@@ -140,6 +140,16 @@
     "accent": "cyan"
   },
   {
+    "path": "landing/materials.html",
+    "card": "materials",
+    "title": "Материалы — Руслан Немыкин",
+    "description": "Публикации, Engineering Map, Engineering Notes и проверяемые источники Руслана Немыкина — единая точка входа в инженерные материалы сайта.",
+    "displayTitle": "ENGINEERING MATERIALS",
+    "kicker": "WRITING AND SOURCES",
+    "tags": ["PUBLICATIONS", "NOTES", "SOURCES"],
+    "accent": "cyan"
+  },
+  {
     "path": "landing/publications.html",
     "card": "publications",
     "title": "Публикации и выступления — Руслан Немыкин",
