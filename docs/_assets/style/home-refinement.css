@@ -129,7 +129,7 @@
 .tr-home-bridge__actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: .55rem;
 }
 
@@ -176,10 +176,6 @@
   .tr-home-bridge {
     grid-template-columns: 1fr;
     gap: 1rem;
-  }
-
-  .tr-home-bridge__actions {
-    justify-content: flex-start;
   }
 }
 
