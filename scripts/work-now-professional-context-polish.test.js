@@ -47,12 +47,13 @@ test('N3b replaces the Now technical callout with a readable RU/EN public intro'
   for (const [file, contextLabel, employer] of pairs) {
     const source = read(file);
     assert.ok(source.includes('class="tr-now-intro"'), `${file}: semantic Now intro wrapper missing`);
-    assert.ok(source.includes('_assets/style/now-refinement.css'), `${file}: bounded Now refinement stylesheet missing`);
     assert.ok(source.includes(contextLabel), `${file}: concise current commercial framing missing`);
     assert.ok(source.includes(employer), `${file}: current full-time employer context missing`);
     assert.ok(!source.includes('> **Generated snapshot:**'), `${file}: internal-style generated snapshot callout must be removed`);
   }
 
+  const yfm = read('docs/.yfm');
+  assert.ok(yfm.includes('_assets/style/now-refinement.css'), 'Diplodoc must own the Now refinement stylesheet globally');
   assert.equal(fs.existsSync(path.join(ROOT, 'docs/_assets/style/now-refinement.css')), true, 'Now refinement stylesheet must exist');
 });
 
