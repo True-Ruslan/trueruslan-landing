@@ -61,18 +61,20 @@ test('portfolio platform registry owns a dedicated public case-study route and t
   ]);
 });
 
-test('portfolio platform evidence records C7 production acceptance while P3.6 measurement remains open', () => {
+test('portfolio platform evidence preserves C7 acceptance while current production advances and P3.6 stays open', () => {
   const evidence = readJson(files.evidence);
   const snapshot = evidence.find(({project}) => project === 'portfolio-platform');
 
   assert.ok(snapshot, 'portfolio-platform evidence snapshot must exist');
   assert.equal(snapshot.status, 'verified');
-  assert.equal(snapshot.lastVerified, '2026-08-11');
+  assert.equal(snapshot.lastVerified, '2026-08-12');
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Public route model' && value.includes('directory')));
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Hosting' && value === 'GitHub Pages'));
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Analytics' && /Cloudflare.*Yandex Metrica/i.test(value)));
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Portfolio Clarity redesign' && /C7.*production accepted/i.test(value)));
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Measurement checkpoint' && /P3\.6.*NEXT.*WAITING/i.test(value)));
+  assert.ok(snapshot.versions.some(({label, value}) => label === 'Current production baseline' && /80195a39ac40cb5f8c97d1f8ea8bbd1f3d744613/.test(value)));
+  assert.ok(snapshot.versions.some(({label, value}) => label === 'Search Discovery' && /11 strategic surfaces.*21 clean routes.*0 findings.*externalEvidence=not-collected/i.test(value)));
 
   const p36c = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/pull/158');
   assert.ok(p36c, 'missing historical P3.6C implementation evidence');
@@ -86,16 +88,28 @@ test('portfolio platform evidence records C7 production acceptance while P3.6 me
   assert.match(c7.scope, /context-only presentation baseline/i);
   assert.match(c7.scope, /134043fa2bb5f6612266a04eab2853f71b207328/);
 
-  const pages = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31516118934');
-  assert.ok(pages, 'missing C7 Pages evidence');
-  assert.equal(pages.state, 'published');
-  assert.match(pages.scope, /5855067883/);
+  const historicalPages = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31516118934');
+  assert.ok(historicalPages, 'missing C7 Pages evidence');
+  assert.equal(historicalPages.state, 'published');
+  assert.match(historicalPages.scope, /5855067883/);
 
-  const live = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31516213818');
-  assert.ok(live, 'missing C7 Production Live evidence');
-  assert.equal(live.state, 'passed');
-  assert.match(live.scope, /P3\.6 measurement remains NEXT \/ WAITING/i);
-  assert.match(live.scope, /no product-impact claim/i);
+  const historicalLive = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31516213818');
+  assert.ok(historicalLive, 'missing C7 Production Live evidence');
+  assert.equal(historicalLive.state, 'passed');
+  assert.match(historicalLive.scope, /P3\.6 measurement remains NEXT \/ WAITING/i);
+  assert.match(historicalLive.scope, /no product-impact claim/i);
+
+  const currentPages = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31583969846');
+  const currentLive = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31583969870');
+  const currentCodeql = snapshot.signals.find(({url}) => url === 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31583969801');
+  assert.ok(currentPages && currentLive && currentCodeql, 'missing current exact production evidence');
+  assert.equal(currentPages.state, 'published');
+  assert.equal(currentLive.state, 'passed');
+  assert.equal(currentCodeql.state, 'green');
+  for (const signal of [currentPages, currentLive, currentCodeql]) {
+    assert.match(signal.scope, /80195a39ac40cb5f8c97d1f8ea8bbd1f3d744613/);
+  }
+  assert.match(currentLive.scope, /P3\.6.*NEXT|P4\.1B.*NEXT/i);
 });
 
 test('RU and EN case studies follow the evidence-first flagship contract', () => {
@@ -155,7 +169,7 @@ test('case study is wired into hubs, navigation, metadata and RU/EN pairing', ()
   assert.match(copyAssets, /en\/projects\/portfolio-platform\.html/);
 });
 
-test('portfolio platform history keeps historical acceptance, C7 current and P3.6 next states distinct', () => {
+test('portfolio platform history keeps C7 historical, one current production baseline and one external-evidence next state', () => {
   const history = readJson(files.history);
   const current = history.filter(({state}) => state === 'current');
   const next = history.filter(({state}) => state === 'next');
@@ -164,8 +178,11 @@ test('portfolio platform history keeps historical acceptance, C7 current and P3.
   assert.equal(next.length, 1);
   assert.ok(history.some(({state, title}) => state === 'past' && /clean URL/i.test(title)));
   assert.ok(history.some(({state, title}) => state === 'past' && /P3\.2|case study/i.test(title)));
-  assert.match(current[0].title, /C7.*production baseline/i);
-  assert.match(current[0].description, /P3\.6.*NEXT|WAITING/i);
+  assert.ok(history.some(({state, title, description}) => state === 'past' && /C7.*production baseline/i.test(title) && /134043fa2bb5f6612266a04eab2853f71b207328/.test(description)));
+  assert.match(current[0].title, /launch.*discovery.*maintenance|current production baseline/i);
+  assert.match(current[0].description, /80195a39ac40cb5f8c97d1f8ea8bbd1f3d744613/);
+  assert.match(current[0].description, /externalEvidence=not-collected/i);
   assert.match(next[0].title, /P3\.6.*WAITING/i);
   assert.match(next[0].description, /operator-observed aggregate evidence/i);
+  assert.match(next[0].description, /P4\.1B.*NEXT/i);
 });
