@@ -102,6 +102,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/navigation-ia-browser-smoke.cjs 2>&1 | tee navigation-ia-browser-smoke.log
+      - name: Homepage layout polish browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/homepage-layout-polish-browser-smoke.cjs 2>&1 | tee homepage-layout-polish-browser-smoke.log
       - name: Work with me browser smoke
         shell: bash
         run: |
@@ -185,6 +190,7 @@ jobs:
           cp photo-stories-browser-smoke.log quality-artifacts/photo-stories-browser-smoke.log 2>/dev/null || true
           cp v03-browser-smoke.log quality-artifacts/v03-browser-smoke.log 2>/dev/null || true
           cp navigation-ia-browser-smoke.log quality-artifacts/navigation-ia-browser-smoke.log 2>/dev/null || true
+          cp homepage-layout-polish-browser-smoke.log quality-artifacts/homepage-layout-polish-browser-smoke.log 2>/dev/null || true
           cp work-with-me-browser-smoke.log quality-artifacts/work-with-me-browser-smoke.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke 2>/dev/null || true
@@ -223,6 +229,9 @@ jobs:
           cp artifacts/navigation-ia-materials-desktop.png quality-artifacts/navigation-ia-materials-desktop.png 2>/dev/null || true
           cp artifacts/navigation-ia-materials-mobile.png quality-artifacts/navigation-ia-materials-mobile.png 2>/dev/null || true
           cp artifacts/navigation-ia-sidebar-desktop.png quality-artifacts/navigation-ia-sidebar-desktop.png 2>/dev/null || true
+          cp artifacts/homepage-layout-polish-summary.json quality-artifacts/homepage-layout-polish-summary.json 2>/dev/null || true
+          cp artifacts/homepage-layout-polish-desktop.png quality-artifacts/homepage-layout-polish-desktop.png 2>/dev/null || true
+          cp artifacts/homepage-layout-polish-mobile.png quality-artifacts/homepage-layout-polish-mobile.png 2>/dev/null || true
           cp artifacts/work-with-me-summary.json quality-artifacts/work-with-me-summary.json 2>/dev/null || true
           cp artifacts/notes-index-summary.json quality-artifacts/notes-index-summary.json 2>/dev/null || true
           cp artifacts/notes-index-mobile.png quality-artifacts/notes-index-mobile.png 2>/dev/null || true
