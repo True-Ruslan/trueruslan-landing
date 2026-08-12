@@ -11,8 +11,9 @@ const {chromium} = requireQualityTool('playwright');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright');
 
 const DESKTOP = {width: 1440, height: 1100};
-const TABLET = {width: 900, height: 1000};
-const BRIDGE_COUNT = 4;
+const TABLET = {width: 820, height: 1000};
+const BRIDGE_COUNT = 3;
+const TRANSITION_SURFACE_COUNT = 4;
 
 function union(rects) {
   return rects.reduce((result, rect) => ({
@@ -45,6 +46,39 @@ async function measureBridge(bridge) {
       actions: actionRects,
     };
   });
+}
+
+async function measureTransitionSurfaces(page) {
+  const surfaces = page.locator('[data-home-bridge], [data-home-collaboration="true"]');
+  const count = await surfaces.count();
+  if (count !== TRANSITION_SURFACE_COUNT) {
+    throw new Error(`Expected ${TRANSITION_SURFACE_COUNT} homepage transition surfaces, found ${count}.`);
+  }
+
+  const measurements = [];
+  for (let index = 0; index < count; index += 1) {
+    measurements.push(await surfaces.nth(index).evaluate((node) => {
+      const rect = node.getBoundingClientRect();
+      return {
+        kind: node.dataset.homeBridge || 'collaboration',
+        y: rect.y,
+        height: rect.height,
+      };
+    }));
+  }
+  return measurements;
+}
+
+function validateSurfaceRhythm(surfaces, label) {
+  const gaps = surfaces.slice(1).map((surface, index) => {
+    const previous = surfaces[index];
+    return surface.y - (previous.y + previous.height);
+  });
+  const spread = Math.max(...gaps) - Math.min(...gaps);
+  if (spread > 18) {
+    throw new Error(`Homepage ${label} transition rhythm is uneven: gaps ${gaps.map((gap) => gap.toFixed(1)).join(', ')}px; spread ${spread.toFixed(1)}px.`);
+  }
+  return {gaps, spread};
 }
 
 function validateDesktopBridge(measurement, index) {
@@ -92,10 +126,12 @@ async function runViewport(browser, baseUrl, viewport, label, {desktop = false, 
     const response = await page.goto(`${baseUrl}/`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`Homepage ${label} returned HTTP ${response?.status() ?? 'none'}`);
 
-    const bridges = page.locator('.tr-home-bridge');
+    const bridges = page.locator('[data-home-bridge]');
     const count = await bridges.count();
-    if (count !== BRIDGE_COUNT) throw new Error(`Expected ${BRIDGE_COUNT} homepage bridges, found ${count}.`);
+    if (count !== BRIDGE_COUNT) throw new Error(`Expected ${BRIDGE_COUNT} standard homepage bridges, found ${count}.`);
 
+    const transitionSurfaces = await measureTransitionSurfaces(page);
+    const rhythm = validateSurfaceRhythm(transitionSurfaces, label);
     const measurements = [];
     for (let index = 0; index < count; index += 1) {
       const measurement = await measureBridge(bridges.nth(index));
@@ -113,7 +149,7 @@ async function runViewport(browser, baseUrl, viewport, label, {desktop = false, 
     if (label === 'desktop' || label === 'mobile') {
       await captureScreenshot(page, `homepage-layout-polish-${label}.png`);
     }
-    return {label, viewport, measurements};
+    return {label, viewport, rhythm, measurements};
   } finally {
     await runtime.close();
   }
