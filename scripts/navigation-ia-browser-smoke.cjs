@@ -212,8 +212,14 @@ async function assertSidebarAndLanguage(browser, baseUrl) {
     await english.waitFor({state: 'visible'});
     const englishHref = await english.getAttribute('href');
     const englishPath = await resolvedPathname(english);
-    if (englishPath !== '/en/projects/') {
-      throw new Error(`Projects language counterpart drifted: ${englishHref || 'missing href'} resolved to ${englishPath}`);
+    const expectedEnglishPath = await page.locator('html').evaluate((html) => {
+      if (!html.dataset.trI18nEn) return null;
+      return new URL(html.dataset.trI18nEn).pathname;
+    });
+    if (!expectedEnglishPath || englishPath !== expectedEnglishPath || !englishPath.endsWith('/en/projects/')) {
+      throw new Error(
+        `Projects language counterpart drifted: ${englishHref || 'missing href'} resolved to ${englishPath}; expected ${expectedEnglishPath || 'missing i18n metadata'}`,
+      );
     }
 
     await assertNoHorizontalOverflow(page, 'Projects navigation IA');
