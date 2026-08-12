@@ -5,7 +5,7 @@ on:
     branches:
       - docs/reconcile-prelaunch-evidence
     paths:
-      - 'scripts/reconcile-prelaunch-evidence-state.js'
+      - 'scripts/reconcile-prelaunch-evidence-state-v2.js'
       - '.github/workflows/prelaunch-evidence-reconciliation.yml'
 
 permissions:
@@ -32,7 +32,7 @@ jobs:
           node-version: '24'
 
       - name: Reconcile durable state
-        run: node scripts/reconcile-prelaunch-evidence-state.js
+        run: node scripts/reconcile-prelaunch-evidence-state-v2.js
 
       - name: Verify reconciliation contract
         run: |
