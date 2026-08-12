@@ -86,13 +86,13 @@ for (const [locale, relativePath] of [
   ['ru', 'docs/landing/now.md'],
   ['en', 'docs/en/now.md'],
 ]) {
-  test(`C4 Now ${locale} renders current canonical snapshot before meta explanation`, () => {
+  test(`C4 Now ${locale} leads with concise public framing before the generated current snapshot`, () => {
     const source = read(relativePath);
+    const intro = indexOfOrFail(source, 'class="tr-now-intro"', `${locale} now intro`);
     const placeholder = indexOfOrFail(source, '<div data-tr-now-placeholder></div>', `${locale} now placeholder`);
-    const metaNeedle = locale === 'ru' ? 'Не roadmap' : 'not a roadmap';
-    const meta = indexOfOrFail(source, metaNeedle, `${locale} now meta`);
-    assert.ok(placeholder < meta, `${locale}: current snapshot must precede meta explanation`);
-    assert.match(source, locale === 'ru' ? /источник контекста/i : /context source/i);
+    assert.ok(intro < placeholder, `${locale}: public framing must precede the generated current snapshot`);
+    assert.match(source, /QWEP/);
+    assert.doesNotMatch(source, locale === 'ru' ? /Не roadmap|источник контекста/i : /not a roadmap|context source/i);
   });
 }
 
