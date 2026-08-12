@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "evidenceClass": "repository-readiness",
+  "externalEvidence": "not-collected",
+  "surfaces": [
+    {"id":"home","role":"identity","intentClass":"name-role","i18nId":"home"},
+    {"id":"experience","role":"experience","intentClass":"professional-experience","i18nId":"resume"},
+    {"id":"projects","role":"portfolio","intentClass":"project-discovery","i18nId":"projects"},
+    {"id":"now","role":"current-work","intentClass":"current-work","i18nId":"now"},
+    {"id":"publications","role":"publishing","intentClass":"publications","i18nId":"publications"},
+    {"id":"collaboration","role":"conversion","intentClass":"work-with-me","i18nId":"work-with-me"},
+    {"id":"engineering-notes","role":"knowledge","intentClass":"engineering-notes","path":"landing/notes.html"},
+    {"id":"villaigence","role":"case-study","intentClass":"project-villaigence","i18nId":"livingworld"},
+    {"id":"vlezet","role":"case-study","intentClass":"project-vlezet","i18nId":"vlezet"},
+    {"id":"notchhub","role":"case-study","intentClass":"project-notchhub","i18nId":"notchhub"},
+    {"id":"portfolio-platform","role":"case-study","intentClass":"project-portfolio-platform","i18nId":"portfolio-platform"}
+  ]
+}

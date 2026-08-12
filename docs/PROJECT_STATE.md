@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-11**, после exact-production acceptance C7 — production baseline + P3.6 handoff; redesign implementation sequence завершён, P3.6 measurement остаётся открытым.
+> Последнее смысловое обновление: **2026-08-11**, после repository acceptance P4.1A Search Discovery readiness и reconciliation оставшихся narrative evidence boundaries; C7 остаётся production baseline, P3.6 measurement остаётся открытым.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -426,6 +426,20 @@ The final runtime slice of **Portfolio Clarity & Scanability** is production-acc
 
 Durable ledger: `docs/acceptance/2026-08-11-portfolio-clarity-c7.md`. C7 completes the Portfolio Clarity redesign implementation sequence only. P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** for real equal-duration `operator-observed` aggregates, explicit traffic-sufficiency assessment and human review. C7 makes no engagement, conversion, SEO or causal product-impact claim.
 
+### P4.1A — Search Discovery repository readiness — REPOSITORY ACCEPTED
+
+P4.1A is the current bounded implementation slice. It audits strategic discovery structure without creating a second SEO source of truth:
+
+- `data/page-meta.json` remains canonical metadata owner for the controlled scope;
+- `data/i18n.json` remains canonical RU/EN pairing owner;
+- clean URL projection remains owned by the existing routing layer;
+- Diplodoc remains the single site-wide search owner;
+- `data/search-discovery.json` contains only coverage/intent policy;
+- generated reports are repository-readiness evidence only;
+- Search Console and Yandex Webmaster external evidence remains `not-collected` in P4.1A.
+
+P4.1A does not change the P3.6 clock or acceptance semantics. Repository acceptance is grounded in exact head `02c587d7adaca57d13cf9e68dd3babf269285d2f`: Build #1858 / `31537039625` — SUCCESS; quality artifact `9119360015`, digest `sha256:411410e9e3f9afecb04984de72b66bedcc6ad67d9a03f16d068ab4fb375632d3`; CodeQL #1408 / `31537039524` — SUCCESS; Dependency Review #1286 / `31537039489` — SUCCESS; Dependency Audit #215 / `31537039452` — SUCCESS. The preserved Build artifact contains the JSON/Markdown/log discovery evidence with **11 surfaces / 21 clean routes / 0 findings / READY** and no external search-performance observations.
+
 ## 3. External project evidence boundaries
 
 Content Freshness observation от **2026-08-08** был вручную reconciled с текущими репозиториями. Новые release/PR/activity signals обновляют evidence snapshot, но сами по себе не повышают lifecycle и не заменяют product-owner/installed acceptance.
@@ -445,9 +459,9 @@ Accepted baseline остаётся:
 - PR #42 — **CLOSED UNMERGED / product-owner usefulness FAIL** после representative retest 2026-08-08; automatic M7.8C не принят;
 - PR #44 — **CLOSED UNMERGED**, deterministic real-fixture benchmark сохранён только как R&D evidence;
 - PR #45 — **CLOSED UNMERGED**, hybrid proposal recovery сохранён только как R&D evidence и не даёт AI geometry authority;
-- PR #52 — **OPEN DRAFT / design-only Assisted Tracing gate**, product code ещё не принят.
+- PR #52 — **CLOSED UNMERGED / superseded**; M8.1 PR #85 is product-owner accepted/merged, while M8.2 PR #87 is the current Draft boundary with focused clipboard retest pending.
 
-Следующая bounded direction — Assisted Tracing: пользователь явно выбирает/рисует rough geometry, локальный raster helper может уточнить только текущий ephemeral preview при однозначном evidence, неоднозначность обязана abstain, обязательного AI/network path нет. M7.8B остаётся последним accepted recognition slice до отдельного TDD/browser/product-owner acceptance.
+Recognition history keeps M7.8B accepted and the failed automatic M7.8C path explicit. Current editor development is M8.2 PR #87 after accepted M8.1 PR #85; no Draft editor slice is promoted before its focused clipboard retest, exact-head CI and product-owner closure.
 
 ### VillAIgence
 
@@ -460,21 +474,23 @@ VAI-M2-INST-005:                NOT TESTED / automated evidence only
 VAI-CONCUR-004:                 NOT TESTED / DEFERRED
 voice deadline/exactly-once:    PR #110 — MERGED
 controlled BELIEF admission:    PR #123 — MERGED
-PLAYER_TOLD extraction:         PR #125 — OPEN DRAFT / RED
+PLAYER_TOLD extraction:         PR #125 — MERGED
+causal NPC↔NPC mutation:         PR #153 — MERGED
+Personality/social snapshot:     PR #155 — OPEN DRAFT / PENDING
 lifecycle:                      release-candidate
 public label:                   ACCEPTANCE IN PROGRESS
 ```
 
-Official release и bounded installed 7 PASS / 0 FAIL не превращают deferred categories в PASS и не повышают lifecycle автоматически. PR #123 закрепил provenance-safe BELIEF admission: `PLAYER_TOLD`/`NPC_TOLD`/`INFERRED` остаются BELIEF, `SYSTEM_OBSERVED` не входит через BELIEF API, FACT authority остаётся server-owned. PR #125 — отдельный Draft/RED extraction slice без второго provider request и без AI→FACT path; он не является accepted product truth.
+Official release и bounded installed 7 PASS / 0 FAIL не превращают deferred categories в PASS и не повышают lifecycle автоматически. PR #123 закрепил provenance-safe BELIEF admission; PR #125 и PR #153 являются merged post-release source capability while server-owned provenance/FACT authority remains unchanged. PR #155 is the current Draft/pending source boundary and does not expand installed acceptance.
 
 ### Portfolio Platform
 
-Canonical Project Evidence обновлён до принятого P3.6C production boundary:
+Canonical Project Evidence records C7 as the latest controlled production boundary:
 
-- exact deployed SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`;
-- Pages #187 / run `31227641778` / deployment `5803497490`;
-- Production Live #288 / run `31227681975`;
-- production pre-consent smoke: zero Yandex requests before consent;
+- exact deployed SHA `134043fa2bb5f6612266a04eab2853f71b207328`;
+- Pages #223 / run `31516118934` / deployment `5855067883`;
+- deployment-triggered Production Live #498 / run `31516213818`;
+- C7 presentation baseline remains `context-only` and does not reset the clean-URL observation clock;
 - P3.6 measurement по-прежнему **OPEN / WAITING FOR EXTERNAL EVIDENCE**.
 
 ---
@@ -648,7 +664,7 @@ production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a091
 ## 5. Operational boundaries
 
 - `issue #111` — authenticated Yandex/search-engine observation;
-- `issue #78` — 2026-08-11 controlled reconciliation updates Vlezet, VillAIgence and Portfolio Platform canonical evidence without lifecycle promotion; close only after the post-merge default-branch Content Freshness run reports 0 findings;
+- `issue #78` — CLOSED / COMPLETED after default-branch Content Freshness #177 reported 0 findings on `master@40773f4953d43174eec25e1070a5925abbb3234a`;
 - `issue #82` — Diplodoc/markdown-it blocker; review on or after **2026-08-17**;
 - no `npm audit fix --force`, local shim or unreviewed fork;
 - no legacy cleanup before observed crawler replacement.
@@ -657,10 +673,8 @@ production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a091
 
 ## 6. Approved next product slice
 
-Portfolio 1.0 implementation is **COMPLETE THROUGH C7**; measurement acceptance remains separate.
+Portfolio 1.0 presentation implementation is **COMPLETE THROUGH C7**; measurement acceptance remains separate.
 
-**Portfolio Clarity redesign implementation sequence — COMPLETE through C7.**
+**Current bounded implementation: P4.1A — Search Discovery repository readiness.** P4.1A audits canonical metadata/i18n/clean-route structure and produces deterministic repository-readiness evidence before any external search-performance optimization. P4.1B external Search Console / Yandex Webmaster evidence is NEXT after P4.1A acceptance; P4.1C user-facing discovery changes remain evidence-gated.
 
-P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; it was not closed or reset by C2/C3/C4/C5/C6/C7 presentation work.
-
-P3.6A measurement-readiness tooling уже принято на exact SHA `7cc56d024fbde53156a9136b14b00c81c6718811`. Сам P3.6 остаётся observation checkpoint: запускать его только с реальными `operator-observed` aggregate observations после минимального post-migration window, с equal-duration baseline/current windows, explicit traffic-sufficiency assessment после закрытия current window и human review. Synthetic `synthetic-pipeline-proof` не является production measurement evidence и не разрешает engagement, causality или product-impact claims.
+P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; P4.1 does not close, reset or reinterpret it. P3.6A measurement-readiness tooling remains accepted on exact SHA `7cc56d024fbde53156a9136b14b00c81c6718811`. Real P3.6 measurement still requires `operator-observed` aggregate observations after the minimum post-migration window, equal-duration windows, explicit traffic-sufficiency assessment and human review; `synthetic-pipeline-proof` cannot create engagement, causality or product-impact claims.

@@ -155,6 +155,12 @@ jobs:
           SITE_URL=https://trueruslan.ru npm run build:docs 2>&1 | tee custom-domain-build.log
           npm run check:site 2>&1 | tee custom-domain-integrity.log
           node scripts/site-artifact.js docs-html https://trueruslan.ru https://true-ruslan.github.io/trueruslan-landing 2>&1 | tee custom-domain-artifact.log
+      - name: Search discovery readiness
+        if: always()
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run check:discovery 2>&1 | tee search-discovery-readiness.log
       - name: Preserve quality diagnostics
         if: always()
         shell: bash
@@ -186,6 +192,7 @@ jobs:
           cp custom-domain-build.log quality-artifacts/custom-domain-build.log 2>/dev/null || true
           cp custom-domain-integrity.log quality-artifacts/custom-domain-integrity.log 2>/dev/null || true
           cp custom-domain-artifact.log quality-artifacts/custom-domain-artifact.log 2>/dev/null || true
+          cp search-discovery-readiness.log quality-artifacts/search-discovery-readiness.log 2>/dev/null || true
           cp docs-html/_search/ru/index.html quality-artifacts/search-index.html 2>/dev/null || true
           cp docs-html/resume/index.html quality-artifacts/resume-generated.html 2>/dev/null || true
           cp docs-html/landing/resume.html quality-artifacts/resume-legacy-redirect.html 2>/dev/null || true
