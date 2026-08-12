@@ -24,7 +24,7 @@ I help when the goal is a concrete technical outcome: backend and integrations, 
 
 ## How we work
 
-<ol class="tr-work-process">
+<ol class="tr-work-process" role="list">
   <li data-tr-work-step="context" data-tr-work-order="01"><strong>Context & Scope.</strong> You describe the problem, desired outcome and constraints; we separate the required result from optional improvements.</li>
   <li data-tr-work-step="implementation" data-tr-work-order="02"><strong>Estimate & Implementation.</strong> Once the scope is clear, we agree on format and estimate, then work in small reviewable increments.</li>
   <li data-tr-work-step="handover" data-tr-work-order="03"><strong>Handover.</strong> I transfer the result with verification steps and explicitly documented remaining risks.</li>
