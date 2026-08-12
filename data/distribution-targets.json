@@ -5,62 +5,62 @@
     "priority": 1,
     "audiences": ["recruiter", "engineer", "general"],
     "channels": ["github", "habr", "telegram", "direct"],
-    "framing": "Персональная инженерная платформа: проекты, технические заметки, публикации и web-CV.",
-    "evidenceBoundary": "Показывает текущую публичную платформу и её canonical разделы; не является заявлением о найме, охвате или завершённости всех проектов."
+    "framing": "Персональная инженерная платформа: опыт, проекты, технические заметки, публикации и прямой способ связаться.",
+    "evidenceBoundary": "Показывает текущую публичную платформу и её canonical разделы; не является заявлением об охвате, найме или завершённости всех проектов."
   },
   {
-    "id": "vlezet-case-study",
-    "pagePath": "landing/projects/vlezet.html",
+    "id": "resume",
+    "pagePath": "landing/resume.html",
     "priority": 2,
+    "audiences": ["recruiter", "engineer", "general"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Короткий вход в коммерческий backend-опыт, ключевые домены, стек и web-CV с PDF-версией.",
+    "evidenceBoundary": "Резюме отражает текущий профессиональный профиль; оно не означает гарантированную доступность, конкретный формат сотрудничества или оффер."
+  },
+  {
+    "id": "projects",
+    "pagePath": "landing/projects.html",
+    "priority": 3,
+    "audiences": ["recruiter", "engineer", "general"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Основной каталог инженерных case studies с быстрым переходом от роли к доказательствам работы.",
+    "evidenceBoundary": "Lifecycle и acceptance каждого проекта принадлежат canonical Project Registry/Evidence; Draft и pending work не считаются принятыми автоматически."
+  },
+  {
+    "id": "notchhub-case-study",
+    "pagePath": "landing/projects/notchhub.html",
+    "priority": 4,
     "audiences": ["engineer", "recruiter"],
     "channels": ["github", "habr", "telegram", "direct"],
-    "framing": "Local-first geometry и recognition case study с deterministic validation и explicit Apply authority.",
-    "evidenceBoundary": "M7.8B принят; M7.8C остаётся Draft до повторного product-owner теста на том же реальном плане."
+    "framing": "Native local-first macOS productivity hub around the MacBook notch: SwiftUI/AppKit boundaries, interaction design, security and performance gates.",
+    "evidenceBoundary": "NotchHub остаётся pre-production / M1 IN DEVELOPMENT; accepted 0.1.0 Personal foundation отделён от текущего interaction hardening и незавершённая M1 work не продвигается автоматически."
   },
   {
     "id": "villaigence-case-study",
     "pagePath": "landing/projects/livingworld.html",
-    "priority": 3,
+    "priority": 5,
     "audiences": ["engineer", "recruiter"],
     "channels": ["github", "habr", "telegram", "direct"],
-    "framing": "Server-authoritative AI NPC system: voice/text ingress, Memory 2.0, security и exact-artifact gates.",
-    "evidenceBoundary": "Source, GameTest и production-JAR evidence подтверждены отдельно; cumulative provider/gameplay acceptance ещё не завершён."
+    "framing": "Server-authoritative AI NPC system: voice/text ingress, Memory 2.0, provenance, security и exact-artifact acceptance.",
+    "evidenceBoundary": "VillAIgence остаётся release-candidate / ACCEPTANCE IN PROGRESS; installed 0.2.0+1.21.1 имеет bounded 7 PASS / 0 FAIL, explicit NOT TESTED/DEFERRED категории и later source capability не расширяют installed acceptance."
+  },
+  {
+    "id": "portfolio-platform-case-study",
+    "pagePath": "landing/projects/portfolio-platform.html",
+    "priority": 6,
+    "audiences": ["engineer", "recruiter"],
+    "channels": ["github", "habr", "telegram", "direct"],
+    "framing": "Static-first portfolio platform: canonical registries, clean URLs, CI quality gates, GitHub Pages и deployment-driven production verification.",
+    "evidenceBoundary": "C7 — текущая production baseline; P3.6 measurement остаётся WAITING FOR EXTERNAL EVIDENCE, поэтому case study не делает engagement, SEO или causal product-impact claims."
   },
   {
     "id": "engineering-notes",
     "pagePath": "landing/notes.html",
-    "priority": 4,
+    "priority": 7,
     "audiences": ["engineer", "researcher", "general"],
     "channels": ["github", "habr", "telegram", "direct"],
-    "framing": "Индекс практических разборов архитектуры, reliability, AI systems и release engineering.",
-    "evidenceBoundary": "Каждая заметка имеет собственную evidence boundary; индекс не расширяет отдельные выводы на все системы."
-  },
-  {
-    "id": "installed-acceptance-note",
-    "pagePath": "landing/notes/source-tests-to-installed-acceptance.html",
-    "priority": 5,
-    "audiences": ["engineer", "recruiter"],
-    "channels": ["github", "habr", "telegram", "direct"],
-    "framing": "Практическая цепочка от source tests до installed exact-artifact acceptance.",
-    "evidenceBoundary": "Release gates доказывают разные свойства; green CI не заменяет cumulative product-owner acceptance."
-  },
-  {
-    "id": "deterministic-authority-note",
-    "pagePath": "landing/notes/probabilistic-proposals-deterministic-authority.html",
-    "priority": 6,
-    "audiences": ["engineer", "researcher"],
-    "channels": ["github", "habr", "telegram", "direct"],
-    "framing": "Как отделить probabilistic proposal от deterministic validation и authoritative mutation.",
-    "evidenceBoundary": "Разбор основан на Vlezet и VillAIgence; паттерн требует адаптации к инвариантам конкретного продукта."
-  },
-  {
-    "id": "restart-persistence-note",
-    "pagePath": "landing/notes/restart-persistence-is-a-product-contract.html",
-    "priority": 7,
-    "audiences": ["engineer", "researcher"],
-    "channels": ["github", "habr", "telegram", "direct"],
-    "framing": "Почему сохранённые bytes ещё нужно дополнить restart, read-back, identity и behavioral continuity.",
-    "evidenceBoundary": "Equal hashes подтверждают byte continuity только в no-mutation scenario и не доказывают semantic или behavioral continuity."
+    "framing": "Компактный индекс практических разборов architecture, reliability, AI systems, release engineering и product evidence.",
+    "evidenceBoundary": "Каждая заметка имеет собственную evidence boundary; индекс не расширяет отдельные выводы на все системы и не превращает инженерную интерпретацию в универсальный факт."
   },
   {
     "id": "publications",
@@ -68,7 +68,25 @@
     "priority": 8,
     "audiences": ["recruiter", "engineer", "researcher", "general"],
     "channels": ["github", "habr", "telegram", "direct"],
-    "framing": "Каталог завершённых и внешне проверяемых статей, докладов и научных материалов.",
-    "evidenceBoundary": "Раздел включает только опубликованные материалы с внешней canonical ссылкой и не содержит Draft-записей."
+    "framing": "Каталог технических и научных материалов, которые можно проверить на внешних canonical площадках.",
+    "evidenceBoundary": "Раздел включает опубликованные материалы с внешними canonical ссылками и не представляет Draft-записи как опубликованные."
+  },
+  {
+    "id": "work-with-me",
+    "pagePath": "landing/work-with-me.html",
+    "priority": 9,
+    "audiences": ["recruiter", "engineer", "general"],
+    "channels": ["github", "telegram", "direct"],
+    "framing": "Прямой путь от интереса к конкретной задаче: backend, интеграции, AI engineering, технический аудит, teaching и mentoring.",
+    "evidenceBoundary": "Страница описывает допустимые направления и способ связаться; она не фиксирует SLA, цены, гарантированную доступность или обязательство принять проект."
+  },
+  {
+    "id": "now",
+    "pagePath": "landing/now.html",
+    "priority": 10,
+    "audiences": ["engineer", "general"],
+    "channels": ["github", "telegram", "direct"],
+    "framing": "Короткий snapshot того, чем я занимаюсь сейчас: активные проекты, изучаемые темы и writing focus.",
+    "evidenceBoundary": "Now — датированный текущий snapshot, а не обещание roadmap, срока выпуска или будущего результата."
   }
 ]

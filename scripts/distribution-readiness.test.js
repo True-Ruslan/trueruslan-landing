@@ -20,13 +20,13 @@ async function loadModule() {
   return import('./distribution-readiness.js');
 }
 
-test('canonical distribution targets resolve only through page metadata', async () => {
+test('canonical distribution targets resolve only through page metadata and clean-route projection', async () => {
   assert.ok(fs.existsSync(TARGETS_PATH), 'missing distribution target registry');
   const api = await loadModule();
   const rawTargets = readJson(TARGETS_PATH);
   const pageMeta = readJson(PAGE_META_PATH);
 
-  assert.equal(rawTargets.length, 8);
+  assert.equal(rawTargets.length, 10);
   assert.ok(rawTargets.every((target) => !Object.hasOwn(target, 'title')));
   assert.ok(rawTargets.every((target) => !Object.hasOwn(target, 'description')));
   assert.ok(rawTargets.every((target) => !Object.hasOwn(target, 'url')));
@@ -34,16 +34,19 @@ test('canonical distribution targets resolve only through page metadata', async 
   const targets = api.validateDistributionTargets(rawTargets, {pageMeta});
   const resolved = api.resolveDistributionTargets(targets, pageMeta, 'https://trueruslan.ru');
 
-  assert.equal(resolved.length, 8);
+  assert.equal(resolved.length, 10);
   assert.equal(new Set(resolved.map(({id}) => id)).size, resolved.length);
   assert.equal(new Set(resolved.map(({pagePath}) => pagePath)).size, resolved.length);
-  assert.deepEqual(resolved.map(({priority}) => priority), [1, 2, 3, 4, 5, 6, 7, 8]);
+  assert.deepEqual(resolved.map(({priority}) => priority), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   assert.ok(resolved.every(({canonicalUrl}) => {
     const parsed = new URL(canonicalUrl);
     return parsed.protocol === 'https:'
       && parsed.hostname === 'trueruslan.ru'
       && parsed.search === ''
-      && parsed.hash === '';
+      && parsed.hash === ''
+      && !parsed.pathname.includes('.html')
+      && !parsed.pathname.startsWith('/landing/')
+      && (parsed.pathname === '/' || parsed.pathname.endsWith('/'));
   }));
 });
 
@@ -84,7 +87,10 @@ test('tracked distribution runbook is deterministic and registry-backed', async 
   assert.match(expected, /### Telegram — verified/is);
   assert.match(expected, /### Telegram Blog — verified/is);
   assert.match(expected, /post-update verification/i);
+  assert.match(expected, /does not auto-post/i);
   assert.doesNotMatch(expected, /utm_|session replay|automatic posting/i);
+  assert.doesNotMatch(expected, /https:\/\/trueruslan\.ru\/landing\//i);
+  assert.doesNotMatch(expected, /https:\/\/trueruslan\.ru\/[^\s)]+\.html/i);
 });
 
 test('distribution workflow is read-only, path-scoped and artifact-producing', () => {
@@ -101,6 +107,7 @@ test('distribution workflow is read-only, path-scoped and artifact-producing', (
     'data/page-meta.json',
     'scripts/distribution-readiness.js',
     'scripts/distribution-readiness.test.js',
+    'scripts/launch-distribution-contract.test.js',
     'docs/DISTRIBUTION.md',
   ]) {
     assert.ok(workflow.includes(controlledPath), `missing workflow path: ${controlledPath}`);

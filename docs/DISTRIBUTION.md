@@ -10,78 +10,98 @@
 - Canonical URL: https://trueruslan.ru/
 - Audiences: `recruiter`, `engineer`, `general`
 - Channels: `github`, `habr`, `telegram`, `direct`
-- Framing: Персональная инженерная платформа: проекты, технические заметки, публикации и web-CV.
-- Evidence boundary: Показывает текущую публичную платформу и её canonical разделы; не является заявлением о найме, охвате или завершённости всех проектов.
+- Framing: Персональная инженерная платформа: опыт, проекты, технические заметки, публикации и прямой способ связаться.
+- Evidence boundary: Показывает текущую публичную платформу и её canonical разделы; не является заявлением об охвате, найме или завершённости всех проектов.
 - [ ] Post-update verification
 
-### 2. Vlezet — Geometry and Recognition Case Study
+### 2. Резюме — Руслан Немыкин
 
-- ID: `vlezet-case-study`
-- Canonical URL: https://trueruslan.ru/landing/projects/vlezet.html
+- ID: `resume`
+- Canonical URL: https://trueruslan.ru/resume/
+- Audiences: `recruiter`, `engineer`, `general`
+- Channels: `github`, `habr`, `telegram`, `direct`
+- Framing: Короткий вход в коммерческий backend-опыт, ключевые домены, стек и web-CV с PDF-версией.
+- Evidence boundary: Резюме отражает текущий профессиональный профиль; оно не означает гарантированную доступность, конкретный формат сотрудничества или оффер.
+- [ ] Post-update verification
+
+### 3. Проекты — Руслан Немыкин
+
+- ID: `projects`
+- Canonical URL: https://trueruslan.ru/projects/
+- Audiences: `recruiter`, `engineer`, `general`
+- Channels: `github`, `habr`, `telegram`, `direct`
+- Framing: Основной каталог инженерных case studies с быстрым переходом от роли к доказательствам работы.
+- Evidence boundary: Lifecycle и acceptance каждого проекта принадлежат canonical Project Registry/Evidence; Draft и pending work не считаются принятыми автоматически.
+- [ ] Post-update verification
+
+### 4. NotchHub — Native macOS Productivity Hub
+
+- ID: `notchhub-case-study`
+- Canonical URL: https://trueruslan.ru/projects/notchhub/
 - Audiences: `engineer`, `recruiter`
 - Channels: `github`, `habr`, `telegram`, `direct`
-- Framing: Local-first geometry и recognition case study с deterministic validation и explicit Apply authority.
-- Evidence boundary: M7.8B принят; M7.8C остаётся Draft до повторного product-owner теста на том же реальном плане.
+- Framing: Native local-first macOS productivity hub around the MacBook notch: SwiftUI/AppKit boundaries, interaction design, security and performance gates.
+- Evidence boundary: NotchHub остаётся pre-production / M1 IN DEVELOPMENT; accepted 0.1.0 Personal foundation отделён от текущего interaction hardening и незавершённая M1 work не продвигается автоматически.
 - [ ] Post-update verification
 
-### 3. VillAIgence — Server-Authoritative AI Society
+### 5. VillAIgence — Server-Authoritative AI Society
 
 - ID: `villaigence-case-study`
-- Canonical URL: https://trueruslan.ru/landing/projects/livingworld.html
+- Canonical URL: https://trueruslan.ru/projects/livingworld/
 - Audiences: `engineer`, `recruiter`
 - Channels: `github`, `habr`, `telegram`, `direct`
-- Framing: Server-authoritative AI NPC system: voice/text ingress, Memory 2.0, security и exact-artifact gates.
-- Evidence boundary: Source, GameTest и production-JAR evidence подтверждены отдельно; cumulative provider/gameplay acceptance ещё не завершён.
+- Framing: Server-authoritative AI NPC system: voice/text ingress, Memory 2.0, provenance, security и exact-artifact acceptance.
+- Evidence boundary: VillAIgence остаётся release-candidate / ACCEPTANCE IN PROGRESS; installed 0.2.0+1.21.1 имеет bounded 7 PASS / 0 FAIL, explicit NOT TESTED/DEFERRED категории и later source capability не расширяют installed acceptance.
 - [ ] Post-update verification
 
-### 4. Engineering Notes — Руслан Немыкин
+### 6. TrueRuslan Landing — Static-First Portfolio Platform
+
+- ID: `portfolio-platform-case-study`
+- Canonical URL: https://trueruslan.ru/projects/portfolio-platform/
+- Audiences: `engineer`, `recruiter`
+- Channels: `github`, `habr`, `telegram`, `direct`
+- Framing: Static-first portfolio platform: canonical registries, clean URLs, CI quality gates, GitHub Pages и deployment-driven production verification.
+- Evidence boundary: C7 — текущая production baseline; P3.6 measurement остаётся WAITING FOR EXTERNAL EVIDENCE, поэтому case study не делает engagement, SEO или causal product-impact claims.
+- [ ] Post-update verification
+
+### 7. Engineering Notes — Руслан Немыкин
 
 - ID: `engineering-notes`
-- Canonical URL: https://trueruslan.ru/landing/notes.html
+- Canonical URL: https://trueruslan.ru/notes/
 - Audiences: `engineer`, `researcher`, `general`
 - Channels: `github`, `habr`, `telegram`, `direct`
-- Framing: Индекс практических разборов архитектуры, reliability, AI systems и release engineering.
-- Evidence boundary: Каждая заметка имеет собственную evidence boundary; индекс не расширяет отдельные выводы на все системы.
-- [ ] Post-update verification
-
-### 5. От source tests к installed acceptance: что доказывает каждый release gate
-
-- ID: `installed-acceptance-note`
-- Canonical URL: https://trueruslan.ru/landing/notes/source-tests-to-installed-acceptance.html
-- Audiences: `engineer`, `recruiter`
-- Channels: `github`, `habr`, `telegram`, `direct`
-- Framing: Практическая цепочка от source tests до installed exact-artifact acceptance.
-- Evidence boundary: Release gates доказывают разные свойства; green CI не заменяет cumulative product-owner acceptance.
-- [ ] Post-update verification
-
-### 6. AI может предложить, но не применить: как строить deterministic authority
-
-- ID: `deterministic-authority-note`
-- Canonical URL: https://trueruslan.ru/landing/notes/probabilistic-proposals-deterministic-authority.html
-- Audiences: `engineer`, `researcher`
-- Channels: `github`, `habr`, `telegram`, `direct`
-- Framing: Как отделить probabilistic proposal от deterministic validation и authoritative mutation.
-- Evidence boundary: Разбор основан на Vlezet и VillAIgence; паттерн требует адаптации к инвариантам конкретного продукта.
-- [ ] Post-update verification
-
-### 7. Restart — это часть продукта: почему сохранённый JSON ещё не доказывает persistence
-
-- ID: `restart-persistence-note`
-- Canonical URL: https://trueruslan.ru/landing/notes/restart-persistence-is-a-product-contract.html
-- Audiences: `engineer`, `researcher`
-- Channels: `github`, `habr`, `telegram`, `direct`
-- Framing: Почему сохранённые bytes ещё нужно дополнить restart, read-back, identity и behavioral continuity.
-- Evidence boundary: Equal hashes подтверждают byte continuity только в no-mutation scenario и не доказывают semantic или behavioral continuity.
+- Framing: Компактный индекс практических разборов architecture, reliability, AI systems, release engineering и product evidence.
+- Evidence boundary: Каждая заметка имеет собственную evidence boundary; индекс не расширяет отдельные выводы на все системы и не превращает инженерную интерпретацию в универсальный факт.
 - [ ] Post-update verification
 
 ### 8. Публикации и выступления — Руслан Немыкин
 
 - ID: `publications`
-- Canonical URL: https://trueruslan.ru/landing/publications.html
+- Canonical URL: https://trueruslan.ru/publications/
 - Audiences: `recruiter`, `engineer`, `researcher`, `general`
 - Channels: `github`, `habr`, `telegram`, `direct`
-- Framing: Каталог завершённых и внешне проверяемых статей, докладов и научных материалов.
-- Evidence boundary: Раздел включает только опубликованные материалы с внешней canonical ссылкой и не содержит Draft-записей.
+- Framing: Каталог технических и научных материалов, которые можно проверить на внешних canonical площадках.
+- Evidence boundary: Раздел включает опубликованные материалы с внешними canonical ссылками и не представляет Draft-записи как опубликованные.
+- [ ] Post-update verification
+
+### 9. Работа со мной — Руслан Немыкин
+
+- ID: `work-with-me`
+- Canonical URL: https://trueruslan.ru/work-with-me/
+- Audiences: `recruiter`, `engineer`, `general`
+- Channels: `github`, `telegram`, `direct`
+- Framing: Прямой путь от интереса к конкретной задаче: backend, интеграции, AI engineering, технический аудит, teaching и mentoring.
+- Evidence boundary: Страница описывает допустимые направления и способ связаться; она не фиксирует SLA, цены, гарантированную доступность или обязательство принять проект.
+- [ ] Post-update verification
+
+### 10. Сейчас — Руслан Немыкин
+
+- ID: `now`
+- Canonical URL: https://trueruslan.ru/now/
+- Audiences: `engineer`, `general`
+- Channels: `github`, `telegram`, `direct`
+- Framing: Короткий snapshot того, чем я занимаюсь сейчас: активные проекты, изучаемые темы и writing focus.
+- Evidence boundary: Now — датированный текущий snapshot, а не обещание roadmap, срока выпуска или будущего результата.
 - [ ] Post-update verification
 
 ## External profile audit
@@ -126,6 +146,8 @@
 
 - Use only the canonical URLs rendered above.
 - Keep every claim inside its recorded evidence boundary.
+- Treat this registry as launch/share preparation, not evidence that an announcement was published or received traffic.
+- Publish manually and deliberately; this repository does not auto-post to GitHub, Habr, Telegram or other external channels.
 - Update a public profile deliberately, then verify the rendered backlink.
 - Record new profile evidence before changing `verified`, `stale` or `unverified` state.
 
