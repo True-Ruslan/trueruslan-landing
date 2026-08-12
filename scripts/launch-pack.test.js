@@ -1,10 +1,16 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
 
 import {
   buildLaunchPack,
   renderLaunchPackMarkdown,
+  writeLaunchPack,
 } from './launch-pack.js';
+
+const ROOT = path.resolve(import.meta.dirname, '..');
 
 function targets() {
   return [
@@ -88,4 +94,32 @@ test('launch pack fails closed on non-canonical URLs', () => {
   const legacy = targets();
   legacy[0] = {...legacy[0], canonicalUrl: 'https://trueruslan.ru/landing/index.html'};
   assert.throws(() => buildLaunchPack({targets: legacy}), /clean|canonical|legacy/i);
+});
+
+test('real registry writes a prepared artifact without changing publication state', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'launch-pack-'));
+  try {
+    const result = writeLaunchPack({outputDir});
+    assert.equal(result.pack.targetCount, 10);
+    assert.ok(result.pack.draftCount > result.pack.targetCount);
+    assert.equal(result.pack.publicationState, 'not-published');
+    assert.equal(fs.existsSync(result.jsonPath), true);
+    assert.equal(fs.existsSync(result.markdownPath), true);
+    assert.match(fs.readFileSync(result.markdownPath, 'utf8'), /Publication remains a deliberate manual action/i);
+  } finally {
+    fs.rmSync(outputDir, {recursive: true, force: true});
+  }
+});
+
+test('launch pack is reproducible locally and owned by the existing read-only distribution workflow', () => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  const workflow = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'distribution-readiness.yml'), 'utf8');
+
+  assert.equal(pkg.scripts['report:launch-pack'], 'node scripts/launch-pack.js');
+  assert.ok(workflow.includes("scripts/launch-pack.js"));
+  assert.ok(workflow.includes("scripts/launch-pack.test.js"));
+  assert.match(workflow, /node scripts\/launch-pack\.js/);
+  assert.match(workflow, /contents:\s*read/);
+  assert.doesNotMatch(workflow, /contents:\s*write|issues:\s*write|deployments:\s*write/);
+  assert.doesNotMatch(workflow, /curl|telegram|api\.github\.com|habr\.com/i);
 });
