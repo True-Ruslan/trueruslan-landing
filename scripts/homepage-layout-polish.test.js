@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const REQUIRED_BRIDGES = [
   '{{HOME_EXPERIENCE_BRIDGE}}',
@@ -18,7 +19,7 @@ const REQUIRED_BRIDGES = [
 test('homepage keeps the four approved bridge surfaces and their existing content ownership', () => {
   const template = read('templates/index.html');
   for (const marker of REQUIRED_BRIDGES) {
-    assert.match(template, new RegExp(marker.replace(/[{}]/g, '\\$&')));
+    assert.match(template, new RegExp(escapeRegExp(marker)));
   }
   assert.match(template, /class="tr-home-shell"/);
   assert.match(template, /class="tr-home-section" aria-labelledby="flagships-title"/);
