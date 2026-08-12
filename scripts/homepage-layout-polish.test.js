@@ -32,6 +32,18 @@ test('homepage layout polish is owned by the existing refinement stylesheet', ()
   assert.match(css, /\.tr-home-bridge__actions\s*\{/);
 });
 
+test('homepage refinement preserves equal bridge-to-collaboration spacing and centered desktop actions', () => {
+  const css = read('docs/_assets/style/home-refinement.css');
+  assert.match(
+    css,
+    /\.tr-home-bridge \+ \.tr-home-bridge,\s*\.tr-home-bridge \+ \.tr-home-collaboration,\s*\.tr-home-collaboration \+ \.tr-home-bridge\s*\{/,
+  );
+  assert.match(
+    css,
+    /\.tr-home-bridge\s*\{[\s\S]*?align-items:\s*center;/,
+  );
+});
+
 test('Build owns a dedicated homepage layout browser acceptance gate and preserves its evidence', () => {
   const smokePath = path.join(ROOT, 'scripts', 'homepage-layout-polish-browser-smoke.cjs');
   assert.equal(fs.existsSync(smokePath), true, 'homepage layout browser smoke must exist');
