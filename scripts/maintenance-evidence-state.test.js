@@ -41,14 +41,14 @@ test('durable state records accepted Dependabot configuration maintenance', () =
   assert.match(durable, /Dependabot[^\n]*(?:unmanaged|invalid)[^\n]*labels/i);
 });
 
-test('maintenance reconciliation preserves external-evidence boundaries after P4.1B intake acceptance', () => {
-  assert.match(state, /P3\.6[^\n]*(?:NEXT|WAITING FOR EXTERNAL EVIDENCE)/i);
-  assert.match(roadmap, /P3\.6[^\n]*(?:NEXT|WAITING FOR EXTERNAL EVIDENCE)/i);
+test('maintenance reconciliation preserves P3.6 and P4.1C while P4.1B review is sparse', () => {
+  assert.match(state, /P3\.6[^\n]*(?:NEXT|WAITING FOR EXTERNAL EVIDENCE|WAITING)/i);
+  assert.match(roadmap, /P3\.6[^\n]*(?:NEXT|WAITING FOR EXTERNAL EVIDENCE|WAITING)/i);
   assert.match(durable, /2026-08-05T00:00:00Z/);
   assert.match(durable, /P4\.1B intake tooling[^\n]*(?:DONE|PRODUCTION ACCEPTED|accepted)/i);
-  assert.match(state, /P4\.1B[^\n]*(?:real external evidence|collection\/review)[^\n]*NEXT/i);
-  assert.match(roadmap, /P4\.1B[^\n]*(?:real external evidence|collection\/review)[^\n]*NEXT/i);
+  assert.match(state, /P4\.1B[^\n]*(?:real external evidence review|review)[^\n]*(?:IN PROGRESS|SPARSE PRE-LAUNCH BASELINE)/i);
+  assert.match(roadmap, /P4\.1B[^\n]*(?:real external evidence review|review)[^\n]*(?:IN PROGRESS|SPARSE PRE-LAUNCH BASELINE)/i);
   assert.match(durable, /P4\.1C[^\n]*WAITING/i);
   assert.match(durable, /externalEvidence[^\n]*not-collected/i);
-  assert.doesNotMatch(durable, /P4\.1B[^\n]*(?:external evidence|collection|observations)[^\n]*(?:DONE|COMPLETED|PRODUCTION ACCEPTED)/i);
+  assert.doesNotMatch(durable, /P4\.1B[^\n]*(?:real external evidence review|evidence review)[^\n]*(?:DONE|COMPLETED|PRODUCTION ACCEPTED)/i);
 });
