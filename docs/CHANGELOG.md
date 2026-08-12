@@ -1,8 +1,16 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-12**, current evidence и P4.1B intake tooling reconciled; P3.6 measurement и реальные P4.1B external observations остаются открытыми.
+> Обновлено: **2026-08-12**, real GSC adapter и controlled launch pack production-reconciled; P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, actual launch — `not-published`, P3.6/P4.1C остаются открытыми.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-12 — Real GSC baseline + controlled launch pack
+
+- PR #213 implemented the first raw adapter against an actual authenticated/operator-supplied Google Search Console Russian Search Performance CSV export, without guessed schema or committed private metrics. The first observations are recorded only as a **sparse pre-public-launch / clean-URL-migration baseline**; query evidence is currently empty and legacy URL visibility is still observable.
+- PR #213 squash / deployed SHA `831535461f3c72d53e3510574ae7ae9c52ab54f6`; exact-head Build #1933, CodeQL #1487 and Dependency Review #1355 — SUCCESS; Pages #236 / 31606858974 — SUCCESS; Production Live Smoke #524 / 31606858968 and #525 / 31606948825 — SUCCESS.
+- PR #214 added a controlled manual launch pack derived from canonical Distribution Readiness, with exact clean URLs, no UTM/query mutation and no external posting/auth/scheduling behavior. Final exact-head Build #1939 / 31610400124, Distribution Readiness #185 / 31610400129, Dependency Review #1361 and CodeQL #1494 — SUCCESS.
+- PR #214 squash / deployed SHA `bed23ac0330ca112b94259998adcd8187203988a`; launch artifact **10 targets / 38 manual drafts / not-published**; Pages #237 / 31611168208 — SUCCESS; Production Live Smoke #526 / 31611168202 and #527 / 31611259926 — SUCCESS.
+- **P4.1B real evidence review is IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, not complete. The actual controlled launch remains not-published. P4.1C remains WAITING. P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE**, and the clean-URL clock remains `2026-08-05T00:00:00Z`.
 
 ## 2026-08-12 — Current evidence reconciliation + P4.1B intake tooling
 
@@ -11,7 +19,7 @@
 - PR #210 exact head `c5153ee6e9d55e44507a0a11ef302fd54a0aa6af`; Build #1922 / 31599699918 — SUCCESS with **731 PASS / 0 FAIL**; CodeQL #1474, Dependency Review #1344 and Dependency Audit #227 — SUCCESS; quality artifact `9142767935`, digest `sha256:64d4f70f291c6fb6403ca6a2db635f3db132f64d91314faef4198d59ed20a866`.
 - PR #210 squash / deployed SHA `6083e4d950d74b272cce199fedccc730dfcc4fed`; Pages #234 / 31600575541 — SUCCESS; Production Live Smoke #520 / 31600575540 — SUCCESS; post-merge CodeQL #1475 / 31600575547 — SUCCESS.
 - P4.1A remains **READY / 11 strategic surfaces / 21 clean routes / 0 findings / externalEvidence=not-collected**. Ordinary Build does not produce a P4.1B external-evidence artifact.
-- **P4.1B intake tooling is accepted; real external evidence collection/review remains NEXT. P4.1C remains WAITING. P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE**; no search-performance, CTR, ranking, engagement or causal product-impact claim was introduced.
+- PR #210 intake tooling remained the historical prerequisite; subsequent PR #213 advanced the first real GSC observations to **P4.1B IN PROGRESS / SPARSE PRE-LAUNCH BASELINE** without making search-performance, CTR, ranking, engagement or causal product-impact claims. P4.1C remains WAITING and P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE.
 
 ## 2026-08-12 — Maintenance evidence reconciliation
 
@@ -20,14 +28,14 @@
 - PR #206 removed explicit Dependabot unmanaged labels only; RED Build #1890 / 31581385552 failed the new regression contract as expected, final Build #1891 / 31581517909 — SUCCESS with **715 PASS / 0 FAIL**, CodeQL #1440 and Dependency Review #1313 — SUCCESS, Pages #231 / 31582194873 — SUCCESS, Production Live Smoke #515 / 31582244697 — SUCCESS.
 - Post-merge Dependabot npm run `31582199568` and GitHub Actions run `31582199031` both completed SUCCESS. They created PR #207 without the removed labels or label-warning comments, proving the configuration fix operationally.
 - PR #207 was **CLOSED UNMERGED** because its `package-lock.json` blob `dac054d274e48ce93828e97b83d09cc121024575` is byte-identical to rejected #185 and inherits the same issue #82 blocker.
-- No P3.6 or P4.1 external-evidence state changed: clean-URL clock remains `2026-08-05T00:00:00Z`, P4.1B remains **NEXT**, P4.1C remains **WAITING**.
+- No P3.6 or P4.1 external-evidence state changed: clean-URL clock remains `2026-08-05T00:00:00Z`, P4.1B review is **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**, P4.1C remains **WAITING**.
 
 ## 2026-08-12 — Launch / Discovery production reconciliation
 
 - PR #202 launch distribution accepted on exact deployed SHA `91c4d3d5cb464a107e3d14d8d091cf4eb0c1638f`; Pages #226 / 31572318752 — SUCCESS; Production Live Smoke #504 / 31572389064 — SUCCESS; readiness remained 10 targets / 4 profiles / 0 stale / 0 unverified.
 - PR #203 launch preview metadata accepted on exact deployed SHA `ffd420c4b2b9e42385529b7654eaaab5f0dbd9cf`; 701 PASS / 0 FAIL; Pages #227 / 31573207215 — SUCCESS; Production Live Smoke #505 / 31573207182 — SUCCESS; browser metadata scope 10 launch + 5 supplemental.
 - P4.1A PR #201 accepted on exact deployed SHA `e75a4d24a5d9f2b8ace95c9a0629e7567992741b`; Build #1879 / 31573775442 — SUCCESS; 709 PASS / 0 FAIL; Pages #228 / 31574516725 — SUCCESS; Production Live Smoke #507 / 31574516705 — SUCCESS; discovery report 11 strategic surfaces / 21 clean routes / 0 findings; externalEvidence=not-collected.
-- No search-performance, CTR, ranking, engagement or causal product-impact claim was introduced. P4.1B remains **NEXT**, P4.1C remains **WAITING**, and P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** with clean-URL clock `2026-08-05T00:00:00Z`.
+- No search-performance, CTR, ranking, engagement or causal product-impact claim was introduced. P4.1B review is **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**, P4.1C remains **WAITING**, and P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** with clean-URL clock `2026-08-05T00:00:00Z`.
 
 ## 2026-08-11 — P4.1A Search Discovery repository readiness — REPOSITORY ACCEPTED
 
