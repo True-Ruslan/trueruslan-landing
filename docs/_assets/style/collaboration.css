@@ -1,3 +1,9 @@
+:root {
+  --tr-collaboration-surface: rgba(255, 255, 255, 0.018);
+  --tr-collaboration-border: rgba(156, 169, 184, 0.12);
+  --tr-collaboration-border-subtle: rgba(156, 169, 184, 0.075);
+}
+
 .tr-collaboration-availability,
 .tr-collaboration-handoff,
 .tr-contextual-collaboration,
@@ -6,26 +12,26 @@
 }
 
 .tr-collaboration-availability {
-  margin: 1.75rem 0 2rem;
-  padding: 1.1rem 1.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.025);
+  margin: 1.9rem 0 2.75rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--tr-collaboration-border);
+  border-bottom: 1px solid var(--tr-collaboration-border);
+  background: transparent;
 }
 
 .tr-collaboration-kicker {
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.8rem;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  opacity: 0.72;
+  opacity: 0.7;
 }
 
 .tr-collaboration-availability ul {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  gap: 0 1.5rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -37,9 +43,8 @@
   justify-content: space-between;
   gap: 1rem;
   min-width: 0;
-  padding: 0.8rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  padding: 0.72rem 0;
+  border-top: 1px solid var(--tr-collaboration-border-subtle);
 }
 
 .tr-collaboration-availability__item span,
@@ -64,21 +69,86 @@
 
 .tr-collaboration-updated,
 .tr-collaboration-boundary {
-  margin: 0.75rem 0 0;
+  margin: 0.8rem 0 0;
+  max-width: 68ch;
   font-size: 0.88rem;
+  line-height: 1.6;
   opacity: 0.7;
 }
 
+.tr-work-tracks {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 2.25rem 0 3rem;
+}
+
+.tr-work-tracks .tr-resume-panel {
+  min-width: 0;
+  padding: 1.1rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--tr-collaboration-border);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.tr-work-tracks .tr-resume-panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.08rem;
+}
+
+.tr-work-tracks .tr-resume-panel p {
+  margin: 0;
+  line-height: 1.65;
+}
+
+.tr-work-tracks .tr-resume-panel p + p {
+  margin-top: 0.8rem;
+}
+
+.tr-work-process {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 1rem 0 2.85rem;
+  padding: 0;
+  counter-reset: tr-work-step;
+  list-style: none;
+}
+
+.tr-work-process li {
+  min-width: 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--tr-collaboration-border);
+  line-height: 1.65;
+}
+
+.tr-work-process li::before {
+  display: block;
+  margin-bottom: 0.55rem;
+  counter-increment: tr-work-step;
+  content: "0" counter(tr-work-step);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--tr-muted);
+}
+
 .tr-collaboration-handoff {
-  margin: 2.25rem 0 0;
-  padding: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.035);
+  margin: 2.75rem 0;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--tr-collaboration-border);
+  border-bottom: 1px solid var(--tr-collaboration-border);
+  background: transparent;
 }
 
 .tr-collaboration-handoff h2 {
   margin-top: 0;
+}
+
+.tr-collaboration-handoff > p:not(.tr-collaboration-boundary) {
+  max-width: 64ch;
+  line-height: 1.65;
 }
 
 .tr-collaboration-actions {
@@ -96,14 +166,14 @@
   justify-content: center;
   min-height: 42px;
   padding: 0.65rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 10px;
   text-decoration: none;
 }
 
 .tr-collaboration-action--primary,
 .tr-home-collaboration__cta {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.055);
 }
 
 .tr-home-collaboration {
@@ -141,7 +211,22 @@
   padding: 1rem 1.1rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.025);
+  background: var(--tr-collaboration-surface);
+}
+
+@media (max-width: 900px) {
+  .tr-work-tracks,
+  .tr-work-process {
+    grid-template-columns: 1fr;
+  }
+
+  .tr-work-tracks {
+    gap: 1.6rem;
+  }
+
+  .tr-work-process {
+    gap: 1.35rem;
+  }
 }
 
 @media (max-width: 720px) {
