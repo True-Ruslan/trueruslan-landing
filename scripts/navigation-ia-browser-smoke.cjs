@@ -36,13 +36,12 @@ async function findSidebar(page) {
       (nodes) => nodes.map((node) => node.href),
     ).catch(() => []);
     const paths = new Set(hrefs.map((href) => new URL(href).pathname));
-    const ownsMaterials = ['/publications/', '/engineering-map/', '/notes/', '/bibliography/']
+    const ownsPrimary = ['/projects/', '/resume/', '/materials/', '/work-with-me/', '/about/']
       .every((route) => paths.has(route));
-    const ownsPrimary = ['/projects/', '/resume/', '/work-with-me/', '/about/']
-      .every((route) => paths.has(route));
-    if (ownsMaterials && ownsPrimary) return candidate;
+    const ownsExpandedProjectBranch = paths.has('/projects/livingworld/');
+    if (ownsPrimary && ownsExpandedProjectBranch) return candidate;
   }
-  throw new Error('Could not locate the generated Diplodoc sidebar by canonical route ownership.');
+  throw new Error('Could not locate the generated Diplodoc sidebar by primary and active-branch route ownership.');
 }
 
 async function linkByCanonicalPath(container, pathname, {name} = {}) {
