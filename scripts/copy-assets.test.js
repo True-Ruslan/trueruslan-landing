@@ -96,7 +96,9 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
   const engineeringMapPath = path.join(outputDir, 'landing', 'engineering-map.html');
   const nowHtmlPath = path.join(outputDir, 'landing', 'now.html');
   const noteHtmlPath = path.join(outputDir, 'landing', 'notes', 'test-note.html');
+  const noteTwoHtmlPath = path.join(outputDir, 'landing', 'notes', 'test-note-two.html');
   const noteSourcePath = path.join(docsDir, 'landing', 'notes', 'test-note.md');
+  const noteTwoSourcePath = path.join(docsDir, 'landing', 'notes', 'test-note-two.md');
 
   fs.mkdirSync(path.dirname(templatePath), {recursive: true});
   fs.mkdirSync(dataDir, {recursive: true});
@@ -106,6 +108,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
   fs.mkdirSync(path.dirname(noteSourcePath), {recursive: true});
   fs.writeFileSync(path.join(docsDir, 'toc.yaml'), 'items:\n  - name: About\n    href: ./landing/about.md\n  - name: Now\n    href: ./landing/now.md\n');
   fs.writeFileSync(noteSourcePath, '# Test note\n');
+  fs.writeFileSync(noteTwoSourcePath, '# Test note two\n');
   fs.writeFileSync(
     templatePath,
     '<!doctype html><html><head><link rel="canonical" href="{{SITE_URL}}/"></head><body class="g-root"><h1>Руслан Немыкин</h1><section>{{CURRENTLY_BUILDING}}</section></body></html>',
@@ -129,16 +132,34 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
     learning: ['Deterministic generation'],
     writing: ['Integration tests'],
   }));
-  fs.writeFileSync(notesPath, JSON.stringify([{
-    slug: 'test-note',
-    title: 'Test note',
-    description: 'Feed entry.',
-    published: '2026-07-20',
-    updated: '2026-07-22',
-    readingMinutes: 3,
-    tags: ['Testing'],
-    related: [],
-  }]));
+  fs.writeFileSync(notesPath, JSON.stringify([
+    {
+      slug: 'test-note',
+      title: 'Test note',
+      description: 'Feed entry.',
+      published: '2026-07-20',
+      updated: '2026-07-22',
+      readingMinutes: 3,
+      tags: ['Testing'],
+      related: ['test-note-two'],
+      series: 'evidence-verification',
+      seriesOrder: 1,
+      readerRole: 'start',
+    },
+    {
+      slug: 'test-note-two',
+      title: 'Test note two',
+      description: 'Second feed entry.',
+      published: '2026-07-20',
+      updated: '2026-07-21',
+      readingMinutes: 2,
+      tags: ['Testing'],
+      related: ['test-note'],
+      series: 'evidence-verification',
+      seriesOrder: 2,
+      readerRole: 'path',
+    },
+  ]));
   fs.writeFileSync(pageMetaPath, JSON.stringify([{
     path: 'index.html',
     card: 'home',
@@ -177,6 +198,10 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
     noteHtmlPath,
     '<!doctype html><html><head><title>Note</title></head><body><main><h1>Test note</h1><p>Body</p></main></body></html>',
   );
+  fs.writeFileSync(
+    noteTwoHtmlPath,
+    '<!doctype html><html><head><title>Note two</title></head><body><main><h1>Test note two</h1><p>Body two</p></main></body></html>',
+  );
 
   const result = postprocessOutput({
     outputDir,
@@ -208,7 +233,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
   assert.equal(result.projectStatusTargets, 1);
   assert.equal(result.nowPageTarget, 'landing/now.html');
   assert.equal(result.timelineTargets.length, 0);
-  assert.equal(result.noteTargets.length, 1);
+  assert.equal(result.noteTargets.length, 2);
   assert.equal(result.engineeringGraphTarget, 'landing/engineering-map.html');
   assert.equal(result.ogCards.length, 1);
   assert.equal(result.metadataUpdated, 1);
@@ -225,6 +250,7 @@ test('postprocessOutput writes v0.3 content, Engineering Map, metadata, analytic
   assert.match(noteHtml, /3 мин/);
   assert.match(noteHtml, /tr-note-nav/);
   assert.match(feed, /Test note/);
+  assert.match(feed, /Test note two/);
   assert.match(html, /Руслан Немыкин/);
   assert.match(html, /Test Project/);
   assert.match(html, /application\/atom\+xml/);
