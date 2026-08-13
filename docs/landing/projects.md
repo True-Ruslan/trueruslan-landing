@@ -52,7 +52,7 @@
 
 <article class="tr-project-index-card tr-project-index-card--compact" data-c3-lab="node-zero">
 <h3>NODE ZERO</h3>
-<p>Психологический техно-хоррор про автономный AI-комплекс и систему MIRROR; исходный код остаётся закрытым.</p>
+<p>Психологический техно-хоррор про автономный AI-комплекс и систему MIRROR; исходный код не публикуется, репозиторий имеет статус private.</p>
 <a class="tr-project-index-card__cta" href="projects/node-zero.html">Открыть проект →</a>
 </article>
 
