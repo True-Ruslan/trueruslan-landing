@@ -35,6 +35,9 @@ jobs:
         run: npm ci
       - name: Build production-like site
         run: SITE_URL=https://trueruslan.ru npm run build:docs
+      - name: Inspect representative generated content root
+        run: |
+          grep -oE '<(main|article|div)[^>]*(class|id)="[^"]+"[^>]*>' docs-html/projects/index.html | head -n 40 || true
       - name: Generate editorial UX evidence
         run: node --test scripts/editorial-ux-audit-built-site.integration.js
       - name: Upload editorial UX evidence
