@@ -8,7 +8,7 @@
 <article class="tr-project-index-card tr-project-index-card--selected" data-c3-project="livingworld">
 <div class="tr-project-index-card__meta"><span data-tr-project-status="livingworld"></span></div>
 <h3>VillAIgence</h3>
-<p>AI-общество NPC для Minecraft: сервер хранит состояние, память и управляет действиями, а модель предлагает возможные действия.</p>
+<p>NPC-система для Minecraft с AI-диалогами и поведением: сервер хранит состояние, память и управляет действиями, а модель только предлагает варианты.</p>
 <ul class="tr-project-index-card__tags" aria-label="Технологии и направления"><li>Java 21</li><li>Fabric</li><li>Memory 2.0</li><li>AI security</li></ul>
 <a class="tr-project-index-card__cta" href="projects/livingworld.html">Открыть проект →</a>
 </article>
