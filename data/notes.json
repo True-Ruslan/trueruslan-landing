@@ -111,7 +111,7 @@
     "updated": "2026-08-03",
     "readingMinutes": 12,
     "tags": ["AI", "Authority", "Validation", "Reliability"],
-    "related": ["server-authoritative-ai-npcs", "llm-output-is-a-protocol-boundary", "hybrid-cv-ai-recognition-boundaries"],
+    "related": ["server-authoritative-ai-npcs", "llm-output-is-a-protocol-boundary", "hybrid-cv-ai-recognition-boundaries", "source-tests-to-installed-acceptance"],
     "series": "ai-authority-protocols",
     "seriesOrder": 3,
     "readerRole": "path"
@@ -124,7 +124,7 @@
     "updated": "2026-08-04",
     "readingMinutes": 12,
     "tags": ["Persistence", "Reliability", "Recovery", "Acceptance"],
-    "related": ["source-tests-to-installed-acceptance", "gametests-vs-installed-gameplay-acceptance", "deployment-success-is-not-production-verification"],
+    "related": ["source-tests-to-installed-acceptance", "gametests-vs-installed-gameplay-acceptance", "deployment-success-is-not-production-verification", "green-ci-is-not-product-verification"],
     "series": "evidence-verification",
     "seriesOrder": 5,
     "readerRole": "path"
@@ -137,7 +137,7 @@
     "updated": "2026-08-05",
     "readingMinutes": 10,
     "tags": ["Deployment", "Verification", "GitHub Pages", "Reliability"],
-    "related": ["green-ci-is-not-product-verification", "clean-urls-without-cloudflare-routing", "passive-pdf-validation-vs-semantic-completeness"],
+    "related": ["green-ci-is-not-product-verification", "clean-urls-without-cloudflare-routing", "passive-pdf-validation-vs-semantic-completeness", "static-site-quality-gates"],
     "series": "evidence-verification",
     "seriesOrder": 6,
     "readerRole": "path"
@@ -150,7 +150,7 @@
     "updated": "2026-08-05",
     "readingMinutes": 12,
     "tags": ["Clean URLs", "GitHub Pages", "Static-first", "SEO"],
-    "related": ["portfolio-runtime-boundary", "static-first-sources-no-js", "deployment-success-is-not-production-verification"],
+    "related": ["portfolio-runtime-boundary", "static-first-sources-no-js", "deployment-success-is-not-production-verification", "static-site-quality-gates"],
     "series": "static-first-web",
     "seriesOrder": 4,
     "readerRole": "path"
@@ -163,7 +163,7 @@
     "updated": "2026-08-05",
     "readingMinutes": 14,
     "tags": ["Computer Vision", "AI", "Authority", "Validation"],
-    "related": ["probabilistic-proposals-deterministic-authority", "llm-output-is-a-protocol-boundary", "server-authoritative-ai-npcs"],
+    "related": ["probabilistic-proposals-deterministic-authority", "llm-output-is-a-protocol-boundary", "server-authoritative-ai-npcs", "green-ci-is-not-product-verification"],
     "series": "ai-authority-protocols",
     "seriesOrder": 4,
     "readerRole": "path"
