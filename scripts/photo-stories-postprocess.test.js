@@ -19,7 +19,9 @@ test('postprocessOutput enhances the canonical Diplodoc photo page and preserves
   const templatesDir = path.join(root, 'templates');
   const historyDir = path.join(dataDir, 'project-history');
   const noteSource = path.join(docsDir, 'landing', 'notes', 'test-note.md');
+  const noteTwoSource = path.join(docsDir, 'landing', 'notes', 'test-note-two.md');
   const noteOutput = path.join(outputDir, 'landing', 'notes', 'test-note.html');
+  const noteTwoOutput = path.join(outputDir, 'landing', 'notes', 'test-note-two.html');
 
   fs.mkdirSync(path.join(outputDir, 'landing'), {recursive: true});
   fs.mkdirSync(path.join(docsDir, 'landing'), {recursive: true});
@@ -31,7 +33,9 @@ test('postprocessOutput enhances the canonical Diplodoc photo page and preserves
   fs.writeFileSync(path.join(docsDir, 'toc.yaml'), 'items:\n  - name: Фото\n    href: ./landing/photos.md\n');
   fs.writeFileSync(path.join(docsDir, 'landing', 'photos.md'), '# Фотографии\n\n<div data-tr-photo-placeholder></div>\n');
   fs.writeFileSync(noteSource, '# Test note\n');
+  fs.writeFileSync(noteTwoSource, '# Test note two\n');
   fs.writeFileSync(noteOutput, '<!doctype html><html><head><title>Note</title></head><body><main><h1>Test note</h1><p>Body</p></main></body></html>');
+  fs.writeFileSync(noteTwoOutput, '<!doctype html><html><head><title>Note two</title></head><body><main><h1>Test note two</h1><p>Body two</p></main></body></html>');
   fs.writeFileSync(
     path.join(outputDir, 'landing', 'photos.html'),
     '<!doctype html><html><head><title>Photos</title></head><body><header data-test-shared-header></header><aside data-test-sidebar></aside><main><h1>Фотографии</h1><div data-tr-photo-placeholder></div></main></body></html>',
@@ -63,16 +67,34 @@ test('postprocessOutput enhances the canonical Diplodoc photo page and preserves
     learning: ['Static generation'],
     writing: ['Photo stories'],
   });
-  writeJson(path.join(dataDir, 'notes.json'), [{
-    slug: 'test-note',
-    title: 'Test note',
-    description: 'A valid fixture note.',
-    published: '2026-07-20',
-    updated: '2026-07-22',
-    readingMinutes: 2,
-    tags: ['Testing'],
-    related: [],
-  }]);
+  writeJson(path.join(dataDir, 'notes.json'), [
+    {
+      slug: 'test-note',
+      title: 'Test note',
+      description: 'A valid fixture note.',
+      published: '2026-07-20',
+      updated: '2026-07-22',
+      readingMinutes: 2,
+      tags: ['Testing'],
+      related: ['test-note-two'],
+      series: 'evidence-verification',
+      seriesOrder: 1,
+      readerRole: 'start',
+    },
+    {
+      slug: 'test-note-two',
+      title: 'Test note two',
+      description: 'Second valid fixture note.',
+      published: '2026-07-20',
+      updated: '2026-07-21',
+      readingMinutes: 2,
+      tags: ['Testing'],
+      related: ['test-note'],
+      series: 'evidence-verification',
+      seriesOrder: 2,
+      readerRole: 'path',
+    },
+  ]);
   writeJson(path.join(dataDir, 'page-meta.json'), [{
     path: 'index.html',
     card: 'home',
