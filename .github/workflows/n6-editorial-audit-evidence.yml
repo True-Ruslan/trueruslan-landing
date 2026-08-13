@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build production-like site
-        run: npm run build:docs
+        run: SITE_URL=https://trueruslan.ru npm run build:docs
       - name: Generate editorial UX evidence
         run: node --test scripts/editorial-ux-audit-built-site.integration.js
       - name: Upload editorial UX evidence
