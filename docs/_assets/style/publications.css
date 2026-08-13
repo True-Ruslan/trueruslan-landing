@@ -123,8 +123,10 @@
 }
 
 .tr-publication-card--featured {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-row: span 5;
+  grid-template-rows: subgrid;
+  row-gap: 0;
   min-height: 100%;
 }
 
@@ -182,10 +184,12 @@
 }
 
 .tr-publication-card__topics {
+  align-items: flex-start;
   margin-top: 0;
 }
 
 .tr-publication-card__topics li {
+  min-width: 0;
   max-width: 100%;
   padding: 0.28rem 0.58rem;
   border: 1px solid rgba(110, 231, 249, 0.2);
@@ -193,6 +197,7 @@
   color: #b8f3fb;
   background: rgba(14, 116, 144, 0.12);
   font-size: 0.78rem;
+  line-height: 1.35;
   overflow-wrap: anywhere;
 }
 
@@ -217,7 +222,6 @@
 }
 
 .tr-publication-card--featured .tr-publication-card__actions {
-  margin-top: auto;
   padding-top: 1.15rem;
 }
 
