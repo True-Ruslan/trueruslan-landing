@@ -11,7 +11,13 @@ const CORE_SCENARIOS = Object.freeze({
     slug: 'work-with-me',
     path: '/work-with-me/',
     heading: 'Работа со мной',
-    requiredText: ['Engineering', 'Teaching & Mentoring', 'Context', 'Scope', 'Estimate', 'Implementation', 'Handover'],
+    requiredText: [
+      'Backend и интеграции',
+      'Обучение и наставничество',
+      'Задача и рамки',
+      'Оценка и работа',
+      'Передача результата',
+    ],
   }),
   vlezet: Object.freeze({
     slug: 'vlezet',

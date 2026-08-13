@@ -30,7 +30,7 @@ function tocHeaderTexts() {
 
 test('RU and EN Work with me pages keep reusable collaboration truth out of Markdown', () => {
   for (const [relativePath, expected] of [
-    ['docs/landing/work-with-me.md', [/Работа со мной/i, /Engineering/i, /Teaching.*Mentoring/i, /Context.*Scope.*Estimate.*Implementation.*Handover/is]],
+    ['docs/landing/work-with-me.md', [/Работа со мной/i, /Backend и интеграции/i, /Обучение и наставничество/i, /Задача.*рамки.*Оценка.*работа.*Передача результата/is]],
     ['docs/en/work-with-me.md', [/Work with me/i, /Engineering/i, /Teaching.*Mentoring/i, /Context.*Scope.*Estimate.*Implementation.*Handover/is]],
   ]) {
     assert.equal(exists(relativePath), true, `${relativePath} must exist`);

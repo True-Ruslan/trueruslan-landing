@@ -37,7 +37,8 @@ test('publications page has stable framing, one featured placeholder and one gen
   const page = read(PAGE_PATH);
 
   assert.match(page, /^# Публикации и выступления/m);
-  assert.match(page, /PUBLICATIONS · TALKS · RESEARCH/);
+  assert.match(page, /со ссылками на исходные страницы и записи/i);
+  assert.doesNotMatch(page, /PUBLICATIONS · TALKS · RESEARCH/);
   assert.match(page, /только уже опубликованные или состоявшиеся материалы/i);
   assert.equal((page.match(/data-tr-publications-featured/g) ?? []).length, 1);
   assert.equal((page.match(/publications-catalogue\.md/g) ?? []).length, 1);

@@ -4,9 +4,9 @@ I am a backend engineer interested in systems that remain understandable and ver
 
 ## Engineer
 
-My current commercial context is full-time backend engineering at **QWEP**, focused on Java/Spring, integrations, data and reliability. My current stack includes **Java 21–25, Spring Boot 3.5–4, PostgreSQL, ClickHouse, Kafka and MinIO**. I pay close attention to sources of truth, ownership boundaries, tests, migrations, CI/CD and reproducible delivery.
+I work full-time as a backend engineer at **QWEP**, focused on Java/Spring, integrations, data and reliability. My current stack includes **Java 21–25, Spring Boot 3.5–4, PostgreSQL, ClickHouse, Kafka and MinIO**. I pay close attention to clear component responsibilities, tests, migrations, CI/CD and predictable delivery.
 
-I use AI and LLMs as engineering tools: in commercial work I contribute to AI-tool adoption and a corporate MCP server, while personal projects let me test more complex agentic systems. I care less about model “magic” than about how the capability is bounded, validated and integrated into the system around it.
+I use AI and LLMs as engineering tools: in commercial work I contribute to AI-tool adoption and a corporate MCP server, while personal projects let me test more complex AI-assisted workflows. I care less about model “magic” than about whether the system validates its outputs and keeps critical decisions under deterministic control.
 
 For concrete roles and stack, see [Experience](resume.md). For shipped and experimental systems, start with [Projects](projects.md).
 
