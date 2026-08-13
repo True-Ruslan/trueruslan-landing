@@ -1,0 +1,38 @@
+.tr-now-intro {
+  box-sizing: border-box;
+  max-width: 68ch;
+  margin: 0 0 2.75rem;
+  padding: 0.15rem 0 0.15rem 1rem;
+  border-left: 2px solid rgba(76, 201, 240, 0.32);
+}
+
+.tr-now-intro p {
+  margin: 0;
+  line-height: 1.68;
+}
+
+.tr-now-intro p + p {
+  margin-top: 0.7rem;
+}
+
+.tr-now-intro__lead {
+  font-size: 1.05rem;
+  color: var(--tr-text);
+}
+
+.tr-now-intro__boundary {
+  max-width: 64ch;
+  font-size: 0.92rem;
+  color: var(--tr-muted);
+}
+
+@media (max-width: 720px) {
+  .tr-now-intro {
+    margin-bottom: 2.25rem;
+    padding-left: 0.8rem;
+  }
+
+  .tr-now-intro__lead {
+    font-size: 1rem;
+  }
+}

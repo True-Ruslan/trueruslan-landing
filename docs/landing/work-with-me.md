@@ -24,10 +24,10 @@
 
 ## Как работаем
 
-<ol class="tr-work-process">
-  <li data-tr-work-step="context"><strong>Context & Scope.</strong> Вы описываете задачу, результат и ограничения; мы отделяем обязательное от необязательного.</li>
-  <li data-tr-work-step="implementation"><strong>Estimate & Implementation.</strong> После понятного scope фиксируем формат и оценку, затем двигаемся небольшими проверяемыми шагами.</li>
-  <li data-tr-work-step="handover"><strong>Handover.</strong> Передаю результат вместе с тем, как его проверить, и с явно обозначенными оставшимися рисками.</li>
+<ol class="tr-work-process" role="list">
+  <li data-tr-work-step="context" data-tr-work-order="01"><strong>Context & Scope.</strong> Вы описываете задачу, результат и ограничения; мы отделяем обязательное от необязательного.</li>
+  <li data-tr-work-step="implementation" data-tr-work-order="02"><strong>Estimate & Implementation.</strong> После понятного scope фиксируем формат и оценку, затем двигаемся небольшими проверяемыми шагами.</li>
+  <li data-tr-work-step="handover" data-tr-work-order="03"><strong>Handover.</strong> Передаю результат вместе с тем, как его проверить, и с явно обозначенными оставшимися рисками.</li>
 </ol>
 
 <div data-tr-collaboration-handoff></div>

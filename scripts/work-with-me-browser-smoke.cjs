@@ -61,6 +61,26 @@ async function assertCurrentTab(anchor, label) {
   if (await anchor.first().getAttribute('target')) throw new Error(`${label}: internal link must stay in the current tab`);
 }
 
+async function assertSingleProcessNumbering(page, locale) {
+  const processItems = page.locator('.tr-work-process > li');
+  if (await processItems.count() !== 3) throw new Error(`${locale}: work process must render exactly three steps`);
+  const rendered = await processItems.evaluateAll((items) => items.map((item) => ({
+    order: item.getAttribute('data-tr-work-order'),
+    display: getComputedStyle(item).display,
+    markerContent: getComputedStyle(item, '::marker').content,
+  })));
+  const expectedOrders = ['01', '02', '03'];
+  for (const [index, item] of rendered.entries()) {
+    if (item.order !== expectedOrders[index]) throw new Error(`${locale}: work process order drifted at ${index + 1}: ${item.order}`);
+    if (item.display === 'list-item') {
+      throw new Error(`${locale}: native ordered-list marker remains active beside ${item.order}`);
+    }
+    if (item.markerContent && !['none', 'normal', '""'].includes(item.markerContent)) {
+      throw new Error(`${locale}: unexpected visible marker beside ${item.order}: ${item.markerContent}`);
+    }
+  }
+}
+
 async function assertWorkPage(browser, baseUrl, locale, {javaScriptEnabled, viewport, screenshot}) {
   const copy = LOCALES[locale];
   const runtime = await createScenarioPage(browser, {viewport, javaScriptEnabled, colorScheme: 'dark', reducedMotion: 'reduce'});
@@ -80,6 +100,7 @@ async function assertWorkPage(browser, baseUrl, locale, {javaScriptEnabled, view
     if (!bodyText.toLocaleLowerCase(locale).includes(copy.status.toLocaleLowerCase(locale))) {
       throw new Error(`${locale}: canonical limited availability is missing`);
     }
+    await assertSingleProcessNumbering(page, locale);
 
     const telegram = page.locator('a[href="https://t.me/TrueRuslan"]');
     const email = page.locator('a[href="mailto:nemykin@true-ruslan.ru"]');

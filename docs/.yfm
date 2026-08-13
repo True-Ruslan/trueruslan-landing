@@ -12,6 +12,7 @@ resources:
     - _assets/style/typography.css
     - _assets/style/accessibility.css
     - _assets/style/content-flow.css
+    - _assets/style/now-refinement.css
     - _assets/style/standalone.css
     - _assets/style/home.css
     - _assets/style/active-projects.css

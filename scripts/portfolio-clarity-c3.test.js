@@ -104,11 +104,11 @@ function assertFlagshipGlance(relativePath, slug, locale) {
 test('C3 source surfaces expose the approved scan-first Projects hierarchy and flagship summary layer', () => {
   assertProjectHub({
     path: 'docs/landing/projects.md',
-    headings: ['## Избранные проекты', '## Коммерческая разработка', '## Лаборатория и эксперименты'],
+    headings: ['## Избранные проекты', '## Исторический коммерческий контекст', '## Лаборатория и эксперименты'],
   });
   assertProjectHub({
     path: 'docs/en/projects.md',
-    headings: ['## Selected work', '## Commercial work', '## Labs & experiments'],
+    headings: ['## Selected work', '## Historical commercial context', '## Labs & experiments'],
   });
 
   const flagships = [

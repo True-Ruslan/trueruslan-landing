@@ -1,0 +1,118 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.join(__dirname, '..');
+const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+
+function marketDbCard(text) {
+  const marker = 'data-c3-commercial="marketdb"';
+  const markerIndex = text.indexOf(marker);
+  assert.notEqual(markerIndex, -1, 'MarketDB historical card must remain present');
+  const articleStart = text.lastIndexOf('<article', markerIndex);
+  const articleEnd = text.indexOf('</article>', markerIndex);
+  assert.notEqual(articleStart, -1, 'MarketDB article start missing');
+  assert.notEqual(articleEnd, -1, 'MarketDB article end missing');
+  return text.slice(articleStart, articleEnd + '</article>'.length);
+}
+
+function cssRule(text, selector) {
+  const start = text.indexOf(`${selector} {`);
+  assert.notEqual(start, -1, `missing CSS rule ${selector}`);
+  const end = text.indexOf('}', start);
+  assert.notEqual(end, -1, `unterminated CSS rule ${selector}`);
+  return text.slice(start, end + 1);
+}
+
+test('N3 gives Work with me a lighter bounded surface and rhythm contract', () => {
+  const ru = read('docs/landing/work-with-me.md');
+  const en = read('docs/en/work-with-me.md');
+  const css = read('docs/_assets/style/collaboration.css');
+
+  for (const source of [ru, en]) {
+    assert.ok(source.includes('class="tr-resume-grid tr-work-tracks"'), 'work tracks must keep their bounded page primitive');
+    assert.ok(source.includes('class="tr-work-process"'), 'work process must keep its bounded page primitive');
+    assert.deepEqual(
+      [...source.matchAll(/data-tr-work-order="([0-9]{2})"/g)].map((match) => match[1]),
+      ['01', '02', '03'],
+      'work process must expose one stable visible order without relying on nested list counters',
+    );
+  }
+  assert.ok(css.includes('.tr-work-tracks .tr-resume-panel'), 'work-track panels need bounded styling');
+  assert.ok(css.includes('.tr-work-process'), 'work process needs bounded rhythm styling');
+  assert.ok(css.includes('--tr-collaboration-surface'), 'collaboration surfaces need a shared light surface token');
+  assert.ok(css.includes('--tr-collaboration-border'), 'collaboration borders need a shared lighter border token');
+  assert.match(css, /\.tr-work-process\s*\{[\s\S]*?list-style:\s*none\s*!important/);
+  assert.match(css, /\.tr-work-process\s*>\s*li::marker\s*\{[\s\S]*?content:\s*["']{2}/);
+  assert.match(css, /content:\s*attr\(data-tr-work-order\)/);
+});
+
+test('N3b replaces the Now technical callout with a readable RU/EN public intro', () => {
+  const pairs = [
+    ['docs/landing/now.md', 'Основной коммерческий контекст', 'QWEP'],
+    ['docs/en/now.md', 'Primary commercial context', 'QWEP'],
+  ];
+
+  for (const [file, contextLabel, employer] of pairs) {
+    const source = read(file);
+    assert.ok(source.includes('class="tr-now-intro"'), `${file}: semantic Now intro wrapper missing`);
+    assert.ok(source.includes(contextLabel), `${file}: concise current commercial framing missing`);
+    assert.ok(source.includes(employer), `${file}: current full-time employer context missing`);
+    assert.ok(!source.includes('> **Generated snapshot:**'), `${file}: internal-style generated snapshot callout must be removed`);
+  }
+
+  const yfm = read('docs/.yfm');
+  assert.ok(yfm.includes('_assets/style/now-refinement.css'), 'Diplodoc must own the Now refinement stylesheet globally');
+  assert.equal(fs.existsSync(path.join(ROOT, 'docs/_assets/style/now-refinement.css')), true, 'Now refinement stylesheet must exist');
+});
+
+test('N3b keeps generated Now truth readable without a heavy internal-status panel', () => {
+  const journalCss = read('docs/_assets/style/journal.css');
+  const focus = cssRule(journalCss, '.tr-now__focus');
+
+  assert.match(focus, /max-width:\s*68ch/);
+  assert.match(focus, /line-height:\s*1\.68/);
+  assert.match(focus, /background:\s*transparent/);
+  assert.match(focus, /border-left:\s*1px solid rgba\(103,\s*232,\s*249,\s*\.28\)/);
+  assert.match(focus, /border-radius:\s*0/);
+  assert.doesNotMatch(focus, /background:\s*rgba\(15,\s*23,\s*42,\s*\.48\)/);
+  assert.doesNotMatch(focus, /border-left:\s*3px/);
+});
+
+test('N3c preserves the current QWEP resume truth without reintroducing MarketDB as employment', () => {
+  const ruResume = read('docs/landing/resume.md');
+  const enResume = read('docs/en/resume.md');
+
+  assert.ok(
+    ruResume.includes('QWEP · Java-разработчик, middle · сентябрь 2025 — настоящее время'),
+    'RU QWEP must remain current in the canonical resume',
+  );
+  assert.ok(
+    enResume.includes('QWEP · Middle Java Developer · September 2025 — present'),
+    'EN QWEP must remain current in the canonical resume',
+  );
+  assert.ok(!ruResume.includes('MarketDB'), 'RU canonical employment timeline must not reintroduce MarketDB as a current job');
+  assert.ok(!enResume.includes('MarketDB'), 'EN canonical employment timeline must not reintroduce MarketDB as a current job');
+});
+
+test('N3c moves MarketDB out of current commercial work while preserving it as history and aligns About copy', () => {
+  const ruProjects = read('docs/landing/projects.md');
+  const enProjects = read('docs/en/projects.md');
+  const ruCard = marketDbCard(ruProjects);
+  const enCard = marketDbCard(enProjects);
+
+  assert.ok(ruProjects.includes('## Исторический коммерческий контекст'), 'RU projects need an explicit historical commercial section');
+  assert.ok(enProjects.includes('## Historical commercial context'), 'EN projects need an explicit historical commercial section');
+  assert.ok(ruCard.toLowerCase().includes('закрыт'), 'RU MarketDB card must explicitly say closed');
+  assert.ok(enCard.toLowerCase().includes('closed'), 'EN MarketDB card must explicitly say closed');
+  assert.ok(!ruCard.includes('Active development'), 'RU MarketDB card must not claim active development');
+  assert.ok(!enCard.includes('Active development'), 'EN MarketDB card must not claim active development');
+
+  const ruAbout = read('docs/landing/about.md');
+  const enAbout = read('docs/en/about.md');
+  assert.ok(ruAbout.includes('QWEP') && /полной занятости/.test(ruAbout), 'RU About must identify QWEP as current full-time commercial context');
+  assert.ok(enAbout.includes('QWEP') && enAbout.includes('full-time'), 'EN About must identify QWEP as current full-time commercial context');
+});
