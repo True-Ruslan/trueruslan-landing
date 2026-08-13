@@ -15,6 +15,24 @@ const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
 const ARTIFACTS_DIR = path.resolve('production-artifacts');
 const CANONICAL = JSON.parse(fs.readFileSync(path.resolve('data/collaboration.json'), 'utf8'));
 const FORBIDDEN_LEAD_RUNTIME = /(?:hubspot|salesforce|calendly|typeform|tally\.so|forms\.gle|stripe\.com|paypal\.com)/i;
+const NO_JS_REQUIRED_TOKENS = Object.freeze({
+  ru: Object.freeze([
+    'Backend и интеграции',
+    'Обучение и наставничество',
+    'Задача и рамки',
+    'Оценка и работа',
+    'Передача результата',
+  ]),
+  en: Object.freeze([
+    'Engineering',
+    'Teaching & Mentoring',
+    'Context',
+    'Scope',
+    'Estimate',
+    'Implementation',
+    'Handover',
+  ]),
+});
 
 const CONTEXTUAL_ALLOWED = [
   'projects/portfolio-platform/',
@@ -91,7 +109,7 @@ async function verifyNoJavaScript(browser, url, locale) {
     const response = await page.goto(url, {waitUntil: 'load', timeout: 45000});
     assert(response?.ok(), `${locale} Work with me no-JS HTTP ${response?.status() ?? 'none'}`);
     const body = await page.locator('body').innerText();
-    for (const token of ['Engineering', 'Teaching & Mentoring', 'Context', 'Scope', 'Estimate', 'Implementation', 'Handover', '2026-08-08']) {
+    for (const token of [...NO_JS_REQUIRED_TOKENS[locale], '2026-08-08']) {
       assert(body.includes(token), `${locale} no-JS missing ${token}`);
     }
     assert(await page.locator('a[href="https://t.me/TrueRuslan"]').count() >= 1, `${locale} no-JS Telegram missing`);
