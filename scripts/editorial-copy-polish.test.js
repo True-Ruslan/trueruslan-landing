@@ -9,7 +9,7 @@ const absent = (source, phrases, label) => {
 
 test('RU Projects uses public-facing project language while preserving project truth', async () => {
   const source = await read('docs/landing/projects.md');
-  assert.match(source, /AI-общество NPC для Minecraft: сервер хранит состояние, память и управляет действиями/);
+  assert.match(source, /NPC-система для Minecraft с AI-диалогами и поведением: сервер хранит состояние, память и управляет действиями/);
   assert.match(source, /Статическое инженерное портфолио и база материалов/);
   assert.match(source, /распознавание используется как подсказка, которую нужно проверить/);
   assert.match(source, /Открыть проект →/);
