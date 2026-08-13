@@ -29,6 +29,20 @@ function countMatches(text, regex) {
   return [...text.matchAll(regex)].length;
 }
 
+export function countGitHubEvidenceLinks(markdown) {
+  const candidates = markdown.match(/https:\/\/[^\s)>'"]+/g) ?? [];
+  let count = 0;
+  for (const candidate of candidates) {
+    try {
+      const url = new URL(candidate);
+      if (url.protocol === 'https:' && url.hostname === 'github.com') count += 1;
+    } catch {
+      // Malformed URL-like text is not evidence and must not affect the inventory.
+    }
+  }
+  return count;
+}
+
 function tagJaccard(left, right) {
   const a = new Set(left);
   const b = new Set(right);
@@ -73,7 +87,7 @@ export function buildEngineeringNotesInventory({notes = loadNotesManifest(), not
       headingCount: countMatches(markdown, /^##+\s+/gm),
       markdownNoteLinks: [...new Set(noteLinks)].length,
       projectLinks: countMatches(markdown, /\]\(\.\.\/projects\//g),
-      githubEvidenceLinks: countMatches(markdown, /https:\/\/github\.com\//g),
+      githubEvidenceLinks: countGitHubEvidenceLinks(markdown),
       explicitFactMarkers: countMatches(markdown, /\*\*Проверенный факт\.\*\*/g),
       relatedOut: note.related.length,
       relatedIn: inbound.get(note.slug) ?? 0,
