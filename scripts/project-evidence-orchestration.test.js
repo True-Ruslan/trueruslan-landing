@@ -19,6 +19,7 @@ test('postprocessOutput loads and injects canonical project evidence when explic
   const historyDir = path.join(dataDir, 'project-history');
   const templatePath = path.join(root, 'templates', 'index.html');
   const noteSourcePath = path.join(docsDir, 'landing', 'notes', 'test-note.md');
+  const noteTwoSourcePath = path.join(docsDir, 'landing', 'notes', 'test-note-two.md');
   const evidencePath = path.join(dataDir, 'project-evidence.json');
 
   fs.mkdirSync(historyDir, {recursive: true});
@@ -29,6 +30,7 @@ test('postprocessOutput loads and injects canonical project evidence when explic
 
   fs.writeFileSync(path.join(docsDir, 'toc.yaml'), 'items:\n  - name: Projects\n    href: ./landing/projects.md\n');
   fs.writeFileSync(noteSourcePath, '# Test note\n');
+  fs.writeFileSync(noteTwoSourcePath, '# Test note two\n');
   fs.writeFileSync(templatePath, '<!doctype html><html><head><link rel="canonical" href="{{SITE_URL}}/"></head><body class="g-root"><h1>Руслан Немыкин</h1><section>{{CURRENTLY_BUILDING}}</section></body></html>');
 
   const projects = [
@@ -57,10 +59,18 @@ test('postprocessOutput loads and injects canonical project evidence when explic
   writeJson(path.join(dataDir, 'now.json'), {
     updated: '2026-07-22', focus: 'Evidence integration.', learning: ['Static builds'], writing: ['Evidence'],
   });
-  writeJson(path.join(dataDir, 'notes.json'), [{
-    slug: 'test-note', title: 'Test note', description: 'Feed entry.', published: '2026-07-20',
-    updated: '2026-07-22', readingMinutes: 3, tags: ['Testing'], related: [],
-  }]);
+  writeJson(path.join(dataDir, 'notes.json'), [
+    {
+      slug: 'test-note', title: 'Test note', description: 'Feed entry.', published: '2026-07-20',
+      updated: '2026-07-22', readingMinutes: 3, tags: ['Testing'], related: ['test-note-two'],
+      series: 'evidence-verification', seriesOrder: 1, readerRole: 'start',
+    },
+    {
+      slug: 'test-note-two', title: 'Test note two', description: 'Second feed entry.', published: '2026-07-20',
+      updated: '2026-07-21', readingMinutes: 2, tags: ['Testing'], related: ['test-note'],
+      series: 'evidence-verification', seriesOrder: 2, readerRole: 'path',
+    },
+  ]);
   writeJson(path.join(dataDir, 'page-meta.json'), [{
     path: 'index.html', card: 'home', title: 'Руслан Немыкин — Backend Engineer',
     description: 'Portfolio test description.', displayTitle: 'RUSLAN NEMYKIN', kicker: 'BACKEND ENGINEER',
@@ -98,6 +108,7 @@ test('postprocessOutput loads and injects canonical project evidence when explic
   fs.writeFileSync(path.join(outputDir, 'landing', 'now.html'), '<!doctype html><html><body><main><div data-tr-now-placeholder></div></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'engineering-map.html'), '<!doctype html><html><body><main><div data-tr-engineering-graph-root></div></main></body></html>');
   fs.writeFileSync(path.join(outputDir, 'landing', 'notes', 'test-note.html'), '<!doctype html><html><body><main><h1>Test note</h1><p>Body</p></main></body></html>');
+  fs.writeFileSync(path.join(outputDir, 'landing', 'notes', 'test-note-two.html'), '<!doctype html><html><body><main><h1>Test note two</h1><p>Body two</p></main></body></html>');
   for (const slug of ['vlezet', 'livingworld', 'node-zero', 'portfolio-platform']) {
     fs.writeFileSync(
       path.join(outputDir, 'landing', 'projects', `${slug}.html`),
