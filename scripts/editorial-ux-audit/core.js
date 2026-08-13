@@ -1,12 +1,16 @@
 const TIER1 = new Set([
-  '/', '/landing/projects/', '/landing/resume/', '/landing/work-with-me/',
-  '/landing/about/', '/landing/now/', '/landing/materials/', '/landing/contacts/',
-  '/en/projects/', '/en/resume/', '/en/work-with-me/', '/en/about/', '/en/now/'
+  '/', '/en/',
+  '/projects/', '/resume/', '/work-with-me/', '/about/', '/now/', '/materials/', '/contacts/',
+  '/en/projects/', '/en/resume/', '/en/work-with-me/', '/en/about/', '/en/now/',
+  '/landing/projects/', '/landing/resume/', '/landing/work-with-me/',
+  '/landing/about/', '/landing/now/', '/landing/materials/', '/landing/contacts/'
 ]);
 
 const TIER2 = new Set([
+  '/publications/', '/engineering-map/', '/notes/', '/bibliography/', '/photos/',
+  '/en/publications/',
   '/landing/publications/', '/landing/engineering-map/', '/landing/notes/',
-  '/landing/bibliography/', '/landing/photos/', '/en/publications/'
+  '/landing/bibliography/', '/landing/photos/'
 ]);
 
 export const normalizeRoute = (value) => {
@@ -41,17 +45,25 @@ export function parseSitemapRoutes(xml, siteUrl) {
 export function classifyRoute(pathname) {
   const route = normalizeRoute(pathname);
   if (TIER1.has(route)) return 'tier1';
-  if (/^\/(?:landing|en)\/notes\/[^/]+\/$/.test(route)) return 'tier3';
+  if (/^\/(?:landing\/|en\/)?notes\/[^/]+\/$/.test(route)) return 'tier3';
   if (
     TIER2.has(route)
-    || /^\/(?:landing|en)\/projects\/[^/]+\/$/.test(route)
+    || /^\/(?:landing\/|en\/)?projects\/[^/]+\/$/.test(route)
     || route.startsWith('/_search/')
   ) return 'tier2';
   return 'tier3';
 }
 
 export function counterpartRoute(route) {
-  if (route.startsWith('/landing/')) return `/en/${route.slice('/landing/'.length)}`;
-  if (route.startsWith('/en/')) return `/landing/${route.slice('/en/'.length)}`;
-  return null;
+  const normalized = normalizeRoute(route);
+  if (normalized === '/') return '/en/';
+  if (normalized === '/en/') return '/';
+  if (normalized.startsWith('/landing/')) {
+    return `/en/${normalized.slice('/landing/'.length)}`;
+  }
+  if (normalized.startsWith('/en/')) {
+    return `/${normalized.slice('/en/'.length)}`;
+  }
+  if (normalized.startsWith('/_search/')) return null;
+  return `/en/${normalized.slice(1)}`;
 }
