@@ -18,6 +18,13 @@ const LOCALES = Object.freeze({
     workHref: 'work-with-me/',
     status: 'ограниченная доступность',
     collaborationText: 'Помогаю с backend-сервисами',
+    requiredTokens: Object.freeze([
+      'Backend и интеграции',
+      'Обучение и наставничество',
+      'Задача и рамки',
+      'Оценка и работа',
+      'Передача результата',
+    ]),
   }),
   en: Object.freeze({
     route: '/en/work-with-me/',
@@ -26,6 +33,15 @@ const LOCALES = Object.freeze({
     workHref: 'en/work-with-me/',
     status: 'limited availability',
     collaborationText: 'I help with backend services',
+    requiredTokens: Object.freeze([
+      'Engineering',
+      'Teaching & Mentoring',
+      'Context',
+      'Scope',
+      'Estimate',
+      'Implementation',
+      'Handover',
+    ]),
   }),
 });
 
@@ -94,7 +110,7 @@ async function assertWorkPage(browser, baseUrl, locale, {javaScriptEnabled, view
     if (!heading.includes(copy.heading)) throw new Error(`${locale}: unexpected H1 ${heading}`);
 
     const bodyText = await page.locator('body').innerText();
-    for (const token of ['Engineering', 'Teaching & Mentoring', 'Context', 'Scope', 'Estimate', 'Implementation', 'Handover', '2026-08-08']) {
+    for (const token of [...copy.requiredTokens, '2026-08-08']) {
       if (!bodyText.includes(token)) throw new Error(`${locale}: missing collaboration truth ${token}`);
     }
     if (!bodyText.toLocaleLowerCase(locale).includes(copy.status.toLocaleLowerCase(locale))) {
