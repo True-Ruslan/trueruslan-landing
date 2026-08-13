@@ -37,7 +37,11 @@ jobs:
         run: SITE_URL=https://trueruslan.ru npm run build:docs
       - name: Inspect representative generated content root
         run: |
-          grep -oE '<(main|article|div)[^>]*(class|id)="[^"]+"[^>]*>' docs-html/projects/index.html | head -n 40 || true
+          echo '--- structural tags ---'
+          grep -oE '<(main|article|div|section)[^>]*(class|id)="[^"]+"[^>]*>' docs-html/projects/index.html | head -n 80 || true
+          echo '--- h1 context ---'
+          grep -oE '.{0,500}<h1[^>]*>.{0,900}' docs-html/projects/index.html | head -c 3000 || true
+          echo
       - name: Generate editorial UX evidence
         run: node --test scripts/editorial-ux-audit-built-site.integration.js
       - name: Upload editorial UX evidence
