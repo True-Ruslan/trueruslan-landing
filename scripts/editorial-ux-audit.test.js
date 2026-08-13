@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 
 async function loadAuditModule() {
   try {
-    return await import('./editorial-ux-audit.js');
+    return await import('./editorial-ux-audit/index.js');
   } catch (error) {
     assert.fail(`editorial UX audit implementation is missing: ${error.message}`);
   }
