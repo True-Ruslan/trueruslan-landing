@@ -7,7 +7,10 @@
     "updated": "2026-07-21",
     "readingMinutes": 6,
     "tags": ["Performance", "Hydration", "Diplodoc"],
-    "related": ["static-site-quality-gates", "static-first-sources-no-js"]
+    "related": ["static-first-sources-no-js", "intersection-observer-giant-table", "clean-urls-without-cloudflare-routing"],
+    "series": "static-first-web",
+    "seriesOrder": 1,
+    "readerRole": "start"
   },
   {
     "slug": "static-site-quality-gates",
@@ -17,7 +20,10 @@
     "updated": "2026-07-21",
     "readingMinutes": 7,
     "tags": ["CI", "Reliability", "Playwright", "Lighthouse"],
-    "related": ["portfolio-runtime-boundary", "server-authoritative-ai-npcs", "intersection-observer-giant-table", "static-first-sources-no-js", "green-ci-is-not-product-verification"]
+    "related": ["green-ci-is-not-product-verification", "source-tests-to-installed-acceptance", "portfolio-runtime-boundary"],
+    "series": "evidence-verification",
+    "seriesOrder": 2,
+    "readerRole": "path"
   },
   {
     "slug": "server-authoritative-ai-npcs",
@@ -27,7 +33,10 @@
     "updated": "2026-07-21",
     "readingMinutes": 8,
     "tags": ["AI agents", "Voice", "Security", "Architecture"],
-    "related": ["static-site-quality-gates", "llm-output-is-a-protocol-boundary"]
+    "related": ["llm-output-is-a-protocol-boundary", "probabilistic-proposals-deterministic-authority", "source-tests-to-installed-acceptance"],
+    "series": "ai-authority-protocols",
+    "seriesOrder": 1,
+    "readerRole": "start"
   },
   {
     "slug": "intersection-observer-giant-table",
@@ -37,7 +46,10 @@
     "updated": "2026-07-22",
     "readingMinutes": 6,
     "tags": ["Browser", "IntersectionObserver", "Regression", "UI"],
-    "related": ["static-site-quality-gates", "static-first-sources-no-js"]
+    "related": ["portfolio-runtime-boundary", "static-first-sources-no-js", "clean-urls-without-cloudflare-routing"],
+    "series": "static-first-web",
+    "seriesOrder": 3,
+    "readerRole": "path"
   },
   {
     "slug": "static-first-sources-no-js",
@@ -47,47 +59,62 @@
     "updated": "2026-07-22",
     "readingMinutes": 7,
     "tags": ["Static-first", "No-JS", "Diplodoc", "Architecture"],
-    "related": ["portfolio-runtime-boundary", "static-site-quality-gates", "intersection-observer-giant-table"]
+    "related": ["portfolio-runtime-boundary", "intersection-observer-giant-table", "clean-urls-without-cloudflare-routing"],
+    "series": "static-first-web",
+    "seriesOrder": 2,
+    "readerRole": "path"
   },
   {
     "slug": "green-ci-is-not-product-verification",
     "title": "Почему green CI не означает verified product",
-    "description": "Как Project Evidence Layer разделил automated и manual proof, bounded scope и freshness, чтобы зелёный pipeline не превращался в слишком широкий product claim.",
+    "description": "Базовая модель evidence scope: почему зелёный CI подтверждает только ограниченный технический факт и не заменяет deployment, installed или product verification.",
     "published": "2026-07-22",
     "updated": "2026-07-22",
     "readingMinutes": 8,
     "tags": ["CI", "Evidence", "Reliability", "Verification"],
-    "related": ["static-site-quality-gates"]
+    "related": ["static-site-quality-gates", "source-tests-to-installed-acceptance", "deployment-success-is-not-production-verification"],
+    "series": "evidence-verification",
+    "seriesOrder": 1,
+    "readerRole": "start"
   },
   {
     "slug": "llm-output-is-a-protocol-boundary",
     "title": "Почему успешный ответ LLM ещё не означает успешный контракт",
-    "description": "Почему structured output модели нужно обрабатывать как внешний protocol boundary: strict JSON, type validation, no coercion, bounded fallback и отдельная authorization граница.",
+    "description": "Фокус на protocol boundary до authorization: strict JSON parsing, schema/type validation, no coercion и bounded fallback до того, как модель вообще сможет претендовать на действие.",
     "published": "2026-07-23",
     "updated": "2026-07-23",
     "readingMinutes": 7,
     "tags": ["AI", "Protocols", "Validation", "Reliability"],
-    "related": ["server-authoritative-ai-npcs", "green-ci-is-not-product-verification"]
+    "related": ["server-authoritative-ai-npcs", "probabilistic-proposals-deterministic-authority", "hybrid-cv-ai-recognition-boundaries"],
+    "series": "ai-authority-protocols",
+    "seriesOrder": 2,
+    "readerRole": "path"
   },
   {
     "slug": "source-tests-to-installed-acceptance",
     "title": "От source tests к installed acceptance: что доказывает каждый release gate",
-    "description": "Практическая ретроспектива VillAIgence: чем отличаются source tests, package identity, GameTests, exact production-JAR startup/restart, rollback и cumulative installed acceptance.",
+    "description": "End-to-end release-gate ретроспектива VillAIgence: source tests → package identity → GameTests → exact production-JAR → restart/rollback → cumulative installed acceptance.",
     "published": "2026-08-03",
     "updated": "2026-08-03",
     "readingMinutes": 11,
     "tags": ["Release Engineering", "CI", "Acceptance", "Reliability"],
-    "related": ["green-ci-is-not-product-verification", "static-site-quality-gates", "server-authoritative-ai-npcs"]
+    "related": ["green-ci-is-not-product-verification", "gametests-vs-installed-gameplay-acceptance", "restart-persistence-is-a-product-contract"],
+    "series": "evidence-verification",
+    "seriesOrder": 3,
+    "readerRole": "path"
   },
   {
     "slug": "probabilistic-proposals-deterministic-authority",
     "title": "AI может предложить, но не применить: как строить deterministic authority",
-    "description": "Два практических кейса — Vlezet и VillAIgence — о том, как immutable identities, deterministic validation, current-state revalidation и explicit Apply отделяют probabilistic proposal от authoritative mutation.",
+    "description": "Переиспользуемый cross-project pattern: как immutable identities, deterministic validation, current-state revalidation и explicit Apply отделяют probabilistic proposal от authoritative mutation.",
     "published": "2026-08-03",
     "updated": "2026-08-03",
     "readingMinutes": 12,
     "tags": ["AI", "Authority", "Validation", "Reliability"],
-    "related": ["server-authoritative-ai-npcs", "green-ci-is-not-product-verification", "source-tests-to-installed-acceptance"]
+    "related": ["server-authoritative-ai-npcs", "llm-output-is-a-protocol-boundary", "hybrid-cv-ai-recognition-boundaries"],
+    "series": "ai-authority-protocols",
+    "seriesOrder": 3,
+    "readerRole": "path"
   },
   {
     "slug": "restart-persistence-is-a-product-contract",
@@ -97,7 +124,10 @@
     "updated": "2026-08-04",
     "readingMinutes": 12,
     "tags": ["Persistence", "Reliability", "Recovery", "Acceptance"],
-    "related": ["source-tests-to-installed-acceptance", "green-ci-is-not-product-verification", "probabilistic-proposals-deterministic-authority"]
+    "related": ["source-tests-to-installed-acceptance", "gametests-vs-installed-gameplay-acceptance", "deployment-success-is-not-production-verification"],
+    "series": "evidence-verification",
+    "seriesOrder": 5,
+    "readerRole": "path"
   },
   {
     "slug": "deployment-success-is-not-production-verification",
@@ -107,7 +137,10 @@
     "updated": "2026-08-05",
     "readingMinutes": 10,
     "tags": ["Deployment", "Verification", "GitHub Pages", "Reliability"],
-    "related": ["green-ci-is-not-product-verification", "static-site-quality-gates", "source-tests-to-installed-acceptance"]
+    "related": ["green-ci-is-not-product-verification", "clean-urls-without-cloudflare-routing", "passive-pdf-validation-vs-semantic-completeness"],
+    "series": "evidence-verification",
+    "seriesOrder": 6,
+    "readerRole": "path"
   },
   {
     "slug": "clean-urls-without-cloudflare-routing",
@@ -117,27 +150,36 @@
     "updated": "2026-08-05",
     "readingMinutes": 12,
     "tags": ["Clean URLs", "GitHub Pages", "Static-first", "SEO"],
-    "related": ["deployment-success-is-not-production-verification", "static-site-quality-gates", "static-first-sources-no-js"]
+    "related": ["portfolio-runtime-boundary", "static-first-sources-no-js", "deployment-success-is-not-production-verification"],
+    "series": "static-first-web",
+    "seriesOrder": 4,
+    "readerRole": "path"
   },
   {
     "slug": "hybrid-cv-ai-recognition-boundaries",
     "title": "Как соединить local CV и AI, не отдавая модели authority над геометрией",
-    "description": "Vlezet case study: deterministic local Draft, immutable AI proposal identity, fail-closed sanitation, current-state revalidation и explicit atomic Apply.",
+    "description": "Конкретный Vlezet case study: local CV Draft + AI proposal остаются предложениями, а current-state revalidation и explicit atomic Apply сохраняют authority у детерминированной модели документа.",
     "published": "2026-08-05",
     "updated": "2026-08-05",
     "readingMinutes": 14,
     "tags": ["Computer Vision", "AI", "Authority", "Validation"],
-    "related": ["probabilistic-proposals-deterministic-authority", "green-ci-is-not-product-verification", "llm-output-is-a-protocol-boundary"]
+    "related": ["probabilistic-proposals-deterministic-authority", "llm-output-is-a-protocol-boundary", "server-authoritative-ai-npcs"],
+    "series": "ai-authority-protocols",
+    "seriesOrder": 4,
+    "readerRole": "path"
   },
   {
     "slug": "gametests-vs-installed-gameplay-acceptance",
     "title": "Почему зелёные GameTests ещё не доказывают installed gameplay acceptance",
-    "description": "VillAIgence release-engineering case study: source/unit contracts, remapped package, GameTests, exact production-JAR, provider-client proof и installed canaries как разные evidence layers.",
+    "description": "Фокусированный VillAIgence разбор системной границы: чем GameTests и remapped package отличаются от exact production-JAR, provider proof и installed gameplay canaries.",
     "published": "2026-08-05",
     "updated": "2026-08-05",
     "readingMinutes": 15,
     "tags": ["GameTests", "Release Engineering", "Acceptance", "Reliability"],
-    "related": ["source-tests-to-installed-acceptance", "restart-persistence-is-a-product-contract", "green-ci-is-not-product-verification"]
+    "related": ["source-tests-to-installed-acceptance", "restart-persistence-is-a-product-contract", "green-ci-is-not-product-verification"],
+    "series": "evidence-verification",
+    "seriesOrder": 4,
+    "readerRole": "path"
   },
   {
     "slug": "passive-pdf-validation-vs-semantic-completeness",
@@ -147,7 +189,10 @@
     "updated": "2026-08-06",
     "readingMinutes": 13,
     "tags": ["PDF", "Validation", "Semantic Completeness", "Accessibility"],
-    "related": ["deployment-success-is-not-production-verification", "source-tests-to-installed-acceptance", "static-site-quality-gates"]
+    "related": ["deployment-success-is-not-production-verification", "evidence-driven-project-state", "source-tests-to-installed-acceptance"],
+    "series": "evidence-verification",
+    "seriesOrder": 7,
+    "readerRole": "path"
   },
   {
     "slug": "evidence-driven-project-state",
@@ -157,6 +202,9 @@
     "updated": "2026-08-06",
     "readingMinutes": 11,
     "tags": ["Evidence", "Project State", "Verification", "Freshness"],
-    "related": ["deployment-success-is-not-production-verification", "passive-pdf-validation-vs-semantic-completeness", "green-ci-is-not-product-verification"]
+    "related": ["green-ci-is-not-product-verification", "passive-pdf-validation-vs-semantic-completeness", "deployment-success-is-not-production-verification"],
+    "series": "evidence-verification",
+    "seriesOrder": 8,
+    "readerRole": "path"
   }
 ]

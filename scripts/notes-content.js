@@ -10,6 +10,24 @@ const ROOT = path.join(__dirname, '..');
 export const DEFAULT_NOTES_PATH = path.join(ROOT, 'data', 'notes.json');
 const DEFAULT_DOCS_DIR = path.join(ROOT, 'docs');
 
+export const NOTE_READER_SERIES = Object.freeze({
+  'evidence-verification': Object.freeze({
+    title: 'Evidence & Verification',
+    promise: 'Разобраться, что именно доказывает каждый технический gate и где заканчивается область его evidence.',
+  }),
+  'ai-authority-protocols': Object.freeze({
+    title: 'AI Authority & Protocol Boundaries',
+    promise: 'Провести границу между вероятностным выводом модели, проверяемым протоколом и детерминированным применением изменений.',
+  }),
+  'static-first-web': Object.freeze({
+    title: 'Static-first Web Engineering',
+    promise: 'Понять, как build-time representation, browser behavior и публичная URL identity остаются воспроизводимыми без лишнего runtime.',
+  }),
+});
+
+const NOTE_READER_ROLES = new Set(['start', 'path']);
+const NOTE_READER_SERIES_KEYS = new Set(Object.keys(NOTE_READER_SERIES));
+
 function isIsoDate(value) {
   return typeof value === 'string'
     && /^\d{4}-\d{2}-\d{2}$/.test(value)
@@ -23,6 +41,41 @@ function escapeXml(value) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&apos;');
+}
+
+function groupNotesBySeries(notes) {
+  const groups = new Map();
+  for (const note of notes) {
+    const members = groups.get(note.series) ?? [];
+    members.push(note);
+    groups.set(note.series, members);
+  }
+  for (const members of groups.values()) members.sort((a, b) => a.seriesOrder - b.seriesOrder);
+  return groups;
+}
+
+function validateReaderArchitecture(notes) {
+  const groups = groupNotesBySeries(notes);
+
+  for (const [series, members] of groups) {
+    const orders = new Set();
+    for (const note of members) {
+      if (orders.has(note.seriesOrder)) throw new Error(`duplicate seriesOrder for ${series}: ${note.seriesOrder}`);
+      orders.add(note.seriesOrder);
+    }
+
+    const ordered = [...members].sort((a, b) => a.seriesOrder - b.seriesOrder);
+    ordered.forEach((note, index) => {
+      if (note.seriesOrder !== index + 1) throw new Error(`non-contiguous seriesOrder for ${series}: ${note.seriesOrder}`);
+    });
+
+    const starts = members.filter((note) => note.readerRole === 'start');
+    if (starts.length !== 1) throw new Error(`series ${series} must contain exactly one start note`);
+    if (starts[0].seriesOrder !== 1) throw new Error(`series ${series} start note must have seriesOrder 1`);
+    if (members.length < 2 || members.filter((note) => note.readerRole === 'path').length < 1) {
+      throw new Error(`series ${series} must contain at least one path note`);
+    }
+  }
 }
 
 export function validateNotesManifest(notes, {docsDir = DEFAULT_DOCS_DIR, requireFiles = true} = {}) {
@@ -50,6 +103,9 @@ export function validateNotesManifest(notes, {docsDir = DEFAULT_DOCS_DIR, requir
       throw new Error(`invalid related notes for ${note.slug}`);
     }
     if (new Set(note.related).size !== note.related.length) throw new Error(`duplicate related note for ${note.slug}`);
+    if (!NOTE_READER_SERIES_KEYS.has(note.series)) throw new Error(`invalid note series for ${note.slug}: ${note.series}`);
+    if (!Number.isInteger(note.seriesOrder) || note.seriesOrder < 1) throw new Error(`invalid seriesOrder for ${note.slug}`);
+    if (!NOTE_READER_ROLES.has(note.readerRole)) throw new Error(`invalid readerRole for ${note.slug}: ${note.readerRole}`);
     if (requireFiles) {
       const notePath = path.join(docsDir, 'landing', 'notes', `${note.slug}.md`);
       if (!fs.existsSync(notePath)) throw new Error(`note source file not found for ${note.slug}`);
@@ -63,6 +119,7 @@ export function validateNotesManifest(notes, {docsDir = DEFAULT_DOCS_DIR, requir
     }
   }
 
+  validateReaderArchitecture(notes);
   return notes;
 }
 
@@ -88,21 +145,93 @@ function orderedNotes(notes) {
   return [...notes].sort((a, b) => b.updated.localeCompare(a.updated) || b.published.localeCompare(a.published) || a.slug.localeCompare(b.slug));
 }
 
-export function renderNotesIndex(notes) {
-  validateNotesManifest(notes, {requireFiles: false});
+function renderStartHere(notes) {
+  const groups = groupNotesBySeries(notes);
+  const choices = Object.entries(NOTE_READER_SERIES).map(([series, presentation]) => {
+    const members = groups.get(series);
+    if (!members?.length) return '';
+    const start = members.find((note) => note.readerRole === 'start');
+    if (!start) throw new Error(`series ${series} is missing its start note`);
+    return `<article class="tr-notes-start__choice" data-tr-notes-start-choice="${escapeHtml(series)}">
+  <h3>${escapeHtml(presentation.title)}</h3>
+  <p>${escapeHtml(presentation.promise)}</p>
+  <a class="tr-notes-start__link" href="${noteHref(start.slug)}">
+    <span>${escapeHtml(start.title)}</span>
+    <span>${escapeHtml(String(start.readingMinutes))} мин</span>
+  </a>
+</article>`;
+  }).filter(Boolean).join('\n');
+
+  return `<section class="tr-notes-start" data-tr-notes-start-here aria-labelledby="tr-notes-start-title">
+  <div class="tr-notes-section-heading">
+    <p class="tr-notes-section-heading__eyebrow">Reader paths</p>
+    <h2 id="tr-notes-start-title">С чего начать</h2>
+    <p>Выберите ближайшую задачу. Каждый маршрут начинается с одной базовой заметки и ведёт к более узким разборам.</p>
+  </div>
+  <div class="tr-notes-start__grid">
+${choices}
+  </div>
+</section>`;
+}
+
+function renderGuidedSeries(notes) {
+  const groups = groupNotesBySeries(notes);
+  return Object.entries(NOTE_READER_SERIES).map(([series, presentation]) => {
+    const members = groups.get(series);
+    if (!members?.length) return '';
+    const items = members.map((note) => `<li data-tr-notes-series-note="${escapeHtml(note.slug)}">
+  <a href="${noteHref(note.slug)}">${escapeHtml(note.title)}</a>
+  <span>${escapeHtml(String(note.readingMinutes))} мин</span>
+</li>`).join('\n');
+    return `<section class="tr-notes-series" data-tr-notes-series="${escapeHtml(series)}" aria-labelledby="tr-notes-series-${escapeHtml(series)}">
+  <div class="tr-notes-series__heading">
+    <h3 id="tr-notes-series-${escapeHtml(series)}">${escapeHtml(presentation.title)}</h3>
+    <p>${escapeHtml(presentation.promise)}</p>
+  </div>
+  <ol class="tr-notes-series__path">
+${items}
+  </ol>
+</section>`;
+  }).filter(Boolean).join('\n');
+}
+
+function renderCatalogue(notes) {
   const cards = orderedNotes(notes).map((note) => `<article class="tr-note-index-card" data-tr-note-index-card="${escapeHtml(note.slug)}">
   <div class="tr-note-index-card__meta">
     <time datetime="${escapeHtml(note.updated)}">${escapeHtml(note.updated)}</time>
     <span>${escapeHtml(String(note.readingMinutes))} мин</span>
   </div>
-  <h2><a href="${noteHref(note.slug)}">${escapeHtml(note.title)}</a></h2>
+  <h3><a href="${noteHref(note.slug)}">${escapeHtml(note.title)}</a></h3>
   <p>${escapeHtml(note.description)}</p>
   <div class="tr-note-index-card__tags" aria-label="Темы">${note.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('')}</div>
 </article>`).join('\n');
 
-  return `<section class="tr-notes-index" data-tr-notes-index aria-label="Engineering Notes">
+  return `<section class="tr-notes-catalogue" data-tr-notes-catalogue aria-labelledby="tr-notes-catalogue-title">
+  <div class="tr-notes-section-heading">
+    <p class="tr-notes-section-heading__eyebrow">Archive</p>
+    <h2 id="tr-notes-catalogue-title">Все заметки</h2>
+    <p>Полный каталог остаётся доступен в хронологическом порядке — guided paths ничего не скрывают.</p>
+  </div>
+  <div class="tr-notes-catalogue__grid">
 ${cards}
+  </div>
 </section>`;
+}
+
+export function renderNotesIndex(notes) {
+  validateNotesManifest(notes, {requireFiles: false});
+  return `<div class="tr-notes-reader" data-tr-notes-index>
+${renderStartHere(notes)}
+<section class="tr-notes-guided" aria-labelledby="tr-notes-guided-title">
+  <div class="tr-notes-section-heading">
+    <p class="tr-notes-section-heading__eyebrow">Guided series</p>
+    <h2 id="tr-notes-guided-title">Маршруты чтения</h2>
+    <p>Три последовательности покрывают все текущие Engineering Notes ровно один раз и не меняют их публичную identity.</p>
+  </div>
+${renderGuidedSeries(notes)}
+</section>
+${renderCatalogue(notes)}
+</div>`;
 }
 
 function injectNotesIndexNoJavaScriptFallback(html, content) {
