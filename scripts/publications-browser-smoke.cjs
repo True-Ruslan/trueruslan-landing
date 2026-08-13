@@ -105,6 +105,52 @@ async function assertEnglishPresentation(page, label, {javaScriptEnabled}) {
   }
 }
 
+async function assertFeaturedCardRhythm(page, label) {
+  const cards = page.locator('.tr-publications-featured--page .tr-publication-card--featured');
+  const count = await cards.count();
+  if (count !== EXPECTED_PUBLICATION_IDS.length) {
+    throw new Error(`${label}: expected ${EXPECTED_PUBLICATION_IDS.length} featured cards for rhythm verification, got ${count}.`);
+  }
+
+  const rowSelectors = Object.freeze([
+    ['title', 'h3'],
+    ['summary', '.tr-publication-card__summary'],
+    ['topics', '.tr-publication-card__topics-block'],
+    ['actions', '.tr-publication-card__actions'],
+  ]);
+
+  for (const [rowName, selector] of rowSelectors) {
+    const tops = [];
+    for (let index = 0; index < count; index += 1) {
+      const box = await cards.nth(index).locator(selector).boundingBox();
+      if (!box) throw new Error(`${label}: ${rowName} row ${index + 1} has no rendered box.`);
+      tops.push(box.y);
+    }
+    const spread = Math.max(...tops) - Math.min(...tops);
+    if (spread > 2) {
+      throw new Error(`${label}: featured ${rowName} rows are misaligned by ${spread.toFixed(2)}px.`);
+    }
+  }
+
+  for (let cardIndex = 0; cardIndex < count; cardIndex += 1) {
+    const card = cards.nth(cardIndex);
+    const cardBox = await card.boundingBox();
+    if (!cardBox) throw new Error(`${label}: featured card ${cardIndex + 1} has no rendered box.`);
+
+    const chips = card.locator('.tr-publication-card__topics li');
+    const chipCount = await chips.count();
+    if (!chipCount) throw new Error(`${label}: featured card ${cardIndex + 1} has no topic chips.`);
+
+    for (let chipIndex = 0; chipIndex < chipCount; chipIndex += 1) {
+      const chipBox = await chips.nth(chipIndex).boundingBox();
+      if (!chipBox) throw new Error(`${label}: topic chip ${chipIndex + 1} in card ${cardIndex + 1} has no rendered box.`);
+      if (chipBox.x < cardBox.x - 1 || chipBox.x + chipBox.width > cardBox.x + cardBox.width + 1) {
+        throw new Error(`${label}: topic chip ${chipIndex + 1} in card ${cardIndex + 1} escapes the card bounds.`);
+      }
+    }
+  }
+}
+
 async function assertPublicationContent(page, label, {javaScriptEnabled, locale}) {
   const copy = LOCALES[locale];
   const heading = (await page.locator('h1').first().innerText()).trim();
@@ -183,6 +229,9 @@ async function runScenario(browser, baseUrl, {
     }
 
     const publicationCards = await assertPublicationContent(page, label, {javaScriptEnabled, locale});
+    if (javaScriptEnabled && viewport.width >= VIEWPORTS.desktop.width) {
+      await assertFeaturedCardRhythm(page, label);
+    }
     await assertNoHorizontalOverflow(page, label);
 
     let axeChecked = false;
