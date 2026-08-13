@@ -1,12 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import {buildEngineeringNotesInventory, countWords} from './engineering-notes-audit.js';
+import {buildEngineeringNotesInventory, countGitHubEvidenceLinks, countWords} from './engineering-notes-audit.js';
 
 test('countWords ignores fenced code while preserving prose and link text', () => {
   const markdown = `# Heading\n\nПолезный текст [про контракт](target.md).\n\n\`inline value\` остаётся смыслом.\n\n\`\`\`text\nignored code tokens here\n\`\`\``;
   const count = countWords(markdown);
   assert.ok(count >= 7 && count <= 12, `unexpected prose word count: ${count}`);
+});
+
+test('GitHub evidence counting accepts only the exact github.com host', () => {
+  const markdown = [
+    'https://github.com/True-Ruslan/example/pull/1',
+    'https://github.com.evil.example/True-Ruslan/example/pull/2',
+    'https://evil.example/github.com/True-Ruslan/example/pull/3',
+  ].join('\n');
+  assert.equal(countGitHubEvidenceLinks(markdown), 1);
 });
 
 test('Engineering Notes inventory covers every registered source with reproducible depth signals', () => {
