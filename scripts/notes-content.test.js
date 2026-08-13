@@ -121,7 +121,11 @@ test('renderNoteNavigation includes previous next and related links', () => {
 test('renderNotesIndex keeps the complete registry-derived catalogue latest-first and compact', () => {
   const html = renderNotesIndex(notes);
   assert.equal((html.match(/data-tr-note-index-card=/g) ?? []).length, 2);
-  assert.ok(html.indexOf('second-note') < html.indexOf('first-note'));
+  const catalogueStart = html.indexOf('data-tr-notes-catalogue');
+  const secondCard = html.indexOf('data-tr-note-index-card="second-note"', catalogueStart);
+  const firstCard = html.indexOf('data-tr-note-index-card="first-note"', catalogueStart);
+  assert.ok(catalogueStart >= 0);
+  assert.ok(secondCard >= 0 && firstCard >= 0 && secondCard < firstCard);
   assert.match(html, /Another note\./);
   assert.match(html, /7 мин/);
   assert.match(html, /datetime="2026-07-22"/);
