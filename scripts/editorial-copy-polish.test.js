@@ -44,7 +44,7 @@ test('RU About is personal and precise without repository-facing architecture la
 test('RU Materials names all four entry points and avoids unnecessary process English', async () => {
   const source = await read('docs/landing/materials.md');
   assert.match(source, /Публикации, Engineering Map, Engineering Notes и Источники — четыре/);
-  assert.match(source, /проверки качества/);
+  assert.match(source, /проверок качества/);
   absent(source, ['quality gates', 'distributed systems', 'reliability, AI engineering'], 'RU Materials');
 });
 
