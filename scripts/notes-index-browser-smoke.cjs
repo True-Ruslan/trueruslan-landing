@@ -15,13 +15,75 @@ const EXPECTED_COUNT = NOTES.length;
 const EXPECTED_ORDER = [...NOTES]
   .sort((a, b) => b.updated.localeCompare(a.updated) || b.published.localeCompare(a.published) || a.slug.localeCompare(b.slug))
   .map(({slug}) => slug);
+const EXPECTED_SERIES = ['evidence-verification', 'ai-authority-protocols', 'static-first-web'];
+const EXPECTED_SERIES_MEMBERS = Object.fromEntries(
+  EXPECTED_SERIES.map((series) => [
+    series,
+    NOTES.filter((note) => note.series === series)
+      .sort((a, b) => a.seriesOrder - b.seriesOrder)
+      .map(({slug}) => slug),
+  ]),
+);
 
 const {chromium} = requireQualityTool('playwright', 'Engineering Notes index smoke tool');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright', 'Engineering Notes index smoke tool');
 
+function assertExpectedPath(pathname, slug, label) {
+  if (!pathname.endsWith(`/notes/${slug}/`) && !pathname.endsWith(`/landing/notes/${slug}.html`)) {
+    throw new Error(`${label}: unexpected href ${pathname}`);
+  }
+}
+
+async function assertReaderArchitecture(page, label) {
+  const startHere = page.locator('[data-tr-notes-start-here]');
+  if (await startHere.count() !== 1) throw new Error(`${label}: expected one Start here region`);
+  if (!(await startHere.innerText()).includes('С чего начать')) throw new Error(`${label}: missing Start here heading`);
+
+  const startChoices = page.locator('[data-tr-notes-start-choice]');
+  if (await startChoices.count() !== EXPECTED_SERIES.length) {
+    throw new Error(`${label}: expected ${EXPECTED_SERIES.length} Start here choices, got ${await startChoices.count()}`);
+  }
+
+  const seriesSections = page.locator('[data-tr-notes-series]');
+  if (await seriesSections.count() !== EXPECTED_SERIES.length) {
+    throw new Error(`${label}: expected ${EXPECTED_SERIES.length} guided series, got ${await seriesSections.count()}`);
+  }
+
+  const guidedNotes = page.locator('[data-tr-notes-series-note]');
+  if (await guidedNotes.count() !== EXPECTED_COUNT) {
+    throw new Error(`${label}: expected ${EXPECTED_COUNT} guided Note links, got ${await guidedNotes.count()}`);
+  }
+
+  for (const series of EXPECTED_SERIES) {
+    const section = page.locator(`[data-tr-notes-series="${series}"]`);
+    if (await section.count() !== 1) throw new Error(`${label}: missing guided series ${series}`);
+    const actualSlugs = await section.locator('[data-tr-notes-series-note]').evaluateAll((nodes) => nodes.map((node) => node.dataset.trNotesSeriesNote));
+    if (JSON.stringify(actualSlugs) !== JSON.stringify(EXPECTED_SERIES_MEMBERS[series])) {
+      throw new Error(`${label}: ${series} order drifted: ${JSON.stringify(actualSlugs)}`);
+    }
+
+    const startSlug = EXPECTED_SERIES_MEMBERS[series][0];
+    const choice = page.locator(`[data-tr-notes-start-choice="${series}"]`);
+    if (await choice.count() !== 1) throw new Error(`${label}: missing Start here choice ${series}`);
+    const choiceHref = await choice.locator('a[href]').first().getAttribute('href');
+    assertExpectedPath(new URL(choiceHref, page.url()).pathname, startSlug, `${label}: Start here ${series}`);
+  }
+
+  const catalogue = page.locator('[data-tr-notes-catalogue]');
+  if (await catalogue.count() !== 1) throw new Error(`${label}: expected one complete catalogue`);
+  if (!(await catalogue.innerText()).includes('Все заметки')) throw new Error(`${label}: missing complete catalogue heading`);
+
+  return {
+    startChoices: await startChoices.count(),
+    series: await seriesSections.count(),
+    guidedNotes: await guidedNotes.count(),
+  };
+}
+
 async function assertIndex(page, label) {
   const root = page.locator('[data-tr-notes-index]');
   if (await root.count() !== 1) throw new Error(`${label}: expected one Notes index root`);
+  const reader = await assertReaderArchitecture(page, label);
   const cards = page.locator('[data-tr-note-index-card]');
   if (await cards.count() !== EXPECTED_COUNT) {
     throw new Error(`${label}: expected ${EXPECTED_COUNT} registry-derived cards, got ${await cards.count()}`);
@@ -40,13 +102,10 @@ async function assertIndex(page, label) {
       throw new Error(`${label}: card ${note.slug} is missing canonical title/summary/read time`);
     }
     const link = card.locator('a[href]').first();
-    const pathname = new URL(await link.getAttribute('href'), page.url()).pathname;
-    if (!pathname.endsWith(`/notes/${note.slug}/`) && !pathname.endsWith(`/landing/notes/${note.slug}.html`)) {
-      throw new Error(`${label}: card ${note.slug} has unexpected href ${pathname}`);
-    }
+    assertExpectedPath(new URL(await link.getAttribute('href'), page.url()).pathname, note.slug, `${label}: card ${note.slug}`);
   }
 
-  return cards.count();
+  return {cards: await cards.count(), ...reader};
 }
 
 async function runEnhanced(browser, baseUrl) {
@@ -62,14 +121,14 @@ async function runEnhanced(browser, baseUrl) {
   try {
     const response = await page.goto(`${baseUrl}${ROUTE}`, {waitUntil: 'networkidle'});
     if (!response?.ok()) throw new Error(`enhanced: Notes index HTTP ${response?.status() ?? 'none'}`);
-    const cards = await assertIndex(page, 'enhanced');
+    const index = await assertIndex(page, 'enhanced');
     const overflow = (await assertNoHorizontalOverflow(page, 'notes-index-mobile')).overflow;
     const axe = await new AxeBuilder({page}).include('[data-tr-notes-index]').analyze();
     const serious = blockingAxeViolations(axe);
     if (serious.length) throw new Error(`enhanced: Axe serious/critical violations: ${serious.map((item) => item.id).join(', ')}`);
     if (pageErrors.length) throw new Error(`enhanced: page errors: ${pageErrors.join(' | ')}`);
     await captureScreenshot(page, 'notes-index-mobile.png');
-    return {cards, overflow, seriousAxeViolations: serious.length};
+    return {...index, overflow, seriousAxeViolations: serious.length};
   } finally {
     await runtime.close();
   }
@@ -86,10 +145,10 @@ async function runNoJavaScript(browser, baseUrl) {
   try {
     const response = await page.goto(`${baseUrl}${ROUTE}`, {waitUntil: 'load'});
     if (!response?.ok()) throw new Error(`no-js: Notes index HTTP ${response?.status() ?? 'none'}`);
-    const cards = await assertIndex(page, 'no-js');
+    const index = await assertIndex(page, 'no-js');
     const overflow = (await assertNoHorizontalOverflow(page, 'notes-index-no-js')).overflow;
     await captureScreenshot(page, 'notes-index-no-js-desktop.png');
-    return {cards, overflow};
+    return {...index, overflow};
   } finally {
     await runtime.close();
   }
