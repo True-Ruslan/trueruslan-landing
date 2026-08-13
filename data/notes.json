@@ -124,7 +124,7 @@
     "updated": "2026-08-04",
     "readingMinutes": 12,
     "tags": ["Persistence", "Reliability", "Recovery", "Acceptance"],
-    "related": ["source-tests-to-installed-acceptance", "gametests-vs-installed-gameplay-acceptance", "deployment-success-is-not-production-verification", "green-ci-is-not-product-verification"],
+    "related": ["source-tests-to-installed-acceptance", "gametests-vs-installed-gameplay-acceptance", "deployment-success-is-not-production-verification", "green-ci-is-not-product-verification", "probabilistic-proposals-deterministic-authority"],
     "series": "evidence-verification",
     "seriesOrder": 5,
     "readerRole": "path"
