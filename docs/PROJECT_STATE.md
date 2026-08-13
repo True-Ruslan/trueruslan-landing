@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-12**, Navigation IA #217 production-accepted на exact deployed SHA `9831521d5d248fa01c491e3cec031cef07fc8ec5`; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6 — WAITING.
+> Последнее смысловое обновление: **2026-08-13**, Portfolio UX/content polish N2–N5 и Engineering Notes reader architecture #229 production-accepted на exact deployed SHA `1a0db35795aea1ea966e1452bcdb106bb5419ba1`; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C — WAITING.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -12,6 +12,49 @@
 4. `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
 Repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance остаются разными фактами.
+
+## 0.5 2026-08-13 — Portfolio UX/content polish + Engineering Notes reader architecture — PRODUCTION ACCEPTED
+
+Post-Navigation программа UX/content polish доведена от визуальной коррекции до reader-oriented Engineering Notes architecture без нового runtime, destructive URL migration или SEO-impact claim. Фактический GitHub state имеет приоритет над snapshot от 2026-08-12.
+
+### N2–N5 accepted progression
+
+- **N2 Homepage spacing/symmetry — PRODUCTION ACCEPTED** via PR #221 / deployed SHA `d2911b416c6bc500a8a9543e636ae045d37869e9`; durable acceptance recorded by PR #222.
+- **N3/N3b/N3c Work with me + Now + professional context — PRODUCTION ACCEPTED** via PR #223 / deployed SHA `710db235c99a8cc1258eb44db0fa2c1bb3fc027b`; durable acceptance recorded by PR #224. QWEP remains current full-time commercial context; MarketDB is closed historical commercial/startup context.
+- **N4 Publications card rhythm — PRODUCTION ACCEPTED** via PR #225 / deployed SHA `0cb8028c5bac21c94daf8c16671d99e8f7fac38f`; durable acceptance recorded by PR #226.
+- **N5 Engineering Notes audit — MERGED / RESEARCH ACCEPTED** via PR #227 / `c2292fb56b1396e994a348d3811015e2f8b6ea4b`: 16 Notes, ~17,351 prose words, 174 section headings, 3 overlap review pairs, no merge/delete/canonical consolidation selected. Audit conclusion: primary problem was reader orientation, not insufficient substance.
+- **N5 reader architecture design — MERGED** via PR #228 / `14e966a0da47a659cbedab2fa3b6834353097ecc`.
+
+### Engineering Notes reader architecture — PRODUCTION ACCEPTED
+
+PR #229 implemented the selected non-destructive reader architecture: `/landing/notes/` remains the single hub; `data/notes.json` remains canonical; all 16 Notes belong to exactly one of three validated series with explicit `seriesOrder` and `readerRole`; the hub renders `С чего начать`, three guided series and the complete chronological `Все заметки` catalogue. Existing Note URLs, canonical/feed/search/clean-route ownership and no-JS usefulness are preserved. No second manifest, runtime content API, client-side filtering or second search owner was introduced.
+
+```text
+PR:                              #229
+TDD RED head:                    15a54a2d152e77429fd440cefe379a5504ef5f66
+RED Build:                       #2035 — 778 PASS / 4 intended reader-contract FAIL
+final feature head:              b5567fdd14430c67746da2dbbbfb0dee1f491470
+exact-head Build:                #2044 / 31685171581 — SUCCESS
+Dependency Review:               31685171386 — SUCCESS
+CodeQL:                          #1612 / 31685171699 — SUCCESS
+quality artifact:                9175280938
+quality digest:                  sha256:eb367d8b81ca203b54d58d4b474d699ec64f4ca6f07f0988c5c5f162b42dc025
+accepted squash / deployed SHA:  1a0db35795aea1ea966e1452bcdb106bb5419ba1
+Pages:                           #251 / 31685895669 — SUCCESS
+Pages deployment ID:             5885271220
+Pages artifact:                  9175388951
+Pages artifact digest:           sha256:68b36f9f44ea475cbb344d1a39c10fde67ecd3a837f280e17b66b9ff122b9200
+Pages verification reports:      9175392494
+Pages reports digest:            sha256:556786a26ecb3dce249ace8cf86c48ab8a23e773ae0934589a4246f7b7d781f5
+Production Live Smoke:           #556 / 31685963890 — SUCCESS
+production artifact:             9175455505
+production digest:               sha256:1a08c34a1bc911ee78771528efa1808dd8e6a9e95b8a1c69fda025bbe72c673d
+master CodeQL:                   #1613 / 31685895573 — SUCCESS
+```
+
+Exact-head browser acceptance proved **16 catalogue cards / 3 Start here choices / 3 series / 16 guided Notes / 0 horizontal overflow / 0 serious-or-critical Axe violations** in enhanced mobile, with the same reader architecture available in no-JS desktop. CI screenshots were reviewed; the large pre-fallback no-JS shell gap was compared against the previously accepted N5 baseline and confirmed pre-existing rather than introduced by #229. Durable ledger: `docs/acceptance/2026-08-13-engineering-notes-reader-architecture.md`.
+
+This closes the selected N5 implementation, not external search/product-impact acceptance. **Controlled launch remains `not-published`; P4.1B remains IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C remains WAITING; P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE.** The clean-URL observation clock remains `2026-08-05T00:00:00Z`. The next operator action is deliberate controlled manual launch, then accumulation/review of real external observations before any evidence-backed P4.1C change.
 
 ## 0.4 2026-08-12 — Navigation information architecture — PRODUCTION ACCEPTED
 
