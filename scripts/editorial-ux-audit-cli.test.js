@@ -29,7 +29,7 @@ async function makeSite() {
 }
 
 test('renders deterministic report summaries and one route row per audited page', async () => {
-  const { renderMarkdownReport } = await import('./editorial-ux-audit/index.js');
+  const { renderMarkdownReport } = await import('./editorial-ux-audit/report.js');
   const report = {
     generatedAt: '2026-08-13T13:00:00.000Z',
     siteUrl: 'https://trueruslan.ru',
