@@ -1,8 +1,21 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-12**, Navigation IA #217 production-reconciled; controlled launch остаётся `not-published`, P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются открытыми.
+> Обновлено: **2026-08-13**, N2–N5 UX/content polish и Engineering Notes reader architecture #229 production-reconciled; controlled launch остаётся `not-published`, P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются открытыми.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-13 — Portfolio UX/content polish + Engineering Notes reader architecture — PRODUCTION ACCEPTED
+
+- N2 Homepage spacing/symmetry shipped through PR #221 (`d2911b416c6bc500a8a9543e636ae045d37869e9`) and durable acceptance #222.
+- N3/N3b/N3c Work with me / Now / professional-context polish shipped through PR #223 (`710db235c99a8cc1258eb44db0fa2c1bb3fc027b`) and durable acceptance #224.
+- N4 Publications card-rhythm refinement shipped through PR #225 (`0cb8028c5bac21c94daf8c16671d99e8f7fac38f`) and durable acceptance #226.
+- N5 audit PR #227 (`c2292fb56b1396e994a348d3811015e2f8b6ea4b`) inventoried all 16 Engineering Notes, rejected destructive consolidation, fixed the exact-host GitHub evidence validation issue surfaced by CodeQL, and selected reader orientation as the bounded next implementation.
+- Design PR #228 (`14e966a0da47a659cbedab2fa3b6834353097ecc`) specified one Notes hub, three reader series, preserved chronological catalogue, intentional related graph and targeted scan-copy clarification.
+- Implementation PR #229 started with intentional RED Build #2035 at `15a54a2d152e77429fd440cefe379a5504ef5f66`: 778 tests passed and exactly four new reader contracts failed before production changes.
+- Final PR #229 head `b5567fdd14430c67746da2dbbbfb0dee1f491470` passed Build #2044 / `31685171581`, Dependency Review `31685171386`, CodeQL #1612 / `31685171699`, the complete browser/Axe/Lighthouse/Firefox/WebKit/no-JS/visual/search/custom-domain matrix and the dedicated Notes reader smoke. Quality artifact `9175280938`, digest `sha256:eb367d8b81ca203b54d58d4b474d699ec64f4ca6f07f0988c5c5f162b42dc025`.
+- PR #229 squash / deployed SHA `1a0db35795aea1ea966e1452bcdb106bb5419ba1`; Pages #251 / `31685895669` — SUCCESS, deployment `5885271220`, Pages artifact `9175388951` / `sha256:68b36f9f44ea475cbb344d1a39c10fde67ecd3a837f280e17b66b9ff122b9200`, verification reports `9175392494` / `sha256:556786a26ecb3dce249ace8cf86c48ab8a23e773ae0934589a4246f7b7d781f5`; Production Live #556 / `31685963890` — SUCCESS, artifact `9175455505` / `sha256:1a08c34a1bc911ee78771528efa1808dd8e6a9e95b8a1c69fda025bbe72c673d`; master CodeQL #1613 / `31685895573` — SUCCESS.
+- Reader result: 16 catalogue cards, 3 Start here choices, 3 guided series, 16 guided Notes, zero mobile/no-JS horizontal overflow and zero serious/critical Axe violations; all existing Note URL/canonical/feed/search/clean-route identities remain intact.
+- No SEO/ranking/engagement/conversion claim is introduced. Controlled launch remains `not-published`; P4.1B remains sparse/in-progress; P4.1C and P3.6 remain waiting; clean-URL clock remains `2026-08-05T00:00:00Z`.
 
 ## 2026-08-12 — Navigation information architecture — PRODUCTION ACCEPTED
 

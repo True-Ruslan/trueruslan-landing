@@ -1,8 +1,22 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-12**, Navigation IA #217 production-accepted; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются evidence-gated.
+> Обновлено: **2026-08-13**, N2–N5 UX/content polish и Engineering Notes reader architecture #229 production-accepted; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются evidence-gated.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-13 accepted Portfolio UX/content polish + Engineering Notes reader architecture
+
+- **N2 Homepage — DONE / PRODUCTION ACCEPTED** via PR #221; durable acceptance #222.
+- **N3/N3b/N3c Work with me / Now / professional context — DONE / PRODUCTION ACCEPTED** via PR #223; durable acceptance #224.
+- **N4 Publications — DONE / PRODUCTION ACCEPTED** via PR #225; durable acceptance #226.
+- **N5 Engineering Notes audit — DONE / RESEARCH ACCEPTED** via PR #227: all 16 Notes retained; no destructive merge/delete/canonical migration selected; reader orientation identified as the actual problem.
+- **N5 reader architecture design — DONE** via PR #228.
+- **N5 selected reader implementation — DONE / PRODUCTION ACCEPTED** via PR #229 / exact deployed SHA `1a0db35795aea1ea966e1452bcdb106bb5419ba1`. The hub now provides `С чего начать`, three validated guided series and the complete `Все заметки` catalogue from the same canonical `data/notes.json`; all current Note routes/search/feed/canonical/clean-URL contracts remain unchanged.
+- PR #229 exact-head Build #2044 / `31685171581`, Dependency Review `31685171386`, CodeQL #1612 / `31685171699` — SUCCESS; Pages #251 / `31685895669`, deployment `5885271220`, Production Live #556 / `31685963890`, master CodeQL #1613 / `31685895573` — SUCCESS. Durable acceptance: `docs/acceptance/2026-08-13-engineering-notes-reader-architecture.md`.
+- **Portfolio UX/content polish implementation sequence N1–N5 is complete.** Further unguided visual/SEO rewriting is not the next product step.
+- **Next operator action: controlled manual launch** using the already accepted launch pack. Repository automation must not post, authenticate, schedule or mutate external publication state.
+- After launch, accumulate real Search Console / Yandex Webmaster observations before P4.1C metadata/copy/internal-link decisions. P4.1B remains sparse/in-progress; P4.1C and P3.6 remain evidence-gated; clean-URL clock remains `2026-08-05T00:00:00Z`.
+- Maintenance remains separate: issue #82 upstream Diplodoc/markdown-it blocker is still open; Content Freshness #78 must be reconciled only from fresh Vlezet/VillAIgence/Portfolio evidence, not from this presentation acceptance.
 
 ## 2026-08-12 accepted Navigation information architecture
 
