@@ -1,6 +1,6 @@
 const PROCESS_JARGON = [
   /\bacceptance identity\b/i,
-  /\boracle\b/i,
+  /\b(?:test|state|verification|acceptance) oracle\b/i,
   /\bfail-closed\b/i,
   /\bdurable reconciliation\b/i,
   /\bexact-head\b/i,
