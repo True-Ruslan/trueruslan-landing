@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-14**, N6 full-site editorial UX + bounded copy polish production-accepted на exact product SHA `635b4a0760765a515277ad8abcbb1500bf646027`; durable acceptance #236 production-verified на `01b4508355c33a81a5e9d1b5f5815a6c37318a9b`; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C — WAITING.
+> Последнее смысловое обновление: **2026-08-14**, post-N6 evidence/security/flagship/production-verifier reconciliation production-accepted на exact deployed SHA `733a8f5342da6fd5a8c9f8995a2383367145db04`; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C — WAITING.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -12,6 +12,40 @@
 4. `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
 Repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance остаются разными фактами.
+
+## 0.7 2026-08-14 — Post-N6 evidence, security, flagship and verifier reconciliation — PRODUCTION ACCEPTED
+
+После завершения N6 репозиторий прошёл отдельный bounded maintenance/reconciliation цикл. Он не открывал новый redesign или SEO-rewrite, а синхронизировал volatile project evidence, закрыл новый high-severity dependency finding и устранил расхождение между production verifier и уже принятой homepage/link architecture.
+
+### Accepted reconciliation
+
+- **Project evidence freshness — DONE** via PR #238: Vlezet/VillAIgence/Node Zero evidence и browser expectations синхронизированы с фактическим GitHub state. Content Freshness Guard после повторной проверки завершился с **0 findings**; issue #78 закрыт как completed.
+- **VillAIgence flagship truth — DONE** via PR #240: официальный current release — **0.3.1+1.21.1**, lifecycle остаётся **Release Candidate / ACCEPTANCE IN PROGRESS**; exact installed corrective canary `VAI-PCM-MULTI-001` остаётся **PENDING**. Исторический `0.2.0+1.21.1 — 7 PASS / 0 FAIL` остаётся последним installed baseline с завершённой acceptance; `VAI-M2-INST-005` и `VAI-CONCUR-004` остаются NOT TESTED, переход к 0.4 заблокирован до corrective acceptance.
+- **Homepage collaboration presentation — DONE** via PR #241: Work with me bridge приведён к принятой homepage visual system без изменения canonical route или collaboration truth.
+- **nanoid high-severity remediation — DONE** via PR #242: explicit `nanoid@3` floor обновлён до `3.3.18`, lockfile регенерирован, high/critical footprint устранён; issue #239 закрыт. Шесть известных moderate markdown-it package records остаются отдельным upstream blocker #82 и не маскируются forced major override.
+- **Production Work with me verifier reconciliation — DONE** via PRs #243–#245. Финальная #245 устранила неверное rebasing raw `href` на EN homepage: verifier теперь проверяет DOM-resolved URL и тем самым учитывает принятый `<base href="../">` contract, не меняя корректную product markup.
+
+### Exact production acceptance
+
+```text
+PR #245 exact head:               4af1a86b8d8c32591fd477ca4940bd1810cfbf95
+Build:                            #2125 / 31805517531 — SUCCESS
+Dependency Review:                #1546 / 31805517697 — SUCCESS
+CodeQL:                           #1706 / 31805517623 — SUCCESS
+PR-safe Production Live:          #600 / 31805517636 — SUCCESS
+accepted squash / deployed SHA:   733a8f5342da6fd5a8c9f8995a2383367145db04
+Pages:                            #264 / 31806002715 — SUCCESS
+Pages deployment ID:              5907193488
+Production Live exact deployment: #601 / 31806002659 — SUCCESS
+master CodeQL:                    #1707 / 31806002667 — SUCCESS
+production artifact:              9221259935
+production digest:                sha256:07f4c3fcb5c0ded81b0c82d954d8de21eb0a2c7fcc6c668f9b3c22a440f21c84
+```
+
+Production Live #601 дождался exact deployment `733a8f...` и на нём прошёл baseline production, Yandex pre-consent, Portfolio Platform, flagship normalization, English Now/Publications, Work with me, P3.4A–F и favicon gates.
+
+Этот цикл закрывает repository-side post-N6 reconciliation, но не имитирует внешний запуск или search impact. **Controlled launch остаётся `not-published`; launch pack остаётся 10 targets / 38 manual drafts; P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — NEXT / WAITING FOR EXTERNAL EVIDENCE.** Clean-URL observation clock не сбрасывается: `2026-08-05T00:00:00Z`. Следующий продуктовый шаг — deliberate manual launch, затем реальные Search Console / Yandex Webmaster observations.
+
 
 ## 0.6 2026-08-14 — N6 full-site editorial UX + bounded copy polish — PRODUCTION ACCEPTED
 
