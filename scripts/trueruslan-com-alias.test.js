@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 
-import {shouldOpenInNewContext} from './link-policy.js';
+import {isAbsoluteSameSiteNavigation, shouldOpenInNewContext} from './link-policy.js';
 
 const WORKER_MODULE = '../infra/cloudflare/trueruslan-com-worker.mjs';
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -16,6 +16,16 @@ async function loadWorker() {
 test('link policy treats trueruslan.com as a same-site host', () => {
   assert.equal(shouldOpenInNewContext('https://trueruslan.com/landing/projects/'), false);
   assert.equal(shouldOpenInNewContext('https://www.trueruslan.com/en/publications/'), false);
+});
+
+test('host-preserving navigation gate rejects absolute same-site anchors', () => {
+  assert.equal(isAbsoluteSameSiteNavigation('https://trueruslan.ru/projects/'), true);
+  assert.equal(isAbsoluteSameSiteNavigation('https://www.trueruslan.ru/projects/'), true);
+  assert.equal(isAbsoluteSameSiteNavigation('https://trueruslan.com/projects/'), true);
+  assert.equal(isAbsoluteSameSiteNavigation('https://www.trueruslan.com/projects/'), true);
+  assert.equal(isAbsoluteSameSiteNavigation('/projects/'), false);
+  assert.equal(isAbsoluteSameSiteNavigation('../projects/'), false);
+  assert.equal(isAbsoluteSameSiteNavigation('https://github.com/True-Ruslan'), false);
 });
 
 test('runtime link policy includes both transparent alias hosts', () => {
