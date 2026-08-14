@@ -61,10 +61,12 @@ test('production homepage verifier follows the C2 fast-scan hierarchy instead of
     'C2 homepage must preserve exactly three selected projects',
     'C2 homepage order drifted after selected work',
     'positive-first homepage collaboration copy is missing',
+    '.tr-bridge-actions__link--primary[href="/work-with-me/"]',
   ]) assert.ok(smoke.includes(literal), `production C2 homepage verifier missing contract: ${literal}`);
 
   assert.doesNotMatch(smoke, /\[data-home-path\]/);
   assert.doesNotMatch(smoke, /#now-title/);
   assert.doesNotMatch(smoke, /homepage primary path count drifted/);
   assert.doesNotMatch(smoke, /primaryPaths:\s*3/);
+  assert.doesNotMatch(smoke, /tr-home-collaboration__action--primary/);
 });
