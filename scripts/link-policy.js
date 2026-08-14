@@ -5,7 +5,12 @@ import * as parse5 from 'parse5';
 
 const EXEMPT_SCHEME = /^(?:mailto|tel|javascript|data):/i;
 const POLICY_REL_TOKENS = new Set(['noopener', 'noreferrer']);
-const SAME_SITE_HOSTS = new Set(['trueruslan.ru', 'www.trueruslan.ru']);
+const SAME_SITE_HOSTS = new Set([
+  'trueruslan.ru',
+  'www.trueruslan.ru',
+  'trueruslan.com',
+  'www.trueruslan.com',
+]);
 const SITE_BASE = 'https://trueruslan.ru/';
 const RUNTIME_SCRIPT_SRC = '_assets/script/link-policy-runtime.js';
 
