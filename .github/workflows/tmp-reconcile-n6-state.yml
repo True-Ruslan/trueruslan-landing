@@ -1,4 +1,4 @@
-name: Temporary N6 reconciliation docs export
+name: Temporary N6 state reconciliation
 
 on:
   push:
@@ -6,24 +6,35 @@ on:
       - docs/reconcile-n6-state
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  export:
+  reconcile:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          persist-credentials: false
-      - name: Upload reconciliation source docs
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: n6-reconciliation-source-docs
-          path: |
-            docs/PROJECT_STATE.md
-            docs/ROADMAP.md
-            docs/CHANGELOG.md
-          if-no-files-found: error
-          retention-days: 1
+          persist-credentials: true
+
+      - name: Apply bounded N6 state patch
+        run: python3 scripts/tmp-reconcile-n6-state.py
+
+      - name: Remove temporary reconciliation helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/tmp-reconcile-n6-state.yml scripts/tmp-reconcile-n6-state.py
+          git diff --check
+          git status --short
+
+      - name: Commit reconciled docs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md .github/workflows/tmp-reconcile-n6-state.yml scripts/tmp-reconcile-n6-state.py
+          git commit -m 'docs: reconcile N6 production acceptance'
+          git push origin HEAD:docs/reconcile-n6-state
