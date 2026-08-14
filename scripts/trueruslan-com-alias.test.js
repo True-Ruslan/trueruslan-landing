@@ -1,9 +1,13 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {fileURLToPath} from 'node:url';
 
 import {shouldOpenInNewContext} from './link-policy.js';
 
 const WORKER_MODULE = '../infra/cloudflare/trueruslan-com-worker.mjs';
+const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 async function loadWorker() {
   return import(WORKER_MODULE);
@@ -12,6 +16,15 @@ async function loadWorker() {
 test('link policy treats trueruslan.com as a same-site host', () => {
   assert.equal(shouldOpenInNewContext('https://trueruslan.com/landing/projects/'), false);
   assert.equal(shouldOpenInNewContext('https://www.trueruslan.com/en/publications/'), false);
+});
+
+test('runtime link policy includes both transparent alias hosts', () => {
+  const runtime = fs.readFileSync(
+    path.join(SCRIPT_DIR, '..', 'docs', '_assets', 'script', 'link-policy-runtime.js'),
+    'utf8',
+  );
+  assert.match(runtime, /['"]trueruslan\.com['"]/);
+  assert.match(runtime, /['"]www\.trueruslan\.com['"]/);
 });
 
 test('transparent alias proxies path and query to the canonical .ru origin', async () => {
@@ -31,8 +44,31 @@ test('transparent alias proxies path and query to the canonical .ru origin', asy
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, 'https://trueruslan.ru/landing/projects/?source=alias');
   assert.equal(calls[0].method, 'GET');
+  assert.equal(calls[0].redirect, 'manual');
   assert.equal(await response.text(), '<html>canonical</html>');
   assert.equal(response.headers.get('content-type'), 'text/html; charset=utf-8');
+});
+
+test('transparent alias does not forward browser credentials to the canonical origin', async () => {
+  const {handleRequest} = await loadWorker();
+  let upstreamRequest;
+  await handleRequest(
+    new Request('https://trueruslan.com/landing/projects/', {
+      headers: {
+        authorization: 'Bearer should-not-cross-origins',
+        cookie: 'alias-session=private',
+        accept: 'text/html',
+      },
+    }),
+    async (request) => {
+      upstreamRequest = request;
+      return new Response('ok');
+    },
+  );
+
+  assert.equal(upstreamRequest.headers.get('authorization'), null);
+  assert.equal(upstreamRequest.headers.get('cookie'), null);
+  assert.equal(upstreamRequest.headers.get('accept'), 'text/html');
 });
 
 test('transparent alias accepts the www alias and HEAD requests', async () => {
@@ -63,6 +99,19 @@ test('canonical-origin redirects are rewritten back to the incoming alias host',
 
   assert.equal(response.status, 301);
   assert.equal(response.headers.get('location'), 'https://trueruslan.com/landing/projects/?normalized=1#top');
+});
+
+test('relative canonical redirects stay on the incoming alias host', async () => {
+  const {handleRequest} = await loadWorker();
+  const response = await handleRequest(
+    new Request('https://www.trueruslan.com/landing/projects'),
+    async () => new Response(null, {
+      status: 301,
+      headers: {location: '/landing/projects/'},
+    }),
+  );
+
+  assert.equal(response.headers.get('location'), 'https://www.trueruslan.com/landing/projects/');
 });
 
 test('external redirects are not rewritten', async () => {
