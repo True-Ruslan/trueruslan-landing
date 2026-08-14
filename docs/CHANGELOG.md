@@ -1,8 +1,18 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-13**, N2–N5 UX/content polish и Engineering Notes reader architecture #229 production-reconciled; controlled launch остаётся `not-published`, P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются открытыми.
+> Обновлено: **2026-08-14**, N6 full-site editorial UX + bounded copy polish production-reconciled; controlled launch остаётся `not-published`, P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются открытыми.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-14 — N6 full-site editorial UX + bounded copy polish — PRODUCTION ACCEPTED
+
+- PR #231 completed the N6A full-site editorial audit: all 50 canonical routes classified; Tier 1 = 14, Tier 2 = 18, Tier 3 = 18; final configured warnings = 0; Onest retained; eight bounded N6C corrections selected. Squash `99af9cd2e9f31f124fb095cd2b7b2b23cc1e2a97`.
+- PR #233 implemented the bounded N6C reader-facing copy set and preserved typography, URLs, registries, workflows, deep case studies and deep Notes architecture. Exact head `513243b7156227888a5ec9f3eecbe3e23939e3bd`; Build #2087 / `31725770799`, Dependency Review #1508 / `31725770759`, CodeQL #1658 / `31725770921` — SUCCESS; initial squash `ec4b0b7ead1117b2bb507e25e517400b36e771a1`.
+- Production Live #561 / `31731621136` and #562 / `31731693651` then exposed one stale verifier contract: RU no-JS correctly used the new Russian labels while the production smoke still required English `Context` in both locales.
+- PR #234 fixed only the verifier and added a regression contract. RED `088dceaea3edba7dfc3115a499fc8af797d99379`: 805 PASS / 1 intended FAIL. GREEN exact head `2f7ad5a11fef85e9d5e88028f6fba05674d4e637`: Build #2089 / `31744917904`, Dependency Review `31744917926`, CodeQL `31744917942` — SUCCESS.
+- PR #234 squash / exact product SHA `635b4a0760765a515277ad8abcbb1500bf646027`: Pages #255 / `31745658299`, Production Live #564 / `31745658315`, deployment-triggered Production Live #565 / `31745724350` and master CodeQL #1662 / `31745658298` — SUCCESS. The previously failing Work with me smoke, P3.4A–F and favicon gates all passed.
+- PR #236 merged the immutable N6 acceptance ledger as `01b4508355c33a81a5e9d1b5f5815a6c37318a9b`; Pages #256 / `31747501445`, Production Live #566 / `31747501412`, #567 / `31747551462` and master CodeQL #1665 / `31747501461` — SUCCESS. PR #235 was closed superseded; no open PR remains from the N6 sequence.
+- No SEO/ranking/engagement/conversion claim is introduced. Controlled launch remains `not-published`; P4.1B remains sparse/in-progress; P4.1C and P3.6 remain waiting; clean-URL clock remains `2026-08-05T00:00:00Z`.
 
 ## 2026-08-13 — Portfolio UX/content polish + Engineering Notes reader architecture — PRODUCTION ACCEPTED
 

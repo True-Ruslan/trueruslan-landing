@@ -1,8 +1,20 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-13**, N2–N5 UX/content polish и Engineering Notes reader architecture #229 production-accepted; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются evidence-gated.
+> Обновлено: **2026-08-14**, N6 full-site editorial UX + bounded copy polish production-accepted; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются evidence-gated.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-14 accepted N6 full-site editorial UX + bounded copy polish
+
+- **N6A full-site audit — DONE / RESEARCH ACCEPTED** via PR #231: 50/50 canonical routes, zero configured final warnings, Onest retained, eight bounded copy corrections selected.
+- **N6C copy polish — DONE / PRODUCT ACCEPTED** via PR #233: bounded RU/EN reader-facing copy only; architecture, URLs, registries, typography and deep content ownership preserved.
+- **Post-merge production verifier regression — CLOSED**: Production Live #561/#562 failed only because the RU no-JS verifier still required English `Context`; deployed RU content matched the accepted N6C copy.
+- **Verifier correction — DONE / PRODUCTION ACCEPTED** via PR #234 / exact product SHA `635b4a0760765a515277ad8abcbb1500bf646027`; Pages #255, Production Live #564/#565 and master CodeQL #1662 are SUCCESS.
+- **Durable N6 acceptance — DONE / PRODUCTION VERIFIED** via PR #236 / `01b4508355c33a81a5e9d1b5f5815a6c37318a9b`; Pages #256, Production Live #566/#567 and master CodeQL #1665 are SUCCESS. Ledger: `docs/acceptance/2026-08-14-n6-editorial-production-acceptance.md`.
+- **N1–N6 presentation/editorial implementation is complete.** Do not start another unguided visual, copy, metadata or internal-link rewrite.
+- **Next product/operator action remains controlled manual launch** using the accepted 10-target / 38-draft launch pack. Repository automation must not post, authenticate, schedule or mutate external publication state.
+- After launch, continue P4.1B only from real authenticated/operator-supplied Search Console / Yandex Webmaster evidence. P4.1C and P3.6 remain evidence-gated; clean-URL clock remains `2026-08-05T00:00:00Z`.
+- Maintenance remains independent: issue #82 is the upstream Diplodoc/markdown-it blocker (next review 2026-08-17); #78 requires fresh cross-repository evidence; #111 and #212 require authenticated operator/external observations.
 
 ## 2026-08-13 accepted Portfolio UX/content polish + Engineering Notes reader architecture
 
