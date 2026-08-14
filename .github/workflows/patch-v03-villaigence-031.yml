@@ -1,0 +1,34 @@
+name: Branch patch VillAIgence v0.3 smoke
+
+on:
+  push:
+    branches:
+      - fix/villaigence-031-case-study
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+
+      - name: Apply fail-closed marker reconciliation
+        run: node scripts/patch-v03-villaigence-031.cjs
+
+      - name: Verify and commit permanent diff
+        run: |
+          git diff --check
+          git diff -- scripts/v03-browser-smoke.cjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/v03-browser-smoke.cjs
+          git rm scripts/patch-v03-villaigence-031.cjs .github/workflows/patch-v03-villaigence-031.yml
+          git commit -m "test: align v0.3 smoke with VillAIgence 0.3.1"
+          git push origin HEAD:fix/villaigence-031-case-study
