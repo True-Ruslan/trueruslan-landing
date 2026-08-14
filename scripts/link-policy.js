@@ -29,6 +29,17 @@ function attrValue(node, name) {
   return node.attrs?.find((attr) => attr.name.toLowerCase() === name)?.value ?? null;
 }
 
+export function isAbsoluteSameSiteNavigation(href) {
+  const value = String(href ?? '').trim();
+  if (!/^https?:\/\//i.test(value)) return false;
+  try {
+    const url = new URL(value);
+    return SAME_SITE_HOSTS.has(url.hostname.toLowerCase());
+  } catch {
+    return false;
+  }
+}
+
 export function shouldOpenInNewContext(href) {
   const value = String(href ?? '').trim();
   if (!value || value.startsWith('#')) return false;
