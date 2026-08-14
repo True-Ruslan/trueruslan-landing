@@ -1,0 +1,42 @@
+name: Post-N6 Docs Reconcile Temp
+
+on:
+  push:
+    branches:
+      - docs/post-n6-reconciliation-2026-08-14
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: docs/post-n6-reconciliation-2026-08-14
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+          check-latest: false
+      - name: Apply reconciliation
+        run: node scripts/reconcile-post-n6-docs-temp.cjs
+      - name: Validate docs diff
+        run: |
+          git diff --check
+          grep -q '733a8f5342da6fd5a8c9f8995a2383367145db04' docs/PROJECT_STATE.md
+          grep -q 'issue #78 закрыт' docs/PROJECT_STATE.md
+          grep -q '#78 and #239 are closed' docs/ROADMAP.md
+          grep -q 'Production Live #601' docs/CHANGELOG.md
+      - name: Remove temporary helper
+        run: rm scripts/reconcile-post-n6-docs-temp.cjs .github/workflows/post-n6-docs-reconcile-temp.yml
+      - name: Commit reconciliation
+        run: |
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md scripts/reconcile-post-n6-docs-temp.cjs .github/workflows/post-n6-docs-reconcile-temp.yml
+          git commit -m 'docs: reconcile post-N6 production state'
+          git push origin HEAD:docs/post-n6-reconciliation-2026-08-14
