@@ -84,6 +84,7 @@ test('Vlezet preserves recognition history while M8.2 is accepted and quality au
   assert.match(history.find(({state}) => state === 'current').title, /M8\.2.*accepted.*merged/i);
   assert.match(history.find(({state}) => state === 'next').title, /testing-policy.*coverage.*M8\.3/i);
 });
+
 test('VillAIgence records official 0.3.1 while installed acceptance remains an explicit separate boundary', () => {
   const evidence = evidenceMap().get('livingworld');
   assert.equal(evidence.lastVerified, '2026-08-14');
@@ -118,6 +119,7 @@ test('VillAIgence records official 0.3.1 while installed acceptance remains an e
   assert.match(history.find(({state}) => state === 'current').title, /0\.3\.1.*installed canary pending/i);
   assert.match(history.find(({state}) => state === 'next').title, /VAI-PCM-MULTI-001.*canary/i);
 });
+
 test('normalized case studies expose current bounded related material and do not promote pending work', () => {
   const livingworldRu = read('docs/landing/projects/livingworld.md');
   const livingworldEn = read('docs/en/projects/livingworld.md');
@@ -130,11 +132,15 @@ test('normalized case studies expose current bounded related material and do not
     'source-tests-to-installed-acceptance',
     'probabilistic-proposals-deterministic-authority',
     'restart-persistence-is-a-product-contract',
-    '0.2.0+1.21.1',
+    '0.3.1+1.21.1',
     '7 PASS / 0 FAIL',
-    'PR #153',
-    'PR #155',
-    'Draft',
+    'PR #165',
+    'PR #167',
+    'VAI-PCM-MULTI-001',
+    'PENDING',
+    '0.4 remains blocked',
+    'installed baseline с завершённой acceptance',
+    'как последний installed baseline с завершённой acceptance',
   ], 'RU VillAIgence case study');
 
   assertIncludesAll(livingworldEn, [
@@ -144,10 +150,14 @@ test('normalized case studies expose current bounded related material and do not
     '../../landing/notes/probabilistic-proposals-deterministic-authority.md',
     '../../landing/notes/restart-persistence-is-a-product-contract.md',
     '../../landing/projects/livingworld.md',
-    '0.2.0+1.21.1',
+    '0.3.1+1.21.1',
     '7 PASS / 0 FAIL',
-    'PR #153',
-    'PR #155',
+    'PR #165',
+    'PR #167',
+    'VAI-PCM-MULTI-001',
+    'PENDING',
+    '0.4 remains blocked',
+    'installed baseline with completed acceptance',
   ], 'EN VillAIgence case study');
   assert.doesNotMatch(
     livingworldEn,

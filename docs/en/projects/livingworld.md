@@ -19,7 +19,7 @@ The internal `LivingWorld / livingworld` names remain compatibility-sensitive en
 <dt>Challenge</dt>
 <dd>Make AI-driven NPCs convincing without giving the model authority over world state, memory or actions.</dd>
 <dt>Result</dt>
-<dd>Official 0.2.0+1.21.1 with bounded installed Memory 2.0 acceptance; later semantic-memory work remains a separate boundary.</dd>
+<dd>Official 0.3.1+1.21.1 is published; the exact installed corrective canary remains PENDING, so release-candidate acceptance is still in progress.</dd>
 <dt>Status</dt>
 <dd><span data-tr-project-status="livingworld"></span></dd>
 </dl>
@@ -61,13 +61,11 @@ Authenticated redirects, unsafe endpoints, malformed JSON, oversized bodies and 
 <!-- case-study:current-state -->
 ## Current lifecycle and acceptance boundary
 
-The public lifecycle remains **release-candidate — ACCEPTANCE IN PROGRESS**. The current official installed release is **0.2.0+1.21.1**; the byte-identical clean-world candidate passed the required installed set at **7 PASS / 0 FAIL**. `VAI-M2-INST-005` remains NOT TESTED / automated evidence only and `VAI-CONCUR-004` remains NOT TESTED / DEFERRED.
+The public lifecycle remains **release-candidate — ACCEPTANCE IN PROGRESS**. The current official release is **0.3.1+1.21.1**. It was published after the bounded targeted Memory 2.0 recall correction in **PR #165**; **PR #167** records the handoff for exact installed corrective acceptance. Automated release and post-release gates pass, but the installed corrective **VAI-PCM-MULTI-001** canary on the retained server world is still **PENDING**.
 
-Post-release source development continued as a separate evidence layer. PR #125 merged bounded PLAYER_TOLD BELIEF candidate extraction without creating an AI-to-FACT authority path. PR #153 merged causal nearby NPC↔NPC social mutation with the full source suite green. These source milestones do not automatically expand installed acceptance.
+The last installed baseline with completed acceptance remains the historical **0.2.0+1.21.1 — 7 PASS / 0 FAIL**. Publishing 0.3.1 does not rewrite that installed evidence and does not imply an installed PASS for the new corrective bytes. **VAI-M2-INST-005** remains NOT TESTED / automated evidence only and **VAI-CONCUR-004** remains NOT TESTED / DEFERRED.
 
-The current development boundary is **Draft PR #155**, the Personality / social snapshot consolidation follow-up. Until its own TDD/review/merge and any separate installed/release acceptance, it remains pending source evidence.
-
-Release identity, source capability and installed gameplay acceptance therefore remain separate facts.
+Until the corrective canary has real installed PASS evidence, **0.4 remains blocked**. Release identity, merged source capability, automated release gates and installed gameplay acceptance remain separate facts.
 
 <!-- case-study:decisions -->
 ## Architecture and key decisions
@@ -136,25 +134,28 @@ Rejected. Deterministic loopback is a protocol/client boundary, not evidence abo
 
 The complete Project Evidence snapshot and timeline remain on the [Russian canonical VillAIgence page](../../landing/projects/livingworld.md). They are generated from shared registries rather than copied into a second English evidence model.
 
-That snapshot now separates historical failures, accepted M11 automation, the official `0.2.0+1.21.1` release, installed **7 PASS / 0 FAIL**, explicit NOT TESTED boundaries, merged PR #123 BELIEF admission and pending Draft/RED PR #125 candidate extraction.
+The current bounded snapshot separates the historical `0.2.0+1.21.1` installed **7 PASS / 0 FAIL** baseline from the official **0.3.1+1.21.1** corrective release. **PR #165** is the targeted Memory 2.0 recall correction, **PR #167** is the installed corrective acceptance handoff, and the exact installed **VAI-PCM-MULTI-001** canary is still **PENDING**. **0.4 remains blocked** until that real installed acceptance exists. Deferred `VAI-M2-INST-005` and `VAI-CONCUR-004` boundaries remain explicit.
 
 <!-- case-study:limitations -->
 ## Known limitations
 
+- the exact installed `VAI-PCM-MULTI-001` canary for official 0.3.1 remains **PENDING**;
 - `VAI-M2-INST-005` remains NOT TESTED / automated evidence only;
 - `VAI-CONCUR-004` remains NOT TESTED / deferred;
 - physical microphone/provider/Voice Chat quality remains observational evidence separate from deterministic protocol tests;
-- PR #125 is Draft/RED and is not accepted extraction behaviour;
-- BELIEF admission does not permit AI→FACT and does not prove extraction quality;
-- publication of 0.2 does not automatically promote the public lifecycle beyond release-candidate;
+- publishing 0.3.1 and passing automated release gates do not prove installed corrective acceptance;
+- semantic BELIEF admission and the recall correction do not permit AI→FACT authority;
+- publication does not automatically promote the public lifecycle beyond release-candidate;
 - Fabric remains the primary package while NeoForge is a compatibility build with separate boundaries.
 
 <!-- case-study:next -->
 ## Next accepted milestone
 
-Complete PR #125 through RED→GREEN while preserving authority: bounded candidate parsing, no second provider request, server-fixed provenance/source identity, fail-soft malformed/empty candidate handling, exactly-once semantic persistence and observed FACT precedence over conflicting BELIEF.
+Run the **exact 0.3.1 installed VAI-PCM-MULTI-001 corrective canary** defined by PR #167.
 
-Only after that boundary is accepted should the roadmap move into trustworthy causal relationship reasons and longer-horizon memory work.
+Install the official `0.3.1+1.21.1` JAR, verify SHA-256 `f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f`, reuse the retained crowded-history world, and execute the exact-text Muammer/Nurey isolation and persistence procedure. Only real installed PASS evidence may close the corrective boundary and unblock 0.4.
+
+Until then the lifecycle remains `release-candidate / ACCEPTANCE IN PROGRESS`; source, release and installed evidence are not collapsed into one status.
 
 <!-- case-study:related -->
 ## Related material

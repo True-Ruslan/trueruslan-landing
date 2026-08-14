@@ -18,7 +18,7 @@
 <dt>Задача</dt>
 <dd>Сделать убедительных AI-NPC, не передавая модели власть над состоянием мира, памятью или действиями.</dd>
 <dt>Результат</dt>
-<dd>Официальный 0.2.0+1.21.1 с bounded installed Memory 2.0 acceptance; следующие semantic-memory изменения остаются отдельными срезами.</dd>
+<dd>Официальный 0.3.1+1.21.1 опубликован; exact installed corrective canary остаётся PENDING, поэтому release-candidate acceptance всё ещё не завершён.</dd>
 <dt>Статус</dt>
 <dd><span data-tr-project-status="livingworld"></span></dd>
 </dl>
@@ -75,13 +75,11 @@ Authenticated redirects, небезопасные endpoint, loopback/SSRF-пут
 <!-- case-study:current-state -->
 ## Текущая lifecycle- и acceptance-граница
 
-Публичный lifecycle остаётся **release-candidate — ACCEPTANCE IN PROGRESS**. Текущий официальный installed release — **0.2.0+1.21.1**; byte-identical clean-world candidate прошёл обязательный installed set **7 PASS / 0 FAIL**. `VAI-M2-INST-005` остаётся NOT TESTED / automated evidence only, `VAI-CONCUR-004` — NOT TESTED / DEFERRED.
+Публичный lifecycle остаётся **release-candidate — ACCEPTANCE IN PROGRESS**. Текущий официальный release — **0.3.1+1.21.1**. Он опубликован после bounded targeted Memory 2.0 recall correction из **PR #165**; **PR #167** зафиксировал handoff для exact installed corrective acceptance. Automated release и post-release gates прошли, но installed corrective **VAI-PCM-MULTI-001** canary на retained server world всё ещё **PENDING**.
 
-После release source development продолжился отдельным evidence layer. PR #125 merged bounded PLAYER_TOLD BELIEF candidate extraction без AI-to-FACT authority. PR #153 merged causal nearby NPC↔NPC social mutation with the full source suite green. Эти source milestones не расширяют installed acceptance автоматически.
+Последний installed baseline с завершённой acceptance остаётся историческим **0.2.0+1.21.1 — 7 PASS / 0 FAIL**. Публикация 0.3.1 не переписывает этот installed evidence и не означает installed PASS для новых corrective bytes. **VAI-M2-INST-005** остаётся NOT TESTED / automated evidence only, **VAI-CONCUR-004** — NOT TESTED / DEFERRED.
 
-Текущий development boundary — **Draft PR #155**, Personality / social snapshot consolidation. До собственного TDD/review/merge и отдельной installed/release acceptance эта работа остаётся pending source evidence.
-
-Так release identity, source capability и installed gameplay acceptance остаются разными фактами.
+До реального installed PASS corrective canary **0.4 remains blocked**. Release identity, merged source capability, automated release gates и installed gameplay acceptance остаются разными фактами.
 
 <!-- case-study:decisions -->
 ## Архитектура и ключевые решения
@@ -224,41 +222,36 @@ Evidence intentionally разделяет:
 - `0.1.21` startup failure и safe rollback;
 - corrective PRs и M11 GameTests/production-JAR gates;
 - PR #110 как merged shared-deadline/exactly-once automation;
-- официальный release `0.2.0+1.21.1`;
-- byte-identical clean-world installed result **7 PASS / 0 FAIL**;
+- официальный `0.2.0+1.21.1` release и byte-identical clean-world installed result **7 PASS / 0 FAIL** как последний installed baseline с завершённой acceptance;
 - `VAI-M2-INST-005` и `VAI-CONCUR-004` как explicit NOT TESTED boundaries;
-- PR #123 как accepted controlled BELIEF admission;
-- PR #125 как pending Draft/RED candidate-extraction work.
+- PR #123 и PR #125 как merged bounded semantic-memory source capabilities без AI→FACT authority;
+- официальный corrective release **0.3.1+1.21.1**;
+- **PR #165** как targeted Memory 2.0 recall correction;
+- **PR #167** как installed corrective acceptance handoff;
+- exact installed **VAI-PCM-MULTI-001** corrective canary как **PENDING**; **0.4 remains blocked** до реального installed PASS.
 
-Статус `verified` относится только к перечисленным scopes и актуальности snapshot. Он не означает, что PR #125 уже принят или что deferred installed cases можно считать пройденными.
+Статус `verified` относится только к перечисленным scopes и актуальности snapshot. Он не превращает опубликованный 0.3.1 в installed acceptance и не позволяет считать deferred/pending cases пройденными.
 
 <!-- case-study:limitations -->
 ## Известные ограничения
 
+- exact installed `VAI-PCM-MULTI-001` canary для официального 0.3.1 остаётся **PENDING**;
 - `VAI-M2-INST-005` остаётся NOT TESTED / AUTOMATED EVIDENCE ONLY;
 - `VAI-CONCUR-004` остаётся NOT TESTED / DEFERRED до доступности двух реальных графических клиентов;
 - physical microphone/provider/Voice Chat quality остаётся отдельным observational layer от deterministic loopback contracts;
-- PR #125 находится в Draft/RED и ещё не является accepted extraction capability;
-- semantic BELIEF admission не разрешает AI→FACT path и не доказывает качество будущего extraction;
-- final promotion beyond `release-candidate` не выводится автоматически из факта публикации `0.2.0`;
+- публикация 0.3.1 и green automated release gates не доказывают installed corrective acceptance;
+- semantic BELIEF admission и recall correction не разрешают AI→FACT path;
+- final promotion beyond `release-candidate` не выводится автоматически из publication или source CI;
 - Fabric остаётся primary package, а NeoForge — compatibility build с отдельными границами проверки.
 
 <!-- case-study:next -->
 ## Следующий принятый шаг
 
-Следующий bounded slice — **PR #125: PLAYER_TOLD BELIEF candidate extraction**.
+Следующий bounded acceptance slice — **exact 0.3.1 installed VAI-PCM-MULTI-001 corrective canary** из PR #167.
 
-Он должен пройти RED→GREEN без расширения authority:
+Нужно установить официальный `0.3.1+1.21.1` JAR, проверить SHA-256 `f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f`, переиспользовать retained crowded-history world и выполнить exact-text Muammer/Nurey isolation + persistence procedure. Только реальный installed PASS может закрыть corrective boundary и разблокировать 0.4.
 
-1. parse bounded candidate statements из существующего structured Chat response;
-2. не делать второй provider request;
-3. фиксировать `PLAYER_TOLD` provenance, owner NPC, current player UUID и persisted source event только на сервере;
-4. fail-soft обрабатывать empty/malformed candidate payload без потери основного dialogue result;
-5. не допускать AI→FACT или прямой parser→store обход admission policy;
-6. доказать exactly-once persistence при retries/replay;
-7. сохранить current observed FACT authoritative над conflicting BELIEF.
-
-После этого roadmap переходит к trustworthy causal relationship memory и long-horizon recall. До отдельного evidence promotion lifecycle остаётся `release-candidate` / `ACCEPTANCE IN PROGRESS`.
+До этого lifecycle остаётся `release-candidate` / `ACCEPTANCE IN PROGRESS`; source, release и installed evidence не схлопываются в один статус.
 
 <!-- case-study:related -->
 ## Связанные материалы
