@@ -63,7 +63,7 @@ Authenticated redirects, unsafe endpoints, malformed JSON, oversized bodies and 
 
 The public lifecycle remains **release-candidate — ACCEPTANCE IN PROGRESS**. The current official release is **0.3.1+1.21.1**. It was published after the bounded targeted Memory 2.0 recall correction in **PR #165**; **PR #167** records the handoff for exact installed corrective acceptance. Automated release and post-release gates pass, but the installed corrective **VAI-PCM-MULTI-001** canary on the retained server world is still **PENDING**.
 
-The last fully accepted installed baseline remains the historical **0.2.0+1.21.1 — 7 PASS / 0 FAIL**. Publishing 0.3.1 does not rewrite that installed evidence and does not imply an installed PASS for the new corrective bytes. **VAI-M2-INST-005** remains NOT TESTED / automated evidence only and **VAI-CONCUR-004** remains NOT TESTED / DEFERRED.
+The last installed baseline with completed acceptance remains the historical **0.2.0+1.21.1 — 7 PASS / 0 FAIL**. Publishing 0.3.1 does not rewrite that installed evidence and does not imply an installed PASS for the new corrective bytes. **VAI-M2-INST-005** remains NOT TESTED / automated evidence only and **VAI-CONCUR-004** remains NOT TESTED / DEFERRED.
 
 Until the corrective canary has real installed PASS evidence, **0.4 remains blocked**. Release identity, merged source capability, automated release gates and installed gameplay acceptance remain separate facts.
 

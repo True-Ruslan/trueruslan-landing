@@ -77,7 +77,7 @@ Authenticated redirects, небезопасные endpoint, loopback/SSRF-пут
 
 Публичный lifecycle остаётся **release-candidate — ACCEPTANCE IN PROGRESS**. Текущий официальный release — **0.3.1+1.21.1**. Он опубликован после bounded targeted Memory 2.0 recall correction из **PR #165**; **PR #167** зафиксировал handoff для exact installed corrective acceptance. Automated release и post-release gates прошли, но installed corrective **VAI-PCM-MULTI-001** canary на retained server world всё ещё **PENDING**.
 
-Последний полностью принятый installed baseline остаётся историческим **0.2.0+1.21.1 — 7 PASS / 0 FAIL**. Публикация 0.3.1 не переписывает этот installed evidence и не означает installed PASS для новых corrective bytes. **VAI-M2-INST-005** остаётся NOT TESTED / automated evidence only, **VAI-CONCUR-004** — NOT TESTED / DEFERRED.
+Последний installed baseline с завершённой acceptance остаётся историческим **0.2.0+1.21.1 — 7 PASS / 0 FAIL**. Публикация 0.3.1 не переписывает этот installed evidence и не означает installed PASS для новых corrective bytes. **VAI-M2-INST-005** остаётся NOT TESTED / automated evidence only, **VAI-CONCUR-004** — NOT TESTED / DEFERRED.
 
 До реального installed PASS corrective canary **0.4 remains blocked**. Release identity, merged source capability, automated release gates и installed gameplay acceptance остаются разными фактами.
 
