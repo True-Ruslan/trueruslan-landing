@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workflow = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'production-live.yml'), 'utf8');
 const smoke = fs.readFileSync(path.join(ROOT, 'scripts', 'production-work-with-me-smoke.cjs'), 'utf8');
+const browserSmoke = fs.readFileSync(path.join(ROOT, 'scripts', 'work-with-me-browser-smoke.cjs'), 'utf8');
 
 function stepBody(name) {
   const marker = `- name: ${name}`;
@@ -64,6 +65,8 @@ test('production homepage verifier follows the C2 fast-scan hierarchy instead of
     '.tr-home-collaboration__action.tr-home-bridge__action--primary',
     'homepage collaboration CTA route drifted',
     'WORK_WITH_ME_EN_URL',
+    'resolvedInternalHref',
+    '.evaluate((anchor) => anchor.href)',
   ]) assert.ok(smoke.includes(literal), `production C2 homepage verifier missing contract: ${literal}`);
 
   assert.doesNotMatch(smoke, /\[data-home-path\]/);
@@ -71,4 +74,12 @@ test('production homepage verifier follows the C2 fast-scan hierarchy instead of
   assert.doesNotMatch(smoke, /homepage primary path count drifted/);
   assert.doesNotMatch(smoke, /primaryPaths:\s*3/);
   assert.doesNotMatch(smoke, /tr-home-collaboration__action--primary/);
+  assert.doesNotMatch(smoke, /new URL\(internalHref,\s*url\)/);
+});
+
+test('local Work with me browser smoke resolves homepage CTAs through the document base URL', () => {
+  assert.match(browserSmoke, /cta\.evaluate\(\(anchor\) => anchor\.href\)/);
+  assert.match(browserSmoke, /new URL\(resolvedHref\)\.pathname !== copy\.route/);
+  assert.doesNotMatch(browserSmoke, /new URL\(href,\s*page\.url\(\)\)/);
+  assert.doesNotMatch(browserSmoke, /workHref:/);
 });
