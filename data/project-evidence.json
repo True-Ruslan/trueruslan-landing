@@ -2,7 +2,7 @@
   {
     "project": "vlezet",
     "status": "verified",
-    "lastVerified": "2026-08-12",
+    "lastVerified": "2026-08-14",
     "versions": [
       {
         "label": "Web application",
@@ -34,15 +34,15 @@
       },
       {
         "label": "Next acceptance boundary",
-        "value": "M8.2 focused manual product-owner retest and explicit acceptance/merge boundary"
+        "value": "Testing-policy + coverage audit, then M8.3 Precision Reference Calibration"
       },
       {
         "label": "Accepted editor slice",
-        "value": "M8.1 — product-owner accepted and merged"
+        "value": "M8.2 — product-owner accepted, protected squash-merged and post-merge verified"
       },
       {
         "label": "Active product slice",
-        "value": "M8.2 precision drawing and structural editing — Draft; focused manual product-owner retest pending"
+        "value": "M8.2 complete; project-wide testing-policy + coverage audit is current engineering priority before M8.3"
       }
     ],
     "signals": [
@@ -121,18 +121,27 @@
       {
         "kind": "pr",
         "mode": "automated",
-        "label": "M8.2 precision drawing and structural editing Draft PR #87",
-        "state": "pending",
+        "label": "M8.2 precision drawing and structural editing PR #87",
+        "state": "merged",
         "url": "https://github.com/True-Ruslan/vlezet/pull/87",
-        "observedAt": "2026-08-12",
-        "scope": "PR #87 remains Draft on exact head 789f1de8eae92eebc8988a41f07439927431fb8b. The original seven product-owner scenarios passed; follow-up source work covers connected-wall/whole-room clipboard behavior, precise room/composite selection semantics and direct room translation. Automated evidence is green: dotnet test 693 passed, npm test 353 passed, CI #5021 PASS and Browser Acceptance #1471 PASS in Chromium/WebKit with artifact 9129992269 (sha256:8b48c9b29087c9442538ebf7888051c27e8c5f369566a5e7f61c14e1dba3ea44). Focused manual product-owner retest remains pending; no merge, release, lifecycle promotion or acceptance is claimed."
+        "observedAt": "2026-08-13",
+        "scope": "PR #87 completed M8.2 with explicit product-owner acceptance after the final three-scenario door-UX retest passed. The accepted delivery head passed exact-head CI plus Chromium/WebKit Browser Acceptance and was protected squash-merged as e323e331a435ae356b91decbdea80dde95028d8a. Post-merge CI #5097 and CodeQL run 31683756298 passed. Vlezet remains pre-production; this is acceptance of the M8.2 editor slice, not a public-beta release claim."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M8.2 post-merge truth reconciliation PR #88",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/88",
+        "observedAt": "2026-08-13",
+        "scope": "PR #88 reconciled canonical project state after the already accepted M8.2 protected merge. M8.3 is technically unblocked, but the project-wide testing-policy and coverage audit requested by the product owner remains the current engineering priority before further product work."
       }
     ]
   },
   {
     "project": "livingworld",
     "status": "verified",
-    "lastVerified": "2026-08-12",
+    "lastVerified": "2026-08-14",
     "versions": [
       {
         "label": "Public name",
@@ -160,7 +169,11 @@
       },
       {
         "label": "Current official release",
-        "value": "0.2.0+1.21.1"
+        "value": "0.3.1+1.21.1"
+      },
+      {
+        "label": "Current 0.3.1 acceptance",
+        "value": "automated release gates PASS; installed corrective VAI-PCM-MULTI-001 canary PENDING"
       },
       {
         "label": "Installed 0.2.0 result",
@@ -176,11 +189,11 @@
       },
       {
         "label": "Active development slice",
-        "value": "0.3 release convergence planning complete — explicit release-request/candidate creation is next; no 0.3 publication/install claim"
+        "value": "0.3.1 corrective installed VAI-PCM-MULTI-001 canary pending; do not start 0.4 before real installed evidence"
       },
       {
         "label": "Latest merged source capability",
-        "value": "0.3 dialogue/personality integration and release convergence contract — PR #160 merged"
+        "value": "0.3.1 bounded targeted Memory 2.0 recall correction and published corrective release"
       }
     ],
     "signals": [
@@ -354,13 +367,40 @@
         "url": "https://github.com/True-Ruslan/villAIgence/pull/160",
         "observedAt": "2026-08-12",
         "scope": "PR #160 merged the 0.3 release convergence contract at 03ccb2d5d047ca551a5ac6be6b927de4404f09cf. Repository security #2498, CI #2862, Production Soak #509 and release dry-run #842 passed; github-release publication was skipped. Planned candidate identity is 0.3.0+1.21.1, but docs/releases/NEXT_RELEASE.txt and the immutable official installed baseline remain 0.2.0+1.21.1. This is not a 0.3 release or installed-acceptance claim."
+      },
+      {
+        "kind": "release",
+        "mode": "automated",
+        "label": "Official 0.3.1+1.21.1 corrective release",
+        "state": "published",
+        "url": "https://github.com/True-Ruslan/villAIgence/releases/tag/0.3.1%2B1.21.1",
+        "observedAt": "2026-08-13",
+        "scope": "Official 0.3.1+1.21.1 is published from immutable release commit bc7c68ac2f3a4f761aa3b03a2f5c1fe1201745ab. The Fabric JAR SHA-256 is f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f. Automated release and post-release acceptance are green, but installed corrective VAI-PCM-MULTI-001 remains pending; lifecycle therefore stays release-candidate / ACCEPTANCE IN PROGRESS."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "0.3.1 targeted Memory 2.0 recall correction PR #165",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/165",
+        "observedAt": "2026-08-13",
+        "scope": "PR #165 restored bounded query-aware recall for retained older eligible Memory 2.0 dialogue while preserving NPC/player isolation and the existing 32-candidate and 6-entry prompt bounds. Automated CI, security, production soak, persistence recovery, GameTests, supported-loader builds and release dry-run passed. Installed VAI-PCM-MULTI-001 was explicitly left pending the official 0.3.1 JAR."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "0.3.1 installed corrective acceptance handoff PR #167",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/167",
+        "observedAt": "2026-08-14",
+        "scope": "PR #167 records the exact 0.3.1 release identity and the remaining installed corrective canary procedure. It preserves the retained 0.3.0 world/history, uses exact text as the decisive retrieval oracle, keeps cross-NPC isolation and duplicate-persistence checks, and explicitly leaves VAI-M2-INST-005 and VAI-CONCUR-004 deferred. No installed PASS is claimed before real server evidence exists."
       }
     ]
   },
   {
     "project": "node-zero",
     "status": "stale",
-    "lastVerified": "2026-07-14",
+    "lastVerified": "2026-08-14",
     "versions": [
       {
         "label": "Unity",
@@ -395,13 +435,21 @@
         "state": "pending",
         "observedAt": "2026-07-22",
         "scope": "Текущий player-foundation остаётся draft milestone. Для него пока не заявлены как проверенные executable gates: Unity validation, EditMode и PlayMode execution, Windows IL2CPP build и graybox launch, gameplay acceptance, allocation checks и воспроизведение из fresh clone."
+      },
+      {
+        "kind": "manual",
+        "mode": "manual",
+        "label": "Stale-evidence review — no new private acceptance evidence",
+        "state": "unavailable",
+        "observedAt": "2026-08-14",
+        "scope": "The controlled snapshot was explicitly reviewed for freshness. No new authoritative private-repository or executable acceptance evidence is available in the portfolio evidence boundary, so the project remains stale / REVIEW REQUIRED and no lifecycle, version or acceptance claim is promoted. The July production-foundation acceptance remains the last positive executable evidence."
       }
     ]
   },
   {
     "project": "portfolio-platform",
     "status": "verified",
-    "lastVerified": "2026-08-12",
+    "lastVerified": "2026-08-14",
     "versions": [
       {
         "label": "Delivery model",
@@ -441,11 +489,11 @@
       },
       {
         "label": "Current production baseline",
-        "value": "master 80195a39ac40cb5f8c97d1f8ea8bbd1f3d744613 — launch/discovery + maintenance evidence production accepted"
+        "value": "master f0e489d75f5bcb1f64057e1046faad877bf3f952 — N6 product accepted and canonical state reconciled"
       },
       {
         "label": "Search Discovery",
-        "value": "P4.1A READY — 11 strategic surfaces / 21 clean routes / 0 findings / externalEvidence=not-collected; P4.1B NEXT"
+        "value": "P4.1A READY; P4.1B IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; controlled launch not-published; P4.1C WAITING"
       }
     ],
     "signals": [
@@ -565,6 +613,24 @@
         "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/31583969801",
         "observedAt": "2026-08-12",
         "scope": "Post-merge CodeQL #1449 completed SUCCESS on exact master 80195a39ac40cb5f8c97d1f8ea8bbd1f3d744613. It proves the configured JavaScript/TypeScript security analysis for that source identity; it does not substitute for deployment or external search evidence."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "N6 production verifier correction PR #234",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/234",
+        "observedAt": "2026-08-14",
+        "scope": "PR #234 corrected the stale locale contract in the deployed Work with me no-JS smoke after N6C. Exact product SHA 635b4a0760765a515277ad8abcbb1500bf646027 passed Pages #255, Production Live #564/#565 and master CodeQL #1662, including the previously failing Work with me smoke. This is product/deployment evidence only, not search or engagement evidence."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "N6 durable state reconciliation PR #237",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/237",
+        "observedAt": "2026-08-14",
+        "scope": "PR #237 reconciled PROJECT_STATE, ROADMAP and CHANGELOG with the production-accepted N6 editorial programme. Squash f0e489d75f5bcb1f64057e1046faad877bf3f952 passed post-merge Pages #257, Production Live #568/#569 and master CodeQL #1667. Controlled launch remains not-published; P4.1B stays sparse/in progress and P4.1C/P3.6 remain external-evidence gated."
       }
     ]
   }

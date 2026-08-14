@@ -78,13 +78,27 @@
     "date": "2026-08",
     "title": "0.3 release convergence contract merged — release not published",
     "description": "PRs #158/#159/#160 advanced personality/social dialogue source integration and defined the 0.3 release convergence contract. All referenced source/security/soak/dry-run gates passed, but release publication was skipped. Official installed acceptance remains 0.2.0+1.21.1 at 7 PASS / 0 FAIL with explicit NOT TESTED boundaries.",
-    "state": "current",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/villAIgence/pull/160"
   },
   {
     "date": "NEXT",
     "title": "Create explicit 0.3 release-request/candidate",
     "description": "Create the separate 0.3.0+1.21.1 release-request/candidate only through the repository release contract. A later tag/release and installed acceptance must use exact-artifact and installed gates; no source convergence evidence may promote 0.3 automatically.",
-    "state": "next"
+    "state": "past"
+  },
+  {
+    "date": "2026-08",
+    "title": "0.3.1 corrective release published — installed canary pending",
+    "description": "Official 0.3.1+1.21.1 is published after the bounded targeted Memory 2.0 recall correction. Automated release and post-release gates are green, but the exact installed VAI-PCM-MULTI-001 corrective canary is still pending on the retained server world. The project therefore remains release-candidate / ACCEPTANCE IN PROGRESS; no installed-acceptance or 0.4 claim is made.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/167"
+  },
+  {
+    "date": "NEXT",
+    "title": "Run exact 0.3.1 installed VAI-PCM-MULTI-001 corrective canary",
+    "description": "Install the official 0.3.1+1.21.1 JAR, verify SHA-256 f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f, reuse the retained crowded-history world and execute the exact-text Muammer/Nurey isolation and persistence procedure from PR #167. Only real installed PASS evidence may close the 0.3 corrective boundary and unblock 0.4.",
+    "state": "next",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/167"
   }
 ]
