@@ -140,6 +140,7 @@ test('normalized case studies expose current bounded related material and do not
     'PENDING',
     '0.4 remains blocked',
     'installed baseline с завершённой acceptance',
+    'как последний installed baseline с завершённой acceptance',
   ], 'RU VillAIgence case study');
 
   assertIncludesAll(livingworldEn, [
