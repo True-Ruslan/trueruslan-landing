@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 
-import {isAbsoluteSameSiteNavigation, shouldOpenInNewContext} from './link-policy.js';
+import {applyLinkPolicy, isAbsoluteSameSiteNavigation, shouldOpenInNewContext} from './link-policy.js';
 
 const WORKER_MODULE = '../infra/cloudflare/trueruslan-com-worker.mjs';
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -26,6 +26,25 @@ test('host-preserving navigation gate rejects absolute same-site anchors', () =>
   assert.equal(isAbsoluteSameSiteNavigation('/projects/'), false);
   assert.equal(isAbsoluteSameSiteNavigation('../projects/'), false);
   assert.equal(isAbsoluteSameSiteNavigation('https://github.com/True-Ruslan'), false);
+});
+
+test('build-time link policy keeps same-site navigation on the current hostname', () => {
+  const html = [
+    '<!doctype html><html><head>',
+    '<link rel="canonical" href="https://trueruslan.ru/projects/">',
+    '<link rel="alternate" hreflang="en" href="https://trueruslan.ru/en/projects/">',
+    '</head><body>',
+    '<a href="https://trueruslan.ru/projects/?source=nav#work">Projects</a>',
+    '<a href="https://www.trueruslan.com/en/about/">About</a>',
+    '</body></html>',
+  ].join('');
+
+  const output = applyLinkPolicy(html);
+
+  assert.match(output, /<a href="\/projects\/\?source=nav#work">Projects<\/a>/);
+  assert.match(output, /<a href="\/en\/about\/">About<\/a>/);
+  assert.match(output, /<link rel="canonical" href="https:\/\/trueruslan\.ru\/projects\/">/);
+  assert.match(output, /<link rel="alternate" hreflang="en" href="https:\/\/trueruslan\.ru\/en\/projects\/">/);
 });
 
 test('runtime link policy includes both transparent alias hosts', () => {
