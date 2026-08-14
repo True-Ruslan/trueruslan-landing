@@ -29,7 +29,7 @@ test('VillAIgence public identity preserves the stable livingworld route', () =>
   assert.equal(project.statusLabel, 'ACCEPTANCE IN PROGRESS');
 });
 
-test('VillAIgence page keeps installed 0.2 acceptance separate from current post-release source work', () => {
+test('VillAIgence page separates published 0.3.1 from pending installed corrective acceptance', () => {
   const page = fs.readFileSync(PAGE_PATH, 'utf8');
 
   assert.match(page, /^# VillAIgence/m);
@@ -39,14 +39,19 @@ test('VillAIgence page keeps installed 0.2 acceptance separate from current post
   assert.match(page, /0\.1\.21\+1\.21\.1[\s\S]{0,300}startup/i);
   assert.match(page, /0\.2\.0\+1\.21\.1/);
   assert.match(page, /7 PASS \/ 0 FAIL/);
+  assert.match(page, /0\.3\.1\+1\.21\.1/);
+  assert.match(page, /PR #165/);
+  assert.match(page, /PR #167/);
+  assert.match(page, /VAI-PCM-MULTI-001/);
+  assert.match(page, /PENDING/);
+  assert.match(page, /0\.4 remains blocked/i);
   assert.match(page, /VAI-M2-INST-005/);
   assert.match(page, /VAI-CONCUR-004/);
   assert.match(page, /PR #125[\s\S]{0,700}(merged|BELIEF)/i);
-  assert.match(page, /PR #153[\s\S]{0,700}(causal|social)/i);
-  assert.match(page, /PR #155[\s\S]{0,700}(Draft|Personality|social snapshot)/i);
   assert.match(page, /SYSTEM_OBSERVED/);
   assert.match(page, /LivingWorld\s*\/\s*livingworld[\s\S]{0,220}compatib/i);
-  assert.doesNotMatch(page, /PR #155[^\n]{0,180}(production-ready|fully accepted)/i);
+  assert.match(page, /release-candidate[^\n]{0,120}ACCEPTANCE IN PROGRESS/i);
+  assert.doesNotMatch(page, /0\.3\.1[^\n]{0,220}(production-ready|fully accepted|полностью принят)/i);
 });
 
 test('VillAIgence timeline keeps installed 0.2 historical while 0.3.1 corrective acceptance is current', () => {
@@ -72,6 +77,7 @@ test('VillAIgence timeline keeps installed 0.2 historical while 0.3.1 corrective
   assert.match(next[0].description, /Only real installed PASS evidence/i);
   assert.match(next[0].description, /unblock 0\.4/i);
 });
+
 test('VillAIgence evidence separates official 0.3.1 release from pending installed corrective acceptance', () => {
   const evidence = readJson(EVIDENCE_PATH).find(({project}) => project === 'livingworld');
 
@@ -111,6 +117,7 @@ test('VillAIgence evidence separates official 0.3.1 release from pending install
   assert.match(handoff.scope, /No installed PASS is claimed/i);
   assert.match(handoff.scope, /VAI-M2-INST-005.*VAI-CONCUR-004/i);
 });
+
 test('VillAIgence metadata uses the stable public route', () => {
   const meta = readJson(META_PATH).find(({path: route}) => route === 'landing/projects/livingworld.html');
 
