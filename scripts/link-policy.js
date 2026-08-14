@@ -40,6 +40,14 @@ export function isAbsoluteSameSiteNavigation(href) {
   }
 }
 
+function hostPreservingSameSiteHref(href) {
+  const value = String(href ?? '').trim();
+  if (!isAbsoluteSameSiteNavigation(value)) return href;
+
+  const url = new URL(value);
+  return `${url.pathname || '/'}${url.search}${url.hash}`;
+}
+
 export function shouldOpenInNewContext(href) {
   const value = String(href ?? '').trim();
   if (!value || value.startsWith('#')) return false;
@@ -86,11 +94,14 @@ function stripPolicyRelTokens(value) {
     .join(' ');
 }
 
-function renderAnchorStartTag(node, {newContext}) {
+function renderAnchorStartTag(node, {newContext, href}) {
   const currentRel = attrValue(node, 'rel');
   const attrs = (node.attrs ?? [])
     .filter((attr) => !['target', 'rel'].includes(attr.name.toLowerCase()))
-    .map((attr) => ({name: attr.name, value: attr.value}));
+    .map((attr) => ({
+      name: attr.name,
+      value: attr.name.toLowerCase() === 'href' ? href : attr.value,
+    }));
 
   if (newContext) {
     attrs.push({name: 'target', value: '_blank'});
@@ -109,15 +120,17 @@ function collectAnchorReplacements(node, replacements) {
     const href = attrValue(node, 'href');
     const startTag = node.sourceCodeLocation?.startTag;
     if (startTag) {
-      const newContext = shouldOpenInNewContext(href);
+      const normalizedHref = hostPreservingSameSiteHref(href);
+      const newContext = shouldOpenInNewContext(normalizedHref);
       const target = attrValue(node, 'target');
       const rel = attrValue(node, 'rel');
       const hasPolicyRel = String(rel ?? '').split(/\s+/).some((token) => POLICY_REL_TOKENS.has(token.toLowerCase()));
-      if (newContext || target || hasPolicyRel) {
+      const hrefChanged = normalizedHref !== href;
+      if (hrefChanged || newContext || target || hasPolicyRel) {
         replacements.push({
           start: startTag.startOffset,
           end: startTag.endOffset,
-          value: renderAnchorStartTag(node, {newContext}),
+          value: renderAnchorStartTag(node, {newContext, href: normalizedHref}),
         });
       }
     }
