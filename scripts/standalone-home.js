@@ -67,7 +67,7 @@ const HOME_COPY = Object.freeze({
       text: 'Помогаю с backend-сервисами, интеграциями, архитектурными разборами, AI-инструментами и техническим наставничеством. Если задача похожа — можно сразу посмотреть форматы работы и написать напрямую.',
       availability: 'Текущая доступность',
       action: 'Посмотреть форматы работы →',
-      handoff: 'Написать напрямую',
+      handoff: 'Написать напрямую →',
     }),
     flagshipCta: 'Открыть проект →',
     tagsLabel: 'Технологии и направления',
@@ -114,7 +114,7 @@ const HOME_COPY = Object.freeze({
       text: 'I help with backend services, integrations, architecture reviews, AI tooling and technical mentoring. If that matches the problem, you can review the available formats and contact me directly.',
       availability: 'Current availability',
       action: 'Review work formats →',
-      handoff: 'Contact me directly',
+      handoff: 'Contact me directly →',
     }),
     flagshipCta: 'Open project →',
     tagsLabel: 'Technologies and areas',
@@ -172,19 +172,21 @@ export function renderHomepageCollaborationSummary(collaboration, locale = 'ru')
   const workWithMeHref = locale === 'en' ? 'en/work-with-me.html' : 'landing/work-with-me.html';
   const directHref = value.contact.telegram;
   const status = value.availability.engineering;
+  const statusLabel = collaborationStatusLabel(status);
 
-  return `<section class="tr-home-section tr-home-collaboration" data-home-collaboration="true" aria-labelledby="home-collaboration-${escapeHtml(locale)}-title">
-  <div class="tr-home-collaboration__copy">
-    <p class="tr-home-collaboration__eyebrow">${escapeHtml(copy.eyebrow)}</p>
+  return `<section class="tr-home-section tr-home-bridge tr-home-collaboration" data-home-collaboration="true" aria-labelledby="home-collaboration-${escapeHtml(locale)}-title">
+  <div class="tr-home-bridge__copy tr-home-collaboration__copy">
+    <p class="tr-home-bridge__eyebrow tr-home-collaboration__eyebrow">${escapeHtml(copy.eyebrow)}</p>
     <h2 id="home-collaboration-${escapeHtml(locale)}-title">${escapeHtml(copy.title)}</h2>
-    <p>${escapeHtml(copy.text)}</p>
+    <p class="tr-home-collaboration__description">${escapeHtml(copy.text)}</p>
+    <p class="tr-home-collaboration__availability" aria-label="${escapeHtml(copy.availability)}: ${escapeHtml(statusLabel)}">
+      <span>${escapeHtml(copy.availability)}</span>
+      <strong data-tr-collaboration-home-availability data-status="${escapeHtml(status)}">${escapeHtml(statusLabel)}</strong>
+    </p>
   </div>
-  <div class="tr-home-collaboration__meta">
-    <p><span>${escapeHtml(copy.availability)}:</span> <strong data-tr-collaboration-home-availability data-status="${escapeHtml(status)}">${escapeHtml(collaborationStatusLabel(status))}</strong></p>
-    <div class="tr-home-collaboration__actions">
-      <a class="tr-home-collaboration__action tr-home-collaboration__action--primary" href="${escapeHtml(workWithMeHref)}">${escapeHtml(copy.action)}</a>
-      <a class="tr-home-collaboration__action" href="${escapeHtml(directHref)}">${escapeHtml(copy.handoff)}</a>
-    </div>
+  <div class="tr-home-bridge__actions tr-home-collaboration__actions">
+    <a class="tr-home-bridge__action tr-home-bridge__action--primary tr-home-collaboration__action" href="${escapeHtml(workWithMeHref)}">${escapeHtml(copy.action)}</a>
+    <a class="tr-home-bridge__action tr-home-collaboration__action" href="${escapeHtml(directHref)}">${escapeHtml(copy.handoff)}</a>
   </div>
 </section>`;
 }

@@ -138,6 +138,12 @@ test('renderStandaloneHome injects the C2 fast-scan structure without Diplodoc r
   assert.equal(count(html, 'data-home-bridge="experience"'), 1);
   assert.equal(count(html, 'data-home-bridge="writing"'), 1);
   assert.equal(count(html, 'data-home-collaboration='), 1);
+  assert.match(html, /class="tr-home-section tr-home-bridge tr-home-collaboration"/);
+  assert.match(html, /class="tr-home-bridge__eyebrow tr-home-collaboration__eyebrow"/);
+  assert.match(html, /class="tr-home-bridge__actions tr-home-collaboration__actions"/);
+  assert.match(html, /class="tr-home-bridge__action tr-home-bridge__action--primary tr-home-collaboration__action" href="landing\/work-with-me\.html"/);
+  assert.match(html, /data-tr-collaboration-home-availability data-status="limited">LIMITED<\/strong>/);
+  assert.doesNotMatch(html, /tr-home-collaboration__meta/);
   assert.equal(count(html, 'data-home-bridge="personal"'), 1);
   assert.doesNotMatch(html, /data-home-flagship="vlezet"|NODE ZERO/);
   assert.doesNotMatch(html, /Memory 2\.0|Performance|\{\{HOME_/);
