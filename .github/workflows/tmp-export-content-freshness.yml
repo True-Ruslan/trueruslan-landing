@@ -1,4 +1,4 @@
-name: Temporary content freshness export
+name: Temporary content freshness reconciliation
 
 on:
   push:
@@ -6,26 +6,35 @@ on:
       - maintenance/content-freshness-2026-08-14
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  export:
+  reconcile:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          persist-credentials: false
-      - name: Upload canonical freshness sources
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: content-freshness-sources
-          path: |
-            data/project-evidence.json
-            data/projects.json
-            data/project-history
-            scripts/content-freshness-guard.cjs
-            scripts/content-freshness-guard.test.cjs
-          if-no-files-found: warn
-          retention-days: 1
+          persist-credentials: true
+
+      - name: Apply bounded freshness reconciliation
+        run: python3 scripts/tmp-content-freshness-reconcile.py
+
+      - name: Remove temporary helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/tmp-export-content-freshness.yml scripts/tmp-content-freshness-reconcile.py
+          git diff --check
+          git status --short
+
+      - name: Commit reconciled evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/project-evidence.json data/project-history/livingworld.json data/project-history/vlezet.json data/project-history/portfolio-platform.json
+          git commit -m 'docs: reconcile project freshness evidence'
+          git push origin HEAD:maintenance/content-freshness-2026-08-14
