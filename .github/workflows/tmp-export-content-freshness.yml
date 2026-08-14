@@ -1,0 +1,31 @@
+name: Temporary content freshness export
+
+on:
+  push:
+    branches:
+      - maintenance/content-freshness-2026-08-14
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Upload canonical freshness sources
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: content-freshness-sources
+          path: |
+            data/project-evidence.json
+            data/projects.json
+            data/project-history
+            scripts/content-freshness-guard.cjs
+            scripts/content-freshness-guard.test.cjs
+          if-no-files-found: warn
+          retention-days: 1
