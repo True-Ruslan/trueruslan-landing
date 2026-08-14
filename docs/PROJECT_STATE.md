@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-13**, Portfolio UX/content polish N2–N5 и Engineering Notes reader architecture #229 production-accepted на exact deployed SHA `1a0db35795aea1ea966e1452bcdb106bb5419ba1`; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C — WAITING.
+> Последнее смысловое обновление: **2026-08-14**, N6 full-site editorial UX + bounded copy polish production-accepted на exact product SHA `635b4a0760765a515277ad8abcbb1500bf646027`; durable acceptance #236 production-verified на `01b4508355c33a81a5e9d1b5f5815a6c37318a9b`; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C — WAITING.
 >
 > Durable snapshot: что представляет собой проект, что принято, чем это доказано, какие границы остаются и что делать дальше.
 
@@ -12,6 +12,38 @@
 4. `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
 
 Repository readiness, generated artifact, deployed production, search-engine observation и external-product acceptance остаются разными фактами.
+
+## 0.6 2026-08-14 — N6 full-site editorial UX + bounded copy polish — PRODUCTION ACCEPTED
+
+N6 завершил полный editorial/reader-quality проход по сайту без повторного открытия site architecture, Onest typography, canonical URLs, navigation/search ownership, canonical registries, analytics или external search-evidence semantics.
+
+### N6A audit + N6C bounded implementation
+
+- **N6A full-site editorial UX audit — DONE / RESEARCH ACCEPTED** via PR #231 / squash `99af9cd2e9f31f124fb095cd2b7b2b23cc1e2a97`: 50/50 canonical routes resolved; Tier 1 = 14, Tier 2 = 18, Tier 3 = 18; final configured automated warnings = 0; Onest = KEEP; exactly 8 bounded copy corrections selected.
+- **N6C editorial copy polish — DONE / PRODUCT ACCEPTED** via PR #233 / initial deployed SHA `ec4b0b7ead1117b2bb507e25e517400b36e771a1`: bounded RU Projects / Work with me / About / Materials / Publications / Notes hub plus EN Projects / About copy only. No typography, URL, registry, workflow, deep-case-study or deep-Note architecture change.
+- The first two post-merge Production Live runs (#561 / `31731621136`, #562 / `31731693651`) exposed a **stale verifier contract**, not a production-content regression: RU no-JS had the accepted translated labels while `production-work-with-me-smoke.cjs` still required the old English token `Context` for both locales.
+- **Verifier correction — DONE / PRODUCTION ACCEPTED** via PR #234. TDD RED commit `088dceaea3edba7dfc3115a499fc8af797d99379`: Build `31744750885` failed exactly one new regression contract (805 PASS / 1 intended FAIL). GREEN exact head `2f7ad5a11fef85e9d5e88028f6fba05674d4e637`: Build #2089 / `31744917904`, Dependency Review `31744917926`, CodeQL `31744917942` — SUCCESS with no new Advanced Security alerts.
+
+### Exact production acceptance
+
+```text
+PR #234 squash / product SHA:    635b4a0760765a515277ad8abcbb1500bf646027
+Pages:                           #255 / 31745658299 — SUCCESS
+Pages deployment ID:             5896352977
+Production Live push:            #564 / 31745658315 — SUCCESS
+Production Live workflow_run:    #565 / 31745724350 — SUCCESS
+master CodeQL:                   #1662 / 31745658298 — SUCCESS
+quality artifact:                9198759058
+quality digest:                  sha256:2802631b5c10fb2d8c8359801ad8ba15e8ab0a7a728aadab6445b55cfef15993
+production artifact:             9198954485
+production digest:               sha256:a30b2e8cb15b7b00ebd22dc2b18a8f2f9d0f1c2eb970006db6c6dff1ad750b4c
+```
+
+Deployment-triggered Production Live #565 passed the previously failing Work with me smoke together with P3.4A–F and favicon verification. Durable ledger: `docs/acceptance/2026-08-14-n6-editorial-production-acceptance.md`.
+
+The durable acceptance itself was merged by PR #236 / `01b4508355c33a81a5e9d1b5f5815a6c37318a9b`; post-merge Pages #256 / `31747501445`, Production Live push #566 / `31747501412`, deployment-triggered Production Live #567 / `31747551462` and master CodeQL #1665 / `31747501461` are SUCCESS. PR #235 was closed as superseded; open PR count returned to zero.
+
+N6 closes the selected editorial implementation sequence, not external product/search impact. **Controlled launch remains `not-published`; P4.1B remains IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C remains WAITING; P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE.** Clean-URL observation clock remains `2026-08-05T00:00:00Z`. No further unguided visual/SEO rewrite is justified before the already-prepared deliberate manual launch and subsequent real Search Console / Yandex Webmaster observations.
 
 ## 0.5 2026-08-13 — Portfolio UX/content polish + Engineering Notes reader architecture — PRODUCTION ACCEPTED
 
