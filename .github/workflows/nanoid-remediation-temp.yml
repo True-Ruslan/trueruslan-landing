@@ -1,0 +1,45 @@
+name: Nanoid Remediation Temp
+
+on:
+  push:
+    branches:
+      - security/nanoid-3.3.18
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate-lockfile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Apply remediation and regenerate lockfile
+        run: |
+          node scripts/nanoid-3318-remediation.cjs
+          npm install --package-lock-only --ignore-scripts
+          npm ci
+          node --test scripts/dependency-security.test.js
+
+      - name: Remove temporary automation
+        run: |
+          rm scripts/nanoid-3318-remediation.cjs
+          rm .github/workflows/nanoid-remediation-temp.yml
+
+      - name: Verify and commit
+        run: |
+          git diff --check
+          git status --short
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: remediate nanoid GHSA-2v37-7h3g-55p8"
+          git push origin HEAD:security/nanoid-3.3.18
