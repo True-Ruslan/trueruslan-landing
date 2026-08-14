@@ -146,7 +146,7 @@ async function verifyHomepage(page, url, locale) {
     assert(await page.locator('footer a[href*="contacts"]').count() >= 1, 'ru: secondary Contacts destination missing from footer');
   }
 
-  const internalCta = page.locator('.tr-home-collaboration__action--primary').first();
+  const internalCta = page.locator('.tr-bridge-actions__link--primary[href="/work-with-me/"]').first();
   assert(await internalCta.count() === 1, `${locale}: homepage collaboration primary CTA missing`);
   assert(!(await internalCta.getAttribute('target')), `${locale}: internal homepage CTA must stay in current tab`);
 
