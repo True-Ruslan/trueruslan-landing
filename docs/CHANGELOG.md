@@ -1,8 +1,20 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-14**, N6 full-site editorial UX + bounded copy polish production-reconciled; controlled launch остаётся `not-published`, P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются открытыми.
+> Обновлено: **2026-08-14**, post-N6 evidence/security/flagship/production-verifier reconciliation production-accepted на `733a8f5342da6fd5a8c9f8995a2383367145db04`; controlled launch остаётся `not-published`, P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются открытыми.
 >
 > Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-14 — Post-N6 evidence/security/flagship/production verifier reconciliation — PRODUCTION ACCEPTED
+
+- PR #238 reconciled volatile project evidence and stale browser expectations; a clean Content Freshness rerun ended with 0 findings and closed issue #78.
+- PR #240 reconciled VillAIgence case-study truth to official release `0.3.1+1.21.1` while preserving `Release Candidate / ACCEPTANCE IN PROGRESS`, the pending exact installed corrective canary and the historical accepted `0.2.0+1.21.1` installed baseline.
+- PR #241 aligned the homepage Work with me bridge with the accepted C2 visual system without changing canonical routes or collaboration semantics.
+- PR #242 remediated the newly effective nanoid high-severity advisory with the minimal `3.3.18` patch, regenerated the lockfile and closed #239. The six known markdown-it moderate records remain isolated under upstream blocker #82.
+- PRs #243/#244 repaired stale production Work with me selectors/contracts. Deployment-bound verification then exposed one EN-only verifier bug: raw `href="en/work-with-me/"` was rebased against the page URL instead of the document `<base href="../">`. Product markup itself was correct.
+- PR #245 fixed the verifier at the correct abstraction boundary by validating the browser-resolved anchor URL and strengthened the local regression contract. Exact head `4af1a86b8d8c32591fd477ca4940bd1810cfbf95`: Build #2125 / `31805517531`, Dependency Review #1546 / `31805517697`, CodeQL #1706 / `31805517623`, PR-safe Production Live #600 / `31805517636` — all SUCCESS.
+- PR #245 squash / deployed SHA `733a8f5342da6fd5a8c9f8995a2383367145db04`: Pages #264 / `31806002715` — SUCCESS; deployment `5907193488`; exact-deployment Production Live #601 / `31806002659` — SUCCESS; master CodeQL #1707 / `31806002667` — SUCCESS. Production artifact `9221259935`, digest `sha256:07f4c3fcb5c0ded81b0c82d954d8de21eb0a2c7fcc6c668f9b3c22a440f21c84`.
+- No external launch/search-impact claim is introduced. Controlled launch remains **not-published**; launch pack remains **10 targets / 38 manual drafts**; P4.1B remains **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**; P4.1C remains **WAITING**; P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; clean-URL clock remains `2026-08-05T00:00:00Z`.
+
 
 ## 2026-08-14 — N6 full-site editorial UX + bounded copy polish — PRODUCTION ACCEPTED
 

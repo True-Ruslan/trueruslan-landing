@@ -1,8 +1,21 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-14**, N6 full-site editorial UX + bounded copy polish production-accepted; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются evidence-gated.
+> Обновлено: **2026-08-14**, post-N6 evidence/security/flagship/production-verifier reconciliation production-accepted на `733a8f5342da6fd5a8c9f8995a2383367145db04`; controlled launch остаётся `not-published`, P4.1B — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются evidence-gated.
 >
 > Current state — `docs/PROJECT_STATE.md`; history — `docs/CHANGELOG.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+
+## 2026-08-14 accepted post-N6 reconciliation
+
+- **Freshness reconciliation — DONE** via PR #238; Content Freshness Guard clean, issue #78 CLOSED / completed.
+- **VillAIgence current flagship truth — DONE** via PR #240; current official release `0.3.1+1.21.1`, lifecycle remains `Release Candidate / ACCEPTANCE IN PROGRESS`, corrective installed canary remains `PENDING`; no false promotion to 0.4.
+- **Homepage Work with me visual alignment — DONE** via PR #241.
+- **nanoid high-severity remediation — DONE** via PR #242; issue #239 CLOSED. Residual six moderate markdown-it records remain owned by upstream blocker #82; next review remains 2026-08-17.
+- **Production verifier repair chain — DONE / PRODUCTION ACCEPTED** via PRs #243–#245. Final deployed SHA `733a8f5342da6fd5a8c9f8995a2383367145db04`: Pages #264 / `31806002715` SUCCESS, exact-deployment Production Live #601 / `31806002659` SUCCESS, master CodeQL #1707 / `31806002667` SUCCESS.
+- **No new visual/SEO rewrite is selected.** Repository-side reconciliation is complete.
+- **Next product/operator action remains controlled manual launch** from the accepted 10-target / 38-draft pack. Repository automation must not post, authenticate, schedule or mutate external publication state.
+- After launch, continue P4.1B only from real authenticated/operator-supplied Search Console / Yandex Webmaster evidence. P4.1C and P3.6 remain evidence-gated; clean-URL clock remains `2026-08-05T00:00:00Z`.
+- Maintenance boundary: #78 and #239 are closed; #82 remains the upstream Diplodoc/markdown-it blocker; #111 and #212 remain authenticated operator/external-observation work.
+
 
 ## 2026-08-14 accepted N6 full-site editorial UX + bounded copy polish
 
@@ -14,7 +27,7 @@
 - **N1–N6 presentation/editorial implementation is complete.** Do not start another unguided visual, copy, metadata or internal-link rewrite.
 - **Next product/operator action remains controlled manual launch** using the accepted 10-target / 38-draft launch pack. Repository automation must not post, authenticate, schedule or mutate external publication state.
 - After launch, continue P4.1B only from real authenticated/operator-supplied Search Console / Yandex Webmaster evidence. P4.1C and P3.6 remain evidence-gated; clean-URL clock remains `2026-08-05T00:00:00Z`.
-- Maintenance remains independent: issue #82 is the upstream Diplodoc/markdown-it blocker (next review 2026-08-17); #78 requires fresh cross-repository evidence; #111 and #212 require authenticated operator/external observations.
+- Maintenance remains independent: issue #82 is the upstream Diplodoc/markdown-it blocker (next review 2026-08-17); #78 is closed after a clean freshness pass; #239 is closed after nanoid remediation; #111 and #212 require authenticated operator/external observations.
 
 ## 2026-08-13 accepted Portfolio UX/content polish + Engineering Notes reader architecture
 
