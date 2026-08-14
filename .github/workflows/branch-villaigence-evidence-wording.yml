@@ -1,0 +1,33 @@
+name: Branch VillAIgence evidence wording correction
+
+on:
+  push:
+    branches:
+      - fix/villaigence-031-case-study
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: fix/villaigence-031-case-study
+          fetch-depth: 0
+      - name: Reword historical evidence bullet
+        shell: bash
+        run: |
+          python3 -c "from pathlib import Path; p=Path('docs/landing/projects/livingworld.md'); s=p.read_text(); old='как последний полностью принятый installed baseline'; new='как последний installed baseline с завершённой acceptance'; assert s.count(old) == 1; p.write_text(s.replace(old, new))"
+      - name: Remove branch-only workflow
+        run: rm .github/workflows/branch-villaigence-evidence-wording.yml
+      - name: Commit permanent wording change
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/landing/projects/livingworld.md .github/workflows/branch-villaigence-evidence-wording.yml
+          git diff --cached --check
+          git commit -m "fix: disambiguate historical VillAIgence evidence wording"
+          git push origin HEAD:fix/villaigence-031-case-study
