@@ -7,13 +7,16 @@ import {fileURLToPath} from 'node:url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const source = fs.readFileSync(path.join(ROOT, 'scripts', 'production-flagship-normalization-smoke.cjs'), 'utf8');
 
-test('production flagship smoke follows current VillAIgence 0.2 and BELIEF boundaries', () => {
+test('production flagship smoke follows current VillAIgence 0.3.1 corrective acceptance boundary', () => {
   assert.match(source, /Current official release/);
   assert.match(source, /Installed 0\.2\.0 result/);
   assert.match(source, /currentVillAIgenceRelease/);
   assert.match(source, /installedVillAIgenceResult/);
-  assert.match(source, /PR #123/);
-  assert.match(source, /PR #125/);
+  assert.match(source, /PR #165/);
+  assert.match(source, /PR #167/);
+  assert.match(source, /VAI-PCM-MULTI-001/);
+  assert.match(source, /PENDING/);
+  assert.match(source, /0\.4 remains blocked/);
   assert.match(source, /VAI-M2-INST-005/);
   assert.match(source, /VAI-CONCUR-004/);
   assert.doesNotMatch(source, /Current published candidate/);
