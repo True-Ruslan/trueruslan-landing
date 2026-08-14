@@ -149,9 +149,10 @@ async function verifyHomepage(page, url, locale) {
   const internalCta = page.locator('.tr-home-collaboration__action.tr-home-bridge__action--primary').first();
   assert(await internalCta.count() === 1, `${locale}: homepage collaboration primary CTA missing`);
   const internalHref = await internalCta.getAttribute('href');
+  const resolvedInternalHref = await internalCta.evaluate((anchor) => anchor.href);
   const expectedWorkPath = new URL(locale === 'ru' ? WORK_WITH_ME_URL : WORK_WITH_ME_EN_URL).pathname;
   assert(
-    internalHref && new URL(internalHref, url).pathname === expectedWorkPath,
+    resolvedInternalHref && new URL(resolvedInternalHref).pathname === expectedWorkPath,
     `${locale}: homepage collaboration CTA route drifted: ${internalHref}`,
   );
   assert(!(await internalCta.getAttribute('target')), `${locale}: internal homepage CTA must stay in current tab`);

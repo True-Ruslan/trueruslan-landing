@@ -15,7 +15,6 @@ const LOCALES = Object.freeze({
     route: '/work-with-me/',
     heading: 'Работа со мной',
     home: '/',
-    workHref: 'work-with-me/',
     status: 'ограниченная доступность',
     collaborationText: 'Помогаю с backend-сервисами',
     requiredTokens: Object.freeze([
@@ -30,7 +29,6 @@ const LOCALES = Object.freeze({
     route: '/en/work-with-me/',
     heading: 'Work with me',
     home: '/en/',
-    workHref: 'en/work-with-me/',
     status: 'limited availability',
     collaborationText: 'I help with backend services',
     requiredTokens: Object.freeze([
@@ -164,7 +162,8 @@ async function assertHomepage(browser, baseUrl, locale) {
     const cta = page.locator('.tr-home-collaboration__action.tr-home-bridge__action--primary').first();
     if (await cta.count() !== 1) throw new Error(`${locale}: homepage collaboration primary action is missing`);
     const href = await cta.getAttribute('href');
-    if (!href || !new URL(href, page.url()).pathname.endsWith(copy.workHref)) throw new Error(`${locale}: homepage collaboration CTA route drifted: ${href}`);
+    const resolvedHref = await cta.evaluate((anchor) => anchor.href);
+    if (!resolvedHref || new URL(resolvedHref).pathname !== copy.route) throw new Error(`${locale}: homepage collaboration CTA route drifted: ${href}`);
     await assertCurrentTab(cta, `${locale} homepage collaboration CTA`);
 
     const order = await page.evaluate(() => {
