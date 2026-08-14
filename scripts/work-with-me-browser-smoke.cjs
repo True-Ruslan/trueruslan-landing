@@ -161,7 +161,7 @@ async function assertHomepage(browser, baseUrl, locale) {
     const bodyText = await page.locator('body').innerText();
     if (!bodyText.includes(copy.collaborationText)) throw new Error(`${locale}: positive-first homepage collaboration copy is missing`);
 
-    const cta = page.locator('.tr-home-collaboration__action--primary').first();
+    const cta = page.locator('.tr-home-collaboration__action.tr-home-bridge__action--primary').first();
     if (await cta.count() !== 1) throw new Error(`${locale}: homepage collaboration primary action is missing`);
     const href = await cta.getAttribute('href');
     if (!href || !new URL(href, page.url()).pathname.endsWith(copy.workHref)) throw new Error(`${locale}: homepage collaboration CTA route drifted: ${href}`);
