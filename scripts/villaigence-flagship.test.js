@@ -49,106 +49,68 @@ test('VillAIgence page keeps installed 0.2 acceptance separate from current post
   assert.doesNotMatch(page, /PR #155[^\n]{0,180}(production-ready|fully accepted)/i);
 });
 
-test('VillAIgence timeline keeps installed release and merged source work historical while 0.3 release convergence is current', () => {
+test('VillAIgence timeline keeps installed 0.2 historical while 0.3.1 corrective acceptance is current', () => {
   const history = readJson(HISTORY_PATH);
   const current = history.filter(({state}) => state === 'current');
   const next = history.filter(({state}) => state === 'next');
   const release = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/120');
-  const admission = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/123');
-  const social = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/153');
-  const personality = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/155');
+  const convergence = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/160');
 
   assert.equal(current.length, 1);
   assert.equal(next.length, 1);
-  assert.match(current[0].title, /0\.3.*release convergence.*release not published/i);
-  assert.match(current[0].description, /PRs #158\/#159\/#160/i);
-  assert.match(current[0].description, /0\.2\.0\+1\.21\.1.*7 PASS \/ 0 FAIL/i);
-  assert.equal(current[0].evidence, 'https://github.com/True-Ruslan/villAIgence/pull/160');
+  assert.match(current[0].title, /0\.3\.1.*corrective release.*installed canary pending/i);
+  assert.match(current[0].description, /release-candidate \/ ACCEPTANCE IN PROGRESS/i);
+  assert.match(current[0].description, /no installed-acceptance or 0\.4 claim/i);
+  assert.equal(current[0].evidence, 'https://github.com/True-Ruslan/villAIgence/pull/167');
   assert.equal(release.state, 'past');
   assert.equal(release.version, '0.2.0+1.21.1');
   assert.match(release.description, /7 PASS \/ 0 FAIL/);
-  assert.equal(admission.state, 'past');
-  assert.match(admission.description, /BELIEF/i);
-  assert.equal(social.state, 'past');
-  assert.match(social.description, /620\/620 tests.*146 source gates/i);
-  assert.equal(personality.state, 'past');
-  assert.match(personality.description, /merged as source capability/i);
-  assert.match(next[0].title, /0\.3.*release-request|0\.3.*candidate/i);
-  assert.match(next[0].description, /exact-artifact|installed gates/i);
-  assert.match(next[0].description, /no source convergence evidence may promote 0\.3 automatically/i);
+  assert.equal(convergence.state, 'past');
+  assert.match(convergence.description, /publication was skipped/i);
+  assert.match(next[0].title, /VAI-PCM-MULTI-001.*canary/i);
+  assert.match(next[0].description, /f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f/);
+  assert.match(next[0].description, /Only real installed PASS evidence/i);
+  assert.match(next[0].description, /unblock 0\.4/i);
 });
-
-test('VillAIgence evidence separates official release, installed acceptance and merged 0.3 source convergence', () => {
+test('VillAIgence evidence separates official 0.3.1 release from pending installed corrective acceptance', () => {
   const evidence = readJson(EVIDENCE_PATH).find(({project}) => project === 'livingworld');
 
   assert.ok(evidence, 'livingworld evidence snapshot must remain present');
-  assert.equal(evidence.lastVerified, '2026-08-12');
+  assert.equal(evidence.lastVerified, '2026-08-14');
 
   const versions = new Map(evidence.versions.map(({label, value}) => [label, value]));
-  assert.equal(versions.get('Current official release'), '0.2.0+1.21.1');
+  assert.equal(versions.get('Current official release'), '0.3.1+1.21.1');
   assert.equal(versions.get('Installed 0.2.0 result'), '7 PASS / 0 FAIL');
+  assert.match(versions.get('Current 0.3.1 acceptance'), /automated release gates PASS.*VAI-PCM-MULTI-001.*PENDING/i);
   assert.match(versions.get('Deferred installed boundaries'), /VAI-M2-INST-005.*VAI-CONCUR-004/);
   assert.match(versions.get('Controlled semantic boundary'), /BELIEF.*FACT.*SYSTEM_OBSERVED/i);
-  assert.match(versions.get('Latest merged source capability'), /0\.3.*release convergence.*#160/i);
-  assert.match(versions.get('Active development slice'), /0\.3.*release convergence.*complete/i);
-  assert.match(versions.get('Active development slice'), /release-request|candidate/i);
-
-  const phaseC = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/110');
-  assert.ok(phaseC, 'missing PR #110 accepted automation evidence');
-  assert.equal(phaseC.state, 'merged');
-  assert.match(phaseC.scope, /monotonic STT.*Chat.*TTS/i);
-  assert.match(phaseC.scope, /exactly-once/i);
-
-  const release = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/120');
-  assert.ok(release, 'missing 0.2 release evidence');
-  assert.equal(release.kind, 'release');
-  assert.equal(release.state, 'published');
-  assert.match(release.scope, /0\.2\.0\+1\.21\.1/);
-  assert.match(release.scope, /7 PASS \/ 0 FAIL/);
-  assert.match(release.scope, /byte-identical/i);
+  assert.match(versions.get('Latest merged source capability'), /0\.3\.1.*Memory 2\.0.*recall/i);
+  assert.match(versions.get('Active development slice'), /VAI-PCM-MULTI-001.*pending/i);
+  assert.match(versions.get('Active development slice'), /do not start 0\.4/i);
 
   const installed = evidence.signals.find(({label}) => label.includes('Installed 0.2.0 clean-world'));
-  assert.ok(installed, 'missing installed 0.2 acceptance evidence');
-  assert.equal(installed.kind, 'manual');
+  assert.ok(installed, 'missing historical installed 0.2 acceptance evidence');
   assert.equal(installed.state, 'accepted');
   assert.match(installed.scope, /(?:7 PASS \/ 0 FAIL|seven required[\s\S]*0 FAIL)/i);
   assert.match(installed.scope, /NOT TESTED/);
 
-  const extraction = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/125');
-  assert.ok(extraction, 'missing PR #125 extraction evidence');
-  assert.equal(extraction.state, 'merged');
-  assert.match(extraction.scope, /PLAYER_TOLD BELIEF|candidate extraction/i);
-  assert.match(extraction.scope, /Server-owned provenance.*FACT authority remain unchanged/i);
+  const release = evidence.signals.find(({label}) => label === 'Official 0.3.1+1.21.1 corrective release');
+  assert.ok(release, 'missing 0.3.1 release evidence');
+  assert.equal(release.kind, 'release');
+  assert.equal(release.state, 'published');
+  assert.match(release.scope, /bc7c68ac2f3a4f761aa3b03a2f5c1fe1201745ab/);
+  assert.match(release.scope, /f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f/);
+  assert.match(release.scope, /installed corrective.*pending/i);
 
-  const social = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/153');
-  assert.ok(social, 'missing PR #153 source capability evidence');
-  assert.equal(social.state, 'merged');
-  assert.match(social.scope, /620\/620 tests.*146 gates/i);
-  assert.match(social.scope, /post-release source capability/i);
-
-  const personality = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/155');
-  assert.ok(personality, 'missing PR #155 source capability evidence');
-  assert.equal(personality.state, 'merged');
-  assert.match(personality.scope, /source capability/i);
-  assert.match(personality.scope, /official installed release remains 0\.2\.0\+1\.21\.1/i);
-
-  for (const [number, sha] of [
-    [158, 'f6d8139cd1164653507ded8030b28c7c28e47cc2'],
-    [159, '889d7ed7303250878b6afb42385f3a02ab169084'],
-    [160, '03ccb2d5d047ca551a5ac6be6b927de4404f09cf'],
-  ]) {
-    const merged = evidence.signals.find(({url}) => url === `https://github.com/True-Ruslan/villAIgence/pull/${number}`);
-    assert.ok(merged, `missing PR #${number} source convergence evidence`);
-    assert.equal(merged.state, 'merged');
-    assert.equal(merged.observedAt, '2026-08-12');
-    assert.match(merged.scope, new RegExp(sha));
-    assert.match(merged.scope, /0\.2\.0\+1\.21\.1/);
-    assert.match(merged.scope, /publication.*skipped|not a 0\.3 release|no new release/i);
-  }
-
-  assert.doesNotMatch(versions.get('Current official release'), /^0\.3/);
+  const corrective = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/165');
+  const handoff = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/167');
+  assert.ok(corrective && handoff, 'missing 0.3.1 corrective PR evidence');
+  assert.equal(corrective.state, 'merged');
+  assert.equal(handoff.state, 'merged');
+  assert.equal(handoff.observedAt, '2026-08-14');
+  assert.match(handoff.scope, /No installed PASS is claimed/i);
+  assert.match(handoff.scope, /VAI-M2-INST-005.*VAI-CONCUR-004/i);
 });
-
 test('VillAIgence metadata uses the stable public route', () => {
   const meta = readJson(META_PATH).find(({path: route}) => route === 'landing/projects/livingworld.html');
 

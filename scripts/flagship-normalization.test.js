@@ -48,13 +48,13 @@ test('P3.3 preserves canonical lifecycle labels and routes', () => {
   assert.equal(livingworld.href, 'landing/projects/livingworld.html');
 });
 
-test('Vlezet preserves M7.8B history while M8.1 is accepted and M8.2 remains the pending product boundary', () => {
+test('Vlezet preserves recognition history while M8.2 is accepted and quality audit is next', () => {
   const evidence = evidenceMap().get('vlezet');
-  assert.equal(evidence.lastVerified, '2026-08-12');
+  assert.equal(evidence.lastVerified, '2026-08-14');
   assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted recognition slice' && value === 'M7.8B'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Automatic M7.8C result' && /FAIL.*closed unmerged/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted editor slice' && /M8\.1.*accepted.*merged/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.2.*precision.*structural.*Draft/i.test(value) && /retest pending/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted editor slice' && /M8\.2.*accepted.*merged/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.2 complete/i.test(value) && /testing-policy.*coverage.*M8\.3/i.test(value)));
 
   const failed = findSignal(evidence, 'Automatic M7.8C');
   assert.equal(failed.state, 'failed');
@@ -64,86 +64,60 @@ test('Vlezet preserves M7.8B history while M8.1 is accepted and M8.2 remains the
   assert.equal(benchmark.state, 'unavailable');
   assertIncludesAll(benchmark.scope, ['closed unmerged', 'R&D evidence', 'not product-owner accepted'], 'Vlezet real-fixture R&D scope');
 
-  const hybrid = findSignal(evidence, 'Hybrid proposal recovery R&D');
-  assert.equal(hybrid.state, 'unavailable');
-  assertIncludesAll(hybrid.scope, ['closed unmerged', 'R&D evidence', 'not an acceptance'], 'Vlezet hybrid R&D scope');
-
   const assisted = findSignal(evidence, 'Assisted Tracing design gate');
   assert.equal(assisted.state, 'unavailable');
   assertIncludesAll(assisted.scope, ['closed unmerged', 'superseded', 'historical design/R&D evidence'], 'Vlezet Assisted Tracing historical scope');
 
-  const acceptedEditor = findSignal(evidence, 'M8.1 precision drawing PR #85');
-  assert.equal(acceptedEditor.state, 'merged');
-  assert.match(acceptedEditor.scope, /product-owner accepted.*9\/9|9\/9.*product-owner accepted/i);
+  const m82 = findSignal(evidence, 'M8.2 precision drawing and structural editing PR #87');
+  assert.equal(m82.state, 'merged');
+  assert.match(m82.scope, /product-owner acceptance/i);
+  assert.match(m82.scope, /e323e331a435ae356b91decbdea80dde95028d8a/);
+  assert.match(m82.scope, /pre-production/i);
 
-  const active = findSignal(evidence, 'M8.2 precision drawing and structural editing Draft PR #87');
-  assert.equal(active.state, 'pending');
-  assert.match(active.scope, /original seven.*passed/i);
-  assert.match(active.scope, /focused manual product-owner retest remains pending/i);
-  assert.match(active.scope, /no merge, release, lifecycle promotion or acceptance/i);
+  const reconciliation = findSignal(evidence, 'M8.2 post-merge truth reconciliation PR #88');
+  assert.equal(reconciliation.state, 'merged');
+  assert.match(reconciliation.scope, /testing-policy.*coverage audit/i);
 
   const history = readJson('data/project-history/vlezet.json');
   assert.equal(history.filter(({state}) => state === 'current').length, 1);
   assert.equal(history.filter(({state}) => state === 'next').length, 1);
-  assert.match(history.find(({state}) => state === 'current').title, /M8\.2.*precision.*structural.*Draft/i);
-  assert.match(history.find(({state}) => state === 'next').description, /manual product-owner retest/i);
+  assert.match(history.find(({state}) => state === 'current').title, /M8\.2.*accepted.*merged/i);
+  assert.match(history.find(({state}) => state === 'next').title, /testing-policy.*coverage.*M8\.3/i);
 });
-
-test('VillAIgence preserves official 0.2 installed acceptance while later source capability advances independently', () => {
+test('VillAIgence records official 0.3.1 while installed acceptance remains an explicit separate boundary', () => {
   const evidence = evidenceMap().get('livingworld');
-  assert.equal(evidence.lastVerified, '2026-08-12');
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Current official release' && value === '0.2.0+1.21.1'));
+  assert.equal(evidence.lastVerified, '2026-08-14');
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Current official release' && value === '0.3.1+1.21.1'));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Current 0.3.1 acceptance' && /VAI-PCM-MULTI-001.*PENDING/i.test(value)));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Installed 0.2.0 result' && value === '7 PASS / 0 FAIL'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Deferred installed boundaries' && value.includes('VAI-M2-INST-005') && value.includes('VAI-CONCUR-004')));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Controlled semantic boundary' && /BELIEF.*FACT.*SYSTEM_OBSERVED/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Latest merged source capability' && /0\.3.*release convergence.*#160/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Active development slice' && /0\.3.*release convergence/i.test(value) && /release-request|candidate/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Latest merged source capability' && /0\.3\.1.*Memory 2\.0.*recall/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Active development slice' && /VAI-PCM-MULTI-001.*pending/i.test(value) && /do not start 0\.4/i.test(value)));
 
-  const release = findSignal(evidence, 'Official 0.2.0+1.21.1');
-  assert.equal(release.state, 'published');
-  assertIncludesAll(release.scope, ['e426f588efefa6aa48a6e536c4a998421bbda241', '7 PASS / 0 FAIL', 'VAI-M2-INST-005', 'VAI-CONCUR-004'], 'VillAIgence 0.2 release scope');
+  const oldRelease = findSignal(evidence, 'Official 0.2.0+1.21.1');
+  assert.equal(oldRelease.state, 'published');
+  assertIncludesAll(oldRelease.scope, ['7 PASS / 0 FAIL', 'VAI-M2-INST-005', 'VAI-CONCUR-004'], 'VillAIgence 0.2 release scope');
 
   const installed = findSignal(evidence, 'Installed 0.2.0 clean-world');
   assert.equal(installed.state, 'accepted');
   assert.match(installed.scope, /(?:7 PASS \/ 0 FAIL|seven required[\s\S]*0 FAIL)/i);
-  assertIncludesAll(installed.scope, ['VAI-M2-INST-005', 'VAI-CONCUR-004'], 'VillAIgence installed 0.2 scope');
 
-  const admission = findSignal(evidence, 'BELIEF admission PR #123');
-  assert.equal(admission.state, 'merged');
-  assertIncludesAll(admission.scope, ['BELIEF', 'SYSTEM_OBSERVED', 'FACT'], 'VillAIgence belief-admission scope');
-
-  const extraction = findSignal(evidence, 'PLAYER_TOLD BELIEF candidate extraction PR #125');
-  assert.equal(extraction.state, 'merged');
-  assert.match(extraction.scope, /Server-owned provenance.*FACT authority remain unchanged/i);
-
-  const social = findSignal(evidence, 'Causal NPC↔NPC social mutation PR #153');
-  assert.equal(social.state, 'merged');
-  assert.match(social.scope, /620\/620 tests.*146 gates/i);
-  assert.match(social.scope, /post-release source capability/i);
-
-  const personality = findSignal(evidence, 'Personality / social snapshot PR #155');
-  assert.equal(personality.state, 'merged');
-  assert.match(personality.scope, /source capability/i);
-  assert.match(personality.scope, /official installed release remains 0\.2\.0\+1\.21\.1/i);
-
-  for (const label of [
-    'Personality/social dialogue integration PR #158',
-    '0.3 dialogue integration state reconciliation PR #159',
-    '0.3 release convergence contract PR #160',
-  ]) {
-    const merged = findSignal(evidence, label);
-    assert.equal(merged.state, 'merged');
-    assert.match(merged.scope, /0\.2\.0\+1\.21\.1/);
-    assert.match(merged.scope, /publication.*skipped|not a 0\.3 release|no new release/i);
-  }
+  const corrective = findSignal(evidence, '0.3.1 targeted Memory 2.0 recall correction PR #165');
+  const handoff = findSignal(evidence, '0.3.1 installed corrective acceptance handoff PR #167');
+  const currentRelease = findSignal(evidence, 'Official 0.3.1+1.21.1 corrective release');
+  assert.equal(corrective.state, 'merged');
+  assert.equal(handoff.state, 'merged');
+  assert.equal(currentRelease.state, 'published');
+  assert.match(currentRelease.scope, /f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f/);
+  assert.match(currentRelease.scope, /installed corrective.*pending/i);
 
   const history = readJson('data/project-history/livingworld.json');
   assert.equal(history.filter(({state}) => state === 'current').length, 1);
   assert.equal(history.filter(({state}) => state === 'next').length, 1);
-  assert.match(history.find(({state}) => state === 'current').title, /0\.3.*release convergence/i);
-  assert.match(history.find(({state}) => state === 'next').title, /release-request|candidate/i);
+  assert.match(history.find(({state}) => state === 'current').title, /0\.3\.1.*installed canary pending/i);
+  assert.match(history.find(({state}) => state === 'next').title, /VAI-PCM-MULTI-001.*canary/i);
 });
-
 test('normalized case studies expose current bounded related material and do not promote pending work', () => {
   const livingworldRu = read('docs/landing/projects/livingworld.md');
   const livingworldEn = read('docs/en/projects/livingworld.md');

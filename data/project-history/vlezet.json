@@ -57,13 +57,27 @@
     "date": "2026-08",
     "title": "M8.2 precision drawing and structural editing — Draft",
     "description": "PR #87 remains Draft on exact head 789f1de8eae92eebc8988a41f07439927431fb8b. Automated .NET/npm/CI and Chromium/WebKit evidence is green, but the focused manual product-owner retest remains pending. No merge, release, lifecycle promotion or acceptance is claimed.",
-    "state": "current",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/vlezet/pull/87"
   },
   {
     "date": "NEXT",
     "title": "Complete focused M8.2 product-owner retest",
     "description": "Run the focused manual product-owner retest against the current Draft, reconcile only observed defects, then require fresh exact-head automation and explicit product-owner acceptance before Ready/merge or any lifecycle promotion.",
-    "state": "next"
+    "state": "past"
+  },
+  {
+    "date": "2026-08",
+    "title": "M8.2 precision drawing and structural editing accepted and merged",
+    "description": "PR #87 closed the M8.2 product-owner gate after the final focused door-UX retest passed, exact-head CI plus Chromium/WebKit Browser Acceptance were green, and the slice was protected squash-merged as e323e331a435ae356b91decbdea80dde95028d8a. Post-merge CI and CodeQL passed. Vlezet remains pre-production.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/87"
+  },
+  {
+    "date": "NEXT",
+    "title": "Complete testing-policy and coverage audit before M8.3",
+    "description": "The M8.3 Precision Reference Calibration product milestone is technically unblocked, but the current engineering priority is the project-wide testing-policy and coverage audit recorded by PR #88. Complete that quality boundary first; then start M8.3 without changing the pre-production lifecycle by inference.",
+    "state": "next",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/88"
   }
 ]

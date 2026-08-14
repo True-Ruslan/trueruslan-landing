@@ -37,13 +37,26 @@
     "date": "NEXT",
     "title": "P3.6 measurement checkpoint — WAITING",
     "description": "P3.6 remains NEXT / WAITING for real equal-duration operator-observed aggregate evidence, explicit traffic-sufficiency assessment and human review. P4.1B is separately NEXT for real Search Console / Yandex Webmaster observations; P4.1C remains WAITING for that evidence or a concrete structural finding. Synthetic pipeline or production readiness cannot create engagement, SEO or causal product-impact conclusions.",
-    "state": "next"
+    "state": "past"
   },
   {
     "date": "2026-08",
     "title": "Current launch / discovery / maintenance production baseline",
     "description": "Exact master 80195a39ac40cb5f8c97d1f8ea8bbd1f3d744613 is production-accepted after launch distribution, preview metadata, P4.1A Search Discovery readiness and maintenance reconciliation. Pages #232, Production Live #516 and CodeQL #1449 are green; P4.1A remains repository/deployment readiness only with externalEvidence=not-collected.",
-    "state": "current",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/208"
+  },
+  {
+    "date": "2026-08",
+    "title": "N6 full-site editorial UX and bounded copy polish production accepted",
+    "description": "N6 completed the 50-route editorial audit and bounded RU/EN reader-facing copy polish without reopening architecture, canonical URLs, registries or typography. The stale Work with me production verifier was corrected in PR #234; canonical state was reconciled in PR #237. Exact master f0e489d75f5bcb1f64057e1046faad877bf3f952 is deployment-verified. Controlled launch is still not-published and no SEO, engagement or causal impact claim is inferred.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/237"
+  },
+  {
+    "date": "NEXT",
+    "title": "Controlled manual launch, then real search and measurement evidence",
+    "description": "Use the already accepted 10-target / 38-draft launch pack for the deliberate operator-controlled manual launch. Repository automation must not post or mutate external publication state. After launch, accumulate authenticated/operator-supplied Google Search Console and Yandex Webmaster observations for P4.1B; P4.1C and P3.6 remain evidence-gated.",
+    "state": "next"
   }
 ]
