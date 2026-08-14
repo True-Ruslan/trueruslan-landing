@@ -44,14 +44,22 @@ The fixed upstream and fixed alias allowlist make this a site-specific adapter r
 
 ### Link policy
 
-The build-time and browser-runtime link policies treat the future `.com` hostnames as same-site navigation targets. Relative links already inherit the current browser origin; the explicit allowlist prevents an absolute `.com` URL from being classified as an external link and forced into a new browsing context.
+The build-time and browser-runtime link policies treat the future `.com` hostnames as same-site navigation targets. Relative links already inherit the current browser origin. Absolute same-site anchor URLs are normalized to root-relative path/query/fragment navigation at build time, and the runtime applies the same normalization to dynamically introduced anchors before interaction. This keeps browser navigation on the hostname the visitor entered without rewriting canonical metadata or proxying a second SEO identity.
+
+The generated-site custom-domain gate remains fail-closed: any absolute same-site `<a>` URL that survives normalization is rejected because it would escape the current alias hostname.
+
+Canonical, hreflang, OpenGraph, Sitemap and Atom identities remain absolute `.ru` URLs and are outside the anchor-normalization contract.
 
 ### Tests
 
-`scripts/trueruslan-com-alias.test.js` covers:
+`scripts/trueruslan-com-alias.test.js` and the existing link-policy runtime tests cover:
 
 - `.com` and `www` same-site classification;
-- path/query preservation;
+- build-time host-preserving normalization of absolute same-site anchors;
+- runtime host-preserving normalization for dynamically introduced anchors;
+- path/query/fragment preservation through navigation normalization;
+- canonical/hreflang `.ru` preservation;
+- path/query preservation through the Worker;
 - GET/HEAD behavior;
 - unknown-host and unsupported-method fail-closed behavior;
 - credential stripping;
@@ -87,7 +95,7 @@ The alias is not accepted until all of the following are verified against the re
 | query string | preserved through proxy |
 | slash/clean-URL redirect | final hostname remains incoming `.com`/`www` alias |
 | internal relative navigation | remains on current alias hostname |
-| absolute `.com` same-site link | not forced to `_blank` |
+| absolute same-site navigation | normalized to host-preserving root-relative navigation |
 | third-party link | existing external-link policy preserved |
 | canonical link | remains `https://trueruslan.ru/...` |
 | hreflang / OpenGraph / Sitemap / Atom | remain canonical `.ru` identities |
