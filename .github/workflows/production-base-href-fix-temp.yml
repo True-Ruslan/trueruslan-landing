@@ -1,0 +1,37 @@
+name: Production Base Href Fix Temp
+
+on:
+  push:
+    branches:
+      - fix/production-home-base-href-contract
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: fix/production-home-base-href-contract
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+          check-latest: false
+      - name: Apply repair
+        run: node scripts/fix-production-base-href-temp.cjs
+      - name: Run focused regression
+        run: node --test scripts/production-work-with-me-workflow.test.js
+      - name: Remove temporary helper
+        run: rm scripts/fix-production-base-href-temp.cjs .github/workflows/production-base-href-fix-temp.yml
+      - name: Commit repair
+        run: |
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add scripts/production-work-with-me-smoke.cjs scripts/work-with-me-browser-smoke.cjs scripts/production-work-with-me-workflow.test.js scripts/fix-production-base-href-temp.cjs .github/workflows/production-base-href-fix-temp.yml
+          git commit -m 'test: honor document base in homepage CTA verification'
+          git push origin HEAD:fix/production-home-base-href-contract
