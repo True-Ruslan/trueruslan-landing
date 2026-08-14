@@ -222,7 +222,7 @@ Evidence intentionally разделяет:
 - `0.1.21` startup failure и safe rollback;
 - corrective PRs и M11 GameTests/production-JAR gates;
 - PR #110 как merged shared-deadline/exactly-once automation;
-- официальный `0.2.0+1.21.1` release и byte-identical clean-world installed result **7 PASS / 0 FAIL** как последний полностью принятый installed baseline;
+- официальный `0.2.0+1.21.1` release и byte-identical clean-world installed result **7 PASS / 0 FAIL** как последний installed baseline с завершённой acceptance;
 - `VAI-M2-INST-005` и `VAI-CONCUR-004` как explicit NOT TESTED boundaries;
 - PR #123 и PR #125 как merged bounded semantic-memory source capabilities без AI→FACT authority;
 - официальный corrective release **0.3.1+1.21.1**;
