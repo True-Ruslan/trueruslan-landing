@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {globSync} from 'glob';
 import {parse} from 'parse5';
 
-import {shouldOpenInNewContext} from './link-policy.js';
+import {isAbsoluteSameSiteNavigation, shouldOpenInNewContext} from './link-policy.js';
 
 const REQUIRED_CANONICAL_FILES = Object.freeze([
   'index.html',
@@ -59,6 +59,9 @@ function collectPolicyFindings(node, relativePath, findings) {
     const rel = relTokens(node);
     if (containsLegacyLandingPath(href)) {
       findings.push(`${relativePath}: anchor still exposes legacy /landing namespace: ${href}`);
+    }
+    if (isAbsoluteSameSiteNavigation(href)) {
+      findings.push(`${relativePath}: absolute same-site anchor would escape the current hostname: ${href}`);
     }
     if (shouldOpenInNewContext(href)) {
       if (target !== '_blank') findings.push(`${relativePath}: external anchor is not target=_blank: ${href}`);

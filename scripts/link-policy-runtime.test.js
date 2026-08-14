@@ -62,6 +62,17 @@ test('runtime policy strips stale new-tab policy from canonical same-site langua
   assert.equal(api.normalizeAnchor(language), false, 'second normalization must be idempotent');
 });
 
+test('runtime policy keeps absolute same-site navigation on the current hostname', () => {
+  const api = loadApi({href: 'https://trueruslan.com/landing/'});
+  const project = fakeAnchor('https://trueruslan.ru/landing/projects/?source=runtime#work');
+
+  assert.equal(api.normalizeAnchor(project), true);
+  assert.equal(project.attrs.get('href'), '/landing/projects/?source=runtime#work');
+  assert.equal(project.attrs.has('target'), false);
+  assert.equal(project.attrs.has('rel'), false);
+  assert.equal(api.normalizeAnchor(project), false, 'second normalization must be idempotent');
+});
+
 test('runtime policy adds safe new-tab attributes only to external web links', () => {
   const api = loadApi();
   const github = fakeAnchor('https://github.com/True-Ruslan', {rel: 'nofollow'});

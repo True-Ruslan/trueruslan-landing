@@ -3,11 +3,29 @@
 
   const EXEMPT_SCHEME = /^(?:mailto|tel|javascript|data):/i;
   const POLICY_REL_TOKENS = new Set(['noopener', 'noreferrer']);
-  const SAME_SITE_HOSTS = new Set(['trueruslan.ru', 'www.trueruslan.ru']);
+  const SAME_SITE_HOSTS = new Set([
+    'trueruslan.ru',
+    'www.trueruslan.ru',
+    'trueruslan.com',
+    'www.trueruslan.com',
+  ]);
   const SITE_BASE = 'https://trueruslan.ru/';
 
   function runtimeBase() {
     return root.document?.baseURI || root.location?.href || SITE_BASE;
+  }
+
+  function hostPreservingSameSiteHref(href) {
+    const value = String(href || '').trim();
+    if (!/^https?:\/\//i.test(value)) return value;
+
+    try {
+      const url = new URL(value);
+      if (!SAME_SITE_HOSTS.has(url.hostname.toLowerCase())) return value;
+      return `${url.pathname || '/'}${url.search}${url.hash}`;
+    } catch {
+      return value;
+    }
   }
 
   function shouldOpenInNewContext(href) {
@@ -56,10 +74,16 @@
   function normalizeAnchor(anchor) {
     if (!anchor || typeof anchor.getAttribute !== 'function' || typeof anchor.setAttribute !== 'function') return false;
     const href = anchor.getAttribute('href') || anchor.href || '';
-    const newContext = shouldOpenInNewContext(href);
+    const normalizedHref = hostPreservingSameSiteHref(href);
+    let changed = false;
+    if (normalizedHref !== href) {
+      anchor.setAttribute('href', normalizedHref);
+      changed = true;
+    }
+
+    const newContext = shouldOpenInNewContext(normalizedHref);
 
     if (!newContext) {
-      let changed = false;
       if (anchor.getAttribute('target')) {
         anchor.removeAttribute?.('target');
         changed = true;
@@ -74,7 +98,6 @@
       return changed;
     }
 
-    let changed = false;
     if (anchor.getAttribute('target') !== '_blank') {
       anchor.setAttribute('target', '_blank');
       changed = true;
