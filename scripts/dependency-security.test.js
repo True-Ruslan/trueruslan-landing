@@ -144,7 +144,7 @@ test('js-yaml and nanoid patch overrides own the current high-severity remediati
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
   assert.equal(packageJson.overrides?.['js-yaml@3'], '3.15.1');
   assert.equal(packageJson.overrides?.['js-yaml@4'], '4.3.1');
-  assert.equal(packageJson.overrides?.['nanoid@3'], '3.3.17');
+  assert.equal(packageJson.overrides?.['nanoid@3'], '3.3.18');
 });
 
 test('js-yaml and nanoid are beyond the current high-severity advisory ranges', () => {
@@ -163,7 +163,7 @@ test('js-yaml and nanoid are beyond the current high-severity advisory ranges', 
   for (const [packagePath, metadata] of lockfileEntriesFor(lockfile, 'nanoid')) {
     const version = metadata?.version;
     const [major] = versionParts(version);
-    if (major === 3 && compareVersion(version, [3, 3, 17]) < 0) {
+    if (major === 3 && compareVersion(version, [3, 3, 18]) < 0) {
       violations.push(`${packagePath}: ${version} (GHSA-2v37-7h3g-55p8)`);
     }
   }
