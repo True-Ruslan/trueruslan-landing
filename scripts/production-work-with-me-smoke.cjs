@@ -146,8 +146,14 @@ async function verifyHomepage(page, url, locale) {
     assert(await page.locator('footer a[href*="contacts"]').count() >= 1, 'ru: secondary Contacts destination missing from footer');
   }
 
-  const internalCta = page.locator('.tr-bridge-actions__link--primary[href="/work-with-me/"]').first();
+  const internalCta = page.locator('.tr-home-collaboration__action.tr-home-bridge__action--primary').first();
   assert(await internalCta.count() === 1, `${locale}: homepage collaboration primary CTA missing`);
+  const internalHref = await internalCta.getAttribute('href');
+  const expectedWorkPath = new URL(locale === 'ru' ? WORK_WITH_ME_URL : WORK_WITH_ME_EN_URL).pathname;
+  assert(
+    internalHref && new URL(internalHref, url).pathname === expectedWorkPath,
+    `${locale}: homepage collaboration CTA route drifted: ${internalHref}`,
+  );
   assert(!(await internalCta.getAttribute('target')), `${locale}: internal homepage CTA must stay in current tab`);
 
   const ordering = await page.evaluate(() => {
