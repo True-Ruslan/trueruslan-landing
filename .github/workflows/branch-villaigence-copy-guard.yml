@@ -1,0 +1,34 @@
+name: Branch VillAIgence acceptance wording guard
+
+on:
+  push:
+    branches:
+      - fix/villaigence-031-case-study
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: fix/villaigence-031-case-study
+          fetch-depth: 0
+      - name: Reword historical installed baseline without positive-promotion ambiguity
+        shell: bash
+        run: |
+          python3 -c "from pathlib import Path; p=Path('docs/landing/projects/livingworld.md'); s=p.read_text(); old='Последний полностью принятый installed baseline остаётся историческим **0.2.0+1.21.1 — 7 PASS / 0 FAIL**.'; new='Последний installed baseline с завершённой acceptance остаётся историческим **0.2.0+1.21.1 — 7 PASS / 0 FAIL**.'; assert s.count(old) == 1; p.write_text(s.replace(old, new))"
+          python3 -c "from pathlib import Path; p=Path('docs/en/projects/livingworld.md'); s=p.read_text(); old='The last fully accepted installed baseline remains the historical **0.2.0+1.21.1 — 7 PASS / 0 FAIL**.'; new='The last installed baseline with completed acceptance remains the historical **0.2.0+1.21.1 — 7 PASS / 0 FAIL**.'; assert s.count(old) == 1; p.write_text(s.replace(old, new))"
+      - name: Remove branch-only workflow
+        run: rm .github/workflows/branch-villaigence-copy-guard.yml
+      - name: Commit permanent wording change
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/landing/projects/livingworld.md docs/en/projects/livingworld.md .github/workflows/branch-villaigence-copy-guard.yml
+          git diff --cached --check
+          git commit -m "fix: avoid ambiguous VillAIgence acceptance promotion"
+          git push origin HEAD:fix/villaigence-031-case-study
