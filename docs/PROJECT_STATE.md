@@ -48,6 +48,7 @@ PR #247 prepared repository-side host-preserving/Cloudflare alias contracts. `tr
 ## 4. External launch and search evidence
 
 - controlled launch pack: **10 targets / 38 manual drafts / not-published**;
+- P4.1B intake tooling — **PRODUCTION ACCEPTED**;
 - P4.1B real external evidence review — **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**;
 - P4.1C — **WAITING**;
 - P3.6 — Measurement checkpoint — **NEXT / WAITING FOR EXTERNAL EVIDENCE**;
