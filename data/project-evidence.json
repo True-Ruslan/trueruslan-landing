@@ -2,7 +2,7 @@
   {
     "project": "vlezet",
     "status": "verified",
-    "lastVerified": "2026-08-14",
+    "lastVerified": "2026-08-15",
     "versions": [
       {
         "label": "Web application",
@@ -34,7 +34,7 @@
       },
       {
         "label": "Next acceptance boundary",
-        "value": "Testing-policy + coverage audit, then M8.3 Precision Reference Calibration"
+        "value": "M8.3 Precision Reference Calibration"
       },
       {
         "label": "Accepted editor slice",
@@ -42,7 +42,7 @@
       },
       {
         "label": "Active product slice",
-        "value": "M8.2 complete; project-wide testing-policy + coverage audit is current engineering priority before M8.3"
+        "value": "M8.3 Precision Reference Calibration active after accepted Testing Policy Phase A and P0 IndexedDB persistence hardening; not product-owner accepted or released"
       }
     ],
     "signals": [
@@ -135,6 +135,33 @@
         "url": "https://github.com/True-Ruslan/vlezet/pull/88",
         "observedAt": "2026-08-13",
         "scope": "PR #88 reconciled canonical project state after the already accepted M8.2 protected merge. M8.3 is technically unblocked, but the project-wide testing-policy and coverage audit requested by the product owner remains the current engineering priority before further product work."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "Testing Policy Phase A PR #89",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/89",
+        "observedAt": "2026-08-14",
+        "scope": "PR #89 accepted the project-wide Testing Policy Phase A boundary after M8.2. It records the testing/coverage direction without promoting Vlezet beyond pre-production or claiming completion of M8.3."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "P0 IndexedDB persistence remediation PR #90",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/90",
+        "observedAt": "2026-08-15",
+        "scope": "PR #90 completed the accepted P0 persistence-hardening boundary with native IndexedDB failure-path evidence, cross-browser persistence and corruption-recovery coverage, ArrayBuffer-backed raw storage and the agreed coverage ratchet. It was merged as 7cb9cfd2a8f809e6000209188b5fab99a2fabfb9. This is persistence acceptance only; Vlezet remains pre-production."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "P0 post-merge truth / M8.3 handoff PR #91",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/91",
+        "observedAt": "2026-08-15",
+        "scope": "PR #91 records the accepted P0 merge identity and post-merge CI/CodeQL truth, then makes M8.3 Precision Reference Calibration the active next product milestone. M8.3 is active work, not product-owner accepted or released; lifecycle remains pre-production."
       }
     ]
   },
@@ -449,7 +476,7 @@
   {
     "project": "portfolio-platform",
     "status": "verified",
-    "lastVerified": "2026-08-14",
+    "lastVerified": "2026-08-15",
     "versions": [
       {
         "label": "Delivery model",
@@ -489,7 +516,7 @@
       },
       {
         "label": "Current production baseline",
-        "value": "master f0e489d75f5bcb1f64057e1046faad877bf3f952 — N6 product accepted and canonical state reconciled"
+        "value": "master 8fe29188e4da9250b405f5e23b7ee8afe97e21d6 — AI Navigator engineering baseline production-accepted with public AI OFF; durable project state reconciled"
       },
       {
         "label": "Search Discovery",
@@ -631,6 +658,24 @@
         "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/237",
         "observedAt": "2026-08-14",
         "scope": "PR #237 reconciled PROJECT_STATE, ROADMAP and CHANGELOG with the production-accepted N6 editorial programme. Squash f0e489d75f5bcb1f64057e1046faad877bf3f952 passed post-merge Pages #257, Production Live #568/#569 and master CodeQL #1667. Controlled launch remains not-published; P4.1B stays sparse/in progress and P4.1C/P3.6 remain external-evidence gated."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "AI Navigator engineering baseline PR #253",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/253",
+        "observedAt": "2026-08-15",
+        "scope": "PR #253 completed the OFF-by-default static-first AI Navigator engineering baseline: deterministic corpus/index/hybrid retrieval, Worker-owned canonical grounding, strict answer/citation boundaries, preflight contracts and provider-free acceptance gates. Exact-head Build #2207, CodeQL #1739, Dependency Audit #269 and Dependency Review #1571 passed. Public mode remained off and no live-provider, SEARCH/FULL canary or product-impact acceptance was claimed."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "AI Navigator durable state reconciliation PR #254",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/254",
+        "observedAt": "2026-08-15",
+        "scope": "PR #254 reconciled the current durable project state while preserving machine-readable historical acceptance contracts. Squash 8fe29188e4da9250b405f5e23b7ee8afe97e21d6 passed Pages #273, Production Live #620 and master CodeQL #1752. Production AI remains OFF; controlled launch remains not-published and P4.1B/P4.1C/P3.6 external-evidence boundaries are unchanged."
       }
     ]
   }
