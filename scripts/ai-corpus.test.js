@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -46,7 +47,7 @@ test('AI corpus contains every registered Engineering Note through canonical Mar
   const chunks = corpus();
   const notes = JSON.parse(fs.readFileSync(NOTES_PATH, 'utf8'));
   const represented = new Set(chunks
-    .filter(({type}) => type === 'note' && {lang: true}.lang)
+    .filter(({type}) => type === 'note')
     .map(({sourcePath}) => sourcePath));
 
   for (const {slug} of notes) {
@@ -91,4 +92,18 @@ test('normalizeChunkText removes Markdown presentation without collapsing semant
     normalizeChunkText(' **Static-first**  [search](https://example.test)\n\n`quality gates` '),
     'Static-first search quality gates',
   );
+});
+
+test('ai-corpus CLI prints the exact stable chunk IDs in corpus order', () => {
+  const result = spawnSync(process.execPath, [path.join(__dirname, 'ai-corpus.js'), '--print-ids'], {
+    cwd: ROOT,
+    encoding: 'utf8',
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const ids = result.stdout.trim().split(/\r?\n/).filter(Boolean);
+  const expected = corpus().map(({id}) => id);
+  assert.deepEqual(ids, expected);
+  assert.ok(ids.includes('ru:project:livingworld:intro'));
+  assert.ok(ids.includes('en:project:vlezet:intro'));
+  assert.ok(ids.includes('ru:publication:diplodoc-github-pages:intro'));
 });
