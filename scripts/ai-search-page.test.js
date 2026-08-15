@@ -114,12 +114,12 @@ test('SEARCH and FULL normalization inject exactly one safe runtime config and r
     assert.equal(count(normalized, /_assets\/script\/ai-search\.js/g), 1);
     assert.equal(count(normalized, /id="tr-ai-search-config"/g), 1);
     assert.equal(count(normalized, /type="application\/json"/g), 1);
-    assert.match(normalized, /&quot;workerBaseUrl&quot;:&quot;https:\/\/ai\.example\.workers\.dev&quot;/);
-    assert.match(normalized, /&quot;embeddingDimensions&quot;:512/);
-    assert.match(normalized, /&quot;maxQueryChars&quot;:500/);
-    assert.match(normalized, /&quot;maxResults&quot;:5/);
-    assert.match(normalized, /&quot;answerMaxChunks&quot;:5/);
-    assert.match(normalized, /&quot;hybridWeights&quot;/);
+    assert.match(normalized, /"workerBaseUrl":"https:\/\/ai\.example\.workers\.dev"/);
+    assert.match(normalized, /"embeddingDimensions":512/);
+    assert.match(normalized, /"maxQueryChars":500/);
+    assert.match(normalized, /"maxResults":5/);
+    assert.match(normalized, /"answerMaxChunks":5/);
+    assert.match(normalized, /"hybridWeights"/);
     assert.doesNotMatch(normalized, /OPENROUTER_API_KEY|test-secret-key|answerModel|embeddingModel/);
 
     const twice = normalizeSearchPageHtml(normalized, '_search/ru/index.html', {aiConfig: config(mode)});
