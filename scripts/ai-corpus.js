@@ -1,6 +1,9 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+
+import {loadAiConfig} from './ai-config.js';
 
 const MIN_CHUNK_CHARS = 80;
 const SMALL_CHUNK_CHARS = 220;
@@ -216,7 +219,7 @@ function loadPageTitle(pageMeta, route, markdown) {
   return record?.title || titleFromMarkdown(markdown, path.posix.basename(route, '.html'));
 }
 
-function buildPublicationChunks({rootDir, publications}) {
+function buildPublicationChunks({publications}) {
   const chunks = [];
   for (const publication of publications) {
     const ruText = normalizeChunkText([
@@ -305,7 +308,7 @@ export function buildAiCorpus({rootDir, config}) {
     }));
   }
 
-  chunks.push(...buildPublicationChunks({rootDir, publications}));
+  chunks.push(...buildPublicationChunks({publications}));
   chunks.sort((left, right) => left.id.localeCompare(right.id, 'en'));
   assertCorpusIntegrity(chunks);
   return chunks;
@@ -314,3 +317,24 @@ export function buildAiCorpus({rootDir, config}) {
 export function serializeCorpus(chunks) {
   return `${JSON.stringify(chunks, null, 2)}\n`;
 }
+
+function isMainModule() {
+  if (!process.argv[1]) return false;
+  return path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+}
+
+function runCli() {
+  const args = process.argv.slice(2);
+  if (args.length !== 1 || args[0] !== '--print-ids') {
+    process.stderr.write('Usage: node scripts/ai-corpus.js --print-ids\n');
+    process.exitCode = 2;
+    return;
+  }
+
+  const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const config = loadAiConfig(path.join(rootDir, 'data', 'ai-navigator.json'));
+  const chunks = buildAiCorpus({rootDir, config});
+  process.stdout.write(`${chunks.map(({id}) => id).join('\n')}\n`);
+}
+
+if (isMainModule()) runCli();
