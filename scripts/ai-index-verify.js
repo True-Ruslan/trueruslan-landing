@@ -92,15 +92,42 @@ export function verifyAiIndex({rootDir, config}) {
   };
 }
 
+export function verifyAiReadiness({rootDir, config, allowOff = false}) {
+  if (allowOff && config.mode === 'off') {
+    return {
+      mode: 'off',
+      indexRequired: false,
+      providerAccess: false,
+    };
+  }
+
+  const index = verifyAiIndex({rootDir, config});
+  return {
+    mode: config.mode,
+    indexRequired: true,
+    providerAccess: false,
+    ...index,
+  };
+}
+
 function isMainModule() {
   return Boolean(process.argv[1]) && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 }
 
+function parseCliArgs(argv) {
+  const allowed = new Set(['--allow-off']);
+  for (const arg of argv) {
+    if (!allowed.has(arg)) throw new Error(`Unknown AI verifier argument: ${arg}`);
+  }
+  return {allowOff: argv.includes('--allow-off')};
+}
+
 function runCli() {
   const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-  const config = loadAiConfig(path.join(rootDir, 'data', 'ai-navigator.json'));
   try {
-    const report = verifyAiIndex({rootDir, config});
+    const args = parseCliArgs(process.argv.slice(2));
+    const config = loadAiConfig(path.join(rootDir, 'data', 'ai-navigator.json'));
+    const report = verifyAiReadiness({rootDir, config, allowOff: args.allowOff});
     process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
   } catch (error) {
     process.stderr.write(`${error.message}\n`);
