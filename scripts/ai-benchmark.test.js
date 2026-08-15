@@ -7,9 +7,11 @@ import {fileURLToPath} from 'node:url';
 import {loadAiConfig} from './ai-config.js';
 import {buildAiCorpus} from './ai-corpus.js';
 import {
+  HYBRID_WEIGHT_CANDIDATES,
   createLexicalRetriever,
   evaluateRetrieval,
   loadBenchmark,
+  selectHybridWeights,
 } from './ai-benchmark.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -127,6 +129,58 @@ test('evaluateRetrieval reports positive recall separately from insufficient cas
   assert.equal(report.paraphraseRecallAt5, 0);
   assert.deepEqual(report.insufficientTopScore, [{id: 'negative', score: 0.2}]);
   assert.equal(report.perCase.length, 3);
+});
+
+test('hybrid candidate grid is fixed and deterministic', () => {
+  assert.deepEqual(HYBRID_WEIGHT_CANDIDATES, [
+    {semantic: 0.55, lexical: 0.30, title: 0.10, language: 0.05},
+    {semantic: 0.65, lexical: 0.20, title: 0.10, language: 0.05},
+    {semantic: 0.70, lexical: 0.15, title: 0.10, language: 0.05},
+    {semantic: 0.75, lexical: 0.10, title: 0.10, language: 0.05},
+  ]);
+});
+
+test('hybrid selection enforces recall gate, exact lexical no-regression and deterministic tie breaks', () => {
+  const lexicalPerCase = [
+    {id: 'exact-a', kind: 'exact', hit: true},
+    {id: 'exact-b', kind: 'exact', hit: false},
+  ];
+  const reports = [
+    {
+      weights: HYBRID_WEIGHT_CANDIDATES[0],
+      report: {recallAt5: 0.92, paraphraseRecallAt5: 0.8, perCase: [
+        {id: 'exact-a', kind: 'exact', hit: false},
+      ]},
+    },
+    {
+      weights: HYBRID_WEIGHT_CANDIDATES[1],
+      report: {recallAt5: 0.91, paraphraseRecallAt5: 0.85, perCase: [
+        {id: 'exact-a', kind: 'exact', hit: true},
+      ]},
+    },
+    {
+      weights: HYBRID_WEIGHT_CANDIDATES[2],
+      report: {recallAt5: 0.93, paraphraseRecallAt5: 0.85, perCase: [
+        {id: 'exact-a', kind: 'exact', hit: true},
+      ]},
+    },
+    {
+      weights: HYBRID_WEIGHT_CANDIDATES[3],
+      report: {recallAt5: 0.89, paraphraseRecallAt5: 0.95, perCase: [
+        {id: 'exact-a', kind: 'exact', hit: true},
+      ]},
+    },
+  ];
+  assert.deepEqual(selectHybridWeights({lexicalPerCase, candidateReports: reports}), HYBRID_WEIGHT_CANDIDATES[1]);
+});
+
+test('hybrid selection fails closed when no candidate satisfies the gates', () => {
+  const lexicalPerCase = [{id: 'exact-a', kind: 'exact', hit: true}];
+  const reports = HYBRID_WEIGHT_CANDIDATES.map((weights) => ({
+    weights,
+    report: {recallAt5: 0.89, paraphraseRecallAt5: 1, perCase: [{id: 'exact-a', kind: 'exact', hit: true}]},
+  }));
+  assert.throws(() => selectHybridWeights({lexicalPerCase, candidateReports: reports}), /no hybrid candidate|0\.90/i);
 });
 
 test('lexical benchmark CLI prints deterministic machine-readable baseline', () => {
