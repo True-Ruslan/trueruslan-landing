@@ -1,0 +1,92 @@
+name: AI Navigator Real Acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_provider_calls:
+        description: Confirm explicit OpenRouter embedding calls for acceptance evidence
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-navigator-real-acceptance-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Require explicit provider-call confirmation
+        if: ${{ inputs.confirm_provider_calls != true }}
+        run: |
+          echo "::error::Real AI acceptance requires explicit provider-call confirmation."
+          exit 1
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Require public AI to remain OFF
+        run: |
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const config = JSON.parse(fs.readFileSync('data/ai-navigator.json', 'utf8'));
+          if (config.mode !== 'off') {
+            throw new Error(`Real acceptance must run while public AI mode is off, got ${String(config.mode)}`);
+          }
+          NODE
+          mkdir -p quality-artifacts
+
+      - name: Refresh document embeddings
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          set -o pipefail
+          node scripts/ai-index.js | tee quality-artifacts/ai-index-refresh.json
+
+      - name: Refresh benchmark query embeddings
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          set -o pipefail
+          node scripts/ai-benchmark-embeddings.js | tee quality-artifacts/ai-benchmark-query-refresh.json
+
+      - name: Offline semantic acceptance
+        run: |
+          set -o pipefail
+          test -z "${OPENROUTER_API_KEY:-}"
+          node scripts/ai-index-verify.js | tee quality-artifacts/ai-index-verify.json
+          node scripts/ai-benchmark.js --mode semantic --index data/ai-index | tee quality-artifacts/ai-semantic-benchmark.json
+          git diff --exit-code -- data/ai-navigator.json
+
+      - name: Upload acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ai-navigator-real-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            data/ai-index/chunks.json
+            data/ai-index/index-meta.json
+            data/ai-index/embeddings.bin
+            data/ai-index/benchmark-query-cache/
+            quality-artifacts/ai-index-refresh.json
+            quality-artifacts/ai-benchmark-query-refresh.json
+            quality-artifacts/ai-index-verify.json
+            quality-artifacts/ai-semantic-benchmark.json
+          if-no-files-found: ignore
+          retention-days: 14
