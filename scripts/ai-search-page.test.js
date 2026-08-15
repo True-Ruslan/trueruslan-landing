@@ -97,12 +97,13 @@ test('OFF search normalization preserves ordinary project resources and emits no
   assert.equal(count(normalized, /_assets\/style\/search\.css/g), 1);
   assert.equal(count(normalized, /_assets\/script\/search-ui\.js/g), 1);
   assert.doesNotMatch(normalized, /data-tr-ai-mode/);
+  assert.doesNotMatch(normalized, /tr-ai-search-config/);
   assert.doesNotMatch(normalized, /ai-search\.css/);
   assert.doesNotMatch(normalized, /ai-retrieval\.js/);
   assert.doesNotMatch(normalized, /ai-search\.js/);
 });
 
-test('SEARCH and FULL normalization inject exactly one AI marker and resource set', () => {
+test('SEARCH and FULL normalization inject exactly one safe runtime config and resource set', () => {
   for (const mode of ['search', 'full']) {
     const normalized = normalizeSearchPageHtml(sourceHtml, '_search/ru/index.html', {aiConfig: config(mode)});
     assert.equal(count(normalized, new RegExp(`data-tr-ai-mode="${mode}"`, 'g')), 2);
@@ -111,6 +112,15 @@ test('SEARCH and FULL normalization inject exactly one AI marker and resource se
     assert.equal(count(normalized, /_assets\/style\/ai-search\.css/g), 1);
     assert.equal(count(normalized, /_assets\/script\/ai-retrieval\.js/g), 1);
     assert.equal(count(normalized, /_assets\/script\/ai-search\.js/g), 1);
+    assert.equal(count(normalized, /id="tr-ai-search-config"/g), 1);
+    assert.equal(count(normalized, /type="application\/json"/g), 1);
+    assert.match(normalized, /&quot;workerBaseUrl&quot;:&quot;https:\/\/ai\.example\.workers\.dev&quot;/);
+    assert.match(normalized, /&quot;embeddingDimensions&quot;:512/);
+    assert.match(normalized, /&quot;maxQueryChars&quot;:500/);
+    assert.match(normalized, /&quot;maxResults&quot;:5/);
+    assert.match(normalized, /&quot;answerMaxChunks&quot;:5/);
+    assert.match(normalized, /&quot;hybridWeights&quot;/);
+    assert.doesNotMatch(normalized, /OPENROUTER_API_KEY|test-secret-key|answerModel|embeddingModel/);
 
     const twice = normalizeSearchPageHtml(normalized, '_search/ru/index.html', {aiConfig: config(mode)});
     assert.equal(twice, normalized);
