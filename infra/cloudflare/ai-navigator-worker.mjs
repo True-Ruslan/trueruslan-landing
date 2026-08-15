@@ -41,6 +41,19 @@ function errorResponse(status, code, error, options = {}) {
   return jsonResponse(status, {error, code}, options);
 }
 
+function preflightResponse(origin) {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Cache-Control': 'no-store',
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'POST',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      Vary: 'Origin',
+    },
+  });
+}
+
 function requestOrigin(request) {
   const value = request.headers.get('Origin');
   return value ? value.trim() : null;
@@ -50,6 +63,25 @@ function allowedOrigin(request, env) {
   const origin = requestOrigin(request);
   if (!origin) return {origin: null, allowed: true};
   return {origin, allowed: origin === env.AI_ALLOWED_ORIGIN};
+}
+
+function handlePreflight(request, env) {
+  const originState = allowedOrigin(request, env);
+  if (!originState.origin || !originState.allowed) {
+    return errorResponse(403, 'origin_forbidden', 'Origin is not allowed.');
+  }
+  const requestedMethod = (request.headers.get('Access-Control-Request-Method') || '').trim().toUpperCase();
+  if (requestedMethod !== 'POST') {
+    return errorResponse(405, 'method_not_allowed', 'Method not allowed.', {headers: {Allow: 'POST'}});
+  }
+  const requestedHeaders = (request.headers.get('Access-Control-Request-Headers') || '')
+    .split(',')
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+  if (requestedHeaders.some((value) => value !== 'content-type')) {
+    return errorResponse(400, 'headers_forbidden', 'Requested headers are not allowed.');
+  }
+  return preflightResponse(originState.origin);
 }
 
 function parseDimensions(env) {
@@ -470,6 +502,7 @@ export async function handleRequest(request, env, fetchImpl = globalThis.fetch) 
   if (!['/v1/embed', '/v1/answer'].includes(url.pathname)) {
     return errorResponse(404, 'not_found', 'Route not found.');
   }
+  if (request.method === 'OPTIONS') return handlePreflight(request, env);
   if (request.method !== 'POST') {
     return errorResponse(405, 'method_not_allowed', 'Method not allowed.', {
       headers: {Allow: 'POST'},
