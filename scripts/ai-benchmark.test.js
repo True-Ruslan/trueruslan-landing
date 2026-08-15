@@ -31,8 +31,8 @@ test('AI retrieval benchmark is exactly 50 reviewed cases with bounded groups', 
   assert.equal(cases.length, 50);
   assert.equal(new Set(cases.map(({id}) => id)).size, 50);
   assert.equal(cases.filter(({kind}) => kind === 'insufficient').length, 10);
-  assert.equal(cases.filter(({kind}) => kind === 'exact').length, 16);
-  assert.equal(cases.filter(({kind}) => kind === 'paraphrase').length, 14);
+  assert.equal(cases.filter(({kind}) => kind === 'exact').length, 15);
+  assert.equal(cases.filter(({kind}) => kind === 'paraphrase').length, 15);
   assert.equal(cases.filter(({kind}) => kind === 'cross-language').length, 10);
   assert.ok(cases.every(({query}) => query.trim().length >= 3));
   assert.ok(cases.every(({lang}) => ['ru', 'en'].includes(lang)));
