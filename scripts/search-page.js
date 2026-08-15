@@ -39,6 +39,38 @@ function appendFragmentChildren(parent, html) {
   }
 }
 
+function publicAiConfig(aiConfig) {
+  return {
+    mode: aiConfig.mode,
+    workerBaseUrl: aiConfig.workerBaseUrl,
+    embeddingDimensions: aiConfig.embeddingDimensions,
+    maxQueryChars: aiConfig.maxQueryChars,
+    maxResults: aiConfig.maxResults,
+    answerMaxChunks: aiConfig.answerMaxChunks,
+    hybridWeights: aiConfig.hybridWeights,
+  };
+}
+
+function safeScriptJson(value) {
+  return JSON.stringify(value)
+    .replaceAll('<', '\\u003c')
+    .replaceAll('>', '\\u003e')
+    .replaceAll('&', '\\u0026');
+}
+
+function injectPublicAiConfig(document, body, aiConfig) {
+  const existing = findNode(document, (node) => (
+    node.tagName === 'script' && getAttribute(node, 'id')?.value === 'tr-ai-search-config'
+  ));
+  if (existing) return;
+
+  const value = safeScriptJson(publicAiConfig(aiConfig));
+  appendFragmentChildren(
+    body,
+    `<script id="tr-ai-search-config" type="application/json" data-tr-ai-resource="config">${value}</script>`,
+  );
+}
+
 function injectProjectSearchResources(document, aiConfig) {
   const html = findNode(document, (node) => node.tagName === 'html');
   const body = findNode(document, (node) => node.tagName === 'body');
@@ -63,6 +95,7 @@ function injectProjectSearchResources(document, aiConfig) {
 
   setAttribute(html, 'data-tr-ai-mode', aiMode);
   setAttribute(body, 'data-tr-ai-mode', aiMode);
+  injectPublicAiConfig(document, body, aiConfig);
 
   const aiStylesheet = '_assets/style/ai-search.css';
   const retrievalScript = '_assets/script/ai-retrieval.js';
