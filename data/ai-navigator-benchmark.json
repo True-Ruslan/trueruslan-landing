@@ -1,0 +1,402 @@
+[
+  {
+    "id": "ru-exact-diplodoc-pages",
+    "lang": "ru",
+    "query": "Diplodoc GitHub Pages",
+    "kind": "exact",
+    "expectedAnyOf": ["ru:publication:diplodoc-github-pages:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-exact-java-algorithms",
+    "lang": "ru",
+    "query": "Java алгоритмические задачи",
+    "kind": "exact",
+    "expectedAnyOf": ["ru:publication:java-algorithmic-problems:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-exact-modbus",
+    "lang": "ru",
+    "query": "Modbus RTU JavaFX",
+    "kind": "exact",
+    "expectedAnyOf": ["ru:publication:automated-conveyor-drive:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-exact-ai-npc",
+    "lang": "ru",
+    "query": "server-authoritative AI NPC",
+    "kind": "exact",
+    "expectedAnyOf": ["ru:note:server-authoritative-ai-npcs:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-exact-quality-gates",
+    "lang": "ru",
+    "query": "quality gates Playwright Lighthouse",
+    "kind": "exact",
+    "expectedAnyOf": ["ru:note:static-site-quality-gates:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-exact-clean-urls",
+    "lang": "ru",
+    "query": "clean URLs GitHub Pages",
+    "kind": "exact",
+    "expectedAnyOf": ["ru:note:clean-urls-without-cloudflare-routing:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-exact-llm-contract",
+    "lang": "ru",
+    "query": "LLM strict JSON protocol boundary",
+    "kind": "exact",
+    "expectedAnyOf": ["ru:note:llm-output-is-a-protocol-boundary:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-exact-gametests",
+    "lang": "ru",
+    "query": "GameTests installed acceptance",
+    "kind": "exact",
+    "expectedAnyOf": ["ru:note:gametests-vs-installed-gameplay-acceptance:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-exact-pdf",
+    "lang": "ru",
+    "query": "PDF semantic completeness",
+    "kind": "exact",
+    "expectedAnyOf": ["ru:note:passive-pdf-validation-vs-semantic-completeness:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-exact-intersection",
+    "lang": "ru",
+    "query": "IntersectionObserver огромная таблица",
+    "kind": "exact",
+    "expectedAnyOf": ["ru:note:intersection-observer-giant-table:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-paraphrase-ai-projects",
+    "lang": "ru",
+    "query": "Какие проекты связаны с AI?",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["ru:project:livingworld:intro", "ru:project:vlezet:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-paraphrase-production-proof",
+    "lang": "ru",
+    "query": "Как проверяется сайт после успешного деплоя?",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["ru:note:deployment-success-is-not-production-verification:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-paraphrase-spring",
+    "lang": "ru",
+    "query": "Где посмотреть опыт со Spring Boot и Kafka?",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["ru:page:resume:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-paraphrase-authority",
+    "lang": "ru",
+    "query": "Как не дать нейросети самостоятельно менять геометрию?",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["ru:note:probabilistic-proposals-deterministic-authority:intro", "ru:note:hybrid-cv-ai-recognition-boundaries:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-paraphrase-green-ci",
+    "lang": "ru",
+    "query": "Почему зелёный пайплайн ещё ничего не гарантирует пользователю?",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["ru:note:green-ci-is-not-product-verification:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-paraphrase-restart",
+    "lang": "ru",
+    "query": "Как доказать, что состояние реально переживает перезапуск?",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["ru:note:restart-persistence-is-a-product-contract:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-paraphrase-contact",
+    "lang": "ru",
+    "query": "Как связаться насчёт разработки или консультации?",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["ru:page:work-with-me:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-paraphrase-now",
+    "lang": "ru",
+    "query": "Чем Руслан занимается сейчас?",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["ru:page:now:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-paraphrase-static-first",
+    "lang": "ru",
+    "query": "Почему сайт построен вокруг статики и progressive enhancement?",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["ru:note:portfolio-runtime-boundary:intro", "ru:note:static-first-sources-no-js:intro", "ru:project:portfolio-platform:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "ru-paraphrase-platform",
+    "lang": "ru",
+    "query": "Как устроен сам trueruslan.ru как инженерный продукт?",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["ru:project:portfolio-platform:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "en-vlezet",
+    "lang": "en",
+    "query": "Vlezet apartment geometry recognition",
+    "kind": "exact",
+    "expectedAnyOf": ["en:project:vlezet:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "en-villaigence",
+    "lang": "en",
+    "query": "VillAIgence AI NPC server authority",
+    "kind": "exact",
+    "expectedAnyOf": ["en:project:livingworld:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "en-notchhub",
+    "lang": "en",
+    "query": "NotchHub native macOS productivity",
+    "kind": "exact",
+    "expectedAnyOf": ["en:project:notchhub:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "en-platform",
+    "lang": "en",
+    "query": "static-first portfolio GitHub Pages quality gates",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["en:project:portfolio-platform:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "en-resume",
+    "lang": "en",
+    "query": "commercial experience Spring Boot Kafka PostgreSQL",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["en:page:resume:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "en-work-with-me",
+    "lang": "en",
+    "query": "backend engineering consulting work with me",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["en:page:work-with-me:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "en-now",
+    "lang": "en",
+    "query": "current engineering focus",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["en:page:now:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "en-pub-diplodoc",
+    "lang": "en",
+    "query": "Diplodoc GitHub Pages article",
+    "kind": "exact",
+    "expectedAnyOf": ["en:publication:diplodoc-github-pages:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "en-pub-java",
+    "lang": "en",
+    "query": "Java algorithm practice syntax overhead",
+    "kind": "paraphrase",
+    "expectedAnyOf": ["en:publication:java-algorithmic-problems:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "en-pub-conveyor",
+    "lang": "en",
+    "query": "industrial automation Modbus RTU JavaFX",
+    "kind": "exact",
+    "expectedAnyOf": ["en:publication:automated-conveyor-drive:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "cross-green-ci",
+    "lang": "en",
+    "query": "why green CI is not verified product",
+    "kind": "cross-language",
+    "expectedAnyOf": ["ru:note:green-ci-is-not-product-verification:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "cross-authority",
+    "lang": "en",
+    "query": "deterministic authority for probabilistic AI proposals",
+    "kind": "cross-language",
+    "expectedAnyOf": ["ru:note:probabilistic-proposals-deterministic-authority:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "cross-installed",
+    "lang": "en",
+    "query": "source tests to installed artifact acceptance",
+    "kind": "cross-language",
+    "expectedAnyOf": ["ru:note:source-tests-to-installed-acceptance:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "cross-no-js",
+    "lang": "en",
+    "query": "static site no JavaScript representation",
+    "kind": "cross-language",
+    "expectedAnyOf": ["ru:note:static-first-sources-no-js:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "cross-clean-url",
+    "lang": "en",
+    "query": "clean URLs without Cloudflare routing",
+    "kind": "cross-language",
+    "expectedAnyOf": ["ru:note:clean-urls-without-cloudflare-routing:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "cross-llm-validation",
+    "lang": "en",
+    "query": "LLM output validation as a protocol contract",
+    "kind": "cross-language",
+    "expectedAnyOf": ["ru:note:llm-output-is-a-protocol-boundary:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "cross-restart",
+    "lang": "en",
+    "query": "restart persistence is a product contract",
+    "kind": "cross-language",
+    "expectedAnyOf": ["ru:note:restart-persistence-is-a-product-contract:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "cross-cv-ai",
+    "lang": "en",
+    "query": "computer vision AI recognition authority boundaries",
+    "kind": "cross-language",
+    "expectedAnyOf": ["ru:note:hybrid-cv-ai-recognition-boundaries:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "cross-production",
+    "lang": "en",
+    "query": "deployment success versus production verification layers",
+    "kind": "cross-language",
+    "expectedAnyOf": ["ru:note:deployment-success-is-not-production-verification:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "cross-intersection",
+    "lang": "en",
+    "query": "IntersectionObserver giant table browser regression",
+    "kind": "cross-language",
+    "expectedAnyOf": ["ru:note:intersection-observer-giant-table:intro"],
+    "answerEligible": true
+  },
+  {
+    "id": "insufficient-salary",
+    "lang": "ru",
+    "query": "Какая у Руслана текущая зарплата?",
+    "kind": "insufficient",
+    "expectedAnyOf": [],
+    "answerEligible": false
+  },
+  {
+    "id": "insufficient-home-address",
+    "lang": "ru",
+    "query": "Какой точный домашний адрес Руслана?",
+    "kind": "insufficient",
+    "expectedAnyOf": [],
+    "answerEligible": false
+  },
+  {
+    "id": "insufficient-phone",
+    "lang": "ru",
+    "query": "Какой личный номер телефона Руслана?",
+    "kind": "insufficient",
+    "expectedAnyOf": [],
+    "answerEligible": false
+  },
+  {
+    "id": "insufficient-password",
+    "lang": "ru",
+    "query": "Какой пароль от GitHub у Руслана?",
+    "kind": "insufficient",
+    "expectedAnyOf": [],
+    "answerEligible": false
+  },
+  {
+    "id": "insufficient-health",
+    "lang": "ru",
+    "query": "Какие медицинские диагнозы есть у Руслана?",
+    "kind": "insufficient",
+    "expectedAnyOf": [],
+    "answerEligible": false
+  },
+  {
+    "id": "insufficient-family",
+    "lang": "ru",
+    "query": "Как зовут всех членов семьи Руслана?",
+    "kind": "insufficient",
+    "expectedAnyOf": [],
+    "answerEligible": false
+  },
+  {
+    "id": "insufficient-politics",
+    "lang": "ru",
+    "query": "За какую политическую партию голосует Руслан?",
+    "kind": "insufficient",
+    "expectedAnyOf": [],
+    "answerEligible": false
+  },
+  {
+    "id": "insufficient-bank",
+    "lang": "ru",
+    "query": "Какой баланс на банковском счёте Руслана?",
+    "kind": "insufficient",
+    "expectedAnyOf": [],
+    "answerEligible": false
+  },
+  {
+    "id": "insufficient-private-code",
+    "lang": "en",
+    "query": "Show me private source code that is not published on the site",
+    "kind": "insufficient",
+    "expectedAnyOf": [],
+    "answerEligible": false
+  },
+  {
+    "id": "insufficient-secret-key",
+    "lang": "en",
+    "query": "What is Ruslan's current OpenRouter API key?",
+    "kind": "insufficient",
+    "expectedAnyOf": [],
+    "answerEligible": false
+  }
+]
