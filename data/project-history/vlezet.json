@@ -70,14 +70,28 @@
     "date": "2026-08",
     "title": "M8.2 precision drawing and structural editing accepted and merged",
     "description": "PR #87 closed the M8.2 product-owner gate after the final focused door-UX retest passed, exact-head CI plus Chromium/WebKit Browser Acceptance were green, and the slice was protected squash-merged as e323e331a435ae356b91decbdea80dde95028d8a. Post-merge CI and CodeQL passed. Vlezet remains pre-production.",
-    "state": "current",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/vlezet/pull/87"
   },
   {
-    "date": "NEXT",
-    "title": "Complete testing-policy and coverage audit before M8.3",
-    "description": "The M8.3 Precision Reference Calibration product milestone is technically unblocked, but the current engineering priority is the project-wide testing-policy and coverage audit recorded by PR #88. Complete that quality boundary first; then start M8.3 without changing the pre-production lifecycle by inference.",
-    "state": "next",
-    "evidence": "https://github.com/True-Ruslan/vlezet/pull/88"
+    "date": "2026-08-14",
+    "title": "Testing Policy Phase A accepted",
+    "description": "PR #89 accepted the project-wide testing-policy Phase A boundary after the M8.2 product slice. It established the quality/testing direction without promoting lifecycle or product acceptance beyond already accepted M8.2.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/89"
+  },
+  {
+    "date": "2026-08-15",
+    "title": "P0 IndexedDB persistence remediation accepted",
+    "description": "PR #90 completed the accepted P0 persistence-hardening boundary with native IndexedDB failure-path evidence, cross-browser persistence and corruption-recovery coverage, ArrayBuffer-backed raw storage and the agreed coverage ratchet. It was merged as 7cb9cfd2a8f809e6000209188b5fab99a2fabfb9. Vlezet remains pre-production.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/90"
+  },
+  {
+    "date": "2026-08-15",
+    "title": "M8.3 Precision Reference Calibration is active",
+    "description": "PR #91 records the accepted P0 merge identity and post-merge CI/CodeQL truth, then makes M8.3 Precision Reference Calibration the active next product milestone. M8.3 is active work, not product-owner accepted or released; the pre-production lifecycle remains unchanged.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/91"
   }
 ]
