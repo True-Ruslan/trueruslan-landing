@@ -48,6 +48,7 @@ P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE; suffic
 - #82 remains OPEN upstream Diplodoc/markdown-it blocker; next historical review marker 2026-08-17; do not use forced incompatible overrides.
 - #78 was reopened 2026-08-15 for repository drift and requires real evidence reconciliation.
 - #111 / #212 remain authenticated operator/external observation work.
+- exact artifact и installed acceptance остаются отдельными release gates.
 - no quality/security gate weakening.
 
 ## Historical durable acceptance contract
