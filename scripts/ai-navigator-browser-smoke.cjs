@@ -279,7 +279,7 @@ function assertNoAiStorage(storage, label) {
 
 async function assertNoProviderMaterial(page, label) {
   const html = await page.content();
-  assert.equal(/openai\/text-embedding|gemini-2\.5|OPENROUTER_API_KEY|sk-[a-z0-9]/i.test(html), false, `${label}: provider authority leaked into browser HTML`);
+  assert.equal(/openai\/text-embedding|gemini-2\.5|Bearer\s+[A-Za-z0-9._~-]{12,}|sk-[a-z0-9]{8,}/i.test(html), false, `${label}: provider authority leaked into browser HTML`);
 }
 
 async function run() {
