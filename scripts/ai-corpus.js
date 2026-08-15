@@ -43,8 +43,8 @@ function stripNonReaderBlocks(markdown) {
   return stripFrontMatter(markdown)
     .replace(/```[\s\S]*?```/g, '\n')
     .replace(/~~~[\s\S]*?~~~/g, '\n')
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '\n')
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '\n')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi, '\n')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style\b[^>]*>/gi, '\n')
     .replace(/<!--[\s\S]*?-->/g, '\n')
     .replace(/^\s*\{%\s*include\b[^%]*%\}\s*$/gim, '\n')
     .replace(/^\s*\{#\s*include\b[^#]*#\}\s*$/gim, '\n');
