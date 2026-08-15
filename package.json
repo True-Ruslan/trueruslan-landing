@@ -57,6 +57,8 @@
     "ai:corpus": "node scripts/ai-corpus.js --write data/ai-index/chunks.json",
     "ai:index": "node scripts/ai-index.js",
     "ai:verify": "node scripts/ai-index-verify.js",
+    "ai:benchmark": "node scripts/ai-benchmark.js",
+    "ai:benchmark:refresh": "node scripts/ai-benchmark-embeddings.js",
     "test": "node --test scripts/*.test.js && npm run check:discovery"
   },
   "dependencies": {
