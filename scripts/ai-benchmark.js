@@ -8,6 +8,13 @@ import {buildAiCorpus, normalizeChunkText} from './ai-corpus.js';
 const BENCHMARK_KINDS = new Set(['exact', 'paraphrase', 'cross-language', 'insufficient']);
 const CASE_KEYS = Object.freeze(['id', 'lang', 'query', 'kind', 'expectedAnyOf', 'answerEligible']);
 
+export const HYBRID_WEIGHT_CANDIDATES = Object.freeze([
+  Object.freeze({semantic: 0.55, lexical: 0.30, title: 0.10, language: 0.05}),
+  Object.freeze({semantic: 0.65, lexical: 0.20, title: 0.10, language: 0.05}),
+  Object.freeze({semantic: 0.70, lexical: 0.15, title: 0.10, language: 0.05}),
+  Object.freeze({semantic: 0.75, lexical: 0.10, title: 0.10, language: 0.05}),
+]);
+
 function readBenchmarkInput(input) {
   if (Array.isArray(input)) return structuredClone(input);
   if (typeof input !== 'string') throw new Error('Benchmark input must be a file path or an array');
@@ -52,6 +59,11 @@ function scoreLexical(query, chunk, preferredLang) {
 
 function roundMetric(value) {
   return Number(Number(value || 0).toFixed(6));
+}
+
+function sameWeights(left, right) {
+  return left && right && ['semantic', 'lexical', 'title', 'language']
+    .every((key) => left[key] === right[key]);
 }
 
 export function loadBenchmark(input, validChunkIds) {
@@ -141,6 +153,36 @@ export function evaluateRetrieval({cases, retrieve, limit = 5}) {
     })),
     perCase,
   };
+}
+
+export function selectHybridWeights({lexicalPerCase, candidateReports}) {
+  if (!Array.isArray(lexicalPerCase) || !Array.isArray(candidateReports)) {
+    throw new Error('Hybrid weight selection requires lexical and candidate reports');
+  }
+  const exactLexicalHits = lexicalPerCase
+    .filter(({kind, hit}) => kind === 'exact' && hit === true)
+    .map(({id}) => id);
+
+  const qualifying = candidateReports
+    .map((candidate, index) => ({...candidate, index}))
+    .filter(({weights, report}) => {
+      if (!HYBRID_WEIGHT_CANDIDATES.some((allowed) => sameWeights(allowed, weights))) return false;
+      if (!report || !Number.isFinite(report.recallAt5) || report.recallAt5 < 0.90) return false;
+      if (!Number.isFinite(report.paraphraseRecallAt5)) return false;
+      const byId = new Map((report.perCase || []).map((item) => [item.id, item]));
+      return exactLexicalHits.every((id) => byId.get(id)?.hit === true);
+    })
+    .sort((left, right) => (
+      right.report.paraphraseRecallAt5 - left.report.paraphraseRecallAt5
+      || left.weights.semantic - right.weights.semantic
+      || left.index - right.index
+    ));
+
+  if (qualifying.length === 0) {
+    throw new Error('No hybrid candidate satisfies Recall@5 >= 0.90 and exact-term lexical no-regression');
+  }
+  const winner = HYBRID_WEIGHT_CANDIDATES.find((candidate) => sameWeights(candidate, qualifying[0].weights));
+  return winner;
 }
 
 function isMainModule() {
