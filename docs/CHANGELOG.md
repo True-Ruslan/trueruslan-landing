@@ -1,744 +1,92 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-14**, post-N6 evidence/security/flagship/production-verifier reconciliation production-accepted на `733a8f5342da6fd5a8c9f8995a2383367145db04`; controlled launch остаётся `not-published`, P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, P3.6/P4.1C остаются открытыми.
+> Обновлено: **2026-08-15**. AI Navigator engineering baseline production-accepted на `ca4cecd510b5c0f6bad6cef31b6b5dd630f5f50f`; public AI остаётся OFF. Controlled launch остаётся `not-published`; P4.1B review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C/P3.6 остаются evidence-gated.
 >
-> Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`; specification — `docs/keystone/specs/2026-08-05-portfolio-1-0-evidence-first.md`.
+> Полный changelog snapshot до 2026-08-15 сохранён byte-for-byte в `docs/archive/2026-08-14/CHANGELOG.md`.
+>
+> Current state — `docs/PROJECT_STATE.md`; next steps — `docs/ROADMAP.md`.
 
-## 2026-08-14 — Post-N6 evidence/security/flagship/production verifier reconciliation — PRODUCTION ACCEPTED
+## 2026-08-15 — AI Navigator static-first engineering baseline — PRODUCTION ACCEPTED / PUBLIC AI OFF
 
-- PR #238 reconciled volatile project evidence and stale browser expectations; a clean Content Freshness rerun ended with 0 findings and closed issue #78.
-- PR #240 reconciled VillAIgence case-study truth to official release `0.3.1+1.21.1` while preserving `Release Candidate / ACCEPTANCE IN PROGRESS`, the pending exact installed corrective canary and the historical accepted `0.2.0+1.21.1` installed baseline.
-- PR #241 aligned the homepage Work with me bridge with the accepted C2 visual system without changing canonical routes or collaboration semantics.
-- PR #242 remediated the newly effective nanoid high-severity advisory with the minimal `3.3.18` patch, regenerated the lockfile and closed #239. The six known markdown-it moderate records remain isolated under upstream blocker #82.
-- PRs #243/#244 repaired stale production Work with me selectors/contracts. Deployment-bound verification then exposed one EN-only verifier bug: raw `href="en/work-with-me/"` was rebased against the page URL instead of the document `<base href="../">`. Product markup itself was correct.
-- PR #245 fixed the verifier at the correct abstraction boundary by validating the browser-resolved anchor URL and strengthened the local regression contract. Exact head `4af1a86b8d8c32591fd477ca4940bd1810cfbf95`: Build #2125 / `31805517531`, Dependency Review #1546 / `31805517697`, CodeQL #1706 / `31805517623`, PR-safe Production Live #600 / `31805517636` — all SUCCESS.
-- PR #245 squash / deployed SHA `733a8f5342da6fd5a8c9f8995a2383367145db04`: Pages #264 / `31806002715` — SUCCESS; deployment `5907193488`; exact-deployment Production Live #601 / `31806002659` — SUCCESS; master CodeQL #1707 / `31806002667` — SUCCESS. Production artifact `9221259935`, digest `sha256:07f4c3fcb5c0ded81b0c82d954d8de21eb0a2c7fcc6c668f9b3c22a440f21c84`.
-- No external launch/search-impact claim is introduced. Controlled launch remains **not-published**; launch pack remains **10 targets / 38 manual drafts**; P4.1B remains **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**; P4.1C remains **WAITING**; P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; clean-URL clock remains `2026-08-05T00:00:00Z`.
+### Design and implementation plan
 
+- PR #248 recorded the approved static-first AI Navigator design: compact optional AI mode in the existing search surface, OFF on fresh production load, ordinary Diplodoc search preserved, semantic retrieval separate from explicit answer generation, canonical-public-content-only grounding, no database/vector database and reversible off/search/full modes.
+- PR #249 converted the design into a TDD delivery plan covering deterministic corpus/benchmark, explicit static index, hybrid retrieval, mode-gated search integration, grounded answers, real provider acceptance, SEARCH canary, FULL canary and final keep/downgrade/remove verdict.
 
-## 2026-08-14 — N6 full-site editorial UX + bounded copy polish — PRODUCTION ACCEPTED
+### Deterministic corpus and retrieval benchmark
 
-- PR #231 completed the N6A full-site editorial audit: all 50 canonical routes classified; Tier 1 = 14, Tier 2 = 18, Tier 3 = 18; final configured warnings = 0; Onest retained; eight bounded N6C corrections selected. Squash `99af9cd2e9f31f124fb095cd2b7b2b23cc1e2a97`.
-- PR #233 implemented the bounded N6C reader-facing copy set and preserved typography, URLs, registries, workflows, deep case studies and deep Notes architecture. Exact head `513243b7156227888a5ec9f3eecbe3e23939e3bd`; Build #2087 / `31725770799`, Dependency Review #1508 / `31725770759`, CodeQL #1658 / `31725770921` — SUCCESS; initial squash `ec4b0b7ead1117b2bb507e25e517400b36e771a1`.
-- Production Live #561 / `31731621136` and #562 / `31731693651` then exposed one stale verifier contract: RU no-JS correctly used the new Russian labels while the production smoke still required English `Context` in both locales.
-- PR #234 fixed only the verifier and added a regression contract. RED `088dceaea3edba7dfc3115a499fc8af797d99379`: 805 PASS / 1 intended FAIL. GREEN exact head `2f7ad5a11fef85e9d5e88028f6fba05674d4e637`: Build #2089 / `31744917904`, Dependency Review `31744917926`, CodeQL `31744917942` — SUCCESS.
-- PR #234 squash / exact product SHA `635b4a0760765a515277ad8abcbb1500bf646027`: Pages #255 / `31745658299`, Production Live #564 / `31745658315`, deployment-triggered Production Live #565 / `31745724350` and master CodeQL #1662 / `31745658298` — SUCCESS. The previously failing Work with me smoke, P3.4A–F and favicon gates all passed.
-- PR #236 merged the immutable N6 acceptance ledger as `01b4508355c33a81a5e9d1b5f5815a6c37318a9b`; Pages #256 / `31747501445`, Production Live #566 / `31747501412`, #567 / `31747551462` and master CodeQL #1665 / `31747501461` — SUCCESS. PR #235 was closed superseded; no open PR remains from the N6 sequence.
-- No SEO/ranking/engagement/conversion claim is introduced. Controlled launch remains `not-published`; P4.1B remains sparse/in-progress; P4.1C and P3.6 remain waiting; clean-URL clock remains `2026-08-05T00:00:00Z`.
+- PR #250 implemented a deterministic canonical public corpus and reviewed **50-case RU/EN retrieval benchmark** with positive, paraphrase, exact-term and insufficient/private-adversarial cases.
+- Corpus chunks use stable IDs, canonical URLs and content hashes; state/acceptance/private material is excluded from reader-owned corpus sources.
+- During review CodeQL found two related sanitizer gaps around non-standard closing `script/style` tags. Both were reproduced before fixing:
+  - RED `83380141b1f1b0eba35b4425871ce017d1a2ae0f` covered `</script >`;
+  - GREEN `9854f6219ac0017d13dd8777412eca241fe5e681` closed the first form;
+  - a second review exposed a broader malformed closing-tail form;
+  - RED `81c9b4c58ac0dffb229e4769f42db785bb8dda3d` reproduced it;
+  - final GREEN `54d78cfd0d1b817ece42086aee61062410cf59d6` changed script/style stripping to a conservative closing-tag contract and added permanent regressions.
+- Final #250 exact-head Build #2204, CodeQL #1733 and Dependency Review #1568 — SUCCESS; both review conversations resolved before squash merge.
 
-## 2026-08-13 — Portfolio UX/content polish + Engineering Notes reader architecture — PRODUCTION ACCEPTED
+### Explicit static embedding index and hybrid retrieval
 
-- N2 Homepage spacing/symmetry shipped through PR #221 (`d2911b416c6bc500a8a9543e636ae045d37869e9`) and durable acceptance #222.
-- N3/N3b/N3c Work with me / Now / professional-context polish shipped through PR #223 (`710db235c99a8cc1258eb44db0fa2c1bb3fc027b`) and durable acceptance #224.
-- N4 Publications card-rhythm refinement shipped through PR #225 (`0cb8028c5bac21c94daf8c16671d99e8f7fac38f`) and durable acceptance #226.
-- N5 audit PR #227 (`c2292fb56b1396e994a348d3811015e2f8b6ea4b`) inventoried all 16 Engineering Notes, rejected destructive consolidation, fixed the exact-host GitHub evidence validation issue surfaced by CodeQL, and selected reader orientation as the bounded next implementation.
-- Design PR #228 (`14e966a0da47a659cbedab2fa3b6834353097ecc`) specified one Notes hub, three reader series, preserved chronological catalogue, intentional related graph and targeted scan-copy clarification.
-- Implementation PR #229 started with intentional RED Build #2035 at `15a54a2d152e77429fd440cefe379a5504ef5f66`: 778 tests passed and exactly four new reader contracts failed before production changes.
-- Final PR #229 head `b5567fdd14430c67746da2dbbbfb0dee1f491470` passed Build #2044 / `31685171581`, Dependency Review `31685171386`, CodeQL #1612 / `31685171699`, the complete browser/Axe/Lighthouse/Firefox/WebKit/no-JS/visual/search/custom-domain matrix and the dedicated Notes reader smoke. Quality artifact `9175280938`, digest `sha256:eb367d8b81ca203b54d58d4b474d699ec64f4ca6f07f0988c5c5f162b42dc025`.
-- PR #229 squash / deployed SHA `1a0db35795aea1ea966e1452bcdb106bb5419ba1`; Pages #251 / `31685895669` — SUCCESS, deployment `5885271220`, Pages artifact `9175388951` / `sha256:68b36f9f44ea475cbb344d1a39c10fde67ecd3a837f280e17b66b9ff122b9200`, verification reports `9175392494` / `sha256:556786a26ecb3dce249ace8cf86c48ab8a23e773ae0934589a4246f7b7d781f5`; Production Live #556 / `31685963890` — SUCCESS, artifact `9175455505` / `sha256:1a08c34a1bc911ee78771528efa1808dd8e6a9e95b8a1c69fda025bbe72c673d`; master CodeQL #1613 / `31685895573` — SUCCESS.
-- Reader result: 16 catalogue cards, 3 Start here choices, 3 guided series, 16 guided Notes, zero mobile/no-JS horizontal overflow and zero serious/critical Axe violations; all existing Note URL/canonical/feed/search/clean-route identities remain intact.
-- No SEO/ranking/engagement/conversion claim is introduced. Controlled launch remains `not-published`; P4.1B remains sparse/in-progress; P4.1C and P3.6 remain waiting; clean-URL clock remains `2026-08-05T00:00:00Z`.
+- PR #251 implemented explicit operator-only document embedding refresh, content-hash reuse, deterministic corpus artifact, Float32 embedding binary + manifest/digests, fully offline current-corpus verification and shared deterministic Node/browser hybrid ranking.
+- Benchmark weight selection is gated by Recall@5 and exact-term no-regression constraints.
+- Accepted corpus sanitizer regressions from #250 were preserved while adding the new `--write`/index maintenance path.
+- Exact head `767b416fe980528c0a933c4d92328fbc24c98a76`: Build #2205, CodeQL #1735, Dependency Audit #267, Dependency Review #1569 — SUCCESS; no review threads.
 
-## 2026-08-12 — Navigation information architecture — PRODUCTION ACCEPTED
+### Optional semantic-search runtime
 
-- PR #217 aligned the visible Diplodoc sidebar to five roots: `Проекты → Опыт → Материалы → Работа со мной → Обо мне`, added the RU Materials hub, nested Publications / Engineering Map / Engineering Notes / Sources, nested Сейчас / Фото / Контакты under About, and made the existing English TOC branch build-only with `hidden: true` while preserving direct EN routes and the top-right language selector.
-- TDD preserved both intentional RED stages: 751/754 PASS with three old-IA failures, then 754/755 PASS while the browser gate was intentionally missing. Final feature head `3900b9ad4444c0ba529fed33fada53490033cf8b` passed Build #1976, Dependency Review #1397, CodeQL #1533, Distribution Readiness #201 and the complete browser/visual/custom-domain matrix.
-- PR #217 squash / deployed SHA `9831521d5d248fa01c491e3cec031cef07fc8ec5`; Pages #240 / `31626103994` — SUCCESS; GitHub Pages deployment `5874711313`; deployment-triggered Production Live #533 / `31626170633` — SUCCESS. Production artifact `9153258510`, digest `sha256:a4b26ea2fbb75850b7f38d979f7888d0167f3407b6eb6566449e7384c8787fef`.
-- Durable acceptance ledger: `docs/acceptance/2026-08-12-navigation-information-architecture.md`.
-- No search-performance, engagement or causal product-impact claim is introduced. Controlled launch remains `not-published`; P4.1B remains IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C remains WAITING; P3.6 remains NEXT / WAITING; clean-URL clock remains `2026-08-05T00:00:00Z`.
+- PR #252 integrated a restrained AI control with the existing search surface without replacing Diplodoc ownership.
+- Production OFF mode does not publish/load the AI corpus/index and makes no provider call.
+- Enabled fixture/canary modes use verified static artifacts and browser-side deterministic hybrid ranking.
+- A minimal stateless Worker boundary hides the OpenRouter key, validates model/dimensions, denies provider data collection, uses no-store responses and an 8-second runtime timeout; failures fall back without changing canonical content/URLs.
+- PR #252 alone was explicitly not considered sufficient for public SEARCH canary because browser CORS/preflight acceptance belonged to the next layer.
+- Exact head `326ab72865fabed63b6a12597e9d07770f45e0d0`: Build #2206, CodeQL #1737, Dependency Audit #268, Dependency Review #1570 — SUCCESS; no review threads.
 
-## 2026-08-12 — Real GSC baseline + controlled launch pack
+### Grounded answers, CORS/preflight and provider-free acceptance
 
-- PR #213 implemented the first raw adapter against an actual authenticated/operator-supplied Google Search Console Russian Search Performance CSV export, without guessed schema or committed private metrics. The first observations are recorded only as a **sparse pre-public-launch / clean-URL-migration baseline**; query evidence is currently empty and legacy URL visibility is still observable.
-- PR #213 squash / deployed SHA `831535461f3c72d53e3510574ae7ae9c52ab54f6`; exact-head Build #1933, CodeQL #1487 and Dependency Review #1355 — SUCCESS; Pages #236 / 31606858974 — SUCCESS; Production Live Smoke #524 / 31606858968 and #525 / 31606948825 — SUCCESS.
-- PR #214 added a controlled manual launch pack derived from canonical Distribution Readiness, with exact clean URLs, no UTM/query mutation and no external posting/auth/scheduling behavior. Final exact-head Build #1939 / 31610400124, Distribution Readiness #185 / 31610400129, Dependency Review #1361 and CodeQL #1494 — SUCCESS.
-- PR #214 squash / deployed SHA `bed23ac0330ca112b94259998adcd8187203988a`; launch artifact **10 targets / 38 manual drafts / not-published**; Pages #237 / 31611168208 — SUCCESS; Production Live Smoke #526 / 31611168202 and #527 / 31611259926 — SUCCESS.
-- **P4.1B real evidence review is IN PROGRESS / SPARSE PRE-LAUNCH BASELINE, not complete. The actual controlled launch remains not-published. P4.1C remains WAITING. P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE**, and the clean-URL clock remains `2026-08-05T00:00:00Z`.
+- PR #253 completed the OFF-by-default engineering acceptance layer.
+- `/v1/answer` accepts only a question plus selected canonical chunk IDs; browser-provided context/model/provider settings are not trusted. The Worker resolves canonical public corpus context server-side.
+- Strict structured answer schema, citation-subset validation and insufficient-evidence normalization prevent unsupported world-knowledge/browsing/tool fallback.
+- Answer generation remains an explicit `Ask AI` action after retrieval.
+- `/v1/embed` and `/v1/answer` have exact-origin CORS preflight contracts; preflight makes no provider call.
+- Provider/corpus operations remain bounded, responses are no-store, and browser output uses safe rendering/fallback behavior.
+- Added provider-free offline AI readiness verification, semantic benchmark cache and AI browser smoke to normal CI; real provider acceptance is a separate explicit workflow.
+- Exact #253 head `8b9beacbda0e7c3042d7838b6242c790981c238f`: Build #2207 / `31905319214`, CodeQL #1739 / `31905319219`, Dependency Audit #269 / `31905319207`, Dependency Review #1571 / `31905319201` — SUCCESS; AI Navigator offline verification and browser smoke — SUCCESS.
 
-## 2026-08-12 — Current evidence reconciliation + P4.1B intake tooling
+### Final production verification
 
-- PR #209 reconciled current Vlezet, VillAIgence and Portfolio Platform evidence without promoting lifecycle or external acceptance. Final exact-head Build #1914 / 31597254382 — SUCCESS with **723 PASS / 0 FAIL**; Content Freshness #191, CodeQL #1465 and Dependency Review #1336 — SUCCESS; squash `ccf1996ced5c90511812ad435bb5829df56d30b3`; Pages #233 / 31598153664 and Production Live #519 / 31598218971 — SUCCESS.
-- PR #210 added P4.1B intake tooling for explicit operator-supplied aggregate Google Search Console / Yandex Webmaster observations: strict provenance/metric/same-property validation, RU/EN and clean-vs-legacy reporting, indexing findings, ignored private inputs and SHA-256-bound local reports. Raw export adapters remain intentionally deferred until an actual operator export/API response exists.
-- PR #210 exact head `c5153ee6e9d55e44507a0a11ef302fd54a0aa6af`; Build #1922 / 31599699918 — SUCCESS with **731 PASS / 0 FAIL**; CodeQL #1474, Dependency Review #1344 and Dependency Audit #227 — SUCCESS; quality artifact `9142767935`, digest `sha256:64d4f70f291c6fb6403ca6a2db635f3db132f64d91314faef4198d59ed20a866`.
-- PR #210 squash / deployed SHA `6083e4d950d74b272cce199fedccc730dfcc4fed`; Pages #234 / 31600575541 — SUCCESS; Production Live Smoke #520 / 31600575540 — SUCCESS; post-merge CodeQL #1475 / 31600575547 — SUCCESS.
-- P4.1A remains **READY / 11 strategic surfaces / 21 clean routes / 0 findings / externalEvidence=not-collected**. Ordinary Build does not produce a P4.1B external-evidence artifact.
-- PR #210 intake tooling remained the historical prerequisite; subsequent PR #213 advanced the first real GSC observations to **P4.1B IN PROGRESS / SPARSE PRE-LAUNCH BASELINE** without making search-performance, CTR, ranking, engagement or causal product-impact claims. P4.1C remains WAITING and P3.6 remains NEXT / WAITING FOR EXTERNAL EVIDENCE.
-
-## 2026-08-12 — Maintenance evidence reconciliation
-
-- PR #205 accepted the CodeQL Action v4.37.6 pin on exact deployed SHA `94a3748e5fd82ac707f2bcc69e4cab255ba217e5`: Build #1887 / 31579461177 — SUCCESS; CodeQL #1435 / 31579461126 — SUCCESS; Pages #230 / 31580165353 — SUCCESS; Production Live Smoke #511 / 31580165196 — SUCCESS. No query/language/permission/schedule semantics changed.
-- Recreated PR #185 at `c4e6b8dd87f224ed92dca8598d8d49737bea1d0f` passed Build #1889, CodeQL #1438 and Dependency Review #1311, but Dependency Audit #222 / 31580402634 reported **7 moderate / 0 high / 0 critical** versus the accepted issue #82 baseline of 6 package records. PR #185 was therefore **CLOSED UNMERGED / SECURITY BLOCKED**; issue #82 remains OPEN blocker with next review **2026-08-17**.
-- PR #206 removed explicit Dependabot unmanaged labels only; RED Build #1890 / 31581385552 failed the new regression contract as expected, final Build #1891 / 31581517909 — SUCCESS with **715 PASS / 0 FAIL**, CodeQL #1440 and Dependency Review #1313 — SUCCESS, Pages #231 / 31582194873 — SUCCESS, Production Live Smoke #515 / 31582244697 — SUCCESS.
-- Post-merge Dependabot npm run `31582199568` and GitHub Actions run `31582199031` both completed SUCCESS. They created PR #207 without the removed labels or label-warning comments, proving the configuration fix operationally.
-- PR #207 was **CLOSED UNMERGED** because its `package-lock.json` blob `dac054d274e48ce93828e97b83d09cc121024575` is byte-identical to rejected #185 and inherits the same issue #82 blocker.
-- No P3.6 or P4.1 external-evidence state changed: clean-URL clock remains `2026-08-05T00:00:00Z`, P4.1B review is **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**, P4.1C remains **WAITING**.
-
-## 2026-08-12 — Launch / Discovery production reconciliation
-
-- PR #202 launch distribution accepted on exact deployed SHA `91c4d3d5cb464a107e3d14d8d091cf4eb0c1638f`; Pages #226 / 31572318752 — SUCCESS; Production Live Smoke #504 / 31572389064 — SUCCESS; readiness remained 10 targets / 4 profiles / 0 stale / 0 unverified.
-- PR #203 launch preview metadata accepted on exact deployed SHA `ffd420c4b2b9e42385529b7654eaaab5f0dbd9cf`; 701 PASS / 0 FAIL; Pages #227 / 31573207215 — SUCCESS; Production Live Smoke #505 / 31573207182 — SUCCESS; browser metadata scope 10 launch + 5 supplemental.
-- P4.1A PR #201 accepted on exact deployed SHA `e75a4d24a5d9f2b8ace95c9a0629e7567992741b`; Build #1879 / 31573775442 — SUCCESS; 709 PASS / 0 FAIL; Pages #228 / 31574516725 — SUCCESS; Production Live Smoke #507 / 31574516705 — SUCCESS; discovery report 11 strategic surfaces / 21 clean routes / 0 findings; externalEvidence=not-collected.
-- No search-performance, CTR, ranking, engagement or causal product-impact claim was introduced. P4.1B review is **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**, P4.1C remains **WAITING**, and P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** with clean-URL clock `2026-08-05T00:00:00Z`.
-
-## 2026-08-11 — P4.1A Search Discovery repository readiness — REPOSITORY ACCEPTED
-
-- Opened Draft PR #201 from `master@40773f4953d43174eec25e1070a5925abbb3234a` with a RED-first structural discovery contract.
-- Added `data/search-discovery.json` as bounded coverage/intent policy referencing existing canonical i18n identities rather than duplicating RU/EN paths.
-- Added deterministic readiness/report tooling for missing metadata, missing i18n pairs, non-clean strategic routes and competing cross-surface title/description duplicates.
-- Kept proper-name equality inside one RU/EN surface valid and kept RU-only secondary Sources outside the initial controlled metadata scope instead of inventing metadata solely for the audit.
-- Wired `npm run check:discovery` into the ordinary `npm test`/Build artifact path; generated evidence is `repository-readiness` only and external Search Console/Webmaster evidence remains `not-collected`.
-- P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**; P4.1A does not reset its clean-URL observation clock or make search-performance/product-impact claims.
-- Exact-head acceptance evidence: `02c587d7adaca57d13cf9e68dd3babf269285d2f`; Build #1858 / `31537039625` — SUCCESS; CodeQL #1408 / `31537039524` — SUCCESS; Dependency Review #1286 / `31537039489` — SUCCESS; Dependency Audit #215 / `31537039452` — SUCCESS; quality artifact `9119360015`, digest `sha256:411410e9e3f9afecb04984de72b66bedcc6ad67d9a03f16d068ab4fb375632d3`; preserved discovery report **READY / 11 surfaces / 21 clean routes / 0 findings / externalEvidence=not-collected**.
-
-## 2026-08-11 — Content Freshness reconciliation — CURRENT EXTERNAL EVIDENCE
-
-- Reconciled the three repository-drift warnings from issue #78 against current GitHub state instead of promoting freshness automatically.
-- Vlezet stays `pre-production / ACTIVE DEVELOPMENT`: PR #52 is closed unmerged/superseded, M8.1 PR #85 is product-owner accepted/merged, and M8.2 PR #87 remains Draft with the focused clipboard retest pending.
-- VillAIgence stays `release-candidate / ACCEPTANCE IN PROGRESS`: official installed `0.2.0+1.21.1` remains `7 PASS / 0 FAIL` with explicit NOT TESTED boundaries; post-release source capability includes merged PR #153 while PR #155 remains Draft.
-- Portfolio Platform stays production and records C7 exact production acceptance as the latest controlled evidence; P3.6 remains NEXT / WAITING.
-- Advanced controlled `lastVerified` to 2026-08-11 only after manual reconciliation. Default-branch Content Freshness #177 later reported 0 findings and automatically closed issue #78 as completed.
-
-## 2026-08-11 — C7 production baseline + P3.6 handoff — PRODUCTION ACCEPTED
-
-- Added one tracked `data/presentation-baseline.json` as `context-only` provenance for the existing P3.6 Measurement Checkpoint, separate from private operator observations and readiness analysis.
-- Kept `cleanUrlMigrationAt=2026-08-05T00:00:00Z` and `resetsCleanUrlMeasurement=false`; C7 did not restart the observation clock.
-- Extended the existing measurement report/workflow with an explicit tracked `--presentation-baseline` input without adding a secret, second analytics owner or second observation schema.
-- Preserved the existing P3.6 rules: real evidence remains equal-duration `operator-observed` aggregates plus explicit traffic sufficiency and human review.
-- PR #198 exact feature head: `6a511b8f7cc102cdcc1b00f1dda26bc57fdefae3`;
-- exact-head Build #1799 / `31515510234` — SUCCESS;
-- quality artifact `9111068659`, digest `sha256:528e13cbe2883644c4673ce18bd0475b8acb87bb81b98e7ad806953bacc27e24`;
-- Measurement Checkpoint #174 / `31515510155` — SUCCESS;
-- measurement artifact `9110870252`, digest `sha256:6aeca4695acb1cae8933a852ee6ad8fc1323a80208a90cb7abb0084afdbd229c`;
-- accepted squash / exact deployed SHA: `134043fa2bb5f6612266a04eab2853f71b207328`;
-- Pages #223 / `31516118934` — SUCCESS;
-- github-pages deployment `5855067883` — success;
-- Pages artifact `9111122104`, digest `sha256:22471106f7981d7cfd8b8d7245aeea0db140c1a2c3fc0fb7b092ca30e5814e41`;
-- Pages production verification reports `9111138147`, digest `sha256:f3bf385afa7b727cd62a26ccdbeef5d64eb711e516c4a90e993d7a7c7f9e6b75`;
-- deployment-triggered Production Live #498 / `31516213818` — SUCCESS;
-- production artifact `9111213502`, digest `sha256:fcacde8fd83e068fe094c05a0da07a23bb8ba88a42e15d87507cf5d8ccc1a1d8`.
-
-C7 completes the Portfolio Clarity redesign implementation sequence only. P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE** and no engagement, conversion, SEO or causal product-impact claim is made.
-
-## 2026-08-11 — C6 final EN/SEO reconciliation — PRODUCTION ACCEPTED
-
-- Replaced the stale hard-coded i18n browser pair list with canonical `data/i18n.json` ownership, so all **13 controlled RU/EN pairs** are covered by generated canonical/hreflang/no-JavaScript acceptance.
-- Reconciled top-level English Projects/Now and professional links into natural user-facing copy, using paired EN routes where available and explicit labels for intentional RU-only deep links.
-- Kept `data/page-meta.json` as the sole canonical metadata owner while adding generated browser coverage for EN home/Experience canonical metadata/OpenGraph.
-- Extended one Person JSON-LD identity across RU and EN home with `alternateName: Ruslan Nemykin`; no second structured-data identity was introduced.
-- Preserved one Diplodoc generated search owner. C6 updated the EN Now search oracle from removed implementation-oriented copy to stable user-facing `short snapshot`.
-- The first exact feature deployment passed Pages but Production Live #490 exposed the same stale phrase in the deployment-only P3.5B verifier. PR #196 corrected only that verifier query plus its regression contract; no product/runtime behavior changed.
-- feature PR #195 exact head: `3104089b500e1f680117eb86e14347f3a7309b35`;
-- feature Build #1783 / `31471924720` — SUCCESS;
-- feature squash: `3bed9077ea02f50d1e2d0bb13cc3430174486a7e`;
-- production-verifier correction PR #196 exact head: `ffadb765ac29ffad4988727c980be7bffc0dd58a`;
-- correction Build #1785 / `31473097553` — SUCCESS;
-- accepted squash / exact deployed SHA: `4751e14f4464b1c55153bf8803d7367d67b5fa7b`;
-- Pages #221 / `31473635637` — SUCCESS;
-- github-pages deployment `5847044248` — success;
-- deployment-triggered Production Live #493 / `31473689705` — SUCCESS;
-- production-live artifact `9094397196`, digest `sha256:1d3c3b4cb6f068b2bb9e755ea17cc466f7afe4306e899d690b1d63c3ce5ec27f`.
-
-C6 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim. Next implementation slice: **C7 — production baseline + P3.6 handoff**.
-
-## 2026-08-11 — C5 Knowledge surfaces — PRODUCTION ACCEPTED
-
-- Replaced the hand-authored Engineering Notes mini-catalogue with a compact latest-first index derived from canonical `data/notes.json`; added semantic no-JavaScript output and a dedicated registry/count/order/overflow/Axe browser gate.
-- Reordered Publications RU/EN so Featured and generated catalogue precede methodology framing without changing bibliographic ownership.
-- Moved Engineering Map before taxonomy explanation, verified the reading guide after real scroll and reviewed only the intentional map-first desktop/mobile visual overrides (`1440×1465` / `390×2817`) with unchanged global thresholds.
-- Moved Sources searchable/filterable knowledge utility before meta framing while preserving the existing Sources Registry and page-local filter ownership.
-- Resolved the Advanced Security TOCTOU finding in the new Notes index postprocessor with direct read + explicit `ENOENT` handling and regression coverage.
-- PR #193 exact head: `f99c4534932a86e6cac0876b4a082639786d4ad9`;
-- final exact-head Build #1754 / `31437853159` — SUCCESS;
-- quality artifact `9081845821`, digest `sha256:1aad891494f773059237052fedecddbc7ea0d41b6160d007d1e5bfdd1a2313e8`;
-- CodeQL #1296 / `31437853182` — SUCCESS;
-- Dependency Review #1182 / `31437853183` — SUCCESS;
-- accepted squash / deployed SHA: `00900e832d69356bbccaa874f1b625876dad1e21`;
-- Pages #218 / `31466807721` — SUCCESS;
-- Pages deployment `5845809144` — success;
-- Pages artifact `9091830845`, digest `sha256:d21cea0af2c20f8e20c4218244481d5127717c3e02c31816804a290f8dfd25b6`;
-- Pages verification reports `9091833853`, digest `sha256:606c1516529640b51cab480dd0e8a8b9347072c3a2be9b33f032419cf38e6179`;
-- deployment-triggered Production Live #486 / `31466868392` — SUCCESS;
-- production artifact `9091881791`, digest `sha256:4e3349bdbb8b44326049750074810b3f6ed150e7b6b8922bf75aee43354d93b0`.
-
-C5 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim. Next implementation slice: **C6 — final EN/SEO reconciliation**.
-
-## 2026-08-10 — C4 Professional surfaces — PRODUCTION ACCEPTED
-
-- Reworked RU/EN Experience into a concise hero, direct contact action, five grouped stack areas and impact-first role summaries; removed the duplicated Profile/flat technology wall.
-- Reduced RU/EN Work with me to exactly three useful tracks, canonical availability, three implementation steps, direct handoff and explicit boundaries.
-- Reduced RU/EN About to three concise personal-professional sections while preserving current Java/Spring and AI/MCP facts without duplicating full Experience/Projects narratives.
-- Moved the canonical generated Now snapshot before meta explanation in RU/EN; `data/now.json` and Project Registry remain authoritative.
-- Made Telegram/email immediate on Contacts while profiles and qualification remain secondary; collaboration renderer still does not own Contacts.
-- Reviewed the intentional Resume visual change before acceptance; final desktop/mobile samples are `1440×3631` / `390×4964` with unchanged global visual thresholds.
-- PR #191 exact head: `90551bf476a167a589ee1b4a5fab2cb11c8cd923`;
-- exact-head Build #1712 / `31400871629` — SUCCESS;
-- quality artifact `9067791638`, digest `sha256:0699049422b719281dbb68980bcde478a0adbd37dfad03ac19b69280ab32151c`;
-- CodeQL #1252 / `31400871940` — SUCCESS;
-- Dependency Review #1140 / `31400871675` — SUCCESS;
-- accepted squash / deployed SHA: `12ea58e815ebf09bcc5915e92a715cd3bfed5241`;
-- Pages #216 / `31401684624` — SUCCESS;
-- Pages deployment `5834505086` — success;
-- Pages artifact `9067905904`, digest `sha256:b1ed622b6b40f7b4fbec5e11afa161ca40eb53337fdfb9f7cc625d7fef4d1d4e`;
-- deployment-triggered Production Live #482 / `31402338027` — SUCCESS;
-- production artifact `9068239234`, digest `sha256:8548b1740dd7d8e746feaedcc08ce6b227df786fa4646b4b7018e9bb1928f264`.
-
-C4 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim. Next implementation slice: **C5 — Knowledge surfaces**.
-
-## 2026-08-10 — C3 Projects and flagship summary layer — PRODUCTION ACCEPTED
-
-- Rebuilt RU/EN Projects into **Selected work → Commercial work → Labs & experiments**.
-- Kept the spotlight to VillAIgence, NotchHub and TrueRuslan Landing; MarketDB is public-safe commercial proof, while Vlezet remains directly reachable without returning to the spotlight.
-- Added one shared five-field registry-backed `Коротко / At a glance` layer to VillAIgence, NotchHub, TrueRuslan Landing and Vlezet in RU/EN before deep evidence.
-- Preserved NODE ZERO private/proprietary boundaries, canonical project/evidence ownership, clean routes, one Diplodoc search owner, no-JavaScript semantics, privacy, SEO and accessibility.
-- Reviewed only the intentionally changed Projects desktop/mobile visual baselines; global visual thresholds remain unchanged.
-- PR #189 integrated head: `d58e4fe53e53ab52c59d63222642c87f36aa4662`;
-- integrated exact-head Build #1686 / `31385511275` — SUCCESS;
-- CodeQL #1224 / `31385511279` — SUCCESS;
-- Dependency Review #1114 / `31385511434` — SUCCESS;
-- quality artifact `9061720498`, digest `sha256:254e5a9ffadc5327777fcd9b65a149bfc5f3b75a1d4c08d7a87fa8ddbe3e5e59`;
-- accepted squash / deployed SHA: `c54fd7c0e3554ffb6063fecfaa8135d02e9a6679`;
-- Pages #214 / `31388753309` — SUCCESS;
-- Pages deployment `5832077852` — success;
-- Pages artifact `9062771335`, digest `sha256:e1781720e49e152b8d6dcc9ee1f34e1a718116ee5cac70c091358c01b28b40ed`;
-- Pages verification reports `9062785516`, digest `sha256:2b2344c7a8f5e584293285af757dce9ddaa05aec657176995c0f284791f0dbe2`;
-- deployment-triggered Production Live #478 / `31388848079` — SUCCESS;
-- production artifact `9062864420`, digest `sha256:413205da34291556eabae8bf4d7f46f2af04be4fc63ce9cd42d8da801730c544`.
-
-C3 does not start, reset or close P3.6 Measurement and makes no engagement, conversion, SEO or causal product-impact claim. Next implementation slice: **C4 — Professional surfaces**.
-
-## 2026-08-10 — C2 Homepage clarity — PRODUCTION ACCEPTED
-
-- Implemented the approved C2 fast-scan homepage hierarchy in RU/EN: **Hero → Proof → Selected work → Experience → Writing → Work with me → Personal**.
-- Replaced first-scan Layer-3 evidence density with four concise professional proof facts and kept the spotlight to three selected projects.
-- Kept exactly five semantic primary-navigation destinations; Contacts remains secondary and directly reachable.
-- Preserved canonical registries, no-JavaScript content, generated search, canonical clean routes, privacy/Metrica and SEO contracts.
-- Feature PR #183 squash: `5fe5c6e15a61e54edd39e94140c7554ba19c5203`; exact-head Build #1631 / `31341099744` — SUCCESS, 636 tests and all 31 quality stages.
-- First C2 Pages #210 / `31341477318` deployed successfully, but deployment-triggered Production Live #467 / `31341502294` failed only because the Work with me production verifier still required removed C1 homepage cards.
-- PR #184 corrected that verifier with RED-first coverage; exact-head Build #1633 / `31341749976`, CodeQL #1167 and Dependency Review #1061 — SUCCESS.
-- Final accepted / deployed SHA: `361543c383b394d1f4cb061a97473038972340cf`.
-- Final Pages #211 / `31342012579` — SUCCESS; deployment `5823994260`; Pages artifact `9046113610`, digest `sha256:c1d3dfec2f2c171ad4d224c04bb4765ef2d7d5099e2feacb6ee3bab35cb88ea1`.
-- Deployment-triggered Production Live #471 / `31342042518` — SUCCESS; artifact `9046144255`, digest `sha256:7ebdb095887ab210df33f0a743ee1af371c23dd2939f9151a7b500341b2dbce6`.
-- Exact production Work with me/C2 evidence reports RU/EN `proofFacts=4`, `selectedProjects=3`, `primaryNavigationItems=5`, with no product-side browser errors on that surface.
-
-C2 remains an intermediate redesign slice and does not start, reset or close P3.6 Measurement. Next implementation slice: **C3 — Projects and flagship summary layer**.
-
-## 2026-08-09 — C1 Presentation foundation — PRODUCTION ACCEPTED
-
-- Began implementation of the approved **Portfolio Clarity & Scanability** redesign with an intentionally bounded foundation slice.
-- Replaced the generic system/UI typography with self-hosted **Onest Variable** using reviewed Cyrillic + Latin WOFF2 subsets, exact SHA-256 contracts and retained SIL OFL 1.1 text.
-- Added shared readability tokens: 17px desktop body target, 16px mobile body target, 1.62 line-height and 70ch long-form width.
-- Reduced primary navigation to exactly five semantic destinations in both RU and EN while keeping /now, Engineering Map, Notes, Publications, Sources, Photos and Contacts available through the existing content tree/sidebar.
-- Extended build-time asset publication to WOFF2 and license text; no runtime font CDN was introduced.
-- TDD RED: head `a6e3c067c63d8ca91245e941b89c9ac0b0514a1a`, Build #1442 / `31301733976`, 585 PASS / exactly 5 expected FAIL.
-- Final source acceptance: Build #1463 / `31304311486`, 591 PASS / 0 FAIL; CodeQL #988 and Dependency Review #891 SUCCESS; full browser/a11y/Lighthouse/cross-browser/privacy/SEO/visual matrix SUCCESS.
-- Manual visual review accepted only the homepage desktop/mobile baseline change caused by the new font; unrelated shared baselines were preserved.
-- Production accepted exact squash SHA `9cc9d69e6b49e3e9f3432788f0deb943d7acebf5`.
-
-- PR #174 squash / deployed SHA: `9cc9d69e6b49e3e9f3432788f0deb943d7acebf5`;
-- final exact-head Build #1463 / `31304311486` — SUCCESS;
-- Pages #202 / `31304612906` — SUCCESS;
-- Pages deployment `5817134996` — success;
-- Production Live Smoke #354 / `31304642055` — SUCCESS;
-- production artifact `9035548962`;
-- production digest `sha256:41af56c91d59b5c80134d49b1928b0fde348384334c8863ddd9c74c9f4e5c85c`;
-- production observation: `2026-08-09T08:55:33.810Z`.
-
-C1 is not the final redesign measurement baseline. P3.6 remains **NEXT / WAITING**, and the next implementation slice is **C2 — Homepage structure**.
-
-## 2026-08-09 — Work with me / private practice — PRODUCTION ACCEPTED
-
-PR #171 implemented the approved evidence-led private-practice design from PR #170. It adds RU/EN Work with me routes backed by one fail-closed `data/collaboration.json`, a restrained homepage bridge, canonical Contacts handoff and an exact contextual CTA allowlist. There is no form, CRM, booking, payment flow, public pricing, lead database, conversion tracking, session replay or AI seller.
-
-TDD and acceptance caught three important boundaries before merge: the initial product RED established the missing surfaces; a dedicated browser gate exposed incomplete no-JavaScript Diplodoc output; and final Advanced Security review exposed a postprocessor TOCTOU race. The no-JS artifact became a full semantic fallback with inspected mobile presentation, and the race was reproduced by Build #1426 before direct read + fail-closed `ENOENT` remediation.
-
-Final feature production evidence:
+PR #253 squash produced exact deployed SHA:
 
 ```text
-feature PR:                       #171 — MERGED
-accepted squash / deployed SHA:  433ee076f3f90dfe14feea97f59ad84bca0c337a
-exact-head Build:                 #1427 / 31285618671 — SUCCESS
-quality artifact:                 9029759379
-quality digest:                   sha256:cc321f83f41539df0e256fcb23c5d28801d5f70093ab79b97bca594796a28987
-CodeQL:                          #949 / 31285618637 — SUCCESS
-Dependency Review:               #855 / 31285618645 — SUCCESS
-Pages:                           #199 / 31285875710 — SUCCESS
-Pages deployment ID:             5814010976
-Pages artifact:                  9029779285
-Pages artifact digest:           sha256:a22a8436e963650ddb89a22e2d6914b449575933a2a4b3a1618561503e469a86
-Production Live Smoke:           #350 / 31285898990 — SUCCESS
-Work with me production smoke:   PASS
-production artifact:             9029804820
-production digest:               sha256:e01e5baf0675d826334b2d75dd865e66833eaf2f804181a2061f7389b3505577
-observedAt:                      2026-08-09T00:20:13.227Z
+master / deployed SHA:            ca4cecd510b5c0f6bad6cef31b6b5dd630f5f50f
+Pages:                            #272 / 31905664206 — SUCCESS
+Production Live Smoke:            #618 / 31905664180 — SUCCESS
+master CodeQL:                    #1740 / 31905664193 — SUCCESS
+production AI mode:               off
 ```
 
-Production Work with me verification passed RU/EN rendered and no-JavaScript pages, canonical availability/contact truth, homepage ordering and exactly three primary paths, Contacts handoff, 7 allowed versus 5 forbidden contextual surfaces, generated search and first-party runtime diagnostics. P3.6 measurement remains open / NEXT / WAITING; this feature does not imply engagement or product-impact evidence.
+Production Live #618 resolved the exact Pages deployment and passed the full deployed baseline suite. No public AI/provider/search-impact claim is introduced.
 
-## 2026-08-08 — Homepage density, Experience, unified header and NotchHub — PRODUCTION ACCEPTED
+### Boundaries preserved
 
-Issue #166 was implemented through PR #167 as a bounded presentation slice: compact RU/EN homepage rhythm, terminal before primary paths, `Опыт` / `Experience` as the visible navigation label with stable `/landing/resume/`, dedicated Experience metric typography, one standalone/generated header contract, NotchHub as the featured current RU/EN flagship, and Vlezet editorial de-emphasis without changing its active lifecycle, direct route, history or evidence.
+- public AI remains **OFF**;
+- `workerBaseUrl` remains empty in production config;
+- no dedicated provider key/spend cap is claimed from repository code;
+- real embedding/provider acceptance and public SEARCH/FULL canaries remain future explicit gates;
+- ordinary CI/build/deploy remains provider-free;
+- controlled launch remains **not-published**;
+- P4.1B remains **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**;
+- P4.1C remains **WAITING**;
+- P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**;
+- clean-URL clock remains `2026-08-05T00:00:00Z`.
 
-The first merged feature SHA was not promoted to accepted despite green source/build gates. Pages #195 deployed it successfully, but deployment-triggered Production Live #329 found a real product mismatch: **Vlezet still appeared in the English `Current work` grid** because `/now` selected every `active` project even though Vlezet had `featured=false`.
+## 2026-08-14 — Transparent `trueruslan.com` repository readiness
 
-```text
-feature PR #167 merged SHA:      2ccb495872b94027980ecaaab1ee7bbc0f3a8ba8
-Pages:                           #195 / 31259962668 — SUCCESS
-Pages deployment ID:             5809180757
-Production Live Smoke:           #329 / 31259991547 — FAILURE
-failed gate:                     P3.5B English Now — Vlezet leaked into Current work
-```
+- PR #247 prepared a fail-closed Cloudflare alias adapter and host-preserving static/runtime same-site navigation contracts while keeping `trueruslan.ru` as the sole GitHub Pages custom domain and canonical SEO identity.
+- No DNS/Cloudflare route activation, second canonical identity or live `.com` claim was introduced.
+- Squash `5610584cf8333884fd64ae2aa5eec7229ea06a31` deployed successfully before the AI Navigator sequence; production smoke remained green.
 
-PR #168 fixed the presentation/lifecycle boundary with TDD. RED head `722925563c4b91d3cb7060704b596d08b7686f3c` produced exactly one expected regression failure. GREEN head `b51c922a56efa517bd6418e4cdbc114698e9ebf4` changed prominent `/now` selection to `active && featured`, so Vlezet remains `active=true` while no longer appearing in the spotlight. Full Build #1381, CodeQL #900 and Dependency Review #809 passed before squash merge.
+## Historical record
 
-Final exact-production acceptance:
+The full pre-2026-08-15 changelog, including N1–N6, navigation, Engineering Notes reader architecture, clean URL migration, P4.1A/P4.1B readiness, dependency maintenance and earlier production acceptance evidence, is preserved unchanged at:
 
-```text
-hotfix PR:                       #168 — MERGED
-final accepted source SHA:       4395128144c069663e67c660e5b549cfca851ae8
-Pages:                           #196 / 31260596290 — SUCCESS
-Pages deployment ID:             5809298234
-Production Live Smoke:           #331 / 31260625145 — SUCCESS
-P3.5B English Now smoke:         PASS
-production artifact:             9022691131
-production digest:               sha256:14de956b15e6c3c4c1c2cf0256e5652e229a7c7d5b4d0be81e6e802feaf52bef
-```
-
-All deployment-triggered production gates passed on the exact accepted SHA. P3.6 measurement remains open: this presentation acceptance does not provide or infer the required real equal-duration aggregate observations, traffic sufficiency or human review.
-
-## 2026-08-08 — P3.6C Yandex Metrica browser collection — PRODUCTION ACCEPTED
-
-PR #158 was squash-merged as `9bccf042fa6f9ce3ab289c7d023077c137ab238c` after exact-head Build/CodeQL/Dependency Review and consent-lifecycle verification. The owner confirmed the counter-side privacy gate before rollout. Pages #187 built the production artifact with the real repository counter variable and its fail-closed verifier accepted the bounded consent controller without a static provider script or expanded tracking options.
-
-Deployment-triggered Production Live Smoke #288 resolved the exact successful Pages deployment and ran the real-site pre-consent browser check without granting consent or sending test telemetry. The check passed with **zero Yandex requests before consent**; the production workflow also preserved the exact deployment identity and uploaded durable evidence.
-
-```text
-PR #158 squash / deployed SHA:       9bccf042fa6f9ce3ab289c7d023077c137ab238c
-Pages:                               #187 / 31227641778 — SUCCESS
-Pages deployment ID:                 5803497490
-Pages artifact:                      9012660943
-Pages artifact digest:               sha256:79e2f08aae0523b5d84274be08cd2e554ab4d88e8f01e7f745fc6547109be622
-Pages production reports:            9012663370
-Pages reports digest:                sha256:baa0333182cd825287a67e0cca9b444bef1273ce631409d2bc945f53f161767d
-Production Live Smoke:               #288 / 31227681975 — SUCCESS
-Yandex pre-consent production smoke: PASS — zero Yandex requests before consent
-production artifact:                 9012692719
-production digest:                   sha256:1688d968db168f8342b9fca95b3550cbd7b4065aed0d6e6d282dc5e4fb22230a
-```
-
-P3.6C is therefore **PRODUCTION ACCEPTED** for exact deployed SHA `9bccf042fa6f9ce3ab289c7d023077c137ab238c`. P3.6 measurement remains open / NOT ACCEPTED until real equal-duration `operator-observed` aggregate windows, the minimum observation duration, traffic-sufficiency assessment and human review are complete.
-
-## 2026-08-07 — P3.6B real Reports API connection and P3.6C consent-gated browser collection
-
-P3.6B moved from synthetic-only readiness to a real authenticated Yandex Metrica Reports API connection. The configured repository counter and read-only OAuth access were verified by connection-check run `31201235872` — SUCCESS for completed UTC day 2026-08-06. This accepts the API connection/tooling boundary only; P3.6 measurement remains open.
-
-P3.6C is implemented in **PR #158** with **explicit consent** before any Yandex browser provider request. The final postprocessor is after clean URLs; generated pages contain only a first-party consent controller until opt-in. Webvisor/session replay, Click Map, link tracking, accurate-bounce events, hash tracking, title transmission, custom events, user parameters, ecommerce and noscript tracking are disabled or forbidden. Consent withdrawal disables future collection and denied-state reloads do not load the provider.
-
-P3.6C is **pending production acceptance** until PR #158 is merged, the exact SHA is deployed by Pages with the real counter variable, the final artifact verifier passes, and Production Live Smoke proves a fresh RU/EN context makes zero Yandex provider requests before consent. P3.6 itself remains NOT ACCEPTED pending real observation windows, traffic-sufficiency assessment and human review.
-
-## 2026-08-07 — P3.6A Measurement readiness
-
-PR #155 added the bounded P3.6 measurement-readiness layer without manufacturing external analytics evidence. The analyzer accepts aggregate Cloudflare/Search Console/Yandex observations only, rejects raw/user-level telemetry, enforces the migration observation window, equal-duration comparison windows and post-window operator assessment, and emits descriptive deltas without automatic engagement or product-impact conclusions.
-
-Synthetic PR/master proof is explicitly separated from real measurement: it reports `synthetic-pipeline-proof`, keeps `readyForHumanReview=false` and is **not production measurement evidence**. Manual real input must be `operator-observed`; raw observations live only under `$RUNNER_TEMP` and are never uploaded.
-
-```text
-PR #155 squash / deployed SHA:       7cc56d024fbde53156a9136b14b00c81c6718811
-PR Build:                            #1187 / 31185270870 — SUCCESS
-PR quality artifact:                 8996659434
-PR quality digest:                   sha256:07b6c53547894d1456525ed5574ecb9554c15a2178c16193435cf91937b06a32
-PR Measurement Checkpoint:           #16 / 31185271128 — SUCCESS
-PR synthetic artifact:               8996446081
-PR synthetic digest:                 sha256:7a1f05c829867c7bc0fff757a512a95f11e2c1fcb27a3684d2acc90ecfbef87a
-post-merge Measurement Checkpoint:   #17 / 31185967995 — SUCCESS
-post-merge synthetic artifact:       8996722305
-post-merge synthetic digest:         sha256:d6ab858824c2284a964a4b37f0e7377bb322af8baed922b8af83b27bbb36bce9
-Pages:                               #184 / 31185967012 — SUCCESS
-Pages deployment ID:                 5795968137
-Pages artifact:                      8996733610
-Pages artifact digest:               sha256:bda25b1331e9843a7b6f3364f47fdbea8f5fa7ef09a6445c55729062f3e6bfbf
-Production Live Smoke:               #267 / 31186078593 — SUCCESS
-production artifact:                 8996831585
-production digest:                   sha256:d8e4fae2cf63bfc1d2c8742eea68d4fbdb3d9ef588df834d2e65473fa22a475d
-```
-
-Synthetic workflow evidence is classified as `synthetic-pipeline-proof`, has `readyForHumanReview=false`, and is **not production measurement evidence**. Real P3.6 remains open until `operator-observed` aggregate observations exist, the minimum post-migration window has elapsed, baseline/current windows have equal duration, the operator assessment occurs after the current window closes, traffic sufficiency is explicitly assessed, and a human reviews the descriptive report. No automatic engagement, causality or product-impact conclusion is permitted.
-
-P3.6 remains **NEXT / WAITING** for real external aggregate evidence and human review.
-
-## 2026-08-07 — P3.5C English Publications
-
-PR #153 published `/en/publications/` as a controlled English catalogue over the same canonical `data/publications.json`. Original Russian publication titles, source language and canonical Habr URLs remain bibliographic identity; English summaries/topics are presentation fields in the same records. No second publication registry, second site-wide search index or English-only publication state was introduced.
-
-Verification found and corrected two model mismatches without weakening acceptance. First, broad Russian-copy checks could match substrings inside legitimate original titles, so localization assertions were scoped to actual UI nodes. Second, Diplodoc sanitized `aria-label` from prebuilt Catalogue state, so the Topics semantic label was moved to real screen-reader-only DOM text. Generated-search acceptance now queries unique registry-derived English content (`syntax overhead`) and requires the `/en/publications/` result rather than assuming a specific bounded snippet.
-
-```text
-PR #153 squash / deployed SHA:  f189d100785f0aea363df306fb7a923c06ee61a2
-Build:                          #1158 / 31179795922 — SUCCESS
-quality artifact:               8994422472
-quality digest:                 sha256:60ccfc9a37515a6a78bea2b8876e05e3119581d72b90ab4a1a8d2954a3da26d0
-CodeQL:                         #663 / 31179795959 — SUCCESS
-Dependency Review:              #586 / 31179796022 — SUCCESS
-Distribution Readiness:         #137 / 31179795919 — SUCCESS
-Pages:                          #182 / 31180427543 — SUCCESS
-Pages deployment ID:            5794904843
-Pages artifact:                 8994536006
-Pages artifact digest:          sha256:847a0705f2ce1896a2046abdfec428b4c4ef43cf39270f62fb675b3e785468b1
-Production Live Smoke:          #263 / 31180478038 — SUCCESS
-P3.5C English Publications smoke: PASS
-production artifact:            8994603193
-production digest:              sha256:f7eedbffc29f7f8ed322cf14d654ad19f0cc35fca3e53aa1bcd64000ca652d80
-```
-
-Next bounded checkpoint: **P3.6 — Measurement checkpoint — NEXT**, only after sufficient aggregate traffic.
-
-## 2026-08-07 — P3.5B English /now
-
-PR #150 published the controlled English current-work route `/en/now/` from the same canonical `data/now.json`: one shared update date, localized presentation, Project Registry-derived cards, RU/EN canonical pairing, metadata/OpenGraph, generated search and semantic no-JavaScript fallback. No `now-en.json` or second current-state model was introduced.
-
-The first exact deployment was healthy, but the new P3.5B production verifier failed because it inspected raw relative project hrefs without applying Diplodoc's `<base href="../../">`. The exact Pages artifact proved the page itself resolved correctly in browsers. PR #151 added a RED regression and corrected the verifier to resolve hrefs through `document.baseURI` before exact canonical comparison; product code and content did not need a corrective change.
-
-```text
-PR #150 feature squash:         b0b041968b955ed619cbfe560640dde1244833de
-PR #151 final squash/deployed:  96ea3ec5de18d99a811405b36a5b60066d9c374c
-feature Build:                  #1105 / 31158466856 — SUCCESS
-feature quality artifact:       8986214202
-feature quality digest:         sha256:e89e69f84cdcc00bc6b0656caee9e2282211eb3fba57c1e1b46b64cece1861eb
-correction Build:               #1107 / 31159529244 — SUCCESS
-correction quality artifact:    8986592511
-correction quality digest:      sha256:e519aa06bca1d2a9c1a581c9504daef0b4933f21bfc6596a19299bae137af0bf
-Pages:                          #180 / 31161876484 — SUCCESS
-Pages deployment ID:            5791352097
-Pages artifact:                 8987394027
-Pages artifact digest:          sha256:7c456d8e8f534bed6c2f2c410f615004c7d2dff37b71fe0ea7709cfb7129f999
-Production Live Smoke:          #230 / 31161925498 — SUCCESS
-P3.5B English Now smoke:        PASS
-production artifact:            8987452957
-production digest:              sha256:2fe174a95fca6daa28d261f281576597d6d383d432a7a0cc32f9cdbb231d08b5
-```
-
-Next bounded slice: **P3.5C — English Publications — NEXT**.
-
-## 2026-08-07 — P3.5A English Vlezet flagship
-
-PR #148 completed the third controlled English flagship at `/en/projects/vlezet/` without creating a second project-state model.
-
-Added canonical RU/EN pairing, metadata/OpenGraph, navigation, generated search, localized registry-derived Project Evidence, semantic no-JavaScript fallback, mobile/accessibility coverage and exact-deployment flagship verification. Volatile heads/run identities remain owned by dated canonical evidence rather than article prose.
-
-GitHub Advanced Security found a potential check-then-read filesystem race in Project Evidence. A RED regression reproduced the class, direct reads with fail-closed `ENOENT` handling removed it, and CodeQL automatically resolved the review thread on the corrected head.
-
-```text
-PR #148 squash / deployed SHA:  17aa2cc5dd13b38ebd83f15d7596d8216f9d8b87
-Build:                          #1081 / 31153441505 — SUCCESS
-unit tests:                     428 PASS / 0 FAIL
-quality artifact:               8984294852
-quality digest:                 sha256:31615e8b6240535e653bf618cc913d00515675636ddfc2ecff7ed11b3ec50b2f
-CodeQL:                         #581 / 31153441477 — SUCCESS
-Dependency Review:              #509 / 31153441537 — SUCCESS
-Distribution Readiness:         #95 / 31153441483 — SUCCESS
-Pages:                          #177 / 31155442788 — SUCCESS
-Pages deployment ID:            5790177102
-Production Live Smoke:          #214 / 31155442779 — SUCCESS
-production artifact:            8985006008
-production digest:              sha256:a91b35963c685068c6ee79aff269de3baa297d9a6b8fcc321a945e696db84784
-post-merge CodeQL:              #582 / 31155442796 — SUCCESS
-```
-
-Next bounded slice: **P3.5B — English /now — NEXT**. Publications remains P3.5C.
-
-## 2026-08-06 — P3.4F Evidence-driven project state
-
-PR #141 опубликовал grounded Engineering Note:
-
-```text
-/landing/notes/evidence-driven-project-state/
-```
-
-Добавлено:
-
-- canonical registries как владельцы volatile public facts;
-- явные классы verified fact, engineering inference и limitation;
-- trust states `verified`, `stale`, `unverified`;
-- независимые repository, generated artifact, deployed production, external-product acceptance и operator/search-engine layers;
-- запрет автоматического promotion Draft PR, freshness observation и pending product-owner evidence;
-- `observedAt`, exact SHA, artifact digest и deployment identity;
-- reviewable/non-mutating automation;
-- semantic/no-JavaScript content, registry-derived metadata/OpenGraph, Atom feed, generated search и отдельный P3.4F production smoke.
-
-```text
-PR #141 RED Build:              #1024 — expected FAILURE
-PR #141 exact head:             bd7b25019871aa22d56a4a1584f871c0012e5f59
-PR #141 squash:                 cef4275977893ae23e00d9231fd87b3f587b123f
-Build:                          #1037 — SUCCESS
-quality artifact:               8967149410
-quality digest:                 sha256:50f72f4d75dee81b0c61f7edec1e3f07f77be9983473acc69a672e998d4938a9
-CodeQL:                         #531 — SUCCESS
-Dependency Review:              #465 — SUCCESS
-```
-
-Exact production acceptance выявила отдельный operational defect в Pages workflow. Исправления выполнялись evidence-first, и неудачные гипотезы не скрыты:
-
-- PR #142 сделал Pages artifact name attempt-scoped и устранил конфликт артефактов на rerun;
-- PR #143 увеличил polling budget, но GitHub Pages всё равно ограничивал deployment десятью минутами;
-- PR #144 добавил same-run retry, однако production logs доказали, что отменённый deployment identity немедленно отменяет второй action того же run;
-- PR #145 удалил disproven retry, сохранил один fail-closed deploy action и закрепил recovery только новым `github.run_attempt` с уникальным артефактом.
-
-```text
-PR #145 exact head:             e356279c736c0df25778b60509ba903f7555cc61
-PR #145 squash / deployed SHA:  8d2c3aa45d2b02ad3c22de75aca3602b009c13e6
-Build:                          #1044 / 31110081521 — SUCCESS
-unit tests:                     420 PASS / 0 FAIL
-quality artifact:               8971423729
-quality digest:                 sha256:afb44aaab0820e923330f4688fedaec3be9ced452dc2ea7de4de5136a09ff0ca
-CodeQL:                         #542 — SUCCESS
-Dependency Review:              #472 — SUCCESS
-Pages:                          #175 / 31110585951 — SUCCESS
-Pages deployment ID:            5781321808
-Pages artifact:                 8971641004
-Pages artifact digest:          sha256:8ee14188edb566e2d727d857b2bffe9063a3acf76ed5cbfb6afe312011a1a171
-Production Live Smoke:          #190 / 31110583631 — SUCCESS
-baseline/platform/flagship/P3.4A/P3.4B/P3.4C/P3.4D/P3.4E/P3.4F/favicon: PASS
-production artifact:            8971978059
-production digest:              sha256:ac8e8cdf0dfe3d05e03e668a6bad1b051c226a0918e993e436c45efcc607a106
-observedAt:                     2026-08-06T14:36:34Z
-```
-
-P3.4F принят только для exact deployed SHA `8d2c3aa45d2b02ad3c22de75aca3602b009c13e6`. Факт публикации Note, успешный build или repository activity по отдельности не заменяют exact deployment identity и independent Production Live Smoke.
-
-Next bounded slice:
-
-**P3.5 — Selective English expansion**.
-
-## 2026-08-06 — P3.4E Passive PDF validation versus semantic completeness
-
-PR #134 опубликовал grounded Engineering Note:
-
-```text
-/landing/notes/passive-pdf-validation-vs-semantic-completeness/
-```
-
-Добавлено:
-
-- file existence, stable route, `%PDF-`, parseability, MIME, Content-Disposition и downloadable bytes как отдельные технические evidence layers;
-- page count, text extraction и required-section coverage отдельно от binary validity;
-- web-CV ↔ PDF semantic equivalence отдельно от текущей professional-profile truth;
-- явная граница: валидный или parseable PDF не становится автоматически complete, current, accessible или human-readable;
-- web-CV как canonical editorial source, PDF как bounded distribution artifact;
-- rendered DOM, raw HTML, binary PDF, Atom feed и generated search как независимые observation surfaces;
-- exact deployment-only P3.4E smoke.
-
-```text
-PR #134 RED head:              ad3d46817bb40002e4f311acac2632929886780f
-RED Build:                      #985 / 31048729901 — expected FAILURE
-RED result:                     399 PASS / 4 expected FAIL
-PR #134 exact head:            fd09071730bf1a6d227ad544734b4ef15bb0a1f0
-PR #134 squash:                f184236fec2f8985fe9f893a7d6819ad4e6eea37
-Build:                          #996 / 31049874523 — SUCCESS
-unit tests:                     403 PASS / 0 FAIL
-quality artifact:               8948085565
-quality digest:                 sha256:a31c074f337263d35181a7073fd5cbd6ef8f96ff0af92757c9cdb0c8e27d43b0
-```
-
-Exact production verification последовательно обнаружила несколько независимых проблем и не была ослаблена:
-
-- PR #135 исправил слишком узкий resume DOM scope;
-- PR #136 заменил layout-dependent `body.innerText()` на bounded rendered DOM surfaces;
-- PR #137 отделил raw HTML no-JavaScript evidence от scripting-enabled browser DOM;
-- PR #138 исправил реальный product defect и внедрил RU/EN `<noscript data-tr-resume-fallback>` до clean-route publishing;
-- PR #139 исправил stale edge observation deterministic query `tr_evidence_sha=<exact SHA>` и заголовками `Cache-Control: no-cache` / `Pragma: no-cache`.
-
-```text
-PR #138 exact head:            a82fbeeb660a2a1eb6d3d6c7963708ef946fcc5f
-PR #138 squash:                90df9b8741b0d40b6ca3981f649624b55bfc85c1
-Build:                          #1010 / 31083663155 — SUCCESS
-unit tests:                     410 PASS / 0 FAIL
-quality artifact:               8960804973
-quality digest:                 sha256:47292ba7cb21abfc9d0ef7d862efdfc34423ef27a5df1a95145f3fcdb95e142e
-PR #139 RED head:              de79262c5db1e484b455409800c3dc060bf474b4
-PR #139 exact head:            0ccd8a5dc669212a46f9d2f3d2f5f6a73685be87
-PR #139 squash:                a570dc420c83af33b483cb55c5904b3575ff729a
-Build:                          #1013 / 31086478496 — SUCCESS
-unit tests:                     411 PASS / 0 FAIL
-quality artifact:               8961719018
-quality digest:                 sha256:78ba029a7ae88cb9b20f456c0c5cffdd9609a0b4856cc7bbf456cc2e39f02e47
-Pages:                          #169 / 31086909691 — SUCCESS
-Pages deployment ID:            5776481884
-Production Live Smoke:          #168 / 31086909906 — SUCCESS
-baseline/platform/flagship/P3.4A/P3.4B/P3.4C/P3.4D/P3.4E/favicon: PASS
-production artifact:            8961927073
-production digest:              sha256:681f8a098349bc4e44078273f5086f892f0dec7750abbe87de8ecf96702f24bc
-PDF size:                       277792 bytes
-PDF SHA-256:                    efd99499a483c06394dd0181b5d2be9b0e09265937163f74eeb8c05a0807e613
-```
-
-Automated marker checks не заменяют editorial review, PDF accessibility review, ATS testing и human-readable layout acceptance.
-
-Next bounded Note:
-
-**P3.4F — Evidence-driven project state**.
-
-## 2026-08-05 — P3.4D GameTests versus installed gameplay acceptance
-
-PR #132 опубликовал grounded Engineering Note:
-
-```text
-/landing/notes/gametests-vs-installed-gameplay-acceptance/
-```
-
-Добавлено:
-
-- source/unit contracts, remapped package и GameTests как разные evidence layers;
-- `fabric.mod.json`, manifest и SHA-256 как package-identity evidence;
-- exact production-JAR two-JVM startup/restart как отдельный gate;
-- literal-loopback provider-client proof отдельно от real-provider acceptance;
-- `VAI-CONCUR-003` logical-client automation отдельно от `VAI-CONCUR-004` real installed two-client canary;
-- accepted bounded PR #110/#112 evidence без promotion Draft PR #114;
-- physical microphone, Simple Voice Chat UDP/Opus, inventory/grave/resurrection canary и cumulative product-owner acceptance как installed gates;
-- rollback и recovery как часть acceptance;
-- Notes Registry, index, toc, metadata, Atom feed и generated search integration;
-- отдельный exact-deployment P3.4D production smoke.
-
-```text
-PR #132 RED head:              237a3225954e1b4b633422b690b1e3fb02983f89
-RED Build:                      #969 / 31042289632 — expected FAILURE
-RED result:                     394 PASS / 4 expected FAIL
-PR #132 exact head:            b4f49b29dc9c16ff4d3c2412d5b4d2ea18282239
-PR #132 squash:                02894431e042b89943e4bdb3cb43f336fa9ad75d
-Build:                          #978 / 31042919449 — SUCCESS
-unit tests:                     398 PASS / 0 FAIL
-quality artifact:               8945409733
-quality digest:                 sha256:cbf160fc9877e31acc89729ae077ee3f2cad815425be4200253a06659f9339c2
-Pages:                          #162 / 31043536231 — SUCCESS
-Pages deployment ID:            5768748824
-Production Live Smoke:          #139 / 31043534975 — SUCCESS
-baseline/platform/flagship/P3.4A/P3.4B/P3.4C/P3.4D/favicon smokes: PASS
-production artifact:            8945575207
-production digest:              sha256:0f1d56a3735f366512e627f7669ae017ed932bf7a2a4ee19ad0fc4ed0c5b347f
-```
-
-Green GameTests were not presented as installed gameplay correctness. The published `0.1.25+1.21.1` artifact remains separate from pending installed canaries. PR #114 remains Draft.
-
-## 2026-08-05 — P3.4C Hybrid CV + AI recognition boundaries
-
-PR #130 опубликовал `/landing/notes/hybrid-cv-ai-recognition-boundaries/` and preserved `VlezetDocument`, `localDraftFingerprint`, current-state revalidation and explicit Apply as the deterministic geometry-authority boundary.
-
-```text
-PR #130 RED head:              842959fb765702a634ec0592f218f1275d3ca93e
-PR #130 exact head:            731dbf0a6d217a40c17a8c8f1494f342fcb35e7e
-PR #130 squash:                8bc5b2134cd10cd8cf27f46ec0bc2fb4ee6c67d7
-Build:                          #961 / 31029662846 — SUCCESS
-quality artifact:               8940244292
-quality digest:                 sha256:1f3a013c543171230e0a69975e69beaf18b252ca2337a63938f692f6a7c162d9
-Pages deployment ID:            5766332284
-Production Live Smoke:          #132 / 31030324160 — SUCCESS
-production artifact:            8940409941
-production digest:              sha256:9cb66c8e3b2b432c9bbdd160542f3b5566e1e3e21f3be07711f16d5f95fae700
-```
-
-Accepted M7.8B remains separate from Draft M7.8C and PR #42/#44/#45; product-owner retest remains required.
-
-## 2026-08-05 — P3.4B Clean URLs without Cloudflare routing
-
-PR #128 опубликовал `/landing/notes/clean-urls-without-cloudflare-routing/`; PR #129 закрыл durable state.
-
-```text
-PR #128 RED head:              4d14dd6842423a17f12d8cb2734df36cdb162b41
-PR #128 exact head:            dd1911ebbc5faf66a56144c75dd45215b4042293
-PR #128 squash:                4ebaaa0b4ea2b3ceb602a70c100a6ec58bf738cb
-Build:                          #945 / 31021101326 — SUCCESS
-quality artifact:               8936766318
-quality digest:                 sha256:38d1a612b9e684a2faccf71f889217933b115434391a5e60a5baff49b746178d
-Pages deployment ID:            5764711503
-Production Live Smoke:          #123 / 31021657939 — SUCCESS
-production artifact:            8936914548
-production digest:              sha256:cc250f9ea49d4214c5b815ebb9ee067f540e54124e0edbbef46391ccc2b4fa51
-```
-
-Repository-native directory URLs, canonical/hreflang/OpenGraph/Sitemap/Atom/search migration, legacy `.html` query and fragment compatibility and delayed search-engine observation were recorded as one bounded contract.
-
-## 2026-08-05 — P3.4A Deployment success is not production verification
-
-PR #125 опубликовал `/landing/notes/deployment-success-is-not-production-verification/`. Production Live Smoke #108 обнаружил verifier defect; PR #126 устранил stale hard-coded evidence, после чего exact deployment прошёл Production Live Smoke #114.
-
-```text
-PR #125 RED head:              688b98a58937dbf9b5c9f45667d4cfdef1327294
-PR #125 exact head:            9c0a24c6adfd1794adc70facdc1ace4dc01a3d86
-PR #125 squash:                c4f3cb5a3aa71b958d906d15eb975833b46d3571
-Build:                          #922 / 31014792446 — SUCCESS
-quality artifact:               8934487200
-quality digest:                 sha256:61fde2c53551057d5d01b9f409d86c0aa50be6b20f8de3a4e9ae0b66988126ad
-PR #126 RED head:              43ccee7b09220000660e425ea32cc87938a7b653
-PR #126 exact head:            50a7185d799eea96adb7dcea8cd20e9e9a400784
-PR #126 squash:                0a1cd6ad40870366fecfdce3bbdae7e8722b2119
-Build:                          #927 / 31016127657 — SUCCESS
-quality artifact:               8934699715
-quality digest:                 sha256:607a2d901e77ebe5862fd760393f6a4435699dd69d1dc8abb910007fc0611b52
-Pages:                          #156 / 31016942589 — SUCCESS
-Pages deployment ID:            5763802525
-Production Live Smoke:          #114 / 31017023851 — SUCCESS
-production artifact:            8935003712
-production digest:              sha256:23f344e3562d6b61106c8dc59a4b3e9ce2293192555c9f31ac09e7eb9916d480
-```
-
-## 2026-08-05 — P3.3 Flagship normalization
-
-PR #122 нормализовал RU VillAIgence, RU Vlezet и controlled EN VillAIgence. Lifecycle и external acceptance boundaries не расширялись.
-
-```text
-PR #122 RED head:              f2c5b065a8f1a1cd8adbad6ebb4ed7743cb33ad7
-PR #122 exact head:            ee5fa11d455e0f113d76a1d1fd9947e7d54b2e46
-PR #122 squash:                c90a221a21f51e897661667f981483bad922ad0d
-Build:                          #893 / 31005675334 — SUCCESS
-quality artifact:               8930321636
-quality digest:                 sha256:97880f197f9484b41eb38ee606c291a754d889a55160719d948c13b0fc9a4e8a
-Pages:                          #152 / 31006504250 — SUCCESS
-Pages deployment ID:            5761717586
-Production Live Smoke:          #95 / 31006557622 — SUCCESS
-production artifact:            8930571510
-production digest:              sha256:c230b3c31308371ff669a9171ada693229909ad868a6eb4e2c09634b72200f13
-```
-
-## 2026-08-05 — P3.2 TrueRuslan Landing flagship
-
-PR #119 создал RU/EN platform case study; PR #120 закрепил production selector `main.dc-doc-page__content`.
-
-```text
-PR #119 head:                  6736c9fd917f213621e5e88273304dda8ddda760
-PR #119 squash:                d11aeddeed492dce512e123d216e0191a5906ca9
-PR #120 head:                  c2fa3327061148b5e4adf703bd707d6925639df3
-PR #120 squash:                dcb278cb4f52d5e8afc314a9f30689edb5153af0
-Build #119:                     #868 / 30998184982 — SUCCESS
-Build #120:                     #869 / 30998966087 — SUCCESS
-Pages deployment ID:            5760275658
-Production Live Smoke:          #80 / 30999331791 — SUCCESS
-production artifact:            8927580319
-production digest:              sha256:71198afc2ae475a9322ee74f5ea54a5b2190baa884cc8f54da01de7efdf21e08
-```
-
-## 2026-08-05 — P3.1 Homepage evidence paths
-
-PR #117 сделал homepage evidence-first entry point; PR #118 синхронизировал durable state.
-
-```text
-PR #117 squash:                fe1a796df37313401c07e25c0672dc32db30a1c4
-Build:                          #836 / 30989449993 — SUCCESS
-Pages:                          #147 / 30989921979 — SUCCESS
-Production Live Smoke:          #58 / 30989981685 — SUCCESS
-```
-
-## Repository-native clean URLs
-
-PR #114/#115 established the directory-route contract.
-
-```text
-PR #114 squash:                cf07c39378e7c531583e80eaef5edc7e7d1f2bad
-PR #115 squash:                4260d30cff4ebdbf3f666f4763aa667c8dc7ee6c
-Production Live Smoke #52:      SUCCESS
-representative route:           /landing/resume/
-```
-
-## Operational boundaries
-
-- issue #111 — authenticated Yandex/search-engine observation;
-- issue #78 — default-branch Content Freshness owner refresh;
-- issue #82 — Diplodoc/markdown-it dependency blocker, review on or after 2026-08-17;
-- no `npm audit fix --force` or unreviewed compatibility bypass.
+`docs/archive/2026-08-14/CHANGELOG.md`
