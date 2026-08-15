@@ -49,6 +49,7 @@
     "check:site": "node scripts/site-integrity.js && node scripts/public-url-link-policy-artifact.js",
     "check:discovery": "node scripts/search-discovery-report.js --output-dir quality-artifacts",
     "check:editorial": "node --test scripts/editorial-ux-audit-built-site.integration.js",
+    "check:ai": "node scripts/ai-index-verify.js --allow-off",
     "report:discovery:external": "node scripts/search-discovery-external-report.js",
     "report:launch-pack": "node scripts/launch-pack.js",
     "check:freshness": "node scripts/content-freshness-report.js",
