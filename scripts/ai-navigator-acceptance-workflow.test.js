@@ -37,7 +37,8 @@ test('provider credential is scoped only to refresh steps and never reaches offl
   assert.ok(offlineStart >= 0, 'offline semantic acceptance step is required');
   const offlineEnd = workflow.indexOf('\n      - name:', offlineStart + 1);
   const offlineStep = workflow.slice(offlineStart, offlineEnd >= 0 ? offlineEnd : workflow.length);
-  assert.doesNotMatch(offlineStep, /secrets\.|OPENROUTER_API_KEY:\s*/);
+  assert.doesNotMatch(offlineStep, /secrets\./);
+  assert.doesNotMatch(offlineStep, /^\s*env:\s*$|^\s*OPENROUTER_API_KEY:\s+/m, 'offline step must not inject provider credentials');
   assert.match(offlineStep, /test -z "\$\{OPENROUTER_API_KEY:-\}"/);
   assert.match(offlineStep, /node scripts\/ai-index-verify\.js/);
   assert.match(offlineStep, /node scripts\/ai-benchmark\.js --mode semantic --index data\/ai-index/);
