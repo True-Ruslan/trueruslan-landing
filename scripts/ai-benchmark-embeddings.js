@@ -173,10 +173,7 @@ function existingReusableCache({cases, config, cacheDir}) {
       || typeof meta.queryHashes !== 'object') return null;
     if (meta.embeddingsDigest !== sha256(embeddings)) return null;
     const vectors = decodeVectors(embeddings, meta.caseIds, config.embeddingDimensions);
-    const currentIds = new Set(normalizedCases(cases).map(({id}) => id));
-    if (meta.caseIds.some((id) => !currentIds.has(id))) {
-      // Removed cases are harmless for reuse; they are simply not written into the next cache.
-    }
+    normalizedCases(cases);
     return {meta, vectors};
   } catch {
     return null;
@@ -329,7 +326,10 @@ async function runCli() {
       Promise.resolve(loadAiConfig(path.join(rootDir, 'data', 'ai-navigator.json'))),
     ]);
     const corpus = buildAiCorpus({rootDir, config});
-    const cases = loadBenchmark({rootDir, validChunkIds: new Set(corpus.map(({id}) => id))});
+    const cases = loadBenchmark(
+      path.join(rootDir, 'data', 'ai-navigator-benchmark.json'),
+      new Set(corpus.map(({id}) => id)),
+    );
     const sourceCommit = /^[a-f0-9]{40}$/i.test(process.env.GITHUB_SHA || '') ? process.env.GITHUB_SHA : null;
     const report = await refreshBenchmarkQueryEmbeddings({
       cases,
