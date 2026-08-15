@@ -3,11 +3,14 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 import {refreshAiIndex} from './ai-index.js';
-import {copySearchResources, publishAiArtifacts} from './copy-assets.js';
+import {copyAiSearchResources, publishAiArtifacts} from './ai-static-assets.js';
 import {normalizeSearchPageHtml} from './search-page.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.join(__dirname, '..');
 const sourceHtml = `<!doctype html><html><head>
   <base href="../../">
   <link rel="stylesheet" href="../../_bundle/search.css">
@@ -48,10 +51,6 @@ function count(source, pattern) {
 
 function writeSearchResourceFixture(rootDir) {
   const files = [
-    '_assets/style/search.css',
-    '_assets/script/search-ui.js',
-    '_assets/style/project-evidence.css',
-    '_assets/style/publications.css',
     '_assets/style/ai-search.css',
     '_assets/script/ai-retrieval.js',
     '_assets/script/ai-search.js',
@@ -118,21 +117,22 @@ test('SEARCH and FULL normalization inject exactly one AI marker and resource se
   }
 });
 
-test('copySearchResources copies AI browser resources only in enabled modes', () => {
+test('AI static resource copier is a no-op OFF and copies only the three AI resources when enabled', () => {
   const docsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-ai-resource-src-'));
   writeSearchResourceFixture(docsDir);
 
   const offOutput = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-ai-resource-off-'));
-  const off = copySearchResources(docsDir, offOutput, config('off'));
-  assert.ok(off.some((value) => value.endsWith(path.join('_assets', 'style', 'search.css'))));
-  assert.ok(!off.some((value) => value.includes('ai-search') || value.includes('ai-retrieval')));
+  assert.deepEqual(copyAiSearchResources({docsDir, outputDir: offOutput, config: config('off')}), []);
   assert.equal(fs.existsSync(path.join(offOutput, '_assets', 'style', 'ai-search.css')), false);
 
   const enabledOutput = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-ai-resource-on-'));
-  const enabled = copySearchResources(docsDir, enabledOutput, config('search'));
-  assert.ok(enabled.some((value) => value.endsWith(path.join('_assets', 'style', 'ai-search.css'))));
-  assert.ok(enabled.some((value) => value.endsWith(path.join('_assets', 'script', 'ai-retrieval.js'))));
-  assert.ok(enabled.some((value) => value.endsWith(path.join('_assets', 'script', 'ai-search.js'))));
+  const enabled = copyAiSearchResources({docsDir, outputDir: enabledOutput, config: config('search')});
+  assert.deepEqual(enabled, [
+    '_assets/style/ai-search.css',
+    '_assets/script/ai-retrieval.js',
+    '_assets/script/ai-search.js',
+  ]);
+  for (const relative of enabled) assert.equal(fs.existsSync(path.join(enabledOutput, relative)), true, relative);
 });
 
 test('publishAiArtifacts is a no-op when mode is OFF', () => {
@@ -166,4 +166,11 @@ test('enabled publication fails closed on stale index before writing public AI a
     /stale|AI index unavailable|hash/i,
   );
   assert.equal(fs.existsSync(path.join(outputDir, 'ai')), false);
+});
+
+test('normal build chain runs the isolated AI postprocessor without coupling ordinary build to OpenRouter', () => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  assert.equal(pkg.scripts['postprocess:ai-search'], 'node scripts/ai-static-assets.js');
+  assert.match(pkg.scripts['copy-assets'], /node scripts\/copy-assets\.js && npm run postprocess:ai-search/);
+  assert.doesNotMatch(pkg.scripts['copy-assets'], /ai:index|OPENROUTER_API_KEY|openrouter/i);
 });
