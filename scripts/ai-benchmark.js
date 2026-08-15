@@ -1,9 +1,12 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {verifyBenchmarkQueryEmbeddings} from './ai-benchmark-embeddings.js';
 import {loadAiConfig} from './ai-config.js';
-import {buildAiCorpus, normalizeChunkText} from './ai-corpus.js';
+import {buildAiCorpus, normalizeChunkText, serializeCorpus} from './ai-corpus.js';
+import {rankChunks} from './ai-retrieval-core.js';
 
 const BENCHMARK_KINDS = new Set(['exact', 'paraphrase', 'cross-language', 'insufficient']);
 const CASE_KEYS = Object.freeze(['id', 'lang', 'query', 'kind', 'expectedAnyOf', 'answerEligible']);
@@ -14,6 +17,11 @@ export const HYBRID_WEIGHT_CANDIDATES = Object.freeze([
   Object.freeze({semantic: 0.70, lexical: 0.15, title: 0.10, language: 0.05}),
   Object.freeze({semantic: 0.75, lexical: 0.10, title: 0.10, language: 0.05}),
 ]);
+
+function sha256(value) {
+  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(String(value), 'utf8');
+  return `sha256:${crypto.createHash('sha256').update(bytes).digest('hex')}`;
+}
 
 function readBenchmarkInput(input) {
   if (Array.isArray(input)) return structuredClone(input);
@@ -124,7 +132,7 @@ function recallFor(cases, perCase, predicate) {
 
 export function evaluateRetrieval({cases, retrieve, limit = 5}) {
   const perCase = cases.map((item) => {
-    const results = [...(retrieve({query: item.query, lang: item.lang, limit}) || [])].slice(0, limit);
+    const results = [...(retrieve({id: item.id, query: item.query, lang: item.lang, kind: item.kind, limit}) || [])].slice(0, limit);
     const resultIds = results.map(({chunkId}) => chunkId);
     const hit = item.kind === 'insufficient'
       ? false
@@ -185,28 +193,171 @@ export function selectHybridWeights({lexicalPerCase, candidateReports}) {
   return winner;
 }
 
+function createSemanticRetriever({corpus, documentEmbeddings, queryEmbeddings, weights, ranker}) {
+  return ({id, query, limit = 5}) => {
+    const queryVector = queryEmbeddings.get(id);
+    if (!queryVector) throw new Error(`semantic benchmark query cache missing ${id}`);
+    return ranker({
+      query,
+      queryVector,
+      chunks: corpus,
+      embeddings: documentEmbeddings,
+      config: {hybridWeights: weights},
+    }).slice(0, limit);
+  };
+}
+
+export function runSemanticBenchmark({
+  cases,
+  corpus,
+  documentEmbeddings,
+  queryEmbeddings,
+  ranker = rankChunks,
+  lexicalReport = null,
+}) {
+  if (!Array.isArray(cases) || !Array.isArray(corpus)) throw new Error('semantic benchmark requires cases and corpus arrays');
+  if (!documentEmbeddings || typeof documentEmbeddings.get !== 'function') throw new Error('semantic benchmark requires document embeddings');
+  if (!queryEmbeddings || typeof queryEmbeddings.get !== 'function') throw new Error('semantic benchmark requires query embeddings');
+  if (typeof ranker !== 'function') throw new Error('semantic benchmark requires a ranker');
+
+  const lexical = lexicalReport || evaluateRetrieval({cases, retrieve: createLexicalRetriever(corpus), limit: 5});
+  const candidateReports = HYBRID_WEIGHT_CANDIDATES.map((weights) => ({
+    weights,
+    report: evaluateRetrieval({
+      cases,
+      retrieve: createSemanticRetriever({corpus, documentEmbeddings, queryEmbeddings, weights, ranker}),
+      limit: 5,
+    }),
+  }));
+  const selectedWeights = selectHybridWeights({lexicalPerCase: lexical.perCase, candidateReports});
+  const winner = candidateReports.find(({weights}) => sameWeights(weights, selectedWeights));
+  if (!winner) throw new Error('selected semantic benchmark candidate disappeared');
+  return {
+    ...winner.report,
+    selectedWeights,
+    lexicalBaseline: {
+      recallAt5: lexical.recallAt5,
+      exactTermRecallAt5: lexical.exactTermRecallAt5,
+      paraphraseRecallAt5: lexical.paraphraseRecallAt5,
+    },
+    candidates: candidateReports.map(({weights, report}) => ({
+      weights,
+      recallAt5: report.recallAt5,
+      exactTermRecallAt5: report.exactTermRecallAt5,
+      paraphraseRecallAt5: report.paraphraseRecallAt5,
+    })),
+  };
+}
+
+function decodeDocumentEmbeddings(buffer, chunkIds, dimensions) {
+  const expectedLength = chunkIds.length * dimensions * 4;
+  if (buffer.length !== expectedLength) {
+    throw new Error(`semantic document embedding length mismatch: expected ${expectedLength}, got ${buffer.length}`);
+  }
+  const vectors = new Map();
+  let offset = 0;
+  for (const id of chunkIds) {
+    const vector = new Array(dimensions);
+    for (let index = 0; index < dimensions; index += 1) {
+      const value = buffer.readFloatLE(offset);
+      if (!Number.isFinite(value)) throw new Error(`semantic document embedding contains non-finite value for ${id}`);
+      vector[index] = value;
+      offset += 4;
+    }
+    vectors.set(id, vector);
+  }
+  return vectors;
+}
+
+function loadDocumentIndex({indexDir, config, corpus}) {
+  const chunksPath = path.join(indexDir, 'chunks.json');
+  const metaPath = path.join(indexDir, 'index-meta.json');
+  const embeddingsPath = path.join(indexDir, 'embeddings.bin');
+  const chunksBytes = fs.readFileSync(chunksPath);
+  const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+  const embeddings = fs.readFileSync(embeddingsPath);
+  const expectedChunks = serializeCorpus(corpus);
+  if (chunksBytes.toString('utf8') !== expectedChunks) throw new Error('semantic document index is stale: chunks.json differs from canonical corpus');
+  if (meta.embeddingModel !== config.embeddingModel) throw new Error('semantic document index model mismatch');
+  if (meta.dimensions !== config.embeddingDimensions) throw new Error('semantic document index dimension mismatch');
+  const expectedIds = corpus.map(({id}) => id);
+  if (JSON.stringify(meta.chunkIds) !== JSON.stringify(expectedIds)) throw new Error('semantic document index chunk order mismatch');
+  if (meta.embeddingsDigest !== sha256(embeddings)) throw new Error('semantic document index embedding digest mismatch');
+  return decodeDocumentEmbeddings(embeddings, expectedIds, config.embeddingDimensions);
+}
+
+function parseCliArgs(args) {
+  let mode = null;
+  let index = null;
+  for (let cursor = 0; cursor < args.length; cursor += 1) {
+    const arg = args[cursor];
+    if (arg === '--mode') {
+      mode = args[++cursor];
+      continue;
+    }
+    if (arg === '--index') {
+      index = args[++cursor];
+      continue;
+    }
+    throw new Error(`Unknown benchmark argument: ${arg}`);
+  }
+  if (!['lexical', 'semantic'].includes(mode)) {
+    throw new Error('Usage: node scripts/ai-benchmark.js --mode lexical|semantic [--index data/ai-index]');
+  }
+  if (mode === 'semantic' && (!index || typeof index !== 'string')) {
+    throw new Error('Semantic benchmark requires --index PATH');
+  }
+  if (mode === 'lexical' && index) throw new Error('--index is only valid with --mode semantic');
+  return {mode, index};
+}
+
 function isMainModule() {
   if (!process.argv[1]) return false;
   return path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 }
 
 function runCli() {
-  const args = process.argv.slice(2);
-  if (args.length !== 2 || args[0] !== '--mode' || args[1] !== 'lexical') {
-    process.stderr.write('Usage: node scripts/ai-benchmark.js --mode lexical\n');
-    process.exitCode = 2;
-    return;
-  }
-
   const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-  const config = loadAiConfig(path.join(rootDir, 'data', 'ai-navigator.json'));
-  const corpus = buildAiCorpus({rootDir, config});
-  const cases = loadBenchmark(
-    path.join(rootDir, 'data', 'ai-navigator-benchmark.json'),
-    new Set(corpus.map(({id}) => id)),
-  );
-  const report = evaluateRetrieval({cases, retrieve: createLexicalRetriever(corpus), limit: 5});
-  process.stdout.write(`${JSON.stringify({mode: 'lexical', ...report}, null, 2)}\n`);
+  try {
+    const args = parseCliArgs(process.argv.slice(2));
+    const config = loadAiConfig(path.join(rootDir, 'data', 'ai-navigator.json'));
+    const corpus = buildAiCorpus({rootDir, config});
+    const cases = loadBenchmark(
+      path.join(rootDir, 'data', 'ai-navigator-benchmark.json'),
+      new Set(corpus.map(({id}) => id)),
+    );
+    const lexical = evaluateRetrieval({cases, retrieve: createLexicalRetriever(corpus), limit: 5});
+    if (args.mode === 'lexical') {
+      process.stdout.write(`${JSON.stringify({mode: 'lexical', ...lexical}, null, 2)}\n`);
+      return;
+    }
+
+    const indexDir = path.resolve(rootDir, args.index);
+    const documentEmbeddings = loadDocumentIndex({indexDir, config, corpus});
+    const queryCache = verifyBenchmarkQueryEmbeddings({
+      cases,
+      config,
+      cacheDir: path.join(indexDir, 'benchmark-query-cache'),
+    });
+    const report = runSemanticBenchmark({
+      cases,
+      corpus,
+      documentEmbeddings,
+      queryEmbeddings: queryCache.vectors,
+      lexicalReport: lexical,
+    });
+    process.stdout.write(`${JSON.stringify({
+      mode: 'semantic',
+      index: path.relative(rootDir, indexDir) || '.',
+      benchmarkDigest: queryCache.benchmarkDigest,
+      embeddingModel: queryCache.embeddingModel,
+      dimensions: queryCache.dimensions,
+      ...report,
+    }, null, 2)}\n`);
+  } catch (error) {
+    process.stderr.write(`${error.message}\n`);
+    process.exitCode = 2;
+  }
 }
 
 if (isMainModule()) runCli();
