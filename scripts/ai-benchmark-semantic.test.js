@@ -142,24 +142,27 @@ test('provider, partial and dimension failures never retry and never replace pre
       fetchImpl: async () => vectorResponse([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
     });
     const stable = readCacheBytes(cacheDir);
+    const failures = [
+      {name: 'provider-http', fetchImpl: async () => new Response('quota', {status: 429})},
+      {name: 'partial', fetchImpl: async () => vectorResponse([])},
+      {name: 'dimension', fetchImpl: async () => vectorResponse([[1, 0]])},
+      {name: 'network', fetchImpl: async () => { throw new Error('network down'); }},
+    ];
 
-    for (const badFetch of [
-      async () => new Response('quota', {status: 429}),
-      async () => vectorResponse([[1, 0, 0]]),
-      async () => vectorResponse([[1, 0], [0, 1, 0], [0, 0, 1]]),
-      async () => { throw new Error('network down'); },
-    ]) {
+    for (const [index, failure] of failures.entries()) {
       let calls = 0;
-      const changed = CASES.map((item) => item.id === 'case-a' ? {...item, query: `${item.query} changed ${Math.random()}`} : item);
+      const changed = CASES.map((item) => item.id === 'case-a'
+        ? {...item, query: `${item.query} changed ${index}`}
+        : item);
       await assert.rejects(refreshBenchmarkQueryEmbeddings({
         cases: changed,
         config: config(3),
         cacheDir,
         apiKey: 'ephemeral-test-key',
-        fetchImpl: async (...args) => { calls += 1; return badFetch(...args); },
-      }));
-      assert.equal(calls, 1, 'benchmark query embedding refresh must never retry automatically');
-      assert.deepEqual(readCacheBytes(cacheDir), stable, 'failed refresh must preserve previous cache bytes');
+        fetchImpl: async (...args) => { calls += 1; return failure.fetchImpl(...args); },
+      }), undefined, failure.name);
+      assert.equal(calls, 1, `${failure.name}: benchmark query embedding refresh must never retry automatically`);
+      assert.deepEqual(readCacheBytes(cacheDir), stable, `${failure.name}: failed refresh must preserve previous cache bytes`);
     }
   } finally {
     fs.rmSync(cacheDir, {recursive: true, force: true});
