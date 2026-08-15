@@ -39,7 +39,7 @@ function appendFragmentChildren(parent, html) {
   }
 }
 
-function injectProjectSearchResources(document) {
+function injectProjectSearchResources(document, aiConfig) {
   const html = findNode(document, (node) => node.tagName === 'html');
   const body = findNode(document, (node) => node.tagName === 'body');
   const head = findNode(document, (node) => node.tagName === 'head');
@@ -57,9 +57,29 @@ function injectProjectSearchResources(document) {
   if (!hasResource(document, 'script', 'src', script)) {
     appendFragmentChildren(body, `<script src="${script}" defer data-tr-search-resource="script"></script>`);
   }
+
+  const aiMode = aiConfig?.mode;
+  if (!['search', 'full'].includes(aiMode)) return;
+
+  setAttribute(html, 'data-tr-ai-mode', aiMode);
+  setAttribute(body, 'data-tr-ai-mode', aiMode);
+
+  const aiStylesheet = '_assets/style/ai-search.css';
+  const retrievalScript = '_assets/script/ai-retrieval.js';
+  const aiScript = '_assets/script/ai-search.js';
+
+  if (!hasResource(document, 'link', 'href', aiStylesheet)) {
+    appendFragmentChildren(head, `<link rel="stylesheet" href="${aiStylesheet}" data-tr-ai-resource="style">`);
+  }
+  if (!hasResource(document, 'script', 'src', retrievalScript)) {
+    appendFragmentChildren(body, `<script src="${retrievalScript}" defer data-tr-ai-resource="retrieval"></script>`);
+  }
+  if (!hasResource(document, 'script', 'src', aiScript)) {
+    appendFragmentChildren(body, `<script src="${aiScript}" defer data-tr-ai-resource="runtime"></script>`);
+  }
 }
 
-export function normalizeSearchPageHtml(html, pageRelativePath) {
+export function normalizeSearchPageHtml(html, pageRelativePath, {aiConfig = null} = {}) {
   const document = parse(html);
   const searchDirectory = path.posix.dirname(pageRelativePath.replaceAll('\\', '/'));
   const seenScripts = new Set();
@@ -93,6 +113,6 @@ export function normalizeSearchPageHtml(html, pageRelativePath) {
   }
 
   visit(document);
-  injectProjectSearchResources(document);
+  injectProjectSearchResources(document, aiConfig);
   return serialize(document);
 }
