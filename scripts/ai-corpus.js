@@ -318,6 +318,14 @@ export function serializeCorpus(chunks) {
   return `${JSON.stringify(chunks, null, 2)}\n`;
 }
 
+export function writeAiCorpus({rootDir, config, outputPath}) {
+  const chunks = buildAiCorpus({rootDir, config});
+  const serialized = serializeCorpus(chunks);
+  fs.mkdirSync(path.dirname(outputPath), {recursive: true});
+  fs.writeFileSync(outputPath, serialized, 'utf8');
+  return {chunks, corpusDigest: sha256(serialized)};
+}
+
 function isMainModule() {
   if (!process.argv[1]) return false;
   return path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
@@ -325,16 +333,24 @@ function isMainModule() {
 
 function runCli() {
   const args = process.argv.slice(2);
-  if (args.length !== 1 || args[0] !== '--print-ids') {
-    process.stderr.write('Usage: node scripts/ai-corpus.js --print-ids\n');
-    process.exitCode = 2;
+  const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const config = loadAiConfig(path.join(rootDir, 'data', 'ai-navigator.json'));
+
+  if (args.length === 1 && args[0] === '--print-ids') {
+    const chunks = buildAiCorpus({rootDir, config});
+    process.stdout.write(`${chunks.map(({id}) => id).join('\n')}\n`);
     return;
   }
 
-  const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-  const config = loadAiConfig(path.join(rootDir, 'data', 'ai-navigator.json'));
-  const chunks = buildAiCorpus({rootDir, config});
-  process.stdout.write(`${chunks.map(({id}) => id).join('\n')}\n`);
+  if (args.length === 2 && args[0] === '--write' && args[1].trim()) {
+    const outputPath = path.resolve(process.cwd(), args[1]);
+    const {chunks, corpusDigest} = writeAiCorpus({rootDir, config, outputPath});
+    process.stdout.write(`AI corpus written: ${outputPath} (${chunks.length} chunks, ${corpusDigest})\n`);
+    return;
+  }
+
+  process.stderr.write('Usage: node scripts/ai-corpus.js --print-ids | --write <output-path>\n');
+  process.exitCode = 2;
 }
 
 if (isMainModule()) runCli();

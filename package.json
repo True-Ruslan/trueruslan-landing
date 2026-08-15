@@ -52,6 +52,9 @@
     "report:launch-pack": "node scripts/launch-pack.js",
     "check:freshness": "node scripts/content-freshness-report.js",
     "probe:freshness": "node scripts/content-freshness-probe.js",
+    "ai:corpus": "node scripts/ai-corpus.js --write data/ai-index/chunks.json",
+    "ai:index": "node scripts/ai-index.js",
+    "ai:verify": "node scripts/ai-index-verify.js",
     "test": "node --test scripts/*.test.js && npm run check:discovery"
   },
   "dependencies": {
