@@ -12,6 +12,9 @@
     'hybridWeights',
   ]);
   const WEIGHT_KEYS = Object.freeze(['semantic', 'lexical', 'title', 'language']);
+  const STABLE_CHUNK_ID = /^(?:ru|en):(note|project|publication|page):[a-z0-9](?:[a-z0-9-]*[a-z0-9])?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+  const MAX_ANSWER_CHUNKS = 5;
+  const MAX_ANSWER_WORDS = 450;
 
   function locale(document) {
     return String(document?.documentElement?.lang || '').toLowerCase().startsWith('en') ? 'en' : 'ru';
@@ -67,6 +70,7 @@
     assertPositiveInteger(value.maxQueryChars, 'maxQueryChars');
     assertPositiveInteger(value.maxResults, 'maxResults');
     assertPositiveInteger(value.answerMaxChunks, 'answerMaxChunks');
+    if (value.answerMaxChunks > MAX_ANSWER_CHUNKS) throw new Error(`answerMaxChunks must be at most ${MAX_ANSWER_CHUNKS}`);
     validateWeights(value.hybridWeights);
     return value;
   }
@@ -104,7 +108,7 @@
     button.setAttribute('aria-checked', 'false');
     button.setAttribute(
       'aria-label',
-      locale(document) === 'en' ? 'AI semantic search' : 'Поиск по смыслу с помощью AI',
+      locale(document) === 'en' ? 'Semantic search with AI' : 'Поиск по смыслу с помощью AI',
     );
     button.setAttribute('data-tr-ai-enabled', 'false');
 
@@ -168,7 +172,7 @@
       if (!chunks[index] || chunks[index].id !== meta.chunkIds[index]) {
         throw new Error(`AI index chunk ID order mismatch at ${index}`);
       }
-      if (typeof chunks[index].url !== 'string' || !chunks[index].url.startsWith('/')) {
+      if (typeof chunks[index].url !== 'string' || !chunks[index].url.startsWith('/') || chunks[index].url.startsWith('//')) {
         throw new Error(`AI index contains a non-canonical URL for ${chunks[index].id}`);
       }
     }
@@ -225,6 +229,189 @@
       if (!chunk) throw new Error(`AI ranking returned an unknown chunk ID: ${item.chunkId}`);
       return {...chunk, score: item.score};
     });
+  }
+
+  function selectAnswerChunkIds(results, maxChunks = MAX_ANSWER_CHUNKS) {
+    assertPositiveInteger(maxChunks, 'answerMaxChunks');
+    if (!Array.isArray(results)) throw new Error('answer results must be an array');
+    const limit = Math.min(maxChunks, MAX_ANSWER_CHUNKS);
+    const ids = [];
+    const seen = new Set();
+    for (const result of results) {
+      const id = result?.id;
+      if (typeof id !== 'string' || !STABLE_CHUNK_ID.test(id)) throw new Error('answer result contains an invalid chunk ID');
+      if (seen.has(id)) continue;
+      seen.add(id);
+      ids.push(id);
+      if (ids.length >= limit) break;
+    }
+    return ids;
+  }
+
+  function validateGroundedAnswerPayload(payload, selectedIds) {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) throw new Error('AI answer response is invalid');
+    const keys = Object.keys(payload).sort();
+    const expected = ['answer', 'citations', 'sufficientEvidence'].sort();
+    if (keys.length !== expected.length || keys.some((key, index) => key !== expected[index])) {
+      throw new Error('AI answer response has an invalid field set');
+    }
+    if (typeof payload.sufficientEvidence !== 'boolean' || typeof payload.answer !== 'string' || !Array.isArray(payload.citations)) {
+      throw new Error('AI answer response is invalid');
+    }
+    const allowed = new Set(selectedIds);
+    if (payload.citations.length > MAX_ANSWER_CHUNKS
+      || payload.citations.some((id) => typeof id !== 'string' || !STABLE_CHUNK_ID.test(id) || !allowed.has(id))
+      || new Set(payload.citations).size !== payload.citations.length) {
+      throw new Error('AI answer citation is outside selected canonical chunks');
+    }
+    const answer = payload.answer.trim();
+    if (!payload.sufficientEvidence) {
+      if (answer || payload.citations.length) throw new Error('AI insufficient response must not contain claims or citations');
+      return {sufficientEvidence: false, answer: '', citations: []};
+    }
+    const words = answer ? answer.split(/\s+/u).length : 0;
+    if (!answer || words > MAX_ANSWER_WORDS || payload.citations.length < 1) throw new Error('AI answer response is invalid');
+    return {sufficientEvidence: true, answer, citations: [...payload.citations]};
+  }
+
+  async function requestGroundedAnswer({workerBaseUrl, question, chunkIds, fetchImpl = root.fetch?.bind(root)}) {
+    if (typeof fetchImpl !== 'function') throw new Error('fetch is unavailable');
+    validateWorkerBaseUrl(workerBaseUrl);
+    const normalizedQuestion = typeof question === 'string' ? question.trim() : '';
+    if (!normalizedQuestion || normalizedQuestion.length > 500) throw new Error('question length must be from 1 to 500');
+    if (!Array.isArray(chunkIds)
+      || chunkIds.length < 1
+      || chunkIds.length > MAX_ANSWER_CHUNKS
+      || chunkIds.some((id) => typeof id !== 'string' || !STABLE_CHUNK_ID.test(id))
+      || new Set(chunkIds).size !== chunkIds.length) {
+      throw new Error('chunkIds must contain one to five unique stable chunk IDs');
+    }
+    const response = await fetchImpl(new URL('/v1/answer', workerBaseUrl).href, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({question: normalizedQuestion, chunkIds}),
+    });
+    if (!response?.ok) throw new Error(`AI grounded answer unavailable: HTTP ${response?.status ?? 'unknown'}`);
+    return validateGroundedAnswerPayload(await response.json(), chunkIds);
+  }
+
+  function removeByClass(panel, className) {
+    if (!panel?.querySelector) return;
+    let node = panel.querySelector(`.${className}`);
+    while (node) {
+      node.remove?.();
+      node = panel.querySelector(`.${className}`);
+    }
+  }
+
+  function removeAnswerSurfaces(panel) {
+    removeByClass(panel, 'tr-ai-answer-action');
+    removeByClass(panel, 'tr-ai-answer');
+  }
+
+  function resolveCitationChunks({citations, selectedIds, chunks}) {
+    const allowed = new Set(selectedIds);
+    const byId = new Map((Array.isArray(chunks) ? chunks : []).map((chunk) => [chunk.id, chunk]));
+    return citations.map((id) => {
+      if (!allowed.has(id)) throw new Error('AI answer citation is outside selected results');
+      const chunk = byId.get(id);
+      if (!chunk
+        || typeof chunk.url !== 'string'
+        || !chunk.url.startsWith('/')
+        || chunk.url.startsWith('//')
+        || chunk.url.includes('..')) {
+        throw new Error('AI answer citation metadata is unavailable or unsafe');
+      }
+      return chunk;
+    });
+  }
+
+  function renderGroundedAnswer({document, panel, result, selectedIds, chunks}) {
+    if (!document || !panel) throw new Error('AI answer render target is unavailable');
+    removeByClass(panel, 'tr-ai-answer');
+    const normalized = validateGroundedAnswerPayload(result, selectedIds);
+    const section = document.createElement('section');
+    section.className = 'tr-ai-answer';
+    section.setAttribute('aria-live', 'polite');
+
+    const body = document.createElement('div');
+    body.className = 'tr-ai-answer__body';
+    if (!normalized.sufficientEvidence) {
+      body.textContent = locale(document) === 'en'
+        ? 'The site does not contain enough evidence to answer this question.'
+        : 'На сайте недостаточно данных, чтобы ответить на этот вопрос.';
+      section.append(body);
+      panel.append(section);
+      return section;
+    }
+
+    body.textContent = normalized.answer;
+    const sources = document.createElement('ol');
+    sources.className = 'tr-ai-answer__sources';
+    const citationChunks = resolveCitationChunks({citations: normalized.citations, selectedIds, chunks});
+    for (const chunk of citationChunks) {
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      link.setAttribute('href', chunk.url);
+      link.textContent = [chunk.title, chunk.section].filter(Boolean).join(' · ') || chunk.url;
+      item.append(link);
+      sources.append(item);
+    }
+    section.append(body, sources);
+    panel.append(section);
+    return section;
+  }
+
+  function renderAnswerFailure({document, panel, status = null}) {
+    if (!document || !panel) throw new Error('AI answer render target is unavailable');
+    removeByClass(panel, 'tr-ai-answer');
+    const section = document.createElement('section');
+    section.className = 'tr-ai-answer tr-ai-answer--error';
+    section.setAttribute('aria-live', 'polite');
+    const suffix = status ? ` (${status})` : '';
+    section.textContent = locale(document) === 'en'
+      ? `AI answer is temporarily unavailable. The semantic results remain available${suffix}.`
+      : `Ответ AI временно недоступен. Результаты поиска по смыслу остаются доступными${suffix}.`;
+    panel.append(section);
+    return section;
+  }
+
+  function createAnswerAction({document, panel, config, question, results, index, fetchImpl = root.fetch?.bind(root)}) {
+    if (!document || !panel || config?.mode !== 'full' || !Array.isArray(results) || results.length === 0) return null;
+    const selectedIds = selectAnswerChunkIds(results, config.answerMaxChunks);
+    if (selectedIds.length === 0) return null;
+    removeByClass(panel, 'tr-ai-answer-action');
+    removeByClass(panel, 'tr-ai-answer');
+
+    const button = document.createElement('button');
+    button.className = 'tr-ai-answer-action';
+    button.setAttribute('type', 'button');
+    button.textContent = locale(document) === 'en' ? 'Ask AI about these results' : 'Спросить AI по найденному';
+    let inFlight = false;
+    button.addEventListener('click', async () => {
+      if (inFlight) return;
+      inFlight = true;
+      button.setAttribute('aria-busy', 'true');
+      button.setAttribute('disabled', '');
+      try {
+        const result = await requestGroundedAnswer({
+          workerBaseUrl: config.workerBaseUrl,
+          question,
+          chunkIds: selectedIds,
+          fetchImpl,
+        });
+        renderGroundedAnswer({document, panel, result, selectedIds, chunks: index?.chunks});
+      } catch (error) {
+        const match = String(error?.message || '').match(/HTTP\s+(\d+)/i);
+        renderAnswerFailure({document, panel, status: match ? Number(match[1]) : null});
+      } finally {
+        inFlight = false;
+        button.removeAttribute('aria-busy');
+        button.removeAttribute('disabled');
+      }
+    });
+    panel.append(button);
+    return button;
   }
 
   function findInput(document) {
@@ -351,6 +538,7 @@
       if (inFlight) return;
       const query = String(input.value || '').trim();
       if (!query || query.length > config.maxQueryChars) return;
+      removeAnswerSurfaces(panel);
       inFlight = true;
       switchButton.setAttribute('aria-busy', 'true');
       try {
@@ -366,6 +554,15 @@
           retrievalApi: root.TrueRuslanAiRetrieval,
         });
         renderResults(document, panel, results);
+        createAnswerAction({
+          document,
+          panel,
+          config,
+          question: query,
+          results,
+          index,
+          fetchImpl: root.fetch?.bind(root),
+        });
       } catch {
         renderFailure(document, panel, () => {
           setEnabled(false);
@@ -390,6 +587,12 @@
     loadAiIndex,
     requestQueryEmbedding,
     runSemanticSearch,
+    selectAnswerChunkIds,
+    requestGroundedAnswer,
+    createAnswerAction,
+    renderGroundedAnswer,
+    renderAnswerFailure,
+    renderResults,
     init,
   });
 

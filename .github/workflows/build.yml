@@ -122,6 +122,16 @@ jobs:
         run: |
           set -o pipefail
           node scripts/search-smoke.cjs 2>&1 | tee search-smoke.log
+      - name: AI Navigator offline verification
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run check:ai 2>&1 | tee ai-navigator-verify.log
+      - name: AI Navigator browser smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/ai-navigator-browser-smoke.cjs 2>&1 | tee ai-navigator-browser-smoke.log
       - name: VillAIgence generated search smoke
         shell: bash
         run: |
@@ -194,6 +204,11 @@ jobs:
           cp work-with-me-browser-smoke.log quality-artifacts/work-with-me-browser-smoke.log 2>/dev/null || true
           cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke 2>/dev/null || true
+          cp ai-navigator-verify.log quality-artifacts/ai-navigator-verify.log 2>/dev/null || true
+          cp ai-navigator-browser-smoke.log quality-artifacts/ai-navigator-browser-smoke.log 2>/dev/null || true
+          for file in ai-navigator-summary.json ai-navigator-search-mobile.png ai-navigator-full-desktop.png; do
+            test -f "quality-artifacts/$file" || true
+          done
           cp villaigence-search-smoke.log quality-artifacts/villaigence-search-smoke.log 2>/dev/null || true
           cp i18n-browser-smoke.log quality-artifacts/i18n-browser-smoke.log 2>/dev/null || true
           cp analytics-browser-smoke.log quality-artifacts/analytics-browser-smoke.log 2>/dev/null || true
