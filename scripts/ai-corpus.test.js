@@ -69,7 +69,7 @@ test('AI corpus resolves every configured page to an existing canonical Markdown
 });
 
 test('Markdown chunking creates bounded reader-owned sections and strips non-reader chrome', () => {
-  const markdown = `---\ntitle: Fixture\nsecretField: do-not-index\n---\n# Fixture\n\nIntro paragraph that is intentionally long enough to become a useful semantic chunk for a reader and not just tiny metadata.\n\n<script>window.secret = true</script>\n\n## Reliability Boundary\n\nThis section explains a deterministic reliability boundary in enough detail that the semantic chunk is meaningful and remains reader-owned source text.\n\n{% include [Registry cards](../../_includes/registry-cards.md) %}\n`;
+  const markdown = `---\ntitle: Fixture\nsecretField: do-not-index\n---\n# Fixture\n\nIntro paragraph that is intentionally long enough to become a useful semantic chunk for a reader and not just tiny metadata.\n\n<script>window.secret = true</script>\n<script>window.evasive = true</script >\n<script>window.evasiveTail = true</script\t\n bar>\n\n## Reliability Boundary\n\nThis section explains a deterministic reliability boundary in enough detail that the semantic chunk is meaningful and remains reader-owned source text.\n\n{% include [Registry cards](../../_includes/registry-cards.md) %}\n`;
 
   const chunks = chunkMarkdown({
     sourcePath: 'docs/fixture.md',
@@ -84,6 +84,8 @@ test('Markdown chunking creates bounded reader-owned sections and strips non-rea
   assert.deepEqual(chunks.map(({section}) => section), ['Intro', 'Reliability Boundary']);
   assert.ok(chunks.every(({text}) => !text.includes('secretField')));
   assert.ok(chunks.every(({text}) => !text.includes('window.secret')));
+  assert.ok(chunks.every(({text}) => !text.includes('window.evasive')));
+  assert.ok(chunks.every(({text}) => !text.includes('window.evasiveTail')));
   assert.ok(chunks.every(({text}) => !text.includes('Registry cards')));
 });
 
