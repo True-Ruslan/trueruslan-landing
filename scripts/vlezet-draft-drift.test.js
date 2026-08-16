@@ -6,20 +6,22 @@ import test from 'node:test';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const EVIDENCE_PATH = path.join(ROOT, 'data', 'project-evidence.json');
 
-test('Vlezet keeps failed M7.8C history while M8.2 is accepted and pre-production remains unchanged', () => {
+test('Vlezet keeps failed M7.8C history while M8.3 is active and pre-production remains unchanged', () => {
   const evidence = JSON.parse(fs.readFileSync(EVIDENCE_PATH, 'utf8'));
   const vlezet = evidence.find((entry) => entry.project === 'vlezet');
 
   assert.ok(vlezet, 'missing Vlezet evidence snapshot');
   assert.equal(vlezet.status, 'verified');
-  assert.equal(vlezet.lastVerified, '2026-08-14');
+  assert.equal(vlezet.lastVerified, '2026-08-15');
 
   const versions = new Map(vlezet.versions.map(({label, value}) => [label, value]));
   assert.equal(versions.get('Accepted recognition slice'), 'M7.8B');
   assert.match(versions.get('Automatic M7.8C result'), /FAIL.*closed unmerged/i);
   assert.match(versions.get('Accepted editor slice'), /M8\.2.*product-owner accepted.*merged/i);
-  assert.match(versions.get('Active product slice'), /M8\.2 complete/i);
-  assert.match(versions.get('Active product slice'), /testing-policy.*coverage.*M8\.3/i);
+  assert.equal(versions.get('Next acceptance boundary'), 'M8.3 Precision Reference Calibration');
+  assert.match(versions.get('Active product slice'), /M8\.3 Precision Reference Calibration active/i);
+  assert.match(versions.get('Active product slice'), /Testing Policy Phase A.*P0 IndexedDB persistence hardening/i);
+  assert.match(versions.get('Active product slice'), /not product-owner accepted or released/i);
 
   const m78c = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/42');
   assert.ok(m78c, 'missing bounded M7.8C failure signal');
@@ -45,13 +47,29 @@ test('Vlezet keeps failed M7.8C history while M8.2 is accepted and pre-productio
   assert.match(m82.scope, /Post-merge CI #5097.*CodeQL/i);
   assert.match(m82.scope, /pre-production/i);
 
-  const reconciliation = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/88');
-  assert.ok(reconciliation, 'missing M8.2 post-merge reconciliation signal');
-  assert.equal(reconciliation.state, 'merged');
-  assert.match(reconciliation.scope, /testing-policy.*coverage audit/i);
+  const testingPolicy = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/89');
+  assert.ok(testingPolicy, 'missing accepted Testing Policy Phase A signal');
+  assert.equal(testingPolicy.state, 'merged');
+  assert.match(testingPolicy.scope, /without promoting Vlezet beyond pre-production/i);
+
+  const persistence = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/90');
+  assert.ok(persistence, 'missing accepted P0 IndexedDB signal');
+  assert.equal(persistence.state, 'merged');
+  assert.equal(persistence.observedAt, '2026-08-15');
+  assert.match(persistence.scope, /7cb9cfd2a8f809e6000209188b5fab99a2fabfb9/);
+  assert.match(persistence.scope, /persistence acceptance only/i);
+  assert.match(persistence.scope, /pre-production/i);
+
+  const handoff = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/91');
+  assert.ok(handoff, 'missing M8.3 handoff signal');
+  assert.equal(handoff.state, 'merged');
+  assert.equal(handoff.observedAt, '2026-08-15');
+  assert.match(handoff.scope, /M8\.3 Precision Reference Calibration.*active/i);
+  assert.match(handoff.scope, /not product-owner accepted or released/i);
+  assert.match(handoff.scope, /pre-production/i);
 
   assert.doesNotMatch(
-    [m78c.scope, assisted.scope, m82.scope, reconciliation.scope].join('\n'),
-    /M7\.8C.*product-owner accepted|M8\.2.*production-ready|M8\.2.*released/i,
+    [m78c.scope, assisted.scope, m82.scope, testingPolicy.scope, persistence.scope, handoff.scope].join('\n'),
+    /M7\.8C.*product-owner accepted|M8\.2.*production-ready|M8\.2.*released|M8\.3.*product-owner accepted|M8\.3.*production-ready|M8\.3.*released/i,
   );
 });
