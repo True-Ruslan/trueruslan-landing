@@ -67,7 +67,7 @@ test('portfolio platform evidence preserves C7 and N6 history while AI Navigator
 
   assert.ok(snapshot, 'portfolio-platform evidence snapshot must exist');
   assert.equal(snapshot.status, 'verified');
-  assert.equal(snapshot.lastVerified, '2026-08-15');
+  assert.equal(snapshot.lastVerified, '2026-08-16');
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Public route model' && value.includes('directory')));
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Hosting' && value === 'GitHub Pages'));
   assert.ok(snapshot.versions.some(({label, value}) => label === 'Analytics' && /Cloudflare.*Yandex Metrica/i.test(value)));
