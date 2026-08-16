@@ -59,7 +59,6 @@ test('VillAIgence timeline keeps installed 0.2 historical while 0.3.2 corrective
   const current = history.filter(({state}) => state === 'current');
   const next = history.filter(({state}) => state === 'next');
   const installedBaseline = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/120');
-  const failed031 = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/169' && /0\.3\.1 installed corrective canary failed/i.test(evidence?.title || ''));
   const release031 = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/releases/tag/0.3.1%2B1.21.1');
 
   assert.equal(current.length, 1);
@@ -75,7 +74,6 @@ test('VillAIgence timeline keeps installed 0.2 historical while 0.3.2 corrective
   assert.match(installedBaseline.description, /7 PASS \/ 0 FAIL/);
   assert.equal(release031.state, 'past');
   assert.match(release031.description, /installed corrective acceptance still required/i);
-  assert.equal(failed031, undefined, '0.3.1 installed failure must not be misidentified as PR #169 evidence');
   assert.ok(history.some(({state, title, description}) => state === 'past' && /0\.3\.1 installed corrective canary failed/i.test(title) && /amber-pine-314/i.test(description)));
 
   assert.match(next[0].title, /0\.3\.2.*VAI-PCM-MULTI-001.*canary/i);
