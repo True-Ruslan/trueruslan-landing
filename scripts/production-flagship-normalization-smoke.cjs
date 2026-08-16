@@ -71,6 +71,8 @@ async function verifyCaseStudy(page, {
   alternateUrl,
   requireEvidence,
   requireTimeline = requireEvidence,
+  expectNextMilestone = true,
+  timelineCurrentMarkers = [],
 }) {
   const response = await page.goto(url, {waitUntil: 'networkidle', timeout: 45000});
   assert(response?.ok(), `${locale} ${slug} returned HTTP ${response?.status() ?? 'none'}`);
@@ -126,14 +128,27 @@ async function verifyCaseStudy(page, {
   if (requireTimeline) {
     const timeline = page.locator('.tr-project-timeline');
     await timeline.waitFor({state: 'visible', timeout: 10000});
+    const current = timeline.locator('.tr-project-timeline__item--current');
     assert(
-      await timeline.locator('.tr-project-timeline__item--current').count() === 1,
+      await current.count() === 1,
       `${locale} ${slug} timeline must expose exactly one current milestone`,
     );
-    assert(
-      await timeline.locator('.tr-project-timeline__item--next').count() >= 1,
-      `${locale} ${slug} timeline must expose a next milestone`,
-    );
+    const currentText = await current.innerText();
+    for (const marker of timelineCurrentMarkers) {
+      assert(
+        currentText.toLowerCase().includes(marker.toLowerCase()),
+        `${locale} ${slug} current timeline milestone misses ${marker}: ${currentText}`,
+      );
+    }
+    const nextCount = await timeline.locator('.tr-project-timeline__item--next').count();
+    if (expectNextMilestone) {
+      assert(nextCount >= 1, `${locale} ${slug} timeline must expose a next milestone`);
+    } else {
+      assert(
+        nextCount === 0,
+        `${locale} ${slug} timeline must not invent a next milestone while the current acceptance boundary is active`,
+      );
+    }
   }
 
   const html = await page.content();
@@ -288,6 +303,13 @@ async function main() {
       ],
       alternateUrl: VLEZET_EN_URL,
       requireEvidence: true,
+      expectNextMilestone: false,
+      timelineCurrentMarkers: [
+        'M8.3 Precision Reference Calibration',
+        'Draft',
+        'RED',
+        'not product-owner accepted, merged or released',
+      ],
     });
 
     summary.livingworldEn = await verifyCaseStudy(page, {
