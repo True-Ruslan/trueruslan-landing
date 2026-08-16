@@ -2,7 +2,7 @@
   {
     "project": "vlezet",
     "status": "verified",
-    "lastVerified": "2026-08-15",
+    "lastVerified": "2026-08-16",
     "versions": [
       {
         "label": "Web application",
@@ -42,7 +42,7 @@
       },
       {
         "label": "Active product slice",
-        "value": "M8.3 Precision Reference Calibration active after accepted Testing Policy Phase A and P0 IndexedDB persistence hardening; not product-owner accepted or released"
+        "value": "M8.3 Precision Reference Calibration active in Draft PR #92 after accepted Testing Policy Phase A and P0 IndexedDB persistence hardening; current implementation checkpoint is TDD RED and is not product-owner accepted, merged or released"
       }
     ],
     "signals": [
@@ -162,13 +162,22 @@
         "url": "https://github.com/True-Ruslan/vlezet/pull/91",
         "observedAt": "2026-08-15",
         "scope": "PR #91 records the accepted P0 merge identity and post-merge CI/CodeQL truth, then makes M8.3 Precision Reference Calibration the active next product milestone. M8.3 is active work, not product-owner accepted or released; lifecycle remains pre-production."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M8.3 Precision Reference Calibration Draft PR #92",
+        "state": "pending",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/92",
+        "observedAt": "2026-08-16",
+        "scope": "Draft PR #92 is the active M8.3 implementation workstream. At the observed head 58542998b8c5086e64932defb347689a82d842ef it remains an intentional TDD RED checkpoint: tests define verifyReferenceCalibration while the production API is not yet implemented. Existing ReferencePlan remains persistent authority, runtime-only navigation/snapping/verification stays non-authoritative, and no schema migration or AI/network dependency is introduced. The Draft is not product-owner accepted, merged or released; lifecycle remains pre-production."
       }
     ]
   },
   {
     "project": "livingworld",
     "status": "verified",
-    "lastVerified": "2026-08-14",
+    "lastVerified": "2026-08-16",
     "versions": [
       {
         "label": "Public name",
@@ -196,11 +205,11 @@
       },
       {
         "label": "Current official release",
-        "value": "0.3.1+1.21.1"
+        "value": "0.3.2+1.21.1"
       },
       {
-        "label": "Current 0.3.1 acceptance",
-        "value": "automated release gates PASS; installed corrective VAI-PCM-MULTI-001 canary PENDING"
+        "label": "Current 0.3.2 acceptance",
+        "value": "automated release gates PASS; exact installed corrective VAI-PCM-MULTI-001 canary PENDING"
       },
       {
         "label": "Installed 0.2.0 result",
@@ -216,11 +225,11 @@
       },
       {
         "label": "Active development slice",
-        "value": "0.3.1 corrective installed VAI-PCM-MULTI-001 canary pending; do not start 0.4 before real installed evidence"
+        "value": "0.3.2 exact installed VAI-PCM-MULTI-001 corrective canary pending after 0.3.1 installed FAIL; do not start 0.4 before real installed PASS and repository reconciliation"
       },
       {
         "label": "Latest merged source capability",
-        "value": "0.3.1 bounded targeted Memory 2.0 recall correction and published corrective release"
+        "value": "0.3.2 deterministic targeted-recall ranking correction plus exact retained-world installed retest contract"
       }
     ],
     "signals": [
@@ -285,7 +294,7 @@
         "state": "published",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/107",
         "observedAt": "2026-08-05",
-        "scope": "PR #107 published immutable 0.1.25+1.21.1 after the exact post-merge production gate. It is retained as historical release evidence and is superseded by the later official 0.2.0 release."
+        "scope": "PR #107 published immutable 0.1.25+1.21.1 after the exact post-merge production gate. It is retained as historical release evidence and is superseded by later official releases."
       },
       {
         "kind": "pr",
@@ -321,7 +330,7 @@
         "state": "published",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/120",
         "observedAt": "2026-08-07",
-        "scope": "Release 0.2.0+1.21.1 is the current official Memory 2.0 release at immutable release commit e426f588efefa6aa48a6e536c4a998421bbda241. The published/final candidate JAR is byte-identical to the installed candidate SHA-256 56293f86634b50b2def044429aac6f2cf0d197eb16ac1e60224708f7b3333aee. Installed clean-world required cases ended 7 PASS / 0 FAIL; VAI-M2-INST-005 remains NOT TESTED / automated evidence only and VAI-CONCUR-004 remains NOT TESTED / DEFERRED."
+        "scope": "Release 0.2.0+1.21.1 is the accepted Memory 2.0 installed baseline at immutable release commit e426f588efefa6aa48a6e536c4a998421bbda241. The published/final candidate JAR is byte-identical to the installed candidate SHA-256 56293f86634b50b2def044429aac6f2cf0d197eb16ac1e60224708f7b3333aee. Installed clean-world required cases ended 7 PASS / 0 FAIL; VAI-M2-INST-005 remains NOT TESTED / automated evidence only and VAI-CONCUR-004 remains NOT TESTED / DEFERRED."
       },
       {
         "kind": "manual",
@@ -357,7 +366,7 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/153",
         "observedAt": "2026-08-11",
-        "scope": "PR #153 merged causal nearby NPC-to-NPC social influence with the full source acceptance suite green (620/620 tests and 146 gates). This is post-release source capability only; the official installed release remains 0.2.0+1.21.1 with 7 PASS / 0 FAIL and the documented NOT TESTED boundaries."
+        "scope": "PR #153 merged causal nearby NPC-to-NPC social influence with the full source acceptance suite green (620/620 tests and 146 gates). This is post-release source capability only; the accepted installed Memory 2.0 baseline remains 0.2.0+1.21.1 with 7 PASS / 0 FAIL and the documented NOT TESTED boundaries."
       },
       {
         "kind": "pr",
@@ -366,7 +375,7 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/155",
         "observedAt": "2026-08-11",
-        "scope": "PR #155 merged bounded read-only MCA personality/direct NPC-pair social snapshot source capability at merge a04e76dcf3ca6a07126e4e4b46f4d417a857a10f. Exact-head CI, Production Soak and Release dry-run passed while github-release publication was skipped. It is source evidence only; official installed release remains 0.2.0+1.21.1 at 7 PASS / 0 FAIL with VAI-M2-INST-005 and VAI-CONCUR-004 still explicit NOT TESTED boundaries."
+        "scope": "PR #155 merged bounded read-only MCA personality/direct NPC-pair social snapshot source capability at merge a04e76dcf3ca6a07126e4e4b46f4d417a857a10f. Exact-head CI, Production Soak and Release dry-run passed while github-release publication was skipped. It is source evidence only; accepted installed Memory 2.0 baseline remains 0.2.0+1.21.1 at 7 PASS / 0 FAIL with VAI-M2-INST-005 and VAI-CONCUR-004 still explicit NOT TESTED boundaries."
       },
       {
         "kind": "pr",
@@ -375,7 +384,7 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/158",
         "observedAt": "2026-08-12",
-        "scope": "PR #158 merged personality/social dialogue integration at f6d8139cd1164653507ded8030b28c7c28e47cc2. Security #2456, CI #2821, Production Soak #490 and release dry-run #823 passed; release publication was skipped. The immutable official installed release remains 0.2.0+1.21.1, so this is not a 0.3 release or installed-acceptance claim."
+        "scope": "PR #158 merged personality/social dialogue integration at f6d8139cd1164653507ded8030b28c7c28e47cc2. Security #2456, CI #2821, Production Soak #490 and release dry-run #823 passed; release publication was skipped. This is source evidence only and not an installed-acceptance claim."
       },
       {
         "kind": "pr",
@@ -384,7 +393,7 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/159",
         "observedAt": "2026-08-12",
-        "scope": "PR #159 reconciled the 0.3 dialogue integration source state at 889d7ed7303250878b6afb42385f3a02ab169084. Repository security, CI, Production Soak and release dry-run passed while publication was skipped. It explicitly preserves 0.2.0+1.21.1 as the official installed release and makes no new release/install claim."
+        "scope": "PR #159 reconciled the 0.3 dialogue integration source state at 889d7ed7303250878b6afb42385f3a02ab169084. Repository security, CI, Production Soak and release dry-run passed while publication was skipped. It made no new release/install claim."
       },
       {
         "kind": "pr",
@@ -393,7 +402,7 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/160",
         "observedAt": "2026-08-12",
-        "scope": "PR #160 merged the 0.3 release convergence contract at 03ccb2d5d047ca551a5ac6be6b927de4404f09cf. Repository security #2498, CI #2862, Production Soak #509 and release dry-run #842 passed; github-release publication was skipped. Planned candidate identity is 0.3.0+1.21.1, but docs/releases/NEXT_RELEASE.txt and the immutable official installed baseline remain 0.2.0+1.21.1. This is not a 0.3 release or installed-acceptance claim."
+        "scope": "PR #160 merged the 0.3 release convergence contract at 03ccb2d5d047ca551a5ac6be6b927de4404f09cf. Repository security #2498, CI #2862, Production Soak #509 and release dry-run #842 passed; github-release publication was skipped. This was not itself a release or installed-acceptance claim."
       },
       {
         "kind": "release",
@@ -402,7 +411,7 @@
         "state": "published",
         "url": "https://github.com/True-Ruslan/villAIgence/releases/tag/0.3.1%2B1.21.1",
         "observedAt": "2026-08-13",
-        "scope": "Official 0.3.1+1.21.1 is published from immutable release commit bc7c68ac2f3a4f761aa3b03a2f5c1fe1201745ab. The Fabric JAR SHA-256 is f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f. Automated release and post-release acceptance are green, but installed corrective VAI-PCM-MULTI-001 remains pending; lifecycle therefore stays release-candidate / ACCEPTANCE IN PROGRESS."
+        "scope": "Official 0.3.1+1.21.1 was published from immutable release commit bc7c68ac2f3a4f761aa3b03a2f5c1fe1201745ab. The Fabric JAR SHA-256 is f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f. Automated release and post-release acceptance were green, but installed corrective VAI-PCM-MULTI-001 still required real server evidence."
       },
       {
         "kind": "pr",
@@ -420,7 +429,43 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/villAIgence/pull/167",
         "observedAt": "2026-08-14",
-        "scope": "PR #167 records the exact 0.3.1 release identity and the remaining installed corrective canary procedure. It preserves the retained 0.3.0 world/history, uses exact text as the decisive retrieval oracle, keeps cross-NPC isolation and duplicate-persistence checks, and explicitly leaves VAI-M2-INST-005 and VAI-CONCUR-004 deferred. No installed PASS is claimed before real server evidence exists."
+        "scope": "PR #167 records the exact 0.3.1 release identity and the remaining installed corrective canary procedure. It preserves the retained 0.3.0 world/history, uses exact text as the decisive retrieval oracle, keeps cross-NPC isolation and duplicate-persistence checks, and explicitly leaves VAI-M2-INST-005 and VAI-CONCUR-004 deferred. No installed PASS was claimed before real server evidence existed."
+      },
+      {
+        "kind": "manual",
+        "mode": "manual",
+        "label": "Installed 0.3.1 VAI-PCM-MULTI-001 corrective canary",
+        "state": "failed",
+        "url": "https://github.com/True-Ruslan/villAIgence/blob/1.21.1/docs/livingworld/VALIDATION_0.3.1_CORRECTIVE_INSTALLED.md",
+        "observedAt": "2026-08-15",
+        "scope": "The exact official 0.3.1 Fabric JAR with SHA-256 f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f was installed on the retained LinuxGSM world and VAI-PCM-MULTI-001 failed: Muammer retained owner-local amber-pine-314 but did not recall it after the required exact query. Nurey recalled violet-river-926; startup, persistence validity, event uniqueness and cross-NPC isolation passed. This is negative installed evidence, not installed acceptance."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "0.3.2 targeted recall ranking correction PR #169",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/169",
+        "observedAt": "2026-08-15",
+        "scope": "PR #169 merged as 101c74d178ec29ca15f67ebd6041ef256a339f31 after the installed 0.3.1 trigger exposed final rank-to-6 starvation. The fix keeps exact NPC/player eligibility, the 32-candidate and 6-result bounds, provider call count, persistence schema and FACT/BELIEF authority unchanged while adding a narrow deterministic fallback for explicit marker recall. It does not claim installed acceptance."
+      },
+      {
+        "kind": "release",
+        "mode": "automated",
+        "label": "Official 0.3.2+1.21.1 corrective release",
+        "state": "published",
+        "url": "https://github.com/True-Ruslan/villAIgence/releases/tag/0.3.2%2B1.21.1",
+        "observedAt": "2026-08-15",
+        "scope": "Official 0.3.2+1.21.1 is published from release merge 3bb39e7ed126163efcdf971e85c89a4a5efd3111. The official Fabric asset villaigence-fabric-0.3.2+1.21.1.jar has SHA-256 b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015 and release run 31879227075 succeeded. Automated release evidence is not installed acceptance; VAI-PCM-MULTI-001 remains PENDING."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "0.3.2 installed corrective test plan PR #171",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/villAIgence/pull/171",
+        "observedAt": "2026-08-15",
+        "scope": "PR #171 merged as 9ff6e6bc56946db55f9dfd788bd049875a81466f and fixes the exact retained-world operator contract for the official 0.3.2 JAR: immutable artifact identity, backup and persistence hashes, Muammer/Nurey marker baseline, exact recall prompts, cross-NPC isolation and duplicate-event integrity. VAI-PCM-MULTI-001 remains PENDING; VAI-M2-INST-005 and VAI-CONCUR-004 remain NOT TESTED/deferred; 0.4 stays blocked until real installed PASS and repository reconciliation."
       }
     ]
   },
@@ -476,7 +521,7 @@
   {
     "project": "portfolio-platform",
     "status": "verified",
-    "lastVerified": "2026-08-15",
+    "lastVerified": "2026-08-16",
     "versions": [
       {
         "label": "Delivery model",
