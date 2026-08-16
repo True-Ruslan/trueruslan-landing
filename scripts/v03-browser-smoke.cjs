@@ -214,10 +214,30 @@ async function assertProjectTimeline(page, slug) {
   if (await timeline.locator('.tr-project-timeline__item').count() < 3) {
     throw new Error(`${slug} timeline has fewer than three milestones.`);
   }
-  if (await timeline.locator('.tr-project-timeline__item--current').count() !== 1) {
+
+  const current = timeline.locator('.tr-project-timeline__item--current');
+  if (await current.count() !== 1) {
     throw new Error(`${slug} timeline must expose exactly one current milestone.`);
   }
-  if (await timeline.locator('.tr-project-timeline__item--next').count() < 1) {
+
+  const nextCount = await timeline.locator('.tr-project-timeline__item--next').count();
+  if (slug === 'vlezet') {
+    if (nextCount !== 0) {
+      throw new Error('vlezet timeline must not invent a next milestone while M8.3 is the active acceptance boundary.');
+    }
+    const currentText = await current.innerText();
+    for (const marker of [/M8\.3 Precision Reference Calibration/i, /Draft/i, /RED/i]) {
+      if (!marker.test(currentText)) {
+        throw new Error(`vlezet current milestone lost its active Draft/RED M8.3 boundary: ${currentText}`);
+      }
+    }
+    if (!/not product-owner accepted, merged or released/i.test(currentText)) {
+      throw new Error('vlezet current milestone must preserve the explicit no-promotion boundary.');
+    }
+    return;
+  }
+
+  if (nextCount < 1) {
     throw new Error(`${slug} timeline must expose a next milestone.`);
   }
 }

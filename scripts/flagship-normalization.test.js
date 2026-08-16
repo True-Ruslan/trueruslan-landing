@@ -48,13 +48,14 @@ test('P3.3 preserves canonical lifecycle labels and routes', () => {
   assert.equal(livingworld.href, 'landing/projects/livingworld.html');
 });
 
-test('Vlezet preserves recognition history while M8.2 is accepted and quality audit is next', () => {
+test('Vlezet preserves recognition history while M8.3 Draft is active and pre-production remains unchanged', () => {
   const evidence = evidenceMap().get('vlezet');
-  assert.equal(evidence.lastVerified, '2026-08-14');
+  assert.equal(evidence.lastVerified, '2026-08-16');
   assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted recognition slice' && value === 'M7.8B'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Automatic M7.8C result' && /FAIL.*closed unmerged/i.test(value)));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted editor slice' && /M8\.2.*accepted.*merged/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.2 complete/i.test(value) && /testing-policy.*coverage.*M8\.3/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Next acceptance boundary' && value === 'M8.3 Precision Reference Calibration'));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.3 Precision Reference Calibration active in Draft PR #92/i.test(value) && /TDD RED/i.test(value) && /not product-owner accepted, merged or released/i.test(value)));
 
   const failed = findSignal(evidence, 'Automatic M7.8C');
   assert.equal(failed.state, 'failed');
@@ -74,27 +75,37 @@ test('Vlezet preserves recognition history while M8.2 is accepted and quality au
   assert.match(m82.scope, /e323e331a435ae356b91decbdea80dde95028d8a/);
   assert.match(m82.scope, /pre-production/i);
 
-  const reconciliation = findSignal(evidence, 'M8.2 post-merge truth reconciliation PR #88');
-  assert.equal(reconciliation.state, 'merged');
-  assert.match(reconciliation.scope, /testing-policy.*coverage audit/i);
+  const persistence = findSignal(evidence, 'P0 IndexedDB persistence remediation PR #90');
+  const handoff = findSignal(evidence, 'P0 post-merge truth / M8.3 handoff PR #91');
+  const draft = findSignal(evidence, 'M8.3 Precision Reference Calibration Draft PR #92');
+  assert.equal(persistence.state, 'merged');
+  assert.match(persistence.scope, /7cb9cfd2a8f809e6000209188b5fab99a2fabfb9/);
+  assert.equal(handoff.state, 'merged');
+  assert.equal(draft.state, 'pending');
+  assert.match(draft.scope, /58542998b8c5086e64932defb347689a82d842ef/);
+  assert.match(draft.scope, /TDD RED/i);
+  assert.match(draft.scope, /not product-owner accepted, merged or released/i);
 
   const history = readJson('data/project-history/vlezet.json');
   assert.equal(history.filter(({state}) => state === 'current').length, 1);
-  assert.equal(history.filter(({state}) => state === 'next').length, 1);
-  assert.match(history.find(({state}) => state === 'current').title, /M8\.2.*accepted.*merged/i);
-  assert.match(history.find(({state}) => state === 'next').title, /testing-policy.*coverage.*M8\.3/i);
+  assert.equal(history.filter(({state}) => state === 'next').length, 0);
+  assert.match(history.find(({state}) => state === 'current').title, /M8\.3 Precision Reference Calibration.*active.*Draft.*RED/i);
+  assert.match(history.find(({state}) => state === 'current').description, /pre-production lifecycle remains unchanged/i);
+  assert.ok(history.some(({state, title}) => state === 'past' && /M8\.2.*accepted.*merged/i.test(title)));
+  assert.ok(history.some(({state, title}) => state === 'past' && /Testing Policy Phase A accepted/i.test(title)));
+  assert.ok(history.some(({state, title}) => state === 'past' && /P0 IndexedDB persistence remediation accepted/i.test(title)));
 });
 
-test('VillAIgence records official 0.3.1 while installed acceptance remains an explicit separate boundary', () => {
+test('VillAIgence records official 0.3.2 while installed acceptance remains an explicit separate boundary', () => {
   const evidence = evidenceMap().get('livingworld');
-  assert.equal(evidence.lastVerified, '2026-08-14');
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Current official release' && value === '0.3.1+1.21.1'));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Current 0.3.1 acceptance' && /VAI-PCM-MULTI-001.*PENDING/i.test(value)));
+  assert.equal(evidence.lastVerified, '2026-08-16');
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Current official release' && value === '0.3.2+1.21.1'));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Current 0.3.2 acceptance' && /VAI-PCM-MULTI-001.*PENDING/i.test(value)));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Installed 0.2.0 result' && value === '7 PASS / 0 FAIL'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Deferred installed boundaries' && value.includes('VAI-M2-INST-005') && value.includes('VAI-CONCUR-004')));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Controlled semantic boundary' && /BELIEF.*FACT.*SYSTEM_OBSERVED/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Latest merged source capability' && /0\.3\.1.*Memory 2\.0.*recall/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Active development slice' && /VAI-PCM-MULTI-001.*pending/i.test(value) && /do not start 0\.4/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Latest merged source capability' && /0\.3\.2.*targeted-recall ranking correction.*installed retest contract/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Active development slice' && /0\.3\.1 installed FAIL/i.test(value) && /VAI-PCM-MULTI-001.*pending/i.test(value) && /do not start 0\.4/i.test(value)));
 
   const oldRelease = findSignal(evidence, 'Official 0.2.0+1.21.1');
   assert.equal(oldRelease.state, 'published');
@@ -104,20 +115,24 @@ test('VillAIgence records official 0.3.1 while installed acceptance remains an e
   assert.equal(installed.state, 'accepted');
   assert.match(installed.scope, /(?:7 PASS \/ 0 FAIL|seven required[\s\S]*0 FAIL)/i);
 
-  const corrective = findSignal(evidence, '0.3.1 targeted Memory 2.0 recall correction PR #165');
-  const handoff = findSignal(evidence, '0.3.1 installed corrective acceptance handoff PR #167');
-  const currentRelease = findSignal(evidence, 'Official 0.3.1+1.21.1 corrective release');
-  assert.equal(corrective.state, 'merged');
-  assert.equal(handoff.state, 'merged');
+  const failed031 = findSignal(evidence, 'Installed 0.3.1 VAI-PCM-MULTI-001 corrective canary');
+  const correction = findSignal(evidence, '0.3.2 targeted recall ranking correction PR #169');
+  const currentRelease = findSignal(evidence, 'Official 0.3.2+1.21.1 corrective release');
+  const plan = findSignal(evidence, '0.3.2 installed corrective test plan PR #171');
+  assert.equal(failed031.state, 'failed');
+  assert.equal(correction.state, 'merged');
   assert.equal(currentRelease.state, 'published');
-  assert.match(currentRelease.scope, /f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f/);
-  assert.match(currentRelease.scope, /installed corrective.*pending/i);
+  assert.match(currentRelease.scope, /b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015/);
+  assert.match(currentRelease.scope, /not installed acceptance/i);
+  assert.equal(plan.state, 'merged');
+  assert.match(plan.scope, /VAI-PCM-MULTI-001 remains PENDING/i);
+  assert.match(plan.scope, /0\.4 stays blocked/i);
 
   const history = readJson('data/project-history/livingworld.json');
   assert.equal(history.filter(({state}) => state === 'current').length, 1);
   assert.equal(history.filter(({state}) => state === 'next').length, 1);
-  assert.match(history.find(({state}) => state === 'current').title, /0\.3\.1.*installed canary pending/i);
-  assert.match(history.find(({state}) => state === 'next').title, /VAI-PCM-MULTI-001.*canary/i);
+  assert.match(history.find(({state}) => state === 'current').title, /0\.3\.2.*installed canary pending/i);
+  assert.match(history.find(({state}) => state === 'next').title, /0\.3\.2.*VAI-PCM-MULTI-001.*canary/i);
 });
 
 test('normalized case studies expose current bounded related material and do not promote pending work', () => {

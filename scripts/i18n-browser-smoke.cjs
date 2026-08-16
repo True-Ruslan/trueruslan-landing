@@ -180,7 +180,13 @@ async function assertEnglishVlezetNoJsEvidence(page) {
     'M8.1 precision drawing PR #85',
     'M8.2 precision drawing and structural editing PR #87',
     'M8.2 post-merge truth reconciliation PR #88',
-    'Testing-policy + coverage audit',
+    'Testing Policy Phase A PR #89',
+    'P0 IndexedDB persistence remediation PR #90',
+    'P0 post-merge truth / M8.3 handoff PR #91',
+    'M8.3 Precision Reference Calibration Draft PR #92',
+    'TDD RED',
+    'not product-owner accepted, merged or released',
+    'pre-production',
   ];
   for (const marker of markers) {
     if (!text.includes(marker)) throw new Error(`vlezet: English no-JS evidence misses ${marker}`);
