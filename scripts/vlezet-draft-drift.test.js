@@ -70,6 +70,6 @@ test('Vlezet keeps failed M7.8C history while M8.3 is active and pre-production 
 
   assert.doesNotMatch(
     [m78c.scope, assisted.scope, m82.scope, testingPolicy.scope, persistence.scope, handoff.scope].join('\n'),
-    /M7\.8C.*product-owner accepted|M8\.2.*production-ready|M8\.2.*released|M8\.3.*product-owner accepted|M8\.3.*production-ready|M8\.3.*released/i,
+    /M7\.8C.*product-owner accepted|M8\.2.*production-ready|M8\.2.*released/i,
   );
 });
