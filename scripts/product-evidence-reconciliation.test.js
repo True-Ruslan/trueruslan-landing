@@ -54,10 +54,11 @@ test('freshness reconciliation records current truth without promoting lifecycle
 
   assert.equal(vlezetProject.status, 'pre-production');
   assert.equal(vlezetProject.statusLabel, 'ACTIVE DEVELOPMENT');
-  assert.equal(vlezetEvidence.lastVerified, '2026-08-14');
+  assert.equal(vlezetEvidence.lastVerified, '2026-08-15');
   assert.ok(vlezetEvidence.versions.some(({label, value}) => label === 'Accepted recognition slice' && value === 'M7.8B'));
   assert.ok(vlezetEvidence.versions.some(({label, value}) => label === 'Accepted editor slice' && /M8\.2.*accepted.*merged/i.test(value)));
-  assert.ok(vlezetEvidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.2 complete.*testing-policy.*coverage.*M8\.3/i.test(value)));
+  assert.ok(vlezetEvidence.versions.some(({label, value}) => label === 'Next acceptance boundary' && value === 'M8.3 Precision Reference Calibration'));
+  assert.ok(vlezetEvidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.3 Precision Reference Calibration active.*Testing Policy Phase A.*P0 IndexedDB persistence hardening.*not product-owner accepted or released/i.test(value)));
   assert.equal(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/42').state, 'failed');
   assert.equal(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/52').state, 'unavailable');
   const vlezetAccepted = signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/87');
@@ -66,8 +67,18 @@ test('freshness reconciliation records current truth without promoting lifecycle
   assert.match(vlezetAccepted.scope, /product-owner acceptance/i);
   assert.match(vlezetAccepted.scope, /e323e331a435ae356b91decbdea80dde95028d8a/);
   assert.equal(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/88').state, 'merged');
-  assert.match(timelineEntry(vlezetHistory, 'vlezet', 'current').title, /M8\.2.*accepted.*merged/i);
-  assert.match(timelineEntry(vlezetHistory, 'vlezet', 'next').title, /testing-policy.*coverage.*M8\.3/i);
+  assert.equal(signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/89').state, 'merged');
+  const persistence = signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/90');
+  assert.equal(persistence.state, 'merged');
+  assert.equal(persistence.observedAt, '2026-08-15');
+  assert.match(persistence.scope, /7cb9cfd2a8f809e6000209188b5fab99a2fabfb9/);
+  const handoff = signal(vlezetEvidence, 'https://github.com/True-Ruslan/vlezet/pull/91');
+  assert.equal(handoff.state, 'merged');
+  assert.match(handoff.scope, /M8\.3 Precision Reference Calibration.*active/i);
+  assert.match(handoff.scope, /not product-owner accepted or released/i);
+  assert.match(timelineEntry(vlezetHistory, 'vlezet', 'current').title, /M8\.3 Precision Reference Calibration.*active/i);
+  assert.equal(vlezetHistory.filter(({state}) => state === 'next').length, 0);
+  assert.ok(vlezetHistory.some(({state, title}) => state === 'past' && /M8\.2.*accepted.*merged/i.test(title)));
 
   assert.equal(livingworldProject.status, 'release-candidate');
   assert.equal(livingworldProject.statusLabel, 'ACCEPTANCE IN PROGRESS');
@@ -85,14 +96,24 @@ test('freshness reconciliation records current truth without promoting lifecycle
 
   assert.equal(portfolioProject.status, 'production');
   assert.equal(portfolioProject.statusLabel, 'PRODUCTION');
-  assert.equal(portfolioEvidence.lastVerified, '2026-08-14');
+  assert.equal(portfolioEvidence.lastVerified, '2026-08-15');
   assert.ok(portfolioEvidence.versions.some(({label, value}) => label === 'Portfolio Clarity redesign' && /C7.*production accepted/i.test(value)));
   assert.ok(portfolioEvidence.versions.some(({label, value}) => label === 'Measurement checkpoint' && /P3\.6.*NEXT.*WAITING/i.test(value)));
-  assert.ok(portfolioEvidence.versions.some(({label, value}) => label === 'Current production baseline' && /f0e489d75f5bcb1f64057e1046faad877bf3f952/.test(value)));
+  assert.ok(portfolioEvidence.versions.some(({label, value}) => label === 'Current production baseline' && /8fe29188e4da9250b405f5e23b7ee8afe97e21d6.*AI Navigator.*public AI OFF/i.test(value)));
   assert.ok(portfolioEvidence.versions.some(({label, value}) => label === 'Search Discovery' && /P4\.1B IN PROGRESS.*SPARSE PRE-LAUNCH BASELINE.*not-published/i.test(value)));
   assert.equal(signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/pull/234').state, 'merged');
-  assert.equal(signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/pull/237').state, 'merged');
-  assert.match(timelineEntry(portfolioHistory, 'portfolio-platform', 'current').title, /N6.*editorial UX.*production accepted/i);
+  const n6 = signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/pull/237');
+  assert.equal(n6.state, 'merged');
+  assert.match(n6.scope, /f0e489d75f5bcb1f64057e1046faad877bf3f952/);
+  const aiBaseline = signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/pull/253');
+  const aiReconciliation = signal(portfolioEvidence, 'https://github.com/True-Ruslan/trueruslan-landing/pull/254');
+  assert.equal(aiBaseline.state, 'merged');
+  assert.match(aiBaseline.scope, /Public mode remained off/i);
+  assert.equal(aiReconciliation.state, 'merged');
+  assert.match(aiReconciliation.scope, /8fe29188e4da9250b405f5e23b7ee8afe97e21d6/);
+  assert.match(aiReconciliation.scope, /Production AI remains OFF/i);
+  assert.match(timelineEntry(portfolioHistory, 'portfolio-platform', 'current').title, /AI Navigator.*production accepted.*public AI off/i);
+  assert.ok(portfolioHistory.some(({state, title}) => state === 'past' && /N6.*editorial UX.*production accepted/i.test(title)));
   assert.match(timelineEntry(portfolioHistory, 'portfolio-platform', 'next').title, /Controlled manual launch.*real search.*measurement evidence/i);
 
   const projectState = readText('docs/PROJECT_STATE.md');
