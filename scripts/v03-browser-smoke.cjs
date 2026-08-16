@@ -375,7 +375,7 @@ async function main() {
       verify: async (page) => assertNormalizedCaseStudy(page, {
         slug: 'livingworld',
         orderedHeadings: ['Проблема', 'Ограничения', 'Текущая lifecycle', 'Архитектура', 'альтернативы', 'Что подтверждено', 'Известные ограничения', 'Следующий принятый шаг', 'Связанные материалы', 'Что бы я сделал иначе'],
-        requiredText: ['0.3.1+1.21.1', '0.2.0+1.21.1', '7 PASS / 0 FAIL', 'VAI-PCM-MULTI-001', 'VAI-M2-INST-005', 'VAI-CONCUR-004', 'PR #110', 'PR #123', 'PR #125', 'PR #165', 'PR #167', 'PENDING', 'SYSTEM_OBSERVED'],
+        requiredText: ['0.3.1+1.21.1', '0.3.2+1.21.1', '0.2.0+1.21.1', '7 PASS / 0 FAIL', 'VAI-PCM-MULTI-001', 'VAI-M2-INST-005', 'VAI-CONCUR-004', 'PR #110', 'PR #123', 'PR #125', 'PR #169', 'PR #171', 'FAIL', 'PENDING', 'b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015', '0.4 remains blocked', 'SYSTEM_OBSERVED'],
         relatedHrefFragments: ['server-authoritative-ai-npcs', 'source-tests-to-installed-acceptance', 'restart-persistence-is-a-product-contract'],
         requireGlance: true,
       }),
@@ -401,7 +401,7 @@ async function main() {
       verify: async (page) => assertNormalizedCaseStudy(page, {
         slug: 'livingworld',
         orderedHeadings: ['Problem', 'Constraints', 'Current lifecycle', 'Architecture', 'Alternatives', 'Evidence boundary', 'Known limitations', 'Next accepted milestone', 'Related material', 'What I would change'],
-        requiredText: ['0.3.1+1.21.1', '0.2.0+1.21.1', '7 PASS / 0 FAIL', 'VAI-PCM-MULTI-001', 'VAI-M2-INST-005', 'VAI-CONCUR-004', 'PR #110', 'PR #123', 'PR #125', 'PR #165', 'PR #167', 'PENDING', 'SYSTEM_OBSERVED'],
+        requiredText: ['0.3.1+1.21.1', '0.3.2+1.21.1', '0.2.0+1.21.1', '7 PASS / 0 FAIL', 'VAI-PCM-MULTI-001', 'VAI-M2-INST-005', 'VAI-CONCUR-004', 'PR #110', 'PR #123', 'PR #125', 'PR #169', 'PR #171', 'FAIL', 'PENDING', 'b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015', '0.4 remains blocked', 'SYSTEM_OBSERVED'],
         relatedHrefFragments: ['server-authoritative-ai-npcs', 'llm-output-is-a-protocol-boundary', '/projects/livingworld'],
         requireTimeline: false,
         requireEvidence: false,
