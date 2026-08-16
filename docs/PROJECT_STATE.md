@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-15**. AI Navigator engineering baseline production-accepted на exact deployed SHA `ca4cecd510b5c0f6bad6cef31b6b5dd630f5f50f`; публичный AI остаётся **OFF**. Controlled launch остаётся `not-published`; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Последнее смысловое обновление: **2026-08-16**. Current production baseline accepted на exact deployed SHA `d5a67a9787637ee8cc63bdc0ac7a8330ca9ef6d8`; AI Navigator engineering baseline остаётся production-accepted, публичный AI остаётся **OFF**. Controlled launch остаётся `not-published`; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Полный snapshot до reconciliation сохранён byte-for-byte в `docs/archive/2026-08-14/PROJECT_STATE.md`. Этот root-файл остаётся current durable snapshot и одновременно сохраняет compact historical contract markers, используемые CI.
 
@@ -13,17 +13,21 @@ Repository implementation, exact-head CI, deployed production, external provider
 TrueRuslan Landing — static-first personal engineering platform на Diplodoc + GitHub Pages с canonical identity `https://trueruslan.ru`. Diplodoc остаётся обычным site-wide full-text search owner; canonical content и URLs не зависят от runtime AI.
 
 ```text
-master / deployed SHA:            ca4cecd510b5c0f6bad6cef31b6b5dd630f5f50f
-Pages:                            #272 / 31905664206 — SUCCESS
-Production Live Smoke:            #618 / 31905664180 — SUCCESS
-master CodeQL:                    #1740 / 31905664193 — SUCCESS
+master / deployed SHA:            d5a67a9787637ee8cc63bdc0ac7a8330ca9ef6d8
+Pages:                            #277 / 31968943858 — SUCCESS
+Production Live Smoke:            #635 / 31968943881 — SUCCESS
+master CodeQL:                    #1788 / 31968943873 — SUCCESS
+deployed flagship normalization:  SUCCESS
 AI Navigator production mode:     off
 controlled launch:                not-published
 ```
 
-N1–N6 presentation/editorial implementation, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification remain accepted. Post-N6 reconciliation history includes PR #238 (freshness), PR #240 (VillAIgence truth), PR #241 (homepage collaboration), PR #242 (`nanoid` 3.3.18) and PR #245 (`733a8f5342da6fd5a8c9f8995a2383367145db04` production verifier reconciliation).
+N1–N6 presentation/editorial implementation, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification remain accepted. Post-N6 reconciliation now also includes PR #254 durable-state contract repair, PR #255 cross-project Content Freshness reconciliation, PR #256 Vlezet production-verifier boundary, PR #257 VillAIgence public 0.3.2 truth and PR #258 VillAIgence production-verifier reconciliation.
 
-Current VillAIgence public truth remains official release `0.3.1+1.21.1`, lifecycle Release Candidate / ACCEPTANCE IN PROGRESS; corrective installed acceptance remains a separate gate.
+Current cross-project evidence snapshot:
+- VillAIgence: official release `0.3.2+1.21.1`; automated release gates PASS; historical installed 0.3.1 corrective canary FAILED; PR #169 correction and PR #171 exact 0.3.2 retest handoff are merged; exact installed 0.3.2 corrective canary remains PENDING; `0.2.0+1.21.1` with `7 PASS / 0 FAIL` remains the last fully accepted installed baseline; 0.4 remains blocked.
+- Vlezet: M8.3 Precision Reference Calibration is active at Draft / TDD RED and is not product-owner accepted, merged or released.
+- Content Freshness: clean master result is `0 findings / 4 repos / 57 links`; issue #78 is CLOSED / COMPLETED.
 
 ## 2. AI Navigator — ENGINEERING BASELINE PRODUCTION ACCEPTED / PUBLIC AI OFF
 
@@ -64,13 +68,13 @@ P3.5B exact production acceptance and P3.5C exact production acceptance remain h
 ## 6. Approved next product slice
 
 Portfolio 1.0 presentation implementation is **COMPLETE THROUGH C7**.
-Current bounded implementation: P4.1A — Search Discovery repository readiness.
+Current bounded product/operator lane: P4.1B real external evidence review — **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**.
 P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**.
 
 ## 7. Known maintenance / technical debt
 
 - issue #82 — OPEN upstream Diplodoc/markdown-it blocker; no forced incompatible override.
-- issue #78 — historical clean freshness closure was later reopened on 2026-08-15 with repository-drift warnings for `portfolio-platform` and `vlezet`; reconcile actual project evidence before closing again.
+- issue #78 — CLOSED / COMPLETED after clean Content Freshness reconciliation (`0 findings / 4 repos / 57 links`); no active freshness debt is implied.
 - issue #111 — authenticated Yandex Webmaster/operator boundary.
 - issue #212 — authenticated P4.1B external evidence collection/review.
 - AI real-provider/index acceptance still requires a dedicated hard-spend-capped OpenRouter key and explicit operator acceptance path.
