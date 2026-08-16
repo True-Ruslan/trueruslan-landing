@@ -32,10 +32,13 @@ test('deployment flagship smoke derives current release and strategy evidence fr
 
 test('deployment flagship smoke requires the current bounded external evidence markers', () => {
   for (const marker of [
-    'PR #165',
-    'PR #167',
+    '0.3.1+1.21.1',
+    'PR #169',
+    'PR #171',
     'VAI-PCM-MULTI-001',
+    'FAIL',
     'PENDING',
+    'b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015',
     '0.4 remains blocked',
     'PR #42',
     'PR #44',
@@ -46,6 +49,8 @@ test('deployment flagship smoke requires the current bounded external evidence m
     assert.ok(source.includes(marker), `missing current production evidence marker: ${marker}`);
   }
 
+  assert.doesNotMatch(source, /PR #165/);
+  assert.doesNotMatch(source, /PR #167/);
   assert.doesNotMatch(source, /product-owner retest/);
   assert.doesNotMatch(source, /0\.1\.23\+1\.21\.1/);
 });

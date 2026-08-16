@@ -18,6 +18,7 @@ const PROJECT_EVIDENCE = JSON.parse(
 const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
 const LEGACY_ORIGIN = 'true-ruslan.github.io/trueruslan-landing';
 const ARTIFACTS_DIR = path.resolve('production-artifacts');
+const VILLAIGENCE_032_SHA = 'b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015';
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -237,10 +238,13 @@ async function main() {
       requiredText: [
         currentVillAIgenceRelease,
         installedVillAIgenceResult,
-        'PR #165',
-        'PR #167',
+        '0.3.1+1.21.1',
+        'PR #169',
+        'PR #171',
         'VAI-PCM-MULTI-001',
+        'FAIL',
         'PENDING',
+        VILLAIGENCE_032_SHA,
         '0.4 remains blocked',
         'VAI-M2-INST-005',
         'VAI-CONCUR-004',
@@ -248,9 +252,11 @@ async function main() {
       evidenceMarkers: [
         currentVillAIgenceRelease,
         installedVillAIgenceResult,
-        'PR #165',
-        'PR #167',
+        '0.3.1+1.21.1',
+        'PR #169',
+        'PR #171',
         'VAI-PCM-MULTI-001',
+        'FAIL',
         'PENDING',
       ],
       relatedHrefFragments: [
@@ -332,10 +338,13 @@ async function main() {
       requiredText: [
         currentVillAIgenceRelease,
         installedVillAIgenceResult,
-        'PR #165',
-        'PR #167',
+        '0.3.1+1.21.1',
+        'PR #169',
+        'PR #171',
         'VAI-PCM-MULTI-001',
+        'FAIL',
         'PENDING',
+        VILLAIGENCE_032_SHA,
         '0.4 remains blocked',
         'VAI-M2-INST-005',
         'VAI-CONCUR-004',

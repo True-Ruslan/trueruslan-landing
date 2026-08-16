@@ -122,10 +122,13 @@ test('deployment-only flagship smoke covers current RU and EN VillAIgence and Vl
     'data/project-evidence.json',
     'Current official release',
     'Installed 0.2.0 result',
-    'PR #165',
-    'PR #167',
+    '0.3.1+1.21.1',
+    'PR #169',
+    'PR #171',
     'VAI-PCM-MULTI-001',
+    'FAIL',
     'PENDING',
+    'b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015',
     '0.4 remains blocked',
     'M7.8B',
     'Automatic M7.8C result',
@@ -141,6 +144,8 @@ test('deployment-only flagship smoke covers current RU and EN VillAIgence and Vl
     assert.ok(source.includes(marker), `missing deployed flagship smoke marker: ${marker}`);
   }
 
+  assert.doesNotMatch(flagshipSource, /PR #165/);
+  assert.doesNotMatch(flagshipSource, /PR #167/);
   assert.doesNotMatch(flagshipSource, /Current published candidate/);
   assert.doesNotMatch(flagshipSource, /product-owner retest/);
   assert.doesNotMatch(flagshipSource, /0\.1\.23\+1\.21\.1/);
