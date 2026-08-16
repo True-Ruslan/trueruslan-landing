@@ -19,7 +19,7 @@ The internal `LivingWorld / livingworld` names remain compatibility-sensitive en
 <dt>Challenge</dt>
 <dd>Make AI-driven NPCs convincing without giving the model authority over world state, memory or actions.</dd>
 <dt>Result</dt>
-<dd>Official 0.3.1+1.21.1 is published; the exact installed corrective canary remains PENDING, so release-candidate acceptance is still in progress.</dd>
+<dd>Official 0.3.2+1.21.1 is published after the exact installed 0.3.1 corrective canary failed; the 0.3.2 installed retest remains PENDING, so release-candidate acceptance is still in progress.</dd>
 <dt>Status</dt>
 <dd><span data-tr-project-status="livingworld"></span></dd>
 </dl>
@@ -61,11 +61,11 @@ Authenticated redirects, unsafe endpoints, malformed JSON, oversized bodies and 
 <!-- case-study:current-state -->
 ## Current lifecycle and acceptance boundary
 
-The public lifecycle remains **release-candidate — ACCEPTANCE IN PROGRESS**. The current official release is **0.3.1+1.21.1**. It was published after the bounded targeted Memory 2.0 recall correction in **PR #165**; **PR #167** records the handoff for exact installed corrective acceptance. Automated release and post-release gates pass, but the installed corrective **VAI-PCM-MULTI-001** canary on the retained server world is still **PENDING**.
+The public lifecycle remains **release-candidate — ACCEPTANCE IN PROGRESS**. The current official release is **0.3.2+1.21.1**. The exact official 0.3.1 installed **VAI-PCM-MULTI-001** canary failed on Muammer recall while Nurey recall, persistence validity, event uniqueness and cross-NPC isolation remained intact. **PR #169** merged the narrow deterministic targeted-recall ranking correction, and **PR #171** records the exact retained-world handoff for the official 0.3.2 installed retest. Automated 0.3.2 release gates pass, but the 0.3.2 installed corrective canary is still **PENDING**.
 
-The last installed baseline with completed acceptance remains the historical **0.2.0+1.21.1 — 7 PASS / 0 FAIL**. Publishing 0.3.1 does not rewrite that installed evidence and does not imply an installed PASS for the new corrective bytes. **VAI-M2-INST-005** remains NOT TESTED / automated evidence only and **VAI-CONCUR-004** remains NOT TESTED / DEFERRED.
+The last installed baseline with completed acceptance remains the historical **0.2.0+1.21.1 — 7 PASS / 0 FAIL**. The failed 0.3.1 installed canary is negative evidence, and publishing 0.3.2 does not rewrite it or imply an installed PASS for the new corrective bytes. **VAI-M2-INST-005** remains NOT TESTED / automated evidence only and **VAI-CONCUR-004** remains NOT TESTED / DEFERRED.
 
-Until the corrective canary has real installed PASS evidence, **0.4 remains blocked**. Release identity, merged source capability, automated release gates and installed gameplay acceptance remain separate facts.
+Until the 0.3.2 corrective canary has real installed PASS evidence, **0.4 remains blocked**. Release identity, merged source capability, automated release gates and installed gameplay acceptance remain separate facts.
 
 <!-- case-study:decisions -->
 ## Architecture and key decisions
@@ -102,6 +102,8 @@ The following `0.1.21+1.21.1` candidate failed during startup because a tombston
 
 Later, the physical STT seed `silver-fox-482` was recognized as `SilverFox482` during the 0.2 clean-world test. Memory persisted and reproduced the accepted STT transcript correctly. The acceptance oracle was corrected: persistence is evaluated from the accepted transcript boundary, while punctuation/case normalization remains an STT-quality observation.
 
+The exact official `0.3.1+1.21.1` corrective candidate then exposed a deeper retrieval-ranking failure: Muammer retained the owner-local `amber-pine-314` event but did not recall it after the required exact query. That negative installed evidence led to the narrow deterministic ranking correction in PR #169 rather than a broader authority, persistence or provider change.
+
 <!-- case-study:alternatives -->
 ## Alternatives considered and rejected
 
@@ -134,16 +136,16 @@ Rejected. Deterministic loopback is a protocol/client boundary, not evidence abo
 
 The complete Project Evidence snapshot and timeline remain on the [Russian canonical VillAIgence page](../../landing/projects/livingworld.md). They are generated from shared registries rather than copied into a second English evidence model.
 
-The current bounded snapshot separates the historical `0.2.0+1.21.1` installed **7 PASS / 0 FAIL** baseline from the official **0.3.1+1.21.1** corrective release. **PR #165** is the targeted Memory 2.0 recall correction, **PR #167** is the installed corrective acceptance handoff, and the exact installed **VAI-PCM-MULTI-001** canary is still **PENDING**. **0.4 remains blocked** until that real installed acceptance exists. Deferred `VAI-M2-INST-005` and `VAI-CONCUR-004` boundaries remain explicit.
+The current bounded snapshot separates the historical `0.2.0+1.21.1` installed **7 PASS / 0 FAIL** baseline, the failed exact installed **0.3.1+1.21.1 VAI-PCM-MULTI-001** canary and the official **0.3.2+1.21.1** corrective release. **PR #169** is the deterministic targeted-recall ranking correction and **PR #171** is the exact retained-world 0.3.2 installed retest handoff. The 0.3.2 **VAI-PCM-MULTI-001** canary is still **PENDING**. **0.4 remains blocked** until that real installed acceptance exists. Deferred `VAI-M2-INST-005` and `VAI-CONCUR-004` boundaries remain explicit.
 
 <!-- case-study:limitations -->
 ## Known limitations
 
-- the exact installed `VAI-PCM-MULTI-001` canary for official 0.3.1 remains **PENDING**;
+- the exact installed `VAI-PCM-MULTI-001` canary for official 0.3.2 remains **PENDING** after the 0.3.1 installed FAIL;
 - `VAI-M2-INST-005` remains NOT TESTED / automated evidence only;
 - `VAI-CONCUR-004` remains NOT TESTED / deferred;
 - physical microphone/provider/Voice Chat quality remains observational evidence separate from deterministic protocol tests;
-- publishing 0.3.1 and passing automated release gates do not prove installed corrective acceptance;
+- publishing 0.3.2 and passing automated release gates do not prove installed corrective acceptance;
 - semantic BELIEF admission and the recall correction do not permit AI→FACT authority;
 - publication does not automatically promote the public lifecycle beyond release-candidate;
 - Fabric remains the primary package while NeoForge is a compatibility build with separate boundaries.
@@ -151,9 +153,9 @@ The current bounded snapshot separates the historical `0.2.0+1.21.1` installed *
 <!-- case-study:next -->
 ## Next accepted milestone
 
-Run the **exact 0.3.1 installed VAI-PCM-MULTI-001 corrective canary** defined by PR #167.
+Run the **exact 0.3.2 installed VAI-PCM-MULTI-001 corrective canary** defined by PR #171.
 
-Install the official `0.3.1+1.21.1` JAR, verify SHA-256 `f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f`, reuse the retained crowded-history world, and execute the exact-text Muammer/Nurey isolation and persistence procedure. Only real installed PASS evidence may close the corrective boundary and unblock 0.4.
+Install the official `0.3.2+1.21.1` Fabric JAR, verify SHA-256 `b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015`, reuse the retained crowded-history world and execute the exact Muammer/Nurey marker baseline, exact recall prompts, cross-NPC isolation and duplicate-event integrity procedure. Only real installed PASS evidence may close the corrective boundary and unblock 0.4.
 
 Until then the lifecycle remains `release-candidate / ACCEPTANCE IN PROGRESS`; source, release and installed evidence are not collapsed into one status.
 
