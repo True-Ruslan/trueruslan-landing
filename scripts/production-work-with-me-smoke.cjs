@@ -9,6 +9,7 @@ const {
   CONTACTS_URL,
   SEARCH_URL,
 } = require('./production-live-routes.cjs');
+const {gotoWithTransientHttpRetry} = require('./production-navigation-retry.cjs');
 
 const {chromium} = requireQualityTool('playwright', 'Work with me production smoke');
 const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
@@ -82,7 +83,7 @@ async function assertSeoPair(page, url, otherLocaleUrl, locale) {
 }
 
 async function verifyWorkPage(page, url, locale) {
-  const response = await page.goto(url, {waitUntil: 'networkidle', timeout: 45000});
+  const response = await gotoWithTransientHttpRetry(page, url, {waitUntil: 'networkidle', timeout: 45000});
   assert(response?.ok(), `${locale} Work with me HTTP ${response?.status() ?? 'none'}`);
   assert(await page.locator('html').getAttribute('lang') === locale, `${locale}: html lang mismatch`);
   const heading = (await page.locator('h1').first().innerText()).trim();
@@ -106,7 +107,7 @@ async function verifyNoJavaScript(browser, url, locale) {
   const context = await browser.newContext({javaScriptEnabled: false, viewport: {width: 390, height: 844}, colorScheme: 'dark'});
   const page = await context.newPage();
   try {
-    const response = await page.goto(url, {waitUntil: 'load', timeout: 45000});
+    const response = await gotoWithTransientHttpRetry(page, url, {waitUntil: 'load', timeout: 45000});
     assert(response?.ok(), `${locale} Work with me no-JS HTTP ${response?.status() ?? 'none'}`);
     const body = await page.locator('body').innerText();
     for (const token of [...NO_JS_REQUIRED_TOKENS[locale], '2026-08-08']) {
@@ -122,7 +123,7 @@ async function verifyNoJavaScript(browser, url, locale) {
 }
 
 async function verifyHomepage(page, url, locale) {
-  const response = await page.goto(url, {waitUntil: 'networkidle', timeout: 45000});
+  const response = await gotoWithTransientHttpRetry(page, url, {waitUntil: 'networkidle', timeout: 45000});
   assert(response?.ok(), `${locale} homepage HTTP ${response?.status() ?? 'none'}`);
 
   assert(await page.locator('[data-home-proof]').count() === 4, `${locale}: C2 homepage must expose exactly four proof facts`);
@@ -181,7 +182,7 @@ async function verifyHomepage(page, url, locale) {
 }
 
 async function verifyContacts(page) {
-  const response = await page.goto(CONTACTS_URL, {waitUntil: 'networkidle', timeout: 45000});
+  const response = await gotoWithTransientHttpRetry(page, CONTACTS_URL, {waitUntil: 'networkidle', timeout: 45000});
   assert(response?.ok(), `Contacts HTTP ${response?.status() ?? 'none'}`);
   const bodyText = await page.locator('body').innerText();
   assert(bodyText.includes('Основные контакты'), 'Contacts primary contact heading missing');
@@ -204,7 +205,7 @@ async function verifyContacts(page) {
 
 async function verifyContextual(page) {
   for (const route of CONTEXTUAL_ALLOWED) {
-    const response = await page.goto(new URL(route, APEX).href, {waitUntil: 'networkidle', timeout: 45000});
+    const response = await gotoWithTransientHttpRetry(page, new URL(route, APEX).href, {waitUntil: 'networkidle', timeout: 45000});
     assert(response?.ok(), `approved contextual route HTTP failure: ${route}`);
     const cta = page.locator('[data-tr-contextual-collaboration="true"]');
     assert(await cta.count() === 1, `approved contextual CTA missing/duplicated: ${route}`);
@@ -212,7 +213,7 @@ async function verifyContextual(page) {
     assert(!(await anchor.getAttribute('target')), `approved contextual CTA must stay in current tab: ${route}`);
   }
   for (const route of CONTEXTUAL_FORBIDDEN) {
-    const response = await page.goto(new URL(route, APEX).href, {waitUntil: 'networkidle', timeout: 45000});
+    const response = await gotoWithTransientHttpRetry(page, new URL(route, APEX).href, {waitUntil: 'networkidle', timeout: 45000});
     assert(response?.ok(), `forbidden contextual route probe HTTP failure: ${route}`);
     assert(await page.locator('[data-tr-contextual-collaboration="true"]').count() === 0, `contextual CTA leaked: ${route}`);
   }
@@ -220,7 +221,7 @@ async function verifyContextual(page) {
 }
 
 async function verifySearch(page) {
-  const response = await page.goto(SEARCH_URL, {waitUntil: 'networkidle', timeout: 45000});
+  const response = await gotoWithTransientHttpRetry(page, SEARCH_URL, {waitUntil: 'networkidle', timeout: 45000});
   assert(response?.ok(), `search HTTP ${response?.status() ?? 'none'}`);
   const input = page.locator('.tr-search-input').first();
   const button = page.locator('.tr-search-button').first();
