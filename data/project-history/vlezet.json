@@ -88,10 +88,10 @@
     "evidence": "https://github.com/True-Ruslan/vlezet/pull/90"
   },
   {
-    "date": "2026-08-15",
-    "title": "M8.3 Precision Reference Calibration is active",
-    "description": "PR #91 records the accepted P0 merge identity and post-merge CI/CodeQL truth, then makes M8.3 Precision Reference Calibration the active next product milestone. M8.3 is active work, not product-owner accepted or released; the pre-production lifecycle remains unchanged.",
+    "date": "2026-08-16",
+    "title": "M8.3 Precision Reference Calibration is active — Draft / RED",
+    "description": "PR #91 established M8.3 as the active product milestone after accepted P0 persistence hardening. Draft PR #92 is now the implementation workstream and remains an intentional TDD RED checkpoint: ReferencePlan stays the persistent authority, viewport/source-snapping verification stays runtime-only, and no schema migration or AI/network dependency is introduced. M8.3 is not product-owner accepted, merged or released; the pre-production lifecycle remains unchanged.",
     "state": "current",
-    "evidence": "https://github.com/True-Ruslan/vlezet/pull/91"
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/92"
   }
 ]
