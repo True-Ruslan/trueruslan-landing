@@ -54,68 +54,81 @@ test('VillAIgence page separates published 0.3.1 from pending installed correcti
   assert.doesNotMatch(page, /0\.3\.1[^\n]{0,220}(production-ready|fully accepted|полностью принят)/i);
 });
 
-test('VillAIgence timeline keeps installed 0.2 historical while 0.3.1 corrective acceptance is current', () => {
+test('VillAIgence timeline keeps installed 0.2 historical while 0.3.2 corrective acceptance is current', () => {
   const history = readJson(HISTORY_PATH);
   const current = history.filter(({state}) => state === 'current');
   const next = history.filter(({state}) => state === 'next');
-  const release = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/120');
-  const convergence = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/160');
+  const installedBaseline = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/120');
+  const failed031 = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/pull/169' && /0\.3\.1 installed corrective canary failed/i.test(evidence?.title || ''));
+  const release031 = history.find(({evidence}) => evidence === 'https://github.com/True-Ruslan/villAIgence/releases/tag/0.3.1%2B1.21.1');
 
   assert.equal(current.length, 1);
   assert.equal(next.length, 1);
-  assert.match(current[0].title, /0\.3\.1.*corrective release.*installed canary pending/i);
+  assert.match(current[0].title, /0\.3\.2.*corrective release.*installed canary pending/i);
   assert.match(current[0].description, /release-candidate \/ ACCEPTANCE IN PROGRESS/i);
-  assert.match(current[0].description, /no installed-acceptance or 0\.4 claim/i);
-  assert.equal(current[0].evidence, 'https://github.com/True-Ruslan/villAIgence/pull/167');
-  assert.equal(release.state, 'past');
-  assert.equal(release.version, '0.2.0+1.21.1');
-  assert.match(release.description, /7 PASS \/ 0 FAIL/);
-  assert.equal(convergence.state, 'past');
-  assert.match(convergence.description, /publication was skipped/i);
-  assert.match(next[0].title, /VAI-PCM-MULTI-001.*canary/i);
-  assert.match(next[0].description, /f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f/);
-  assert.match(next[0].description, /Only real installed PASS evidence/i);
+  assert.match(current[0].description, /VAI-PCM-MULTI-001 remains PENDING/i);
+  assert.match(current[0].description, /0\.4 stays blocked/i);
+  assert.equal(current[0].evidence, 'https://github.com/True-Ruslan/villAIgence/pull/171');
+
+  assert.equal(installedBaseline.state, 'past');
+  assert.equal(installedBaseline.version, '0.2.0+1.21.1');
+  assert.match(installedBaseline.description, /7 PASS \/ 0 FAIL/);
+  assert.equal(release031.state, 'past');
+  assert.match(release031.description, /installed corrective acceptance still required/i);
+  assert.equal(failed031, undefined, '0.3.1 installed failure must not be misidentified as PR #169 evidence');
+  assert.ok(history.some(({state, title, description}) => state === 'past' && /0\.3\.1 installed corrective canary failed/i.test(title) && /amber-pine-314/i.test(description)));
+
+  assert.match(next[0].title, /0\.3\.2.*VAI-PCM-MULTI-001.*canary/i);
+  assert.match(next[0].description, /b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015/);
+  assert.match(next[0].description, /Only real installed PASS plus repository reconciliation/i);
   assert.match(next[0].description, /unblock 0\.4/i);
 });
 
-test('VillAIgence evidence separates official 0.3.1 release from pending installed corrective acceptance', () => {
+test('VillAIgence evidence separates official 0.3.2 release from pending installed corrective acceptance', () => {
   const evidence = readJson(EVIDENCE_PATH).find(({project}) => project === 'livingworld');
 
   assert.ok(evidence, 'livingworld evidence snapshot must remain present');
-  assert.equal(evidence.lastVerified, '2026-08-14');
+  assert.equal(evidence.lastVerified, '2026-08-16');
 
   const versions = new Map(evidence.versions.map(({label, value}) => [label, value]));
-  assert.equal(versions.get('Current official release'), '0.3.1+1.21.1');
+  assert.equal(versions.get('Current official release'), '0.3.2+1.21.1');
   assert.equal(versions.get('Installed 0.2.0 result'), '7 PASS / 0 FAIL');
-  assert.match(versions.get('Current 0.3.1 acceptance'), /automated release gates PASS.*VAI-PCM-MULTI-001.*PENDING/i);
+  assert.match(versions.get('Current 0.3.2 acceptance'), /automated release gates PASS.*VAI-PCM-MULTI-001.*PENDING/i);
   assert.match(versions.get('Deferred installed boundaries'), /VAI-M2-INST-005.*VAI-CONCUR-004/);
   assert.match(versions.get('Controlled semantic boundary'), /BELIEF.*FACT.*SYSTEM_OBSERVED/i);
-  assert.match(versions.get('Latest merged source capability'), /0\.3\.1.*Memory 2\.0.*recall/i);
+  assert.match(versions.get('Latest merged source capability'), /0\.3\.2.*targeted-recall ranking correction.*installed retest contract/i);
+  assert.match(versions.get('Active development slice'), /0\.3\.1 installed FAIL/i);
   assert.match(versions.get('Active development slice'), /VAI-PCM-MULTI-001.*pending/i);
   assert.match(versions.get('Active development slice'), /do not start 0\.4/i);
 
-  const installed = evidence.signals.find(({label}) => label.includes('Installed 0.2.0 clean-world'));
-  assert.ok(installed, 'missing historical installed 0.2 acceptance evidence');
-  assert.equal(installed.state, 'accepted');
-  assert.match(installed.scope, /(?:7 PASS \/ 0 FAIL|seven required[\s\S]*0 FAIL)/i);
-  assert.match(installed.scope, /NOT TESTED/);
+  const installed020 = evidence.signals.find(({label}) => label.includes('Installed 0.2.0 clean-world'));
+  assert.ok(installed020, 'missing historical installed 0.2 acceptance evidence');
+  assert.equal(installed020.state, 'accepted');
+  assert.match(installed020.scope, /(?:7 PASS \/ 0 FAIL|seven required[\s\S]*0 FAIL)/i);
+  assert.match(installed020.scope, /NOT TESTED/);
 
-  const release = evidence.signals.find(({label}) => label === 'Official 0.3.1+1.21.1 corrective release');
-  assert.ok(release, 'missing 0.3.1 release evidence');
-  assert.equal(release.kind, 'release');
-  assert.equal(release.state, 'published');
-  assert.match(release.scope, /bc7c68ac2f3a4f761aa3b03a2f5c1fe1201745ab/);
-  assert.match(release.scope, /f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f/);
-  assert.match(release.scope, /installed corrective.*pending/i);
+  const installed031 = evidence.signals.find(({label}) => label === 'Installed 0.3.1 VAI-PCM-MULTI-001 corrective canary');
+  assert.ok(installed031, 'missing 0.3.1 installed negative evidence');
+  assert.equal(installed031.state, 'failed');
+  assert.equal(installed031.observedAt, '2026-08-15');
+  assert.match(installed031.scope, /Muammer.*amber-pine-314.*did not recall/i);
+  assert.match(installed031.scope, /negative installed evidence/i);
 
-  const corrective = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/165');
-  const handoff = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/167');
-  assert.ok(corrective && handoff, 'missing 0.3.1 corrective PR evidence');
-  assert.equal(corrective.state, 'merged');
-  assert.equal(handoff.state, 'merged');
-  assert.equal(handoff.observedAt, '2026-08-14');
-  assert.match(handoff.scope, /No installed PASS is claimed/i);
-  assert.match(handoff.scope, /VAI-M2-INST-005.*VAI-CONCUR-004/i);
+  const correction = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/169');
+  const release032 = evidence.signals.find(({label}) => label === 'Official 0.3.2+1.21.1 corrective release');
+  const retestPlan = evidence.signals.find(({url}) => url === 'https://github.com/True-Ruslan/villAIgence/pull/171');
+  assert.ok(correction && release032 && retestPlan, 'missing 0.3.2 correction, release or installed-retest evidence');
+  assert.equal(correction.state, 'merged');
+  assert.match(correction.scope, /101c74d178ec29ca15f67ebd6041ef256a339f31/);
+  assert.match(correction.scope, /does not claim installed acceptance/i);
+  assert.equal(release032.kind, 'release');
+  assert.equal(release032.state, 'published');
+  assert.match(release032.scope, /3bb39e7ed126163efcdf971e85c89a4a5efd3111/);
+  assert.match(release032.scope, /b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015/);
+  assert.match(release032.scope, /not installed acceptance/i);
+  assert.equal(retestPlan.state, 'merged');
+  assert.match(retestPlan.scope, /VAI-PCM-MULTI-001 remains PENDING/i);
+  assert.match(retestPlan.scope, /0\.4 stays blocked/i);
 });
 
 test('VillAIgence metadata uses the stable public route', () => {
