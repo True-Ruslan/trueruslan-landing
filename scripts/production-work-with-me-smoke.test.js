@@ -13,3 +13,15 @@ test('production Work with me no-JS smoke uses locale-specific copy contracts', 
   assert.match(source, /for \(const token of \[\.\.\.NO_JS_REQUIRED_TOKENS\[locale\], '2026-08-08'\]\)/);
   assert.doesNotMatch(source, /for \(const token of \['Engineering', 'Teaching & Mentoring', 'Context', 'Scope', 'Estimate', 'Implementation', 'Handover'/);
 });
+
+test('production Work with me smoke uses bounded transient retry without weakening fail-closed response assertions', async () => {
+  const source = await readFile(SOURCE_PATH, 'utf8');
+
+  assert.match(source, /require\('\.\/production-navigation-retry\.cjs'\)/);
+  assert.match(source, /gotoWithTransientHttpRetry/);
+  assert.doesNotMatch(source, /const response = await page\.goto\(/);
+  assert.match(source, /assert\(response\?\.ok\(\), `\$\{locale\} Work with me HTTP/);
+  assert.match(source, /assert\(response\?\.ok\(\), `\$\{locale\} Work with me no-JS HTTP/);
+  assert.match(source, /assert\(response\?\.ok\(\), `Contacts HTTP/);
+  assert.match(source, /assert\(response\?\.ok\(\), `search HTTP/);
+});
