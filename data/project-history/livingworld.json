@@ -88,17 +88,32 @@
     "state": "past"
   },
   {
-    "date": "2026-08",
-    "title": "0.3.1 corrective release published — installed canary pending",
-    "description": "Official 0.3.1+1.21.1 is published after the bounded targeted Memory 2.0 recall correction. Automated release and post-release gates are green, but the exact installed VAI-PCM-MULTI-001 corrective canary is still pending on the retained server world. The project therefore remains release-candidate / ACCEPTANCE IN PROGRESS; no installed-acceptance or 0.4 claim is made.",
+    "date": "2026-08-13",
+    "title": "0.3.1 corrective release published",
+    "description": "Official 0.3.1+1.21.1 was published after the bounded targeted Memory 2.0 recall correction. Automated release and post-release gates were green, but installed corrective acceptance still required a retained-world VAI-PCM-MULTI-001 canary.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/releases/tag/0.3.1%2B1.21.1"
+  },
+  {
+    "date": "2026-08-15",
+    "title": "0.3.1 installed corrective canary failed",
+    "description": "The exact official 0.3.1 Fabric JAR failed VAI-PCM-MULTI-001 on Muammer: owner-local amber-pine-314 remained persisted but was not recalled after the required exact query. Nurey recalled violet-river-926; startup, persistence validity, unique event IDs and cross-NPC isolation passed. The failure is negative installed evidence, not a rollback of earlier 0.2.0 acceptance.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/169"
+  },
+  {
+    "date": "2026-08-16",
+    "title": "0.3.2 corrective release published — installed canary pending",
+    "description": "PR #169 merged a narrow deterministic targeted-recall ranking correction and official 0.3.2+1.21.1 was published. PR #171 fixes the exact retained-world validation procedure. Automated release evidence is green, but VAI-PCM-MULTI-001 remains PENDING until the official JAR is installed and the exact Muammer/Nurey canary passes. The project remains release-candidate / ACCEPTANCE IN PROGRESS and 0.4 stays blocked.",
     "state": "current",
-    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/167"
+    "version": "0.3.2+1.21.1",
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/171"
   },
   {
     "date": "NEXT",
-    "title": "Run exact 0.3.1 installed VAI-PCM-MULTI-001 corrective canary",
-    "description": "Install the official 0.3.1+1.21.1 JAR, verify SHA-256 f7f40b920c6f72a0e9af864795f48a0f90479db42a145081f43923b71a95e29f, reuse the retained crowded-history world and execute the exact-text Muammer/Nurey isolation and persistence procedure from PR #167. Only real installed PASS evidence may close the 0.3 corrective boundary and unblock 0.4.",
+    "title": "Run exact 0.3.2 installed VAI-PCM-MULTI-001 corrective canary",
+    "description": "Install official villaigence-fabric-0.3.2+1.21.1.jar, verify SHA-256 b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015, preserve backup and pre/post-install persistence hashes, then execute the exact retained-world Muammer/Nurey recall, isolation and duplicate-event checks from PR #171. Only real installed PASS plus repository reconciliation may close the 0.3 corrective boundary and unblock 0.4.",
     "state": "next",
-    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/167"
+    "evidence": "https://github.com/True-Ruslan/villAIgence/pull/171"
   }
 ]
