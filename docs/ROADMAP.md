@@ -1,14 +1,19 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-15**. AI Navigator engineering baseline production-accepted на `ca4cecd510b5c0f6bad6cef31b6b5dd630f5f50f`; public AI остаётся OFF. Controlled launch — not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Обновлено: **2026-08-16**. Current production baseline accepted на `d5a67a9787637ee8cc63bdc0ac7a8330ca9ef6d8`; AI Navigator engineering baseline остаётся production-accepted, public AI остаётся OFF. Controlled launch — not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Предыдущий полный snapshot сохранён в `docs/archive/2026-08-14/ROADMAP.md`.
 
 ## Current accepted baseline
 
-N1–N6, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification are DONE / PRODUCTION ACCEPTED. PR #238, #240, #241, #242 and #245 preserve the accepted post-N6 reconciliation chain. Transparent `trueruslan.com` repository readiness is accepted via PR #247 but external DNS/Cloudflare activation is NOT LIVE.
+N1–N6, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification are DONE / PRODUCTION ACCEPTED. PR #254–#258 preserve the latest durable-state, cross-project freshness and production-verifier reconciliation chain. Transparent `trueruslan.com` repository readiness is accepted via PR #247 but external DNS/Cloudflare activation is NOT LIVE.
 
-AI Navigator #248–#253 is DONE / PRODUCTION ACCEPTED WITH PUBLIC MODE OFF. Current exact production SHA `ca4cecd510b5c0f6bad6cef31b6b5dd630f5f50f`: Pages #272 / 31905664206, Production Live #618 / 31905664180, master CodeQL #1740 / 31905664193 — SUCCESS.
+AI Navigator #248–#253 is DONE / PRODUCTION ACCEPTED WITH PUBLIC MODE OFF. Current exact production SHA `d5a67a9787637ee8cc63bdc0ac7a8330ca9ef6d8`: Pages #277 / 31968943858, Production Live #635 / 31968943881, master CodeQL #1788 / 31968943873 — SUCCESS; deployed flagship normalization — SUCCESS.
+
+Current cross-project truth:
+- VillAIgence official release is `0.3.2+1.21.1`; automated release gates PASS; historical installed 0.3.1 corrective canary FAILED; PR #169 and PR #171 are merged; exact installed 0.3.2 corrective canary remains PENDING; 0.4 remains blocked. The last fully accepted installed baseline remains `0.2.0+1.21.1` with `7 PASS / 0 FAIL`.
+- Vlezet M8.3 Precision Reference Calibration remains Draft / TDD RED and is not product-owner accepted, merged or released.
+- Content Freshness is clean at `0 findings / 4 repos / 57 links`; issue #78 is CLOSED / COMPLETED.
 
 ## Priority A — controlled manual launch / external evidence
 
@@ -46,7 +51,7 @@ P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE; suffic
 ## Maintenance lane
 
 - #82 remains OPEN upstream Diplodoc/markdown-it blocker; next historical review marker 2026-08-17; do not use forced incompatible overrides.
-- #78 was reopened 2026-08-15 for repository drift and requires real evidence reconciliation.
+- #78 is CLOSED / COMPLETED after clean Content Freshness reconciliation (`0 findings / 4 repos / 57 links`).
 - #111 / #212 remain authenticated operator/external observation work.
 - exact artifact и installed acceptance остаются отдельными release gates.
 - no quality/security gate weakening.
