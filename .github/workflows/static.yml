@@ -25,6 +25,7 @@ on:
           - disabled
 
 permissions:
+  actions: read
   contents: read
   pages: write
   id-token: write
@@ -58,6 +59,10 @@ jobs:
         run: npm ci
       - name: Test
         run: npm test
+      - name: Restore exact accepted AI index
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/ai-index-restore.js
       - name: Resolve site deployment contract
         env:
           SITE_DEPLOYMENT_MODE: ${{ inputs.site_mode || 'auto' }}
