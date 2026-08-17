@@ -34,21 +34,31 @@ Repository enforcement is intentionally slightly wider than the recommendation: 
 
 Never put the plaintext key into Git, issues, pull-request comments, workflow inputs, documentation, screenshots, or chat messages.
 
-## GitHub secret
+## GitHub environment secret
 
-In `True-Ruslan/trueruslan-landing` create a repository Actions secret with this exact name:
+In `True-Ruslan/trueruslan-landing` create a GitHub Actions environment named exactly:
+
+```text
+ai5-provider-acceptance
+```
+
+Prefer restricting its deployment branches to `master`. The workflow job explicitly references this environment, so an environment secret is unavailable to unrelated jobs.
+
+Inside that environment create a secret with this exact name:
 
 ```text
 OPENROUTER_AI5_API_KEY
 ```
 
-The manual workflow maps this secret to `OPENROUTER_API_KEY` for one online step only. The offline semantic benchmark runs after that step without the credential in its environment.
+Do not create a repository-wide secret for AI-5. The manual workflow maps the environment secret to `OPENROUTER_API_KEY` for one online step only. The offline semantic benchmark runs after that step without the credential in its environment.
+
+If a suitable independent reviewer exists, an environment approval rule may be added. Do not configure a protection rule that leaves a single-maintainer repository unable to approve its own explicit manual acceptance run.
 
 ## Manual acceptance run
 
 Workflow: **AI Navigator Real Acceptance**.
 
-Run it manually with:
+Run it manually on `master` with:
 
 ```text
 confirm_provider_calls = true
@@ -66,7 +76,7 @@ The workflow then performs exactly two embedding stages:
 1. current canonical document chunks with `input_type=search_document`;
 2. the reviewed 50-query benchmark with `input_type=search_query`.
 
-Each embedding stage has a one-request budget, an 8-second timeout, no automatic retry, pinned `openai/text-embedding-3-small`, 512 dimensions, and the existing ZDR/data-collection-deny provider policy.
+Each embedding stage has a one-request budget, an 8-second client timeout, no client-side automatic retry, pinned `openai/text-embedding-3-small`, 512 dimensions, and the existing ZDR/data-collection-deny provider policy.
 
 After provider access leaves scope, the workflow runs the index verifier and semantic benchmark offline.
 
