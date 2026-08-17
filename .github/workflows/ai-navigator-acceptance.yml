@@ -20,6 +20,7 @@ jobs:
   acceptance:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    environment: ai5-provider-acceptance
     steps:
       - name: Require explicit provider-call confirmation
         if: ${{ inputs.confirm_provider_calls != true }}
