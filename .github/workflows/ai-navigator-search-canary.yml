@@ -1,0 +1,128 @@
+name: AI Navigator SEARCH Canary
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_search_canary:
+        description: Confirm explicit calls to the isolated AI-6 SEARCH Worker and its dedicated OpenRouter key
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: ai-navigator-search-canary-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  canary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: ai6-search-canary
+    steps:
+      - name: Require master and explicit live-canary confirmation
+        env:
+          CONFIRMED: ${{ inputs.confirm_search_canary }}
+        run: |
+          if [[ "${GITHUB_REF}" != "refs/heads/master" ]]; then
+            echo "::error::AI-6 SEARCH canary must execute from master."
+            exit 1
+          fi
+          if [[ "${CONFIRMED}" != "true" ]]; then
+            echo "::error::AI-6 SEARCH canary requires explicit live-call confirmation."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Require public AI to remain OFF
+        run: |
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const config = JSON.parse(fs.readFileSync('data/ai-navigator.json', 'utf8'));
+          if (config.mode !== 'off' || config.workerBaseUrl !== '') {
+            throw new Error(`AI-6 canary requires public AI fully off; mode=${String(config.mode)} workerBaseUrl=${String(config.workerBaseUrl)}`);
+          }
+          NODE
+          mkdir -p quality-artifacts
+
+      - name: Restore exact accepted AI-5 static index artifact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          artifact_id=9283608793
+          artifact_sha256=71260072c273588c4b8a4ab53180b6dfc5c39be8612aee21f91721c7d2919e1f
+          archive="${RUNNER_TEMP}/ai5-accepted.zip"
+          curl --fail --silent --show-error --location \
+            --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}/zip" \
+            --output "${archive}"
+          echo "${artifact_sha256}  ${archive}" | sha256sum --check --strict
+          unzip -q "${archive}" -d .
+          test -f data/ai-index/index-meta.json
+          test -f data/ai-index/embeddings.bin
+          test -f data/ai-index/benchmark-query-cache/benchmark-query-meta.json
+
+      - name: Verify accepted static index and hybrid ranking offline
+        run: |
+          set -euo pipefail
+          test -z "${OPENROUTER_AI6_API_KEY:-}"
+          test -z "${AI6_SEARCH_WORKER_BASE_URL:-}"
+          node scripts/ai-index-verify.js | tee quality-artifacts/ai6-index-verify.json
+          node scripts/ai-benchmark.js --mode semantic --index data/ai-index | tee quality-artifacts/ai6-semantic-benchmark.json
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import {AI6_SEARCH_HYBRID_WEIGHTS} from './scripts/ai6-config-evidence.js';
+          const report = JSON.parse(fs.readFileSync('quality-artifacts/ai6-semantic-benchmark.json', 'utf8'));
+          for (const [key, expected] of Object.entries(AI6_SEARCH_HYBRID_WEIGHTS)) {
+            if (report.selectedWeights?.[key] !== expected) {
+              throw new Error(`AI-6 selectedWeights drift: ${key}=${String(report.selectedWeights?.[key])}; expected ${expected}`);
+            }
+          }
+          if (Object.keys(report.selectedWeights || {}).length !== Object.keys(AI6_SEARCH_HYBRID_WEIGHTS).length) {
+            throw new Error('AI-6 selectedWeights shape drift');
+          }
+          NODE
+
+      - name: Execute bounded SEARCH-only live canary
+        env:
+          AI6_SEARCH_WORKER_BASE_URL: ${{ secrets.AI6_SEARCH_WORKER_BASE_URL }}
+          OPENROUTER_AI6_API_KEY: ${{ secrets.OPENROUTER_AI6_API_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/ai6-config-evidence.js --output-dir quality-artifacts \
+            | tee quality-artifacts/ai6-config-pair-evidence.json
+          node scripts/ai6-search-canary.js | tee quality-artifacts/ai6-search-canary.json
+          git diff --exit-code -- data/ai-navigator.json
+
+      - name: Upload AI-6 canary evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ai-navigator-search-canary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            quality-artifacts/ai6-index-verify.json
+            quality-artifacts/ai6-semantic-benchmark.json
+            quality-artifacts/ai6-config-pair-evidence.json
+            quality-artifacts/ai6-candidate-search-config.json
+            quality-artifacts/ai6-rollback-off-config.json
+            quality-artifacts/ai6-search-canary.json
+          if-no-files-found: ignore
+          retention-days: 14
