@@ -12,6 +12,7 @@ const AI_SEARCH_RESOURCES = Object.freeze([
   '_assets/style/ai-search.css',
   '_assets/script/ai-retrieval.js',
   '_assets/script/ai-search.js',
+  '_assets/script/ai-search-bootstrap.js',
 ]);
 const AI_INDEX_ARTIFACTS = Object.freeze([
   ['chunks.json', 'ai/chunks.json'],
