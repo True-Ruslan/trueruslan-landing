@@ -100,6 +100,7 @@ function injectProjectSearchResources(document, aiConfig) {
   const aiStylesheet = '_assets/style/ai-search.css';
   const retrievalScript = '_assets/script/ai-retrieval.js';
   const aiScript = '_assets/script/ai-search.js';
+  const aiBootstrapScript = '_assets/script/ai-search-bootstrap.js';
 
   if (!hasResource(document, 'link', 'href', aiStylesheet)) {
     appendFragmentChildren(head, `<link rel="stylesheet" href="${aiStylesheet}" data-tr-ai-resource="style">`);
@@ -109,6 +110,9 @@ function injectProjectSearchResources(document, aiConfig) {
   }
   if (!hasResource(document, 'script', 'src', aiScript)) {
     appendFragmentChildren(body, `<script src="${aiScript}" defer data-tr-ai-resource="runtime"></script>`);
+  }
+  if (!hasResource(document, 'script', 'src', aiBootstrapScript)) {
+    appendFragmentChildren(body, `<script src="${aiBootstrapScript}" defer data-tr-ai-resource="bootstrap"></script>`);
   }
 }
 
