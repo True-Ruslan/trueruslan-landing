@@ -40,6 +40,21 @@ Required Worker variables/secrets:
 
 The canary Worker must be isolated and unlinked: no production custom route, no value written to `data/ai-navigator.json`, and no public UI activation.
 
+## Candidate and rollback evidence
+
+AI-6 must prove both sides of the reversible configuration boundary without changing the public file:
+
+- candidate SEARCH config — the exact in-memory public config with only `mode=search` and the isolated Worker origin substituted;
+- rollback OFF config — the exact current public `data/ai-navigator.json` with `mode=off` and `workerBaseUrl=""`.
+
+`node scripts/ai6-config-evidence.js --output-dir quality-artifacts` generates three uploadable evidence files:
+
+- `ai6-config-pair-evidence.json` — candidate/rollback config digests and rollback-baseline match;
+- `ai6-candidate-search-config.json` — sanitized SEARCH candidate metadata containing the real candidate-config digest and only a SHA-256 digest of the isolated Worker origin;
+- `ai6-rollback-off-config.json` — the exact safe OFF rollback config plus its canonical digest.
+
+The raw staging Worker URL is never written to uploadable evidence. The candidate config itself exists only in memory long enough to derive its deterministic canonical SHA-256 digest. The rollback config digest must exactly equal the canonical digest of the public OFF baseline, and the workflow must prove `data/ai-navigator.json` was not modified.
+
 ## Dedicated key policy
 
 Use an ordinary OpenRouter API key dedicated to AI-6 only.
@@ -80,7 +95,8 @@ Before any live Worker request it must:
 2. download AI-5 artifact `9283608793`;
 3. verify artifact SHA-256 `71260072c273588c4b8a4ab53180b6dfc5c39be8612aee21f91721c7d2919e1f`;
 4. run `ai-index-verify` against the restored static index;
-5. run the unchanged full semantic benchmark against that index.
+5. run the unchanged full semantic benchmark against that index;
+6. derive sanitized candidate SEARCH and exact rollback OFF config evidence with deterministic canonical digests, without mutating public config.
 
 The live bounded canary then verifies:
 
@@ -97,6 +113,8 @@ The live bounded canary then verifies:
 8. observed run spend delta is `<= $0.01`;
 9. public AI configuration remains untouched.
 
+Three probes deliberately replace the original one-probe sketch: the bounded set covers the known Latin-only RU technical-language edge, a localized RU paraphrase, and an EN paraphrase while retaining a fixed request count, no retries, a lifetime `$2` key cap, and the `$0.01` successful-run evidence gate.
+
 ## Acceptance gate
 
 AI-6 may be marked **ACCEPTED** only when all of the following are true:
@@ -105,6 +123,8 @@ AI-6 may be marked **ACCEPTED** only when all of the following are true:
 - manual SEARCH canary workflow is `SUCCESS` on the exact merged `master` SHA;
 - exact AI-5 artifact/index verification passes;
 - semantic Recall@5 remains `>= 0.90` with exact-term lexical no-regression; thresholds and candidate weights are not weakened to force a pass;
+- candidate SEARCH config digest, candidate Worker-origin digest and exact rollback OFF config digest are retained in sanitized evidence;
+- rollback config digest exactly matches the public OFF baseline and the public config remains unchanged;
 - preflight/origin/runtime-mode checks pass;
 - three live embeddings pass model/dimension/reference-space checks;
 - `/v1/answer` remains disabled;
@@ -118,7 +138,7 @@ A green repository build alone is **not** AI-6 acceptance. A successful Worker d
 
 On any failure:
 
-1. keep public AI OFF;
+1. keep or restore the exact OFF rollback config recorded in `ai6-rollback-off-config.json`; public production should already be on that baseline because the canary never writes the SEARCH candidate to `data/ai-navigator.json`;
 2. do not lower quality, similarity, security or spend gates;
 3. disable/delete the isolated Worker or set `AI_ENABLED=false`;
 4. revoke the dedicated AI-6 key if the failure may involve credential/runtime exposure;
