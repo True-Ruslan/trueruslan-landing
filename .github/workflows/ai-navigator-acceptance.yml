@@ -20,6 +20,7 @@ jobs:
   acceptance:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    environment: ai5-provider-acceptance
     steps:
       - name: Require explicit provider-call confirmation
         if: ${{ inputs.confirm_provider_calls != true }}
@@ -46,25 +47,18 @@ jobs:
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           const config = JSON.parse(fs.readFileSync('data/ai-navigator.json', 'utf8'));
-          if (config.mode !== 'off') {
-            throw new Error(`Real acceptance must run while public AI mode is off, got ${String(config.mode)}`);
+          if (config.mode !== 'off' || config.workerBaseUrl !== '') {
+            throw new Error(`AI-5 must run with public AI fully off; mode=${String(config.mode)} workerBaseUrl=${String(config.workerBaseUrl)}`);
           }
           NODE
           mkdir -p quality-artifacts
 
-      - name: Refresh document embeddings
+      - name: Run AI-5 provider acceptance
         env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_AI5_API_KEY }}
         run: |
           set -o pipefail
-          node scripts/ai-index.js | tee quality-artifacts/ai-index-refresh.json
-
-      - name: Refresh benchmark query embeddings
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: |
-          set -o pipefail
-          node scripts/ai-benchmark-embeddings.js | tee quality-artifacts/ai-benchmark-query-refresh.json
+          node scripts/ai5-provider-acceptance.js | tee quality-artifacts/ai5-provider-evidence.json
 
       - name: Offline semantic acceptance
         run: |
@@ -84,8 +78,7 @@ jobs:
             data/ai-index/index-meta.json
             data/ai-index/embeddings.bin
             data/ai-index/benchmark-query-cache/
-            quality-artifacts/ai-index-refresh.json
-            quality-artifacts/ai-benchmark-query-refresh.json
+            quality-artifacts/ai5-provider-evidence.json
             quality-artifacts/ai-index-verify.json
             quality-artifacts/ai-semantic-benchmark.json
           if-no-files-found: ignore
