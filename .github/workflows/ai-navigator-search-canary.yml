@@ -87,6 +87,19 @@ jobs:
           test -z "${AI6_SEARCH_WORKER_BASE_URL:-}"
           node scripts/ai-index-verify.js | tee quality-artifacts/ai6-index-verify.json
           node scripts/ai-benchmark.js --mode semantic --index data/ai-index | tee quality-artifacts/ai6-semantic-benchmark.json
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import {AI6_SEARCH_HYBRID_WEIGHTS} from './scripts/ai6-config-evidence.js';
+          const report = JSON.parse(fs.readFileSync('quality-artifacts/ai6-semantic-benchmark.json', 'utf8'));
+          for (const [key, expected] of Object.entries(AI6_SEARCH_HYBRID_WEIGHTS)) {
+            if (report.selectedWeights?.[key] !== expected) {
+              throw new Error(`AI-6 selectedWeights drift: ${key}=${String(report.selectedWeights?.[key])}; expected ${expected}`);
+            }
+          }
+          if (Object.keys(report.selectedWeights || {}).length !== Object.keys(AI6_SEARCH_HYBRID_WEIGHTS).length) {
+            throw new Error('AI-6 selectedWeights shape drift');
+          }
+          NODE
 
       - name: Execute bounded SEARCH-only live canary
         env:
