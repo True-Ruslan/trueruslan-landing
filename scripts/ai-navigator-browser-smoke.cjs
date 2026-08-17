@@ -161,12 +161,27 @@ function prepareFixtureSite() {
   return rootDir;
 }
 
-function assertCanonicalOffArtifact() {
+function assertCanonicalArtifactMatchesConfig() {
+  const config = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'ai-navigator.json'), 'utf8'));
   const searchPath = path.join(OUTPUT_DIR, '_search', 'ru', 'index.html');
   const html = fs.readFileSync(searchPath, 'utf8');
-  assert.equal(html.includes('data-tr-ai-mode='), false, 'canonical OFF search HTML must not expose AI mode');
-  assert.equal(html.includes('tr-ai-search-config'), false, 'canonical OFF search HTML must not expose AI runtime config');
-  assert.equal(html.includes('ai-search.js'), false, 'canonical OFF search HTML must not load AI runtime');
+
+  if (config.mode === 'off') {
+    assert.equal(html.includes('data-tr-ai-mode='), false, 'canonical OFF search HTML must not expose AI mode');
+    assert.equal(html.includes('tr-ai-search-config'), false, 'canonical OFF search HTML must not expose AI runtime config');
+    assert.equal(html.includes('ai-search.js'), false, 'canonical OFF search HTML must not load AI runtime');
+    return 'off';
+  }
+
+  assert.ok(['search', 'full'].includes(config.mode), `unsupported canonical AI mode: ${String(config.mode)}`);
+  assert.equal(html.includes(`data-tr-ai-mode="${config.mode}"`), true, 'canonical enabled search HTML must expose the configured AI mode');
+  assert.equal(html.includes('tr-ai-search-config'), true, 'canonical enabled search HTML must expose safe AI runtime config');
+  assert.equal(html.includes('ai-search.js'), true, 'canonical enabled search HTML must load AI runtime');
+  assert.equal(html.includes('ai-retrieval.js'), true, 'canonical enabled search HTML must load AI retrieval runtime');
+  for (const name of ['chunks.json', 'index-meta.json', 'embeddings.bin']) {
+    assert.equal(fs.existsSync(path.join(OUTPUT_DIR, 'ai', name)), true, `canonical enabled build must publish ai/${name}`);
+  }
+  return config.mode;
 }
 
 function fakeWorkerRouter({baseUrl, state, records}) {
@@ -283,7 +298,7 @@ async function assertNoProviderMaterial(page, label) {
 }
 
 async function run() {
-  assertCanonicalOffArtifact();
+  const canonicalMode = assertCanonicalArtifactMatchesConfig();
   const fixtureDir = prepareFixtureSite();
   const server = await startStaticServer({outputDir: fixtureDir});
   const browser = await launchChromium(chromium);
@@ -455,7 +470,7 @@ async function run() {
       answerRequests: records.answer,
     };
     summary.providerFree = true;
-    summary.canonicalMode = 'off';
+    summary.canonicalMode = canonicalMode;
     writeJsonArtifact('ai-navigator-summary.json', summary);
     process.stdout.write(`AI Navigator browser smoke: PASS (${JSON.stringify(summary.worker)})\n`);
     await context.close();

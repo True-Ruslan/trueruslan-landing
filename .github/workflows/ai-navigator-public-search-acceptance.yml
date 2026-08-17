@@ -1,0 +1,82 @@
+name: AI Navigator Public SEARCH Acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_public_search_acceptance:
+        description: Confirm one bounded live semantic SEARCH check against deployed production
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-navigator-public-search-acceptance-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Require master and explicit production confirmation
+        env:
+          PUBLIC_SEARCH_CONFIRMED: ${{ inputs.confirm_public_search_acceptance }}
+        run: |
+          if [[ "${GITHUB_REF}" != "refs/heads/master" ]]; then
+            echo "::error::Public SEARCH acceptance must execute from master."
+            exit 1
+          fi
+          if [[ "${PUBLIC_SEARCH_CONFIRMED}" != "true" ]]; then
+            echo "::error::Public SEARCH acceptance requires explicit live-call confirmation."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Require canonical SEARCH-only activation
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {validateAiConfig} from './scripts/ai-config.js';
+          const config = JSON.parse(fs.readFileSync('data/ai-navigator.json', 'utf8'));
+          validateAiConfig(config);
+          if (config.mode !== 'search') throw new Error(`Expected public SEARCH mode, got ${String(config.mode)}`);
+          if (config.mode === 'full') throw new Error('FULL mode is not authorized by AI-6.1');
+          NODE
+
+      - name: Install pinned browser acceptance tools
+        run: >-
+          npm install --prefix .quality-tools --package-lock=false --no-save
+          playwright@1.61.1
+
+      - name: Install Chromium
+        run: node .quality-tools/node_modules/playwright/cli.js install --with-deps chromium
+
+      - name: Execute bounded public SEARCH production acceptance
+        run: node scripts/ai-public-search-production-smoke.cjs
+
+      - name: Upload sanitized public SEARCH evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ai-navigator-public-search-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            artifacts/ai-public-search-production-evidence.json
+            artifacts/ai-public-search-production.png
+          if-no-files-found: ignore
+          retention-days: 14
