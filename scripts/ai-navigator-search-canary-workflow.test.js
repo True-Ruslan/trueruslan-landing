@@ -51,6 +51,9 @@ test('AI-6 SEARCH canary restores only the exact accepted AI-5 artifact and re-r
   assert.match(offline, /test -z "\$\{AI6_SEARCH_WORKER_BASE_URL:-\}"/);
   assert.match(offline, /node scripts\/ai-index-verify\.js/);
   assert.match(offline, /node scripts\/ai-benchmark\.js --mode semantic --index data\/ai-index/);
+  assert.match(offline, /AI6_SEARCH_HYBRID_WEIGHTS/);
+  assert.match(offline, /report\.selectedWeights/);
+  assert.match(offline, /AI-6 selectedWeights drift/);
 
   assert.match(live, /AI6_SEARCH_WORKER_BASE_URL:\s*\$\{\{ secrets\.AI6_SEARCH_WORKER_BASE_URL \}\}/);
   assert.match(live, /OPENROUTER_AI6_API_KEY:\s*\$\{\{ secrets\.OPENROUTER_AI6_API_KEY \}\}/);
