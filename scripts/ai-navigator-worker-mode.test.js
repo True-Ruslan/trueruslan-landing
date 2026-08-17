@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import {handleRequest} from '../infra/cloudflare/ai-navigator-worker.mjs';
+import {handleRequest} from '../infra/cloudflare/ai-navigator-runtime.mjs';
 
 const ORIGIN = 'https://trueruslan.ru';
 
@@ -88,6 +88,24 @@ test('off, absent and invalid runtime modes fail closed even when legacy AI_ENAB
       fetchImpl,
     );
     assert.equal(response.status, 503, `mode ${String(mode)} must be disabled`);
+    assert.equal((await payload(response)).code, 'feature_disabled');
+    assert.equal(calls, 0);
+  }
+});
+
+test('legacy AI_ENABLED remains a global kill switch for search and full modes', async () => {
+  for (const mode of ['search', 'full']) {
+    let calls = 0;
+    const disabledEnv = {...env(mode), AI_ENABLED: 'false'};
+    const response = await handleRequest(
+      request('/v1/embed', {query: 'production verification'}),
+      disabledEnv,
+      async () => {
+        calls += 1;
+        throw new Error('global kill switch must prevent provider calls');
+      },
+    );
+    assert.equal(response.status, 503);
     assert.equal((await payload(response)).code, 'feature_disabled');
     assert.equal(calls, 0);
   }
