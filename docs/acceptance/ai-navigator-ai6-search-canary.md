@@ -1,8 +1,24 @@
 # AI Navigator AI-6 — SEARCH canary acceptance
 
-Status: **IMPLEMENTATION IN PROGRESS — PUBLIC AI OFF**
+Status: **IMPLEMENTED / MERGED — LIVE CANARY NOT ACCEPTED — PUBLIC AI OFF**
 
 AI-6 is a bounded, reversible SEARCH-only runtime canary. It is not a public product launch and it does not authorize AI-7/FULL.
+
+## Implementation checkpoint — 2026-08-17
+
+The repository implementation is merged as PR #270 at exact `master` SHA `f23a9161b9aab2dfebad1449eb826315ba73bcd1`.
+
+Repository and deployed-baseline evidence:
+
+- PR exact-head Build #2297 / run `32041779761` — SUCCESS;
+- PR exact-head Dependency Review #1661 / run `32041779901` — SUCCESS;
+- PR exact-head CodeQL #1842 / run `32041779816`, attempt 4 — SUCCESS on `d0d03cabe35c133b911b9555638468b785c37837`;
+- the preceding CodeQL attempt 3 failure was GitHub infrastructure, not a code finding: the pinned CodeQL action download failed and GitHub returned `No server is currently available`; an exact-head rerun passed without changing code;
+- post-merge Pages #284 / run `32044545617` — SUCCESS on `f23a9161b9aab2dfebad1449eb826315ba73bcd1`;
+- post-merge CodeQL #1843 / run `32044545502` — SUCCESS on the same SHA;
+- post-merge Production Live Smoke #652 / run `32044545467` — SUCCESS on the same SHA.
+
+This proves **implemented → tested → merged → deployed baseline verified** only. AI-6 is still **not accepted** because the isolated runtime/operator prerequisites and one successful manual SEARCH canary run are still outstanding. At this checkpoint GitHub environment `ai6-search-canary` has not been provisioned. Public `data/ai-navigator.json` remains OFF and must stay OFF during canary acceptance.
 
 ## Accepted prerequisite
 
