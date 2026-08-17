@@ -1,8 +1,75 @@
 # AI Navigator AI-5 — real provider acceptance
 
-Status: **operator-ready tooling / real-provider evidence pending**.
+Status: **ACCEPTED — 2026-08-17**.
 
 This runbook owns AI-5 only. It generates and evaluates a real OpenRouter embedding candidate while the public AI feature remains disabled.
+
+## Accepted evidence
+
+AI-5 was accepted on exact `master` source commit:
+
+```text
+f02cfff534ca5a1e251981827a0b886a6c5ec112
+```
+
+Manual workflow evidence:
+
+```text
+Workflow:        AI Navigator Real Acceptance
+Run:             #2 / 32016231526 — SUCCESS
+Artifact:        9283608793
+Artifact SHA256: sha256:71260072c273588c4b8a4ab53180b6dfc5c39be8612aee21f91721c7d2919e1f
+Artifact size:   613647 bytes
+```
+
+Real provider/index evidence:
+
+```text
+embedding model:       openai/text-embedding-3-small
+embedding dimensions:  512
+chunk count:           327
+document requests:     1
+query requests:        1
+document latency:      1629 ms
+query latency:         957 ms
+document tokens:       69620
+query tokens:          567
+provider response cost credits:
+  documents:           0.0013924
+  benchmark queries:   0.00001134
+configured key limit:  2 USD lifetime / no reset
+```
+
+Candidate/index digests:
+
+```text
+corpus:              sha256:1249ed898193d1a05bda632b1328a860909887a1700092ba38e612ac7e6ac17a
+embeddings:          sha256:aaf2c7ba86a53f0ff040e63c2c75decbf538a84d6c54c1da0e44f124b199510a
+benchmark:           sha256:879ceffdfc7845dd7c558f9e308d53f981001ef29d804fd86b4112c22358a4ed
+query embeddings:    sha256:4490e074dbaefcfb2e58bacfc9af7655a1a2b342832e805f83126922a7f075ea
+```
+
+Semantic acceptance result:
+
+```text
+positive cases:          40
+insufficient cases:      10
+Recall@5:                0.95
+exact-term Recall@5:     1.0
+paraphrase Recall@5:     1.0
+lexical baseline Recall: 0.875
+selected weights:
+  semantic:              0.65
+  lexical:               0.20
+  title:                 0.10
+  language:              0.05
+```
+
+All ten reviewed insufficient-evidence cases remain non-answer-eligible by benchmark contract. The acceptance workflow completed with candidate index verification PASS, semantic Recall@5 above the required `0.90`, exact-term lexical no-regression, and a deterministic winning weight candidate.
+
+The accepted commit retains `data/ai-navigator.json` with `mode: "off"` and `workerBaseUrl: ""`. AI-5 therefore proves provider/index/retrieval acceptance only; it does **not** activate SEARCH or FULL and does not deploy a Worker.
+
+The corrective retrieval contract from PR #267 was validated before this acceptance run. Its PR head passed Build #2276, CodeQL #1819 and Dependency Review #1640; the merged tree was then deployed and verified on `master`, including Pages, CodeQL #1820 and Production Live Smoke #649.
 
 ## Non-negotiable boundary
 
