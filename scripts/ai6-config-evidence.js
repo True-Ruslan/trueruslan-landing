@@ -3,6 +3,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
+import {validateAiConfig} from './ai-config.js';
+
+export const AI6_SEARCH_HYBRID_WEIGHTS = Object.freeze({
+  semantic: 0.65,
+  lexical: 0.20,
+  title: 0.10,
+  language: 0.05,
+});
+
 function sha256(value) {
   const bytes = Buffer.isBuffer(value) ? value : Buffer.from(String(value), 'utf8');
   return `sha256:${crypto.createHash('sha256').update(bytes).digest('hex')}`;
@@ -51,6 +60,7 @@ export function buildAi6ConfigEvidence({publicConfig, workerBaseUrl}) {
   if (publicConfig.mode !== 'off' || publicConfig.workerBaseUrl !== '') {
     throw new Error('AI-6 config evidence requires the public OFF rollback baseline');
   }
+  validateAiConfig(publicConfig);
 
   const workerOrigin = cleanWorkerOrigin(workerBaseUrl);
   const rollbackConfig = cloneJson(publicConfig);
@@ -58,7 +68,9 @@ export function buildAi6ConfigEvidence({publicConfig, workerBaseUrl}) {
     ...cloneJson(publicConfig),
     mode: 'search',
     workerBaseUrl: workerOrigin,
+    hybridWeights: cloneJson(AI6_SEARCH_HYBRID_WEIGHTS),
   };
+  validateAiConfig(candidateConfig);
 
   const publicConfigDigest = sha256(canonicalJson(publicConfig));
   const candidateConfigDigest = sha256(canonicalJson(candidateConfig));
@@ -72,8 +84,10 @@ export function buildAi6ConfigEvidence({publicConfig, workerBaseUrl}) {
     evidenceClass: 'ai6-search-candidate-config',
     mode: 'search',
     workerBaseUrlDigest: sha256(workerOrigin),
+    hybridWeights: AI6_SEARCH_HYBRID_WEIGHTS,
     configDigest: candidateConfigDigest,
     publicBaselineDigest: publicConfigDigest,
+    configValidated: true,
     sanitized: true,
   });
   const rollback = Object.freeze({
@@ -92,9 +106,11 @@ export function buildAi6ConfigEvidence({publicConfig, workerBaseUrl}) {
       schemaVersion: 1,
       evidenceClass: 'ai6-search-config-pair',
       publicConfigUnchanged: true,
+      candidateConfigValidated: true,
       candidateConfigDigest,
       rollbackConfigDigest,
       candidateWorkerBaseUrlDigest: candidate.workerBaseUrlDigest,
+      candidateHybridWeights: AI6_SEARCH_HYBRID_WEIGHTS,
       rollbackMatchesPublicBaseline: true,
     }),
   });
