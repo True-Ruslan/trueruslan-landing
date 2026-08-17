@@ -38,7 +38,9 @@ test('AI bootstrap retries once after late Diplodoc input hydration and disconne
 
     observe(target, options) {
       assert.equal(target, document.documentElement);
-      assert.deepEqual(options, {childList: true, subtree: true});
+      assert.equal(options.childList, true);
+      assert.equal(options.subtree, true);
+      assert.deepEqual(Object.keys(options).sort(), ['childList', 'subtree']);
       observed = true;
     }
 
