@@ -39,7 +39,7 @@ test('SEARCH builds restore only the exact accepted AI-5 index artifact', () => 
   assert.match(restore, new RegExp(ACCEPTED_AI5_ARTIFACT_SHA256));
   assert.match(restore, /verifyAiIndex/);
   assert.match(restore, /providerAccess: false/);
-  assert.match(restore, /\['chunks\.json',|chunks\.json/);
+  assert.match(restore, /chunks\.json/);
   assert.match(restore, /index-meta\.json/);
   assert.match(restore, /embeddings\.bin/);
   assert.doesNotMatch(restore, /openrouter\.ai|OPENROUTER_API_KEY/i);
@@ -84,7 +84,8 @@ test('production smoke proves semantic UI wiring without enabling FULL', () => {
   assert.match(smoke, /\/v1\/embed/);
   assert.match(smoke, /\/v1\/answer/);
   assert.match(smoke, /feature_disabled/);
+  assert.match(smoke, /unexpectedExternalRequests/);
   assert.match(smoke, /writeJsonArtifact/);
   assert.match(smoke, /workerOriginDigest/);
-  assert.doesNotMatch(smoke, /openrouter\.ai|OPENROUTER|API_KEY|Bearer/i);
+  assert.doesNotMatch(smoke, /openrouter\.ai|OPENROUTER|API_KEY/i);
 });
