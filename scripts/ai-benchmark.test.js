@@ -86,6 +86,33 @@ test('lexical reference retriever deterministically finds exact publication term
   assert.ok(results.every(({score}) => Number.isFinite(score) && score >= 0));
 });
 
+test('evaluateRetrieval treats any section of the expected canonical document as a positive hit', () => {
+  const cases = [{
+    id: 'document-hit',
+    lang: 'ru',
+    query: 'quality gates',
+    kind: 'paraphrase',
+    expectedAnyOf: ['ru:note:quality-gates:intro'],
+    answerEligible: true,
+  }];
+
+  const sectionHit = evaluateRetrieval({
+    cases,
+    retrieve: () => [{chunkId: 'ru:note:quality-gates:browser-smoke', score: 0.9}],
+    limit: 5,
+  });
+  assert.equal(sectionHit.recallAt5, 1);
+  assert.equal(sectionHit.perCase[0].hit, true);
+
+  const differentDocument = evaluateRetrieval({
+    cases,
+    retrieve: () => [{chunkId: 'ru:note:other-quality-gates:intro', score: 0.9}],
+    limit: 5,
+  });
+  assert.equal(differentDocument.recallAt5, 0);
+  assert.equal(differentDocument.perCase[0].hit, false);
+});
+
 test('evaluateRetrieval reports positive recall separately from insufficient cases', () => {
   const cases = [
     {
