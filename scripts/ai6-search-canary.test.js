@@ -155,7 +155,13 @@ test('SEARCH canary verifies preflight, origin rejection, answer disablement and
   assert.equal(report.embeddingProbes.length, 3);
   assert.ok(report.embeddingProbes.every(({referenceCosine}) => referenceCosine === 1));
   assert.match(report.workerOriginDigest, /^sha256:[a-f0-9]{64}$/);
-  assert.equal(JSON.stringify(report).includes(WORKER), false, 'canary evidence must not disclose the staging Worker URL');
+  assert.deepEqual(Object.keys(report).sort(), [
+    'answerNegativeLatencyMs',
+    'embeddingProbes',
+    'embeddingRequestCount',
+    'preflightLatencyMs',
+    'workerOriginDigest',
+  ].sort(), 'canary evidence schema must expose only the Worker-origin digest, never a raw Worker URL field');
   assert.equal(worker.calls.filter(({pathname, method}) => pathname === '/v1/embed' && method === 'POST').length, 4);
   assert.equal(worker.calls.filter(({pathname}) => pathname === '/v1/answer').length, 1);
 });
