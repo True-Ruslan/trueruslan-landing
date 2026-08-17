@@ -1,9 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
-import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+
+import {validateAiConfig} from './ai-config.js';
+import {verifyAiReadiness} from './ai-index-verify.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -11,19 +14,31 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, ...relativePath.split('/')), 'utf8');
 }
 
-test('provider-free check:ai command accepts canonical OFF mode without committed index', () => {
+test('provider-free check:ai contract accepts an explicit OFF rollback without any index', () => {
   const pkg = JSON.parse(read('package.json'));
   assert.equal(pkg.scripts['check:ai'], 'node scripts/ai-index-verify.js --allow-off');
-  const result = spawnSync(process.execPath, ['scripts/ai-index-verify.js', '--allow-off'], {
-    cwd: ROOT,
-    encoding: 'utf8',
-    env: {...process.env, OPENROUTER_API_KEY: ''},
-  });
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-  const report = JSON.parse(result.stdout);
-  assert.equal(report.mode, 'off');
-  assert.equal(report.indexRequired, false);
-  assert.equal(report.providerAccess, false);
+
+  const canonical = JSON.parse(read('data/ai-navigator.json'));
+  const offConfig = {
+    ...canonical,
+    mode: 'off',
+    workerBaseUrl: '',
+    hybridWeights: null,
+  };
+  validateAiConfig(offConfig);
+
+  const emptyRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-ai-readiness-off-'));
+  try {
+    assert.equal(fs.existsSync(path.join(emptyRoot, 'data', 'ai-index')), false, 'OFF fixture must not contain an AI index');
+    const report = verifyAiReadiness({rootDir: emptyRoot, config: offConfig, allowOff: true});
+    assert.deepEqual(report, {
+      mode: 'off',
+      indexRequired: false,
+      providerAccess: false,
+    });
+  } finally {
+    fs.rmSync(emptyRoot, {recursive: true, force: true});
+  }
 });
 
 test('Build wires offline verification and browser smoke immediately after generated search without secrets', () => {
