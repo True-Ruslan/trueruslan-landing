@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "mode": "off",
-  "workerBaseUrl": "",
+  "mode": "search",
+  "workerBaseUrl": "https://trueruslan-ai-navigator-ai6-search-canary.trueruslan.workers.dev",
   "embeddingModel": "openai/text-embedding-3-small",
   "embeddingDimensions": 512,
   "answerModel": "google/gemini-2.5-flash-lite",
@@ -32,5 +32,10 @@
     "en/work-with-me.html",
     "en/publications.html"
   ],
-  "hybridWeights": null
+  "hybridWeights": {
+    "semantic": 0.65,
+    "lexical": 0.20,
+    "title": 0.10,
+    "language": 0.05
+  }
 }
