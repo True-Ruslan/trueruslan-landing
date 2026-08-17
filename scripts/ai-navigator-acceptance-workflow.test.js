@@ -25,9 +25,10 @@ test('real AI acceptance workflow is manual-only, read-only and explicitly confi
   assert.doesNotMatch(workflow, /git push|gh pr|wrangler deploy|actions\/deploy-pages|actions\/upload-pages-artifact/);
 });
 
-test('AI-5 provider credential is dedicated, online-step scoped and absent from offline acceptance', () => {
+test('AI-5 provider credential is environment-scoped, dedicated, and absent from offline acceptance', () => {
   const workflow = workflowSource();
 
+  assert.match(workflow, /environment:\s*ai5-provider-acceptance/);
   assert.doesNotMatch(workflow, /^env:\s*$|^\s{4}env:\s*$/m, 'provider secret must not be workflow- or job-scoped');
   assert.equal((workflow.match(/OPENROUTER_API_KEY:\s*\$\{\{ secrets\.OPENROUTER_AI5_API_KEY \}\}/g) || []).length, 1);
   assert.doesNotMatch(workflow, /secrets\.OPENROUTER_API_KEY/);
