@@ -47,7 +47,17 @@ test('AI-6 config evidence creates a validated sanitized SEARCH candidate and ex
   assert.deepEqual(evidence.manifest.candidateHybridWeights, AI6_SEARCH_HYBRID_WEIGHTS);
   assert.match(evidence.candidate.workerBaseUrlDigest, /^sha256:[a-f0-9]{64}$/);
   assert.match(evidence.candidate.configDigest, /^sha256:[a-f0-9]{64}$/);
-  assert.equal(JSON.stringify(evidence.candidate).includes(WORKER), false, 'candidate artifact must not expose staging Worker URL');
+  assert.deepEqual(Object.keys(evidence.candidate).sort(), [
+    'configDigest',
+    'configValidated',
+    'evidenceClass',
+    'hybridWeights',
+    'mode',
+    'publicBaselineDigest',
+    'sanitized',
+    'schemaVersion',
+    'workerBaseUrlDigest',
+  ].sort(), 'candidate evidence schema must expose only the Worker-origin digest, never a raw Worker URL field');
 
   assert.equal(evidence.rollback.mode, 'off');
   assert.equal(evidence.rollback.workerBaseUrl, '');
@@ -60,7 +70,17 @@ test('AI-6 config evidence creates a validated sanitized SEARCH candidate and ex
   assert.equal(evidence.manifest.candidateConfigDigest, evidence.candidate.configDigest);
   assert.equal(evidence.manifest.rollbackConfigDigest, evidence.rollback.configDigest);
   assert.equal(evidence.manifest.candidateWorkerBaseUrlDigest, evidence.candidate.workerBaseUrlDigest);
-  assert.equal(JSON.stringify(evidence.manifest).includes(WORKER), false);
+  assert.deepEqual(Object.keys(evidence.manifest).sort(), [
+    'candidateConfigDigest',
+    'candidateConfigValidated',
+    'candidateHybridWeights',
+    'candidateWorkerBaseUrlDigest',
+    'evidenceClass',
+    'publicConfigUnchanged',
+    'rollbackConfigDigest',
+    'rollbackMatchesPublicBaseline',
+    'schemaVersion',
+  ].sort(), 'pair manifest must expose only the Worker-origin digest, never a raw Worker URL field');
 });
 
 test('AI-6 config evidence is deterministic for the same baseline and Worker origin', () => {
