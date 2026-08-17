@@ -7,3 +7,5 @@ graphify-out/
 /quality-artifacts/
 /private/search-discovery/
 /docs/_includes/publications-catalogue.md
+.dev.vars*
+.env*
