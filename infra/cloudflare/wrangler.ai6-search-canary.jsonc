@@ -1,0 +1,27 @@
+{
+  "name": "trueruslan-ai-navigator",
+  "main": "./ai-navigator-runtime.mjs",
+  "compatibility_date": "2026-08-17",
+  "workers_dev": false,
+  "preview_urls": false,
+  "env": {
+    "ai6-search-canary": {
+      "name": "trueruslan-ai-navigator-ai6-search-canary",
+      "workers_dev": true,
+      "preview_urls": false,
+      "vars": {
+        "AI_ENABLED": "true",
+        "AI_MODE": "search",
+        "AI_ALLOWED_ORIGIN": "https://trueruslan.ru",
+        "AI_CORPUS_ORIGIN": "https://trueruslan.ru",
+        "AI_EMBEDDING_MODEL": "openai/text-embedding-3-small",
+        "AI_EMBEDDING_DIMENSIONS": "512"
+      },
+      "secrets": {
+        "required": [
+          "OPENROUTER_API_KEY"
+        ]
+      }
+    }
+  }
+}
