@@ -126,32 +126,21 @@ async function run() {
     assert.equal(answerActions, 0, 'SEARCH mode must not expose an answer action');
     evidence.answerActionAbsent = true;
 
-    const negativeAnswer = await page.evaluate(async ({workerOrigin}) => {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 5000);
-      try {
-        const response = await fetch(`${workerOrigin}/v1/answer`, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: '{}',
-          signal: controller.signal,
-        });
-        let body = null;
-        try {
-          body = await response.json();
-        } catch {}
-        return {
-          status: response.status,
-          code: body?.code ?? null,
-          allowOrigin: response.headers.get('access-control-allow-origin'),
-        };
-      } finally {
-        clearTimeout(timer);
-      }
-    }, {workerOrigin});
-    assert.equal(negativeAnswer.status, 503, `SEARCH /v1/answer must be 503, got ${negativeAnswer.status}`);
-    assert.equal(negativeAnswer.code, 'feature_disabled', 'SEARCH /v1/answer must fail closed');
-    assert.equal(negativeAnswer.allowOrigin, PRODUCTION_ORIGIN, 'SEARCH answer rejection must preserve exact-origin CORS');
+    const negativeAnswer = await context.request.post(`${workerOrigin}/v1/answer`, {
+      headers: {
+        Origin: PRODUCTION_ORIGIN,
+        'Content-Type': 'application/json',
+      },
+      data: {},
+      timeout: 5000,
+    });
+    let negativeAnswerBody = null;
+    try {
+      negativeAnswerBody = await negativeAnswer.json();
+    } catch {}
+    assert.equal(negativeAnswer.status(), 503, `SEARCH /v1/answer must be 503, got ${negativeAnswer.status()}`);
+    assert.equal(negativeAnswerBody?.code, 'feature_disabled', 'SEARCH /v1/answer must fail closed');
+    assert.equal(negativeAnswer.headers()['access-control-allow-origin'], PRODUCTION_ORIGIN, 'SEARCH answer rejection must preserve exact-origin CORS');
     evidence.answerEndpointDisabled = true;
 
     const providerAuthorityLeak = await page.evaluate(() => {
