@@ -76,7 +76,7 @@ jobs:
         with:
           name: ai-navigator-public-search-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            artifacts/ai-public-search-production-evidence.json
-            artifacts/ai-public-search-production.png
+            quality-artifacts/ai-public-search-production-evidence.json
+            quality-artifacts/ai-public-search-production.png
           if-no-files-found: ignore
           retention-days: 14

@@ -17,6 +17,11 @@ const EXPECTED_WEIGHTS = Object.freeze({
   title: 0.10,
   language: 0.05,
 });
+const STATIC_AI_PATHS = new Set([
+  '/ai/chunks.json',
+  '/ai/index-meta.json',
+  '/ai/embeddings.bin',
+]);
 const ALLOWED_BACKGROUND_ORIGINS = new Set(['https://static.cloudflareinsights.com']);
 
 function sha256(value) {
@@ -34,10 +39,49 @@ function cleanWorkerOrigin(value) {
   return url.origin;
 }
 
+function sanitizeFailureMessage(error) {
+  return String(error?.message || error || 'unknown failure')
+    .replace(/https?:\/\/[^\s)]+/giu, '[url]')
+    .slice(0, 600);
+}
+
+async function waitForSemanticOutcome(page, timeoutMs = 20000) {
+  const result = page.locator('.tr-ai-result').first();
+  const fallback = page.locator('.tr-ai-results__status').first();
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    if (await result.isVisible().catch(() => false)) {
+      return {kind: 'semantic-result', result};
+    }
+    if (await fallback.isVisible().catch(() => false)) {
+      return {kind: 'semantic-fallback'};
+    }
+    await page.waitForTimeout(100);
+  }
+  return {kind: 'semantic-timeout'};
+}
+
+async function captureFailureScreenshot(page) {
+  if (!page) return false;
+  try {
+    await captureScreenshot(page, 'ai-public-search-production.png');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function run() {
   const browser = await launchChromium(chromium);
+  let context = null;
+  let page = null;
+  let workerOrigin = null;
+  const workerRequests = [];
+  const unexpectedExternalRequests = [];
+  const networkObservations = [];
   const evidence = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     evidenceClass: 'ai-public-search-production-acceptance',
     productionOrigin: PRODUCTION_ORIGIN,
     sourceSha: process.env.GITHUB_SHA || 'unknown',
@@ -48,6 +92,9 @@ async function run() {
     hybridWeights: null,
     workerOriginDigest: null,
     embedRequests: 0,
+    semanticOutcome: null,
+    failureStage: null,
+    networkObservations,
     firstResultPath: null,
     answerEndpointDisabled: false,
     answerActionAbsent: false,
@@ -56,14 +103,14 @@ async function run() {
   };
 
   try {
-    const context = await browser.newContext({
+    context = await browser.newContext({
       viewport: {width: 1280, height: 900},
       colorScheme: 'dark',
       reducedMotion: 'reduce',
     });
-    const page = await context.newPage();
-    const response = await page.goto(SEARCH_URL, {waitUntil: 'domcontentloaded', timeout: 45000});
-    assert.ok(response?.ok(), `production search returned HTTP ${response?.status() ?? 'none'}`);
+    page = await context.newPage();
+    const navigationResponse = await page.goto(SEARCH_URL, {waitUntil: 'domcontentloaded', timeout: 45000});
+    assert.ok(navigationResponse?.ok(), `production search returned HTTP ${navigationResponse?.status() ?? 'none'}`);
 
     const runtime = await page.evaluate(() => {
       const node = document.getElementById('tr-ai-search-config');
@@ -74,15 +121,13 @@ async function run() {
     assert.equal(runtime.mode, 'search', `production AI mode must be search, got ${String(runtime.mode)}`);
     assert.equal(runtime.embeddingDimensions, 512, 'production embedding dimensions drifted');
     assert.deepEqual(runtime.hybridWeights, EXPECTED_WEIGHTS, 'production hybrid weights drifted');
-    const workerOrigin = cleanWorkerOrigin(runtime.workerBaseUrl);
+    workerOrigin = cleanWorkerOrigin(runtime.workerBaseUrl);
 
     evidence.mode = runtime.mode;
     evidence.embeddingDimensions = runtime.embeddingDimensions;
     evidence.hybridWeights = runtime.hybridWeights;
     evidence.workerOriginDigest = sha256(workerOrigin);
 
-    const workerRequests = [];
-    const unexpectedExternalRequests = [];
     page.on('request', (request) => {
       try {
         const url = new URL(request.url());
@@ -93,6 +138,22 @@ async function run() {
         if (url.origin !== PRODUCTION_ORIGIN && !ALLOWED_BACKGROUND_ORIGINS.has(url.origin)) {
           unexpectedExternalRequests.push({method: request.method(), originDigest: sha256(url.origin)});
         }
+      } catch {}
+    });
+
+    page.on('response', (response) => {
+      try {
+        const url = new URL(response.url());
+        const isStaticIndex = url.origin === PRODUCTION_ORIGIN && STATIC_AI_PATHS.has(url.pathname);
+        const isWorkerEmbed = url.origin === workerOrigin && url.pathname === '/v1/embed';
+        if (!isStaticIndex && !isWorkerEmbed) return;
+        networkObservations.push({
+          kind: isWorkerEmbed ? 'worker-embed' : 'static-index',
+          method: response.request().method(),
+          pathname: url.pathname,
+          status: response.status(),
+          ok: response.ok(),
+        });
       } catch {}
     });
 
@@ -109,8 +170,21 @@ async function run() {
     await input.fill(QUERY);
     await button.click();
 
-    const firstResult = page.locator('.tr-ai-result').first();
-    await firstResult.waitFor({state: 'visible', timeout: 20000});
+    const semanticOutcome = await waitForSemanticOutcome(page);
+    evidence.semanticOutcome = semanticOutcome.kind;
+    evidence.embedRequests = workerRequests.filter(({method, pathname}) => method === 'POST' && pathname === '/v1/embed').length;
+    evidence.unexpectedExternalRequests = unexpectedExternalRequests.length;
+
+    if (semanticOutcome.kind === 'semantic-fallback') {
+      evidence.failureStage = 'semantic-fallback';
+      throw new Error('semantic SEARCH entered explicit client fallback');
+    }
+    if (semanticOutcome.kind !== 'semantic-result') {
+      evidence.failureStage = 'semantic-outcome-timeout';
+      throw new Error('semantic SEARCH produced neither a result nor an explicit fallback');
+    }
+
+    const firstResult = semanticOutcome.result;
     const firstResultLink = firstResult.locator('.tr-ai-result__title').first();
     const href = await firstResultLink.getAttribute('href');
     assert.ok(href, 'semantic result is missing canonical href');
@@ -118,9 +192,7 @@ async function run() {
     assert.equal(firstResultPath, EXPECTED_PATH, `semantic SEARCH returned unexpected first route: ${firstResultPath}`);
     evidence.firstResultPath = firstResultPath;
 
-    const embedRequests = workerRequests.filter(({method, pathname}) => method === 'POST' && pathname === '/v1/embed');
-    assert.equal(embedRequests.length, 1, `expected exactly one UI embedding request, got ${embedRequests.length}`);
-    evidence.embedRequests = embedRequests.length;
+    assert.equal(evidence.embedRequests, 1, `expected exactly one UI embedding request, got ${evidence.embedRequests}`);
 
     const answerActions = await page.locator('.tr-ai-answer-action').count();
     assert.equal(answerActions, 0, 'SEARCH mode must not expose an answer action');
@@ -149,19 +221,23 @@ async function run() {
     });
     assert.equal(providerAuthorityLeak, false, 'browser runtime config leaks provider authority or credential-shaped material');
     assert.equal(unexpectedExternalRequests.length, 0, 'AI interaction made an unexpected external request');
-    evidence.unexpectedExternalRequests = unexpectedExternalRequests.length;
 
     await captureScreenshot(page, 'ai-public-search-production.png');
     writeJsonArtifact('ai-public-search-production-evidence.json', evidence);
     process.stdout.write(`AI public SEARCH production acceptance: PASS (${QUERY_ID}; ${firstResultPath})\n`);
-    await context.close();
   } catch (error) {
+    evidence.embedRequests = workerRequests.filter(({method, pathname}) => method === 'POST' && pathname === '/v1/embed').length;
+    evidence.unexpectedExternalRequests = unexpectedExternalRequests.length;
+    if (!evidence.failureStage) evidence.failureStage = 'unclassified';
+    const failureScreenshotCaptured = await captureFailureScreenshot(page);
     writeJsonArtifact('ai-public-search-production-evidence.json', {
       ...evidence,
-      failure: String(error?.message || error),
+      failure: sanitizeFailureMessage(error),
+      failureScreenshotCaptured,
     });
     throw error;
   } finally {
+    await context?.close().catch(() => {});
     await browser.close();
   }
 }
