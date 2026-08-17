@@ -9,3 +9,4 @@ graphify-out/
 /docs/_includes/publications-catalogue.md
 .dev.vars*
 .env*
+.wrangler/
