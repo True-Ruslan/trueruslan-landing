@@ -54,6 +54,7 @@ function writeSearchResourceFixture(rootDir) {
     '_assets/style/ai-search.css',
     '_assets/script/ai-retrieval.js',
     '_assets/script/ai-search.js',
+    '_assets/script/ai-search-bootstrap.js',
   ];
   for (const relative of files) {
     const target = path.join(rootDir, relative);
@@ -101,6 +102,7 @@ test('OFF search normalization preserves ordinary project resources and emits no
   assert.doesNotMatch(normalized, /ai-search\.css/);
   assert.doesNotMatch(normalized, /ai-retrieval\.js/);
   assert.doesNotMatch(normalized, /ai-search\.js/);
+  assert.doesNotMatch(normalized, /ai-search-bootstrap\.js/);
 });
 
 test('SEARCH and FULL normalization inject exactly one safe runtime config and resource set', () => {
@@ -112,6 +114,7 @@ test('SEARCH and FULL normalization inject exactly one safe runtime config and r
     assert.equal(count(normalized, /_assets\/style\/ai-search\.css/g), 1);
     assert.equal(count(normalized, /_assets\/script\/ai-retrieval\.js/g), 1);
     assert.equal(count(normalized, /_assets\/script\/ai-search\.js/g), 1);
+    assert.equal(count(normalized, /_assets\/script\/ai-search-bootstrap\.js/g), 1);
     assert.equal(count(normalized, /id="tr-ai-search-config"/g), 1);
     assert.equal(count(normalized, /type="application\/json"/g), 1);
     assert.match(normalized, /"workerBaseUrl":"https:\/\/ai\.example\.workers\.dev"/);
@@ -127,7 +130,7 @@ test('SEARCH and FULL normalization inject exactly one safe runtime config and r
   }
 });
 
-test('AI static resource copier is a no-op OFF and copies only the three AI resources when enabled', () => {
+test('AI static resource copier is a no-op OFF and copies only the four AI resources when enabled', () => {
   const docsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tr-ai-resource-src-'));
   writeSearchResourceFixture(docsDir);
 
@@ -141,6 +144,7 @@ test('AI static resource copier is a no-op OFF and copies only the three AI reso
     '_assets/style/ai-search.css',
     '_assets/script/ai-retrieval.js',
     '_assets/script/ai-search.js',
+    '_assets/script/ai-search-bootstrap.js',
   ]);
   for (const relative of enabled) assert.equal(fs.existsSync(path.join(enabledOutput, relative)), true, relative);
 });
