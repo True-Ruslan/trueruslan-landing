@@ -94,6 +94,8 @@ jobs:
           OPENROUTER_AI6_API_KEY: ${{ secrets.OPENROUTER_AI6_API_KEY }}
         run: |
           set -euo pipefail
+          node scripts/ai6-config-evidence.js --output-dir quality-artifacts \
+            | tee quality-artifacts/ai6-config-pair-evidence.json
           node scripts/ai6-search-canary.js | tee quality-artifacts/ai6-search-canary.json
           git diff --exit-code -- data/ai-navigator.json
 
@@ -105,6 +107,9 @@ jobs:
           path: |
             quality-artifacts/ai6-index-verify.json
             quality-artifacts/ai6-semantic-benchmark.json
+            quality-artifacts/ai6-config-pair-evidence.json
+            quality-artifacts/ai6-candidate-search-config.json
+            quality-artifacts/ai6-rollback-off-config.json
             quality-artifacts/ai6-search-canary.json
           if-no-files-found: ignore
           retention-days: 14
