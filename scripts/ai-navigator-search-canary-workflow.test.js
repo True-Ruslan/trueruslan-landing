@@ -54,7 +54,20 @@ test('AI-6 SEARCH canary restores only the exact accepted AI-5 artifact and re-r
 
   assert.match(live, /AI6_SEARCH_WORKER_BASE_URL:\s*\$\{\{ secrets\.AI6_SEARCH_WORKER_BASE_URL \}\}/);
   assert.match(live, /OPENROUTER_AI6_API_KEY:\s*\$\{\{ secrets\.OPENROUTER_AI6_API_KEY \}\}/);
+  assert.match(live, /node scripts\/ai6-config-evidence\.js --output-dir quality-artifacts/);
+  assert.match(live, /quality-artifacts\/ai6-config-pair-evidence\.json/);
   assert.match(live, /node scripts\/ai6-search-canary\.js/);
+});
+
+test('AI-6 workflow retains sanitized candidate SEARCH and exact OFF rollback evidence', () => {
+  const workflow = workflowSource();
+  const upload = stepSource(workflow, 'Upload AI-6 canary evidence');
+
+  assert.match(upload, /quality-artifacts\/ai6-config-pair-evidence\.json/);
+  assert.match(upload, /quality-artifacts\/ai6-candidate-search-config\.json/);
+  assert.match(upload, /quality-artifacts\/ai6-rollback-off-config\.json/);
+  assert.match(upload, /quality-artifacts\/ai6-search-canary\.json/);
+  assert.match(upload, /retention-days: 14/);
 });
 
 test('AI-6 credentials are dedicated, environment-scoped and absent from ordinary/offline workflow scope', () => {
