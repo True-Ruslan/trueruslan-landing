@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {buildAi6ConfigEvidence, canonicalJson} from './ai6-config-evidence.js';
+import {
+  AI6_SEARCH_HYBRID_WEIGHTS,
+  buildAi6ConfigEvidence,
+  canonicalJson,
+} from './ai6-config-evidence.js';
 
 const WORKER = 'https://ai6-search-canary.example.workers.dev';
 
@@ -15,6 +19,9 @@ function publicConfig() {
     answerModel: 'google/gemini-2.5-flash-lite',
     maxQueryChars: 500,
     maxResults: 5,
+    answerMaxChunks: 5,
+    answerMaxContextChars: 18000,
+    answerMaxTokens: 700,
     includePagePaths: ['landing/projects.html', 'en/projects.html'],
     hybridWeights: null,
   };
@@ -27,14 +34,17 @@ test('canonical JSON is stable across object key order', () => {
   );
 });
 
-test('AI-6 config evidence creates sanitized SEARCH candidate and exact OFF rollback', () => {
+test('AI-6 config evidence creates a validated sanitized SEARCH candidate and exact OFF rollback', () => {
   const baseline = publicConfig();
   const baselineSnapshot = JSON.stringify(baseline);
   const evidence = buildAi6ConfigEvidence({publicConfig: baseline, workerBaseUrl: WORKER});
 
   assert.equal(JSON.stringify(baseline), baselineSnapshot, 'builder must not mutate public config');
   assert.equal(evidence.candidate.mode, 'search');
+  assert.equal(evidence.candidate.configValidated, true);
   assert.equal(evidence.candidate.sanitized, true);
+  assert.deepEqual(evidence.candidate.hybridWeights, AI6_SEARCH_HYBRID_WEIGHTS);
+  assert.deepEqual(evidence.manifest.candidateHybridWeights, AI6_SEARCH_HYBRID_WEIGHTS);
   assert.match(evidence.candidate.workerBaseUrlDigest, /^sha256:[a-f0-9]{64}$/);
   assert.match(evidence.candidate.configDigest, /^sha256:[a-f0-9]{64}$/);
   assert.equal(JSON.stringify(evidence.candidate).includes(WORKER), false, 'candidate artifact must not expose staging Worker URL');
@@ -42,9 +52,11 @@ test('AI-6 config evidence creates sanitized SEARCH candidate and exact OFF roll
   assert.equal(evidence.rollback.mode, 'off');
   assert.equal(evidence.rollback.workerBaseUrl, '');
   assert.deepEqual(evidence.rollback.config, baseline);
+  assert.equal(evidence.rollback.config.hybridWeights, null);
   assert.equal(evidence.rollback.configDigest, evidence.candidate.publicBaselineDigest);
   assert.equal(evidence.manifest.rollbackMatchesPublicBaseline, true);
   assert.equal(evidence.manifest.publicConfigUnchanged, true);
+  assert.equal(evidence.manifest.candidateConfigValidated, true);
   assert.equal(evidence.manifest.candidateConfigDigest, evidence.candidate.configDigest);
   assert.equal(evidence.manifest.rollbackConfigDigest, evidence.rollback.configDigest);
   assert.equal(evidence.manifest.candidateWorkerBaseUrlDigest, evidence.candidate.workerBaseUrlDigest);
@@ -57,10 +69,14 @@ test('AI-6 config evidence is deterministic for the same baseline and Worker ori
   assert.deepEqual(first, second);
 });
 
-test('AI-6 config evidence rejects non-OFF baselines and unsafe Worker URLs', () => {
+test('AI-6 config evidence rejects non-OFF baselines, invalid baselines and unsafe Worker URLs', () => {
   assert.throws(
     () => buildAi6ConfigEvidence({publicConfig: {...publicConfig(), mode: 'search'}, workerBaseUrl: WORKER}),
     /public OFF rollback baseline/,
+  );
+  assert.throws(
+    () => buildAi6ConfigEvidence({publicConfig: {...publicConfig(), embeddingDimensions: 1536}, workerBaseUrl: WORKER}),
+    /embeddingDimensions must equal 512/,
   );
   assert.throws(
     () => buildAi6ConfigEvidence({publicConfig: publicConfig(), workerBaseUrl: 'http://example.com'}),
