@@ -102,7 +102,7 @@ function normalizedProviderUsage(usage) {
   return {promptTokens, totalTokens, costCredits};
 }
 
-function createEmbeddingAccountingFetch(fetchImpl = globalThis.fetch) {
+export function createEmbeddingAccountingFetch(fetchImpl = globalThis.fetch) {
   if (typeof fetchImpl !== 'function') throw new Error('AI-5 provider accounting requires fetchImpl');
   const state = {requestCount: 0, latencyMs: 0, promptTokens: 0, totalTokens: 0, costCredits: 0};
 
@@ -114,9 +114,13 @@ function createEmbeddingAccountingFetch(fetchImpl = globalThis.fetch) {
     const started = performance.now();
     let response;
     try {
+      const timeoutSignal = AbortSignal.timeout(AI5_REQUEST_TIMEOUT_MS);
+      const signal = init.signal
+        ? AbortSignal.any([init.signal, timeoutSignal])
+        : timeoutSignal;
       response = await fetchImpl(url, {
         ...init,
-        signal: init.signal || AbortSignal.timeout(AI5_REQUEST_TIMEOUT_MS),
+        signal,
       });
     } catch {
       state.latencyMs = Math.max(0, Math.round(performance.now() - started));

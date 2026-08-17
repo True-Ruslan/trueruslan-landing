@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import * as ai5Module from './ai5-provider-acceptance.js';
 import {
   AI5_MAX_KEY_LIMIT_USD,
   buildAi5ProviderEvidence,
@@ -94,6 +95,33 @@ test('current-key preflight never retries provider failures or exposes provider 
     },
   );
   assert.equal(calls, 1);
+});
+
+test('AI-5 embedding accounting owns a bounded signal even when a caller supplies one', async () => {
+  assert.equal(typeof ai5Module.createEmbeddingAccountingFetch, 'function', 'AI-5 accounting helper must be testable');
+  const callerSignal = new AbortController().signal;
+  let observedSignal = null;
+  const accounting = ai5Module.createEmbeddingAccountingFetch(async (_url, init) => {
+    observedSignal = init.signal;
+    return new Response(JSON.stringify({
+      data: [{index: 0, embedding: [1]}],
+      usage: {prompt_tokens: 3, total_tokens: 3, cost: 0.000001},
+    }), {status: 200, headers: {'Content-Type': 'application/json'}});
+  });
+
+  await accounting.fetch('https://openrouter.ai/api/v1/embeddings', {
+    method: 'POST',
+    signal: callerSignal,
+  });
+
+  assert.ok(observedSignal instanceof AbortSignal);
+  assert.notEqual(observedSignal, callerSignal, 'AI-5 must combine caller cancellation with its own timeout signal');
+  const report = accounting.report();
+  assert.equal(report.requestCount, 1);
+  assert.ok(Number.isInteger(report.latencyMs) && report.latencyMs >= 0);
+  assert.equal(report.promptTokens, 3);
+  assert.equal(report.totalTokens, 3);
+  assert.equal(report.costCredits, 0.000001);
 });
 
 test('AI-5 evidence separates USD key spend delta from OpenRouter response cost credits', () => {
