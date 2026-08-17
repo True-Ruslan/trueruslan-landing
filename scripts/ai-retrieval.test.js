@@ -85,6 +85,25 @@ test('ranking prefers query language only through the declared language componen
   ]);
 });
 
+test('explicit language context overrides script inference for Latin-only localized technical queries', () => {
+  const chunks = [
+    chunk('en:note:ai-npc:intro', {title: 'server-authoritative AI NPC', text: 'same terms', lang: 'en'}),
+    chunk('ru:note:ai-npc:intro', {title: 'server-authoritative AI NPC', text: 'same terms', lang: 'ru'}),
+  ];
+  const embeddings = new Map(chunks.map(({id}) => [id, [1, 0]]));
+  const base = {
+    query: 'server-authoritative AI NPC',
+    queryVector: [1, 0],
+    chunks,
+    embeddings,
+    config: config(),
+  };
+
+  assert.equal(rankChunks(base)[0].chunkId, 'en:note:ai-npc:intro');
+  assert.equal(rankChunks({...base, preferredLanguage: 'ru'})[0].chunkId, 'ru:note:ai-npc:intro');
+  assert.throws(() => rankChunks({...base, preferredLanguage: 'de'}), /preferredLanguage.*ru.*en/i);
+});
+
 test('ranking rejects missing vectors, dimension drift and invalid weight contracts', () => {
   const chunks = [chunk('en:page:one:intro', {text: 'one'})];
   assert.throws(
@@ -122,7 +141,14 @@ test('browser classic script exposes dependency-free retrieval with Node-equival
     [chunks[0].id, [0.9, 0.1]],
     [chunks[1].id, [0.7, 0.3]],
   ]);
-  const options = {query: 'AI systems', queryVector: [1, 0], chunks, embeddings, config: config()};
+  const options = {
+    query: 'AI systems',
+    queryVector: [1, 0],
+    chunks,
+    embeddings,
+    config: config(),
+    preferredLanguage: 'ru',
+  };
   const nodeResults = rankChunks(options);
   const browserResults = api.rankChunks(options);
   assert.equal(JSON.stringify(browserResults), JSON.stringify(nodeResults));

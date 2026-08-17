@@ -201,7 +201,14 @@
     return payload.embedding;
   }
 
-  async function runSemanticSearch({query, config, index, fetchImpl, retrievalApi = root.TrueRuslanAiRetrieval}) {
+  async function runSemanticSearch({
+    query,
+    config,
+    index,
+    fetchImpl,
+    preferredLanguage = null,
+    retrievalApi = root.TrueRuslanAiRetrieval,
+  }) {
     validatePublicConfig(config);
     const normalizedQuery = typeof query === 'string' ? query.trim() : '';
     if (!normalizedQuery || normalizedQuery.length > config.maxQueryChars) {
@@ -222,6 +229,7 @@
       chunks: index.chunks,
       embeddings: index.embeddings,
       config,
+      preferredLanguage,
     });
     const chunksById = new Map(index.chunks.map((chunk) => [chunk.id, chunk]));
     return ranked.slice(0, config.maxResults).map((item) => {
@@ -551,6 +559,7 @@
           config,
           index,
           fetchImpl: root.fetch?.bind(root),
+          preferredLanguage: locale(document),
           retrievalApi: root.TrueRuslanAiRetrieval,
         });
         renderResults(document, panel, results);

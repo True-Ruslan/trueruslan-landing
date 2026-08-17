@@ -74,6 +74,19 @@ function sameWeights(left, right) {
     .every((key) => left[key] === right[key]);
 }
 
+function canonicalDocumentId(chunkId) {
+  const parts = String(chunkId || '').split(':');
+  if (parts.length !== 4 || parts.some((part) => !part)) {
+    throw new Error(`Benchmark encountered an invalid stable chunk ID: ${String(chunkId)}`);
+  }
+  return parts.slice(0, 3).join(':');
+}
+
+function matchesExpectedDocument(expectedChunkIds, resultChunkIds) {
+  const resultDocuments = new Set(resultChunkIds.map(canonicalDocumentId));
+  return expectedChunkIds.some((chunkId) => resultDocuments.has(canonicalDocumentId(chunkId)));
+}
+
 export function loadBenchmark(input, validChunkIds) {
   const raw = readBenchmarkInput(input);
   if (!Array.isArray(raw) || raw.length === 0) throw new Error('Benchmark must contain at least one case');
@@ -109,6 +122,7 @@ export function loadBenchmark(input, validChunkIds) {
       }
       for (const chunkId of item.expectedAnyOf) {
         if (!validIds.has(chunkId)) throw new Error(`Benchmark case ${item.id} points at stale or unknown chunk ID: ${chunkId}`);
+        canonicalDocumentId(chunkId);
       }
     }
   }
@@ -136,7 +150,7 @@ export function evaluateRetrieval({cases, retrieve, limit = 5}) {
     const resultIds = results.map(({chunkId}) => chunkId);
     const hit = item.kind === 'insufficient'
       ? false
-      : item.expectedAnyOf.some((chunkId) => resultIds.includes(chunkId));
+      : matchesExpectedDocument(item.expectedAnyOf, resultIds);
     return {
       id: item.id,
       kind: item.kind,
@@ -194,7 +208,7 @@ export function selectHybridWeights({lexicalPerCase, candidateReports}) {
 }
 
 function createSemanticRetriever({corpus, documentEmbeddings, queryEmbeddings, weights, ranker}) {
-  return ({id, query, limit = 5}) => {
+  return ({id, query, lang, limit = 5}) => {
     const queryVector = queryEmbeddings.get(id);
     if (!queryVector) throw new Error(`semantic benchmark query cache missing ${id}`);
     return ranker({
@@ -203,6 +217,7 @@ function createSemanticRetriever({corpus, documentEmbeddings, queryEmbeddings, w
       chunks: corpus,
       embeddings: documentEmbeddings,
       config: {hybridWeights: weights},
+      preferredLanguage: lang,
     }).slice(0, limit);
   };
 }

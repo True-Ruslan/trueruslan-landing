@@ -11,6 +11,7 @@ import {
   createLexicalRetriever,
   evaluateRetrieval,
   loadBenchmark,
+  runSemanticBenchmark,
   selectHybridWeights,
 } from './ai-benchmark.js';
 
@@ -86,6 +87,33 @@ test('lexical reference retriever deterministically finds exact publication term
   assert.ok(results.every(({score}) => Number.isFinite(score) && score >= 0));
 });
 
+test('evaluateRetrieval treats any section of the expected canonical document as a positive hit', () => {
+  const cases = [{
+    id: 'document-hit',
+    lang: 'ru',
+    query: 'quality gates',
+    kind: 'paraphrase',
+    expectedAnyOf: ['ru:note:quality-gates:intro'],
+    answerEligible: true,
+  }];
+
+  const sectionHit = evaluateRetrieval({
+    cases,
+    retrieve: () => [{chunkId: 'ru:note:quality-gates:browser-smoke', score: 0.9}],
+    limit: 5,
+  });
+  assert.equal(sectionHit.recallAt5, 1);
+  assert.equal(sectionHit.perCase[0].hit, true);
+
+  const differentDocument = evaluateRetrieval({
+    cases,
+    retrieve: () => [{chunkId: 'ru:note:other-quality-gates:intro', score: 0.9}],
+    limit: 5,
+  });
+  assert.equal(differentDocument.recallAt5, 0);
+  assert.equal(differentDocument.perCase[0].hit, false);
+});
+
 test('evaluateRetrieval reports positive recall separately from insufficient cases', () => {
   const cases = [
     {
@@ -129,6 +157,41 @@ test('evaluateRetrieval reports positive recall separately from insufficient cas
   assert.equal(report.paraphraseRecallAt5, 0);
   assert.deepEqual(report.insufficientTopScore, [{id: 'negative', score: 0.2}]);
   assert.equal(report.perCase.length, 3);
+});
+
+test('semantic benchmark passes reviewed case language into the shared ranker', () => {
+  const expectedId = 'ru:note:ai-npc:intro';
+  const cases = [{
+    id: 'latin-ru-technical-query',
+    lang: 'ru',
+    query: 'server-authoritative AI NPC',
+    kind: 'exact',
+    expectedAnyOf: [expectedId],
+    answerEligible: true,
+  }];
+  const corpus = [
+    {id: expectedId, title: 'AI NPC', section: 'Intro', text: 'server-authoritative AI NPC', lang: 'ru'},
+    {id: 'en:note:ai-npc:intro', title: 'AI NPC', section: 'Intro', text: 'server-authoritative AI NPC', lang: 'en'},
+  ];
+  const documentEmbeddings = new Map(corpus.map(({id}) => [id, [1, 0]]));
+  const queryEmbeddings = new Map([['latin-ru-technical-query', [1, 0]]]);
+  const observedLanguages = [];
+
+  const report = runSemanticBenchmark({
+    cases,
+    corpus,
+    documentEmbeddings,
+    queryEmbeddings,
+    ranker(options) {
+      observedLanguages.push(options.preferredLanguage);
+      return [{chunkId: options.preferredLanguage === 'ru' ? expectedId : 'en:note:ai-npc:intro', score: 1}];
+    },
+  });
+
+  assert.equal(report.recallAt5, 1);
+  assert.equal(report.exactTermRecallAt5, 1);
+  assert.ok(observedLanguages.length === HYBRID_WEIGHT_CANDIDATES.length);
+  assert.ok(observedLanguages.every((lang) => lang === 'ru'));
 });
 
 test('hybrid candidate grid is fixed and deterministic', () => {
