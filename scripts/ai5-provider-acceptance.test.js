@@ -96,7 +96,7 @@ test('current-key preflight never retries provider failures or exposes provider 
   assert.equal(calls, 1);
 });
 
-test('AI-5 evidence separates key spend delta from document and benchmark provider accounting', () => {
+test('AI-5 evidence separates USD key spend delta from OpenRouter response cost credits', () => {
   const evidence = buildAi5ProviderEvidence({
     sourceCommit: 'a'.repeat(40),
     before: validateAi5KeyMetadata(keyMetadata({limit_remaining: 2, usage: 0.25})),
@@ -108,7 +108,7 @@ test('AI-5 evidence separates key spend delta from document and benchmark provid
       corpusDigest: `sha256:${'b'.repeat(64)}`,
       embeddingsDigest: `sha256:${'c'.repeat(64)}`,
       sourceCommit: 'a'.repeat(40),
-      provider: {requestCount: 1, latencyMs: 123, promptTokens: 5000, totalTokens: 5000, costUsd: 0.0001},
+      provider: {requestCount: 1, latencyMs: 123, promptTokens: 5000, totalTokens: 5000, costCredits: 0.0001},
     },
     benchmarkReport: {
       caseCount: 50,
@@ -117,7 +117,7 @@ test('AI-5 evidence separates key spend delta from document and benchmark provid
       benchmarkDigest: `sha256:${'d'.repeat(64)}`,
       embeddingsDigest: `sha256:${'e'.repeat(64)}`,
       sourceCommit: 'a'.repeat(40),
-      provider: {requestCount: 1, latencyMs: 87, promptTokens: 400, totalTokens: 400, costUsd: 0.000008},
+      provider: {requestCount: 1, latencyMs: 87, promptTokens: 400, totalTokens: 400, costCredits: 0.000008},
     },
   });
 
@@ -125,8 +125,8 @@ test('AI-5 evidence separates key spend delta from document and benchmark provid
   assert.equal(evidence.publicAiMode, 'off');
   assert.equal(evidence.keyPolicy.maxAllowedLimitUsd, 5);
   assert.ok(Math.abs(evidence.keyAccounting.runUsageDeltaUsd - 0.002) < 1e-12);
-  assert.equal(evidence.provider.documentEmbeddings.costUsd, 0.0001);
-  assert.equal(evidence.provider.benchmarkQueries.costUsd, 0.000008);
+  assert.equal(evidence.provider.documentEmbeddings.costCredits, 0.0001);
+  assert.equal(evidence.provider.benchmarkQueries.costCredits, 0.000008);
   assert.equal(JSON.stringify(evidence).includes('Authorization'), false);
   assert.equal(JSON.stringify(evidence).includes('sk-or-v1'), false);
 });
