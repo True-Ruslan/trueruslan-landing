@@ -17,6 +17,7 @@ const EXPECTED_WEIGHTS = Object.freeze({
   title: 0.10,
   language: 0.05,
 });
+const ALLOWED_BACKGROUND_ORIGINS = new Set(['https://static.cloudflareinsights.com']);
 
 function sha256(value) {
   return `sha256:${crypto.createHash('sha256').update(String(value), 'utf8').digest('hex')}`;
@@ -50,7 +51,7 @@ async function run() {
     firstResultPath: null,
     answerEndpointDisabled: false,
     answerActionAbsent: false,
-    providerBrowserRequests: 0,
+    unexpectedExternalRequests: 0,
     sanitized: true,
   };
 
@@ -81,11 +82,16 @@ async function run() {
     evidence.workerOriginDigest = sha256(workerOrigin);
 
     const workerRequests = [];
+    const unexpectedExternalRequests = [];
     page.on('request', (request) => {
       try {
         const url = new URL(request.url());
         if (url.origin === workerOrigin) {
           workerRequests.push({method: request.method(), pathname: url.pathname});
+          return;
+        }
+        if (url.origin !== PRODUCTION_ORIGIN && !ALLOWED_BACKGROUND_ORIGINS.has(url.origin)) {
+          unexpectedExternalRequests.push({method: request.method(), originDigest: sha256(url.origin)});
         }
       } catch {}
     });
@@ -120,7 +126,7 @@ async function run() {
     assert.equal(answerActions, 0, 'SEARCH mode must not expose an answer action');
     evidence.answerActionAbsent = true;
 
-    const negativeAnswer = await page.evaluate(async ({workerOrigin, productionOrigin}) => {
+    const negativeAnswer = await page.evaluate(async ({workerOrigin}) => {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 5000);
       try {
@@ -138,12 +144,11 @@ async function run() {
           status: response.status,
           code: body?.code ?? null,
           allowOrigin: response.headers.get('access-control-allow-origin'),
-          productionOrigin,
         };
       } finally {
         clearTimeout(timer);
       }
-    }, {workerOrigin, productionOrigin: PRODUCTION_ORIGIN});
+    }, {workerOrigin});
     assert.equal(negativeAnswer.status, 503, `SEARCH /v1/answer must be 503, got ${negativeAnswer.status}`);
     assert.equal(negativeAnswer.code, 'feature_disabled', 'SEARCH /v1/answer must fail closed');
     assert.equal(negativeAnswer.allowOrigin, PRODUCTION_ORIGIN, 'SEARCH answer rejection must preserve exact-origin CORS');
@@ -154,7 +159,8 @@ async function run() {
       return /api[_-]?key|bearer\s+|embeddingModel|answerModel/i.test(configText);
     });
     assert.equal(providerAuthorityLeak, false, 'browser runtime config leaks provider authority or credential-shaped material');
-    evidence.providerBrowserRequests = 0;
+    assert.equal(unexpectedExternalRequests.length, 0, 'AI interaction made an unexpected external request');
+    evidence.unexpectedExternalRequests = unexpectedExternalRequests.length;
 
     await captureScreenshot(page, 'ai-public-search-production.png');
     writeJsonArtifact('ai-public-search-production-evidence.json', evidence);
