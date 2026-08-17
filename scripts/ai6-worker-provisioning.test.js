@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const CONFIG_PATH = new URL('../infra/cloudflare/wrangler.ai6-search-canary.jsonc', import.meta.url);
+const GITIGNORE_PATH = new URL('../.gitignore', import.meta.url);
+const RUNBOOK_PATH = new URL('../docs/acceptance/ai-navigator-ai6-worker-provisioning.md', import.meta.url);
 const EXPECTED_VARS = {
   AI_ENABLED: 'true',
   AI_MODE: 'search',
@@ -49,4 +51,31 @@ test('AI-6 Wrangler config never stores provider credentials or enables FULL mod
   assert.equal(config.env['ai6-search-canary'].vars.AI_MODE, 'search');
   assert.equal(config.env['ai6-search-canary'].vars.AI_ENABLED, 'true');
   assert.equal(config.env['ai6-search-canary'].vars.AI_ANSWER_MODEL, undefined);
+});
+
+test('AI-6 local secret and Wrangler state files are gitignored', () => {
+  const ignored = new Set(
+    fs.readFileSync(GITIGNORE_PATH, 'utf8')
+      .split(/\r?\n/u)
+      .map((line) => line.trim())
+      .filter(Boolean),
+  );
+
+  assert.ok(ignored.has('.dev.vars*'));
+  assert.ok(ignored.has('.env*'));
+  assert.ok(ignored.has('.wrangler/'));
+});
+
+test('AI-6 operator runbook pins the isolated config and preserves the acceptance boundary', () => {
+  const runbook = fs.readFileSync(RUNBOOK_PATH, 'utf8');
+  assert.match(runbook, /wrangler@4\.118\.0/u);
+  assert.match(runbook, /--config infra\/cloudflare\/wrangler\.ai6-search-canary\.jsonc/u);
+  assert.match(runbook, /--env ai6-search-canary/u);
+  assert.match(runbook, /--secrets-file infra\/cloudflare\/\.dev\.vars\.ai6-search-canary/u);
+  assert.match(runbook, /--dry-run/u);
+  assert.match(runbook, /--strict/u);
+  assert.match(runbook, /wrangler@4\.118\.0 delete/u);
+  assert.match(runbook, /confirm_search_canary=true/u);
+  assert.match(runbook, /Public AI OFF/u);
+  assert.doesNotMatch(runbook, /sk-or-/u);
 });
