@@ -44,6 +44,16 @@ function inferQueryLanguage(query) {
   return /[\u0400-\u04ff]/u.test(String(query)) ? 'ru' : 'en';
 }
 
+function resolvePreferredLanguage(query, preferredLanguage) {
+  if (preferredLanguage === null || preferredLanguage === undefined || preferredLanguage === '') {
+    return inferQueryLanguage(query);
+  }
+  if (!['ru', 'en'].includes(preferredLanguage)) {
+    throw new Error(`preferredLanguage must be ru or en; got ${String(preferredLanguage)}`);
+  }
+  return preferredLanguage;
+}
+
 function resolveVector(embeddings, chunkId, index) {
   if (embeddings && typeof embeddings.get === 'function') return embeddings.get(chunkId);
   if (Array.isArray(embeddings)) return embeddings[index];
@@ -88,12 +98,12 @@ export function cosineSimilarity(left, right) {
   return Math.max(-1, Math.min(1, value));
 }
 
-export function rankChunks({query, queryVector, chunks, embeddings, config}) {
+export function rankChunks({query, queryVector, chunks, embeddings, config, preferredLanguage = null}) {
   if (typeof query !== 'string' || !query.trim()) throw new Error('query must be a non-empty string');
   assertFiniteVector(queryVector, 'query vector');
   if (!Array.isArray(chunks)) throw new Error('chunks must be an array');
   const weights = validateWeights(config?.hybridWeights);
-  const preferredLanguage = inferQueryLanguage(query);
+  const resolvedPreferredLanguage = resolvePreferredLanguage(query, preferredLanguage);
 
   return chunks
     .map((chunk, index) => {
@@ -102,7 +112,7 @@ export function rankChunks({query, queryVector, chunks, embeddings, config}) {
       const semanticScore = clamp01(cosineSimilarity(queryVector, vector));
       const lexicalComponent = clamp01(lexicalScore(query, `${chunk.title ?? ''} ${chunk.section ?? ''} ${chunk.text ?? ''}`));
       const titleScore = clamp01(lexicalScore(query, chunk.title ?? ''));
-      const languageScore = chunk.lang === preferredLanguage ? 1 : 0;
+      const languageScore = chunk.lang === resolvedPreferredLanguage ? 1 : 0;
       const score = semanticScore * weights.semantic
         + lexicalComponent * weights.lexical
         + titleScore * weights.title
