@@ -4,6 +4,7 @@ on:
   pull_request:
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -31,6 +32,10 @@ jobs:
         run: |
           set -o pipefail
           npm test 2>&1 | tee test.log
+      - name: Restore exact accepted AI index
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/ai-index-restore.js
       - name: Build docs
         shell: bash
         run: |
