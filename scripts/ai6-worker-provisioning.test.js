@@ -76,6 +76,6 @@ test('AI-6 operator runbook pins the isolated config and preserves the acceptanc
   assert.match(runbook, /--strict/u);
   assert.match(runbook, /wrangler@4\.118\.0 delete/u);
   assert.match(runbook, /confirm_search_canary=true/u);
-  assert.match(runbook, /Public AI OFF/u);
+  assert.match(runbook, /PUBLIC AI OFF/u);
   assert.doesNotMatch(runbook, /sk-or-/u);
 });
