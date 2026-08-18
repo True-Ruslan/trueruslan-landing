@@ -28,10 +28,11 @@ function runBootstrap({mounted = true} = {}) {
   let initCalls = 0;
 
   const document = {
-    documentElement: {},
+    readyState: 'complete',
+    documentElement: {dataset: {trAiMode: 'search'}},
     querySelector(selector) {
-      if (selector === '.tr-ai-switch') return switchMounted ? {id: 'switch'} : null;
-      if (selector.includes('.tr-search-input')) return currentInput;
+      if (selector.includes('.tr-ai-switch')) return switchMounted ? {id: 'switch'} : null;
+      if (selector.includes('.tr-search-input') || selector.includes('input[type="search"]')) return currentInput;
       if (selector.includes('.tr-search-button')) return null;
       return null;
     },
@@ -63,6 +64,7 @@ function runBootstrap({mounted = true} = {}) {
       window.timeoutCallback = callback;
       return 1;
     },
+    clearTimeout() {},
     console: {warn() {}},
   };
   window.window = window;
