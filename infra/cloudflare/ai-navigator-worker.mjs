@@ -410,6 +410,9 @@ async function handleAnswer(request, env, fetchImpl, corsOrigin) {
   if (env.AI_ENABLED !== 'true') {
     return errorResponse(503, 'feature_disabled', 'AI feature is disabled.', {origin: corsOrigin});
   }
+  if (env.AI_ANSWER_ENABLED !== 'true') {
+    return errorResponse(503, 'feature_disabled', 'AI answer feature is disabled.', {origin: corsOrigin});
+  }
   if (typeof env.OPENROUTER_API_KEY !== 'string' || !env.OPENROUTER_API_KEY.trim()) {
     return errorResponse(503, 'provider_unconfigured', 'AI provider is not configured.', {origin: corsOrigin});
   }
