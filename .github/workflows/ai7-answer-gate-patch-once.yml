@@ -24,7 +24,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          def replace_once(path: str, old: str, new: str) -> None:
+          def replace_once(path, old, new):
               p = Path(path)
               text = p.read_text()
               count = text.count(old)
@@ -32,29 +32,13 @@ jobs:
                   raise SystemExit(f'{path}: expected one guarded match, got {count}')
               p.write_text(text.replace(old, new, 1))
 
-          replace_once(
-              'infra/cloudflare/ai-navigator-worker.mjs',
-              """  if (env.AI_ENABLED !== 'true') {
-    return errorResponse(503, 'feature_disabled', 'AI feature is disabled.', {origin: corsOrigin});
-  }
-  if (typeof env.OPENROUTER_API_KEY !== 'string' || !env.OPENROUTER_API_KEY.trim()) {""",
-              """  if (env.AI_ENABLED !== 'true') {
-    return errorResponse(503, 'feature_disabled', 'AI feature is disabled.', {origin: corsOrigin});
-  }
-  if (env.AI_ANSWER_ENABLED !== 'true') {
-    return errorResponse(503, 'feature_disabled', 'AI answer feature is disabled.', {origin: corsOrigin});
-  }
-  if (typeof env.OPENROUTER_API_KEY !== 'string' || !env.OPENROUTER_API_KEY.trim()) {""",
-          )
+          old_worker = "  if (env.AI_ENABLED !== 'true') {\n    return errorResponse(503, 'feature_disabled', 'AI feature is disabled.', {origin: corsOrigin});\n  }\n  if (typeof env.OPENROUTER_API_KEY !== 'string' || !env.OPENROUTER_API_KEY.trim()) {"
+          new_worker = "  if (env.AI_ENABLED !== 'true') {\n    return errorResponse(503, 'feature_disabled', 'AI feature is disabled.', {origin: corsOrigin});\n  }\n  if (env.AI_ANSWER_ENABLED !== 'true') {\n    return errorResponse(503, 'feature_disabled', 'AI answer feature is disabled.', {origin: corsOrigin});\n  }\n  if (typeof env.OPENROUTER_API_KEY !== 'string' || !env.OPENROUTER_API_KEY.trim()) {"
+          replace_once('infra/cloudflare/ai-navigator-worker.mjs', old_worker, new_worker)
 
-          replace_once(
-              'scripts/ai-navigator-answer-worker.test.js',
-              """    AI_ENABLED: 'true',
-    OPENROUTER_API_KEY: 'test-secret-key',""",
-              """    AI_ENABLED: 'true',
-    AI_ANSWER_ENABLED: 'true',
-    OPENROUTER_API_KEY: 'test-secret-key',""",
-          )
+          old_test = "    AI_ENABLED: 'true',\n    OPENROUTER_API_KEY: 'test-secret-key',"
+          new_test = "    AI_ENABLED: 'true',\n    AI_ANSWER_ENABLED: 'true',\n    OPENROUTER_API_KEY: 'test-secret-key',"
+          replace_once('scripts/ai-navigator-answer-worker.test.js', old_test, new_test)
           PY
 
           git diff --check
