@@ -25,8 +25,10 @@ test('accepted AI-5 index is repository-owned and byte-exact', () => {
   }
 
   const meta = JSON.parse(fs.readFileSync(path.join(DURABLE_DIR, 'index-meta.json'), 'utf8'));
-  assert.equal(meta.chunkCount, 327, 'accepted chunk count drifted');
-  assert.equal(meta.embeddingDimensions, 512, 'accepted embedding dimensions drifted');
+  assert.equal(meta.chunkIds.length, 327, 'accepted chunk count drifted');
+  assert.equal(meta.dimensions, 512, 'accepted embedding dimensions drifted');
+  assert.equal(meta.corpusDigest, `sha256:${EXPECTED['chunks.json']}`, 'accepted corpus digest drifted');
+  assert.equal(meta.embeddingsDigest, `sha256:${EXPECTED['embeddings.bin']}`, 'accepted embeddings digest drifted');
 });
 
 test('production index restore is provider-free and no longer depends on Actions artifact retention', () => {
