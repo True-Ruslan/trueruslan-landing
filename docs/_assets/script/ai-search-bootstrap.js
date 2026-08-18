@@ -3,6 +3,8 @@
 
   const ACTIVE_MODES = new Set(['search', 'full']);
   const MOUNT_SELECTOR = '.tr-ai-switch [role="switch"]';
+  const INPUT_SELECTOR = '.tr-search-input, .dc-search-page__search-field input, input[type="search"]';
+  const BUTTON_SELECTOR = '.tr-search-button, .dc-search-page__search-button';
   const MAX_WAIT_MS = 30_000;
 
   function alreadyMounted() {
@@ -14,8 +16,24 @@
     return ACTIVE_MODES.has(mode);
   }
 
-  function tryInit() {
-    if (alreadyMounted()) return true;
+  function liveBindingTarget() {
+    const document = root.document;
+    if (!document?.querySelector) return {input: null, form: null, button: null};
+    const input = root.TrueRuslanSearchUI?.findSearchInput?.(document)
+      || document.querySelector(INPUT_SELECTOR);
+    const form = input?.closest?.('form') || null;
+    const button = form ? null : document.querySelector(BUTTON_SELECTOR);
+    return {input, form, button};
+  }
+
+  function sameBindingTarget(left, right) {
+    return left?.input === right?.input
+      && left?.form === right?.form
+      && left?.button === right?.button;
+  }
+
+  function tryInit({force = false} = {}) {
+    if (!force && alreadyMounted()) return true;
     const api = root.TrueRuslanAiSearch;
     if (!api || typeof api.init !== 'function') return false;
     return api.init(root.document) === true;
@@ -23,28 +41,33 @@
 
   function start() {
     if (!canRun()) return false;
-    if (tryInit()) return true;
-    if (typeof root.MutationObserver !== 'function' || !root.document?.documentElement) return false;
 
-    let timeoutId = null;
+    let observedTarget = liveBindingTarget();
+    let mounted = alreadyMounted();
+    if (!mounted) {
+      mounted = tryInit();
+      if (mounted) observedTarget = liveBindingTarget();
+    }
+
+    if (typeof root.MutationObserver !== 'function' || !root.document?.documentElement) return mounted;
+
     const observer = new root.MutationObserver(() => {
-      if (!tryInit()) return;
-      observer.disconnect();
-      if (timeoutId !== null && typeof root.clearTimeout === 'function') {
-        root.clearTimeout(timeoutId);
-        timeoutId = null;
-      }
+      const nextTarget = liveBindingTarget();
+      const bindingChanged = !sameBindingTarget(observedTarget, nextTarget);
+      const mountMissing = !alreadyMounted();
+      if (!bindingChanged && !mountMissing) return;
+
+      if (!tryInit({force: bindingChanged})) return;
+      observedTarget = liveBindingTarget();
+      mounted = true;
     });
 
     observer.observe(root.document.documentElement, {childList: true, subtree: true});
 
     if (typeof root.setTimeout === 'function') {
-      timeoutId = root.setTimeout(() => {
-        observer.disconnect();
-        timeoutId = null;
-      }, MAX_WAIT_MS);
+      root.setTimeout(() => observer.disconnect(), MAX_WAIT_MS);
     }
-    return false;
+    return mounted;
   }
 
   root.TrueRuslanAiSearchBootstrap = Object.freeze({start, tryInit});
