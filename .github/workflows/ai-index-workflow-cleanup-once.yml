@@ -1,0 +1,61 @@
+name: Remove accepted-index artifact plumbing once
+
+on:
+  push:
+    branches: ["feat/ai6-durable-index"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-index-workflow-cleanup-once
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: github.repository == 'True-Ruslan/trueruslan-landing'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout migration branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: feat/ai6-durable-index
+          persist-credentials: true
+
+      - name: Remove Actions artifact permissions and token plumbing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          for name in ('build.yml', 'static.yml'):
+              path = Path('.github/workflows') / name
+              text = path.read_text()
+              old_permission = 'permissions:\n  actions: read\n  contents: read\n'
+              if old_permission not in text:
+                  raise SystemExit(f'{name}: expected actions: read permission block not found')
+              text = text.replace(old_permission, 'permissions:\n  contents: read\n', 1)
+
+              old_restore = '''      - name: Restore exact accepted AI index\n        env:\n          GITHUB_TOKEN: ${{ github.token }}\n        run: node scripts/ai-index-restore.js\n'''
+              if old_restore not in text:
+                  raise SystemExit(f'{name}: expected artifact restore token block not found')
+              text = text.replace(
+                  old_restore,
+                  '      - name: Restore exact accepted AI index\n        run: node scripts/ai-index-restore.js\n',
+                  1,
+              )
+              path.write_text(text)
+          PY
+
+      - name: Commit cleanup and remove migration workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/build.yml .github/workflows/static.yml
+          git rm .github/workflows/ai-index-workflow-cleanup-once.yml
+          git commit -m "ci(ai): remove Actions artifact restore dependency"
+          git push origin HEAD:feat/ai6-durable-index
