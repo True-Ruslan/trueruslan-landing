@@ -1,6 +1,6 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-16**. Current production baseline accepted на `d5a67a9787637ee8cc63bdc0ac7a8330ca9ef6d8`; AI Navigator engineering baseline остаётся production-accepted, public AI остаётся OFF. Controlled launch — not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Обновлено: **2026-08-18**. AI-6 public SEARCH is production-accepted on exact runtime SHA `3809d6f0290ab22f080e919f2ff26b1b018f3db6`; canonical manual acceptance run `32148448724` is SUCCESS. `/v1/answer` remains disabled and FULL is not active. Controlled launch — not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Предыдущий полный snapshot сохранён в `docs/archive/2026-08-14/ROADMAP.md`.
 
@@ -8,7 +8,7 @@
 
 N1–N6, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification are DONE / PRODUCTION ACCEPTED. PR #254–#258 preserve the latest durable-state, cross-project freshness and production-verifier reconciliation chain. Transparent `trueruslan.com` repository readiness is accepted via PR #247 but external DNS/Cloudflare activation is NOT LIVE.
 
-AI Navigator #248–#253 is DONE / PRODUCTION ACCEPTED WITH PUBLIC MODE OFF. Current exact production SHA `d5a67a9787637ee8cc63bdc0ac7a8330ca9ef6d8`: Pages #277 / 31968943858, Production Live #635 / 31968943881, master CodeQL #1788 / 31968943873 — SUCCESS; deployed flagship normalization — SUCCESS.
+AI Navigator engineering baseline #248–#253 remains accepted; AI-5 real-provider/index acceptance and AI-6 SEARCH activation are now also DONE / PRODUCTION ACCEPTED. Exact accepted SEARCH runtime SHA `3809d6f0290ab22f080e919f2ff26b1b018f3db6`: Pages #293 / 32139175939, Production Live #671 / 32139176165, post-Pages Live #672 / 32139345457, master CodeQL #1904 / 32139175988 and canonical manual SEARCH acceptance #6 / 32148448724 — SUCCESS. Public mode is `search`; `/v1/answer` remains disabled; FULL is not active.
 
 Current cross-project truth:
 - VillAIgence official release is `0.3.2+1.21.1`; automated release gates PASS; historical installed 0.3.1 corrective canary FAILED; PR #169 and PR #171 are merged; exact installed 0.3.2 corrective canary remains PENDING; 0.4 remains blocked. The last fully accepted installed baseline remains `0.2.0+1.21.1` with `7 PASS / 0 FAIL`.
@@ -28,14 +28,14 @@ Clean-URL observation clock remains `2026-08-05T00:00:00Z`.
 
 ## Priority B — AI Navigator real acceptance
 
-### AI-5 — real provider/index acceptance — NEXT
-Use a dedicated hard-spend-capped OpenRouter key bound only to the explicit Worker/acceptance path; refresh real document embeddings, verify model/dimensions and static index deterministically, run offline benchmark, record provider latency/error/cost separately. Ordinary CI/build must remain provider-free.
+### AI-5 — real provider/index acceptance — DONE / ACCEPTED
+Dedicated bounded real-provider acceptance completed, including deterministic index verification and real-provider evidence; ordinary CI/build remains provider-free. The accepted index is now persisted durably in-repository with exact digest verification via PR #280 / issue #276.
 
-### AI-6 — SEARCH canary — WAITING FOR AI-5
-Enable only bounded `search` mode, preserve Diplodoc fallback, verify CORS/preflight/query embedding/static index/hybrid ranking/timeouts/failure behavior and measure quality/latency/spend.
+### AI-6 — SEARCH canary + public activation — DONE / PRODUCTION ACCEPTED
+Isolated SEARCH canary was accepted before public activation. Public `search` mode is now accepted on exact SHA `3809d6f0290ab22f080e919f2ff26b1b018f3db6`; canonical run `32148448724` proved a live `/v1/embed` request and semantic result while `/v1/answer` remained disabled, with zero unexpected external requests. Diplodoc fallback and exact rollback remain preserved. Issue #274 is CLOSED / COMPLETED.
 
-### AI-7 — FULL canary + verdict — WAITING FOR SEARCH
-Enable explicit Ask AI only after SEARCH acceptance; preserve canonical Worker grounding and strict citations; verify insufficient-evidence behavior; finish with KEEP / DOWNGRADE / REMOVE.
+### AI-7 — FULL canary + verdict — NEXT / SEPARATE CANARY
+Enable explicit Ask AI only as a separate bounded stage after the accepted SEARCH baseline; preserve canonical Worker grounding and strict citations; verify insufficient-evidence behavior, latency/spend/failure boundaries and rollback; finish with KEEP / DOWNGRADE / REMOVE. No automatic promotion from SEARCH is allowed.
 
 ### P3.4F — Evidence-driven project state — DONE
 ## P3.5 — Selective English expansion — DONE
