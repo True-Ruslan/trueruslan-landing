@@ -31,9 +31,12 @@ test('accepted AI-5 index is repository-owned and byte-exact', () => {
   assert.equal(meta.embeddingsDigest, `sha256:${EXPECTED['embeddings.bin']}`, 'accepted embeddings digest drifted');
 });
 
-test('production index restore is provider-free and no longer depends on Actions artifact retention', () => {
+test('production index restore is provider-free, retention-independent and race-free', () => {
   const source = fs.readFileSync(path.join(ROOT, 'scripts', 'ai-index-restore.js'), 'utf8');
   assert.doesNotMatch(source, /actions\/artifacts|ACCEPTED_AI5_ARTIFACT_ID|GITHUB_TOKEN|Authorization:\s*`Bearer/);
+  assert.doesNotMatch(source, /statSync|copyFileSync/, 'restore must verify and publish the same in-memory bytes without check/use races');
   assert.match(source, /ai-index-accepted/);
+  assert.match(source, /readFileSync/);
+  assert.match(source, /writeFileSync/);
   assert.match(source, /verifyAiIndex/);
 });
