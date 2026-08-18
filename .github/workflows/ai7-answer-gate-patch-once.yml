@@ -35,31 +35,16 @@ jobs:
           replace_once(
               'infra/cloudflare/ai-navigator-worker.mjs',
               """  if (env.AI_ENABLED !== 'true') {
-    return jsonResponse(
-      503,
-      {error: 'AI feature is disabled.', code: 'feature_disabled'},
-      headers,
-    );
+    return errorResponse(503, 'feature_disabled', 'AI feature is disabled.', {origin: corsOrigin});
   }
-
-  if (!env.OPENROUTER_API_KEY) {""",
+  if (typeof env.OPENROUTER_API_KEY !== 'string' || !env.OPENROUTER_API_KEY.trim()) {""",
               """  if (env.AI_ENABLED !== 'true') {
-    return jsonResponse(
-      503,
-      {error: 'AI feature is disabled.', code: 'feature_disabled'},
-      headers,
-    );
+    return errorResponse(503, 'feature_disabled', 'AI feature is disabled.', {origin: corsOrigin});
   }
-
   if (env.AI_ANSWER_ENABLED !== 'true') {
-    return jsonResponse(
-      503,
-      {error: 'AI answer feature is disabled.', code: 'feature_disabled'},
-      headers,
-    );
+    return errorResponse(503, 'feature_disabled', 'AI answer feature is disabled.', {origin: corsOrigin});
   }
-
-  if (!env.OPENROUTER_API_KEY) {""",
+  if (typeof env.OPENROUTER_API_KEY !== 'string' || !env.OPENROUTER_API_KEY.trim()) {""",
           )
 
           replace_once(
