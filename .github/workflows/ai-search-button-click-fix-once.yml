@@ -1,0 +1,47 @@
+name: AI SEARCH button click fix once
+
+on:
+  push:
+    branches:
+      - fix/ai-search-button-click
+    paths:
+      - .github/workflows/ai-search-button-click-fix-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: fix/ai-search-button-click
+          persist-credentials: true
+      - name: Apply guarded runtime fix
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('docs/_assets/script/ai-search.js')
+          source = path.read_text(encoding='utf-8')
+          old = """    if (form?.addEventListener) form.addEventListener('submit', submitAi);\n    else if (searchButton?.addEventListener) searchButton.addEventListener('click', submitAi);"""
+          new = """    function onSearchButtonClick(event) {\n      if (!enabled) return;\n      event?.preventDefault?.();\n      event?.stopImmediatePropagation?.();\n      void submitAi(event);\n    }\n\n    if (form?.addEventListener) form.addEventListener('submit', submitAi);\n    if (searchButton?.addEventListener) searchButton.addEventListener('click', onSearchButtonClick, true);"""
+          if source.count(old) != 1:
+              raise SystemExit('guard failed: expected exactly one legacy button-binding block')
+          path.write_text(source.replace(old, new), encoding='utf-8')
+          PY
+      - name: Verify focused regression
+        run: node --test scripts/ai-search-button-click.test.js
+      - name: Remove one-time workflow and commit fix
+        shell: bash
+        run: |
+          rm .github/workflows/ai-search-button-click-fix-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/_assets/script/ai-search.js .github/workflows/ai-search-button-click-fix-once.yml
+          git diff --cached --check
+          git commit -m "fix(ai): intercept live search button clicks"
+          git push origin HEAD:fix/ai-search-button-click
