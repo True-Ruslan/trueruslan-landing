@@ -11,19 +11,22 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, ...relativePath.split('/')), 'utf8');
 }
 
-test('AI bootstrap retries once after late Diplodoc input hydration and disconnects', () => {
+test('AI bootstrap retries after late Diplodoc hydration and keeps observation bounded', () => {
   const source = read('docs/_assets/script/ai-search-bootstrap.js');
   let domReady = null;
   let mutationCallback = null;
+  let timeoutCallback = null;
   let observed = false;
   let disconnected = false;
+  let switchMounted = false;
   let initCalls = 0;
   let clearCalls = 0;
 
   const document = {
     readyState: 'loading',
     documentElement: {dataset: {trAiMode: 'search'}},
-    querySelector() {
+    querySelector(selector) {
+      if (selector.includes('.tr-ai-switch')) return switchMounted ? {id: 'switch'} : null;
       return null;
     },
     addEventListener(type, callback) {
@@ -53,7 +56,8 @@ test('AI bootstrap retries once after late Diplodoc input hydration and disconne
     window: null,
     document,
     MutationObserver: FakeMutationObserver,
-    setTimeout() {
+    setTimeout(callback) {
+      timeoutCallback = callback;
       return 17;
     },
     clearTimeout(id) {
@@ -66,7 +70,9 @@ test('AI bootstrap retries once after late Diplodoc input hydration and disconne
   sandbox.TrueRuslanAiSearch = {
     init() {
       initCalls += 1;
-      return initCalls >= 2;
+      const mounted = initCalls >= 2;
+      if (mounted) switchMounted = true;
+      return mounted;
     },
   };
 
@@ -78,11 +84,18 @@ test('AI bootstrap retries once after late Diplodoc input hydration and disconne
   assert.equal(observed, true, 'failed initial mount must observe late hydration');
   assert.equal(disconnected, false);
   assert.equal(typeof mutationCallback, 'function');
+  assert.equal(typeof timeoutCallback, 'function', 'hydration protection must have a bounded timeout');
 
   mutationCallback();
   assert.equal(initCalls, 2, 'late hydration must retry runtime initialization');
-  assert.equal(disconnected, true, 'observer must disconnect immediately after successful initialization');
-  assert.equal(clearCalls, 1, 'bounded observer timeout must be cleared after successful initialization');
+  assert.equal(disconnected, false, 'successful initialization must keep observing bounded hydration replacements');
+  assert.equal(clearCalls, 0, 'successful initialization must not clear the bounded hydration timeout');
+
+  mutationCallback();
+  assert.equal(initCalls, 2, 'unchanged mounted DOM must not duplicate runtime initialization');
+
+  timeoutCallback();
+  assert.equal(disconnected, true, 'hydration observer must disconnect at the bounded timeout');
 });
 
 test('SEARCH postprocess publishes and injects the late-hydration bootstrap asset', () => {
