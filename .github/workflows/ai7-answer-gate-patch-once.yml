@@ -1,0 +1,83 @@
+name: AI-7 answer gate patch once
+
+on:
+  push:
+    branches:
+      - feat/ai7-full-canary
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+      - name: Apply independent answer gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              p = Path(path)
+              text = p.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one guarded match, got {count}')
+              p.write_text(text.replace(old, new, 1))
+
+          replace_once(
+              'infra/cloudflare/ai-navigator-worker.mjs',
+              """  if (env.AI_ENABLED !== 'true') {
+    return jsonResponse(
+      503,
+      {error: 'AI feature is disabled.', code: 'feature_disabled'},
+      headers,
+    );
+  }
+
+  if (!env.OPENROUTER_API_KEY) {""",
+              """  if (env.AI_ENABLED !== 'true') {
+    return jsonResponse(
+      503,
+      {error: 'AI feature is disabled.', code: 'feature_disabled'},
+      headers,
+    );
+  }
+
+  if (env.AI_ANSWER_ENABLED !== 'true') {
+    return jsonResponse(
+      503,
+      {error: 'AI answer feature is disabled.', code: 'feature_disabled'},
+      headers,
+    );
+  }
+
+  if (!env.OPENROUTER_API_KEY) {""",
+          )
+
+          replace_once(
+              'scripts/ai-navigator-answer-worker.test.js',
+              """    AI_ENABLED: 'true',
+    OPENROUTER_API_KEY: 'test-secret-key',""",
+              """    AI_ENABLED: 'true',
+    AI_ANSWER_ENABLED: 'true',
+    OPENROUTER_API_KEY: 'test-secret-key',""",
+          )
+          PY
+
+          git diff --check
+          node --test scripts/ai7-answer-enable-gate.test.js scripts/ai-navigator-answer-worker.test.js
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add infra/cloudflare/ai-navigator-worker.mjs scripts/ai-navigator-answer-worker.test.js
+          git rm .github/workflows/ai7-answer-gate-patch-once.yml
+          git commit -m 'feat(ai): require explicit FULL answer enablement'
+          git push origin HEAD:feat/ai7-full-canary
