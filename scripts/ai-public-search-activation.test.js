@@ -6,8 +6,12 @@ import {fileURLToPath} from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WORKER_ORIGIN = 'https://trueruslan-ai-navigator-ai6-search-canary.trueruslan.workers.dev';
-const ACCEPTED_AI5_ARTIFACT_ID = '9283608793';
-const ACCEPTED_AI5_ARTIFACT_SHA256 = '71260072c273588c4b8a4ab53180b6dfc5c39be8612aee21f91721c7d2919e1f';
+const ACCEPTED_AI5_SOURCE = 'data/ai-index-accepted/ai5';
+const ACCEPTED_AI5_FILE_DIGESTS = Object.freeze({
+  'chunks.json': '1249ed898193d1a05bda632b1328a860909887a1700092ba38e612ac7e6ac17a',
+  'index-meta.json': 'ad301d88071b2a57fe68df07cd98cdd9596ecc1ccc832453fc692af4d92f718d',
+  'embeddings.bin': 'aaf2c7ba86a53f0ff040e63c2c75decbf538a84d6c54c1da0e44f124b199510a',
+});
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
@@ -33,22 +37,22 @@ test('public AI config activates only the accepted SEARCH candidate', () => {
   assert.notEqual(value.mode, 'full');
 });
 
-test('SEARCH builds restore only the exact accepted AI-5 index artifact', () => {
+test('SEARCH builds restore only the exact accepted AI-5 index from durable repository bytes', () => {
   const restore = read('scripts/ai-index-restore.js');
-  assert.match(restore, new RegExp(`ACCEPTED_AI5_ARTIFACT_ID = ${ACCEPTED_AI5_ARTIFACT_ID}`));
-  assert.match(restore, new RegExp(ACCEPTED_AI5_ARTIFACT_SHA256));
+  assert.match(restore, new RegExp(ACCEPTED_AI5_SOURCE.replaceAll('/', '\\/')));
+  for (const [name, digest] of Object.entries(ACCEPTED_AI5_FILE_DIGESTS)) {
+    assert.match(restore, new RegExp(digest), `${name}: accepted digest must remain pinned`);
+  }
   assert.match(restore, /verifyAiIndex/);
   assert.match(restore, /providerAccess: false/);
   assert.match(restore, /chunks\.json/);
   assert.match(restore, /index-meta\.json/);
   assert.match(restore, /embeddings\.bin/);
-  assert.doesNotMatch(restore, /openrouter\.ai|OPENROUTER_API_KEY/i);
+  assert.doesNotMatch(restore, /actions\/artifacts|ACCEPTED_AI5_ARTIFACT_ID|GITHUB_TOKEN|openrouter\.ai|OPENROUTER_API_KEY/i);
 
   for (const workflowPath of ['.github/workflows/build.yml', '.github/workflows/static.yml']) {
     const workflow = read(workflowPath);
-    assert.match(workflow, /actions: read/);
     assert.match(workflow, /Restore exact accepted AI index/);
-    assert.match(workflow, /GITHUB_TOKEN: \$\{\{ github\.token \}\}/);
     assert.match(workflow, /node scripts\/ai-index-restore\.js/);
     assert.doesNotMatch(workflow, /OPENROUTER_AI6_API_KEY|OPENROUTER_API_KEY/);
     const restoreIndex = workflow.indexOf('Restore exact accepted AI index');
