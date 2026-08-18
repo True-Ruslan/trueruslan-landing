@@ -7,8 +7,12 @@
   const BUTTON_SELECTOR = '.tr-search-button, .dc-search-page__search-button';
   const MAX_WAIT_MS = 30_000;
 
+  function mountedControl() {
+    return root.document?.querySelector?.(MOUNT_SELECTOR) || null;
+  }
+
   function alreadyMounted() {
-    return Boolean(root.document?.querySelector?.(MOUNT_SELECTOR));
+    return Boolean(mountedControl());
   }
 
   function canRun() {
@@ -32,11 +36,32 @@
       && left?.button === right?.button;
   }
 
+  function resetMountedSwitchForRebind() {
+    const control = mountedControl();
+    if (!control) return false;
+    const wasEnabled = control.getAttribute?.('aria-checked') === 'true';
+    const wrapper = control.closest?.('.tr-ai-switch');
+    if (typeof wrapper?.remove === 'function') wrapper.remove();
+    else if (typeof control.remove === 'function') control.remove();
+    return wasEnabled;
+  }
+
+  function restoreExplicitOptIn(wasEnabled) {
+    if (!wasEnabled) return;
+    const control = mountedControl();
+    if (!control || control.getAttribute?.('aria-checked') === 'true') return;
+    control.click?.();
+  }
+
   function tryInit({force = false} = {}) {
     if (!force && alreadyMounted()) return true;
     const api = root.TrueRuslanAiSearch;
     if (!api || typeof api.init !== 'function') return false;
-    return api.init(root.document) === true;
+
+    const restoreEnabled = force ? resetMountedSwitchForRebind() : false;
+    const initialized = api.init(root.document) === true;
+    if (initialized) restoreExplicitOptIn(restoreEnabled);
+    return initialized;
   }
 
   function start() {
@@ -56,6 +81,7 @@
       const bindingChanged = !sameBindingTarget(observedTarget, nextTarget);
       const mountMissing = !alreadyMounted();
       if (!bindingChanged && !mountMissing) return;
+      if (bindingChanged && !nextTarget.input) return;
 
       if (!tryInit({force: bindingChanged})) return;
       observedTarget = liveBindingTarget();
