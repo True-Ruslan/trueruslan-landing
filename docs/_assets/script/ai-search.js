@@ -584,8 +584,15 @@
       }
     }
 
+    function onSearchButtonClick(event) {
+      if (!enabled) return;
+      event?.preventDefault?.();
+      event?.stopImmediatePropagation?.();
+      void submitAi(event);
+    }
+
     if (form?.addEventListener) form.addEventListener('submit', submitAi);
-    else if (searchButton?.addEventListener) searchButton.addEventListener('click', submitAi);
+    if (searchButton?.addEventListener) searchButton.addEventListener('click', onSearchButtonClick, true);
     return true;
   }
 
