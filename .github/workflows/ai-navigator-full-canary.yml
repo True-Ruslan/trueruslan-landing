@@ -1,0 +1,121 @@
+name: AI Navigator FULL Canary
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_full_canary:
+        description: Confirm bounded calls to the isolated AI-7 FULL Worker and its dedicated OpenRouter key
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-navigator-full-canary-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  canary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: ai7-full-canary
+    steps:
+      - name: Require master and explicit FULL-canary confirmation
+        env:
+          CONFIRMED: ${{ inputs.confirm_full_canary }}
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF}" != "refs/heads/master" ]]; then
+            echo "::error::AI-7 FULL canary must execute from master."
+            exit 1
+          fi
+          if [[ "${CONFIRMED}" != "true" ]]; then
+            echo "::error::AI-7 FULL canary requires explicit live-call confirmation."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Require exact dispatched master SHA
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git branch --show-current)" = "master" || test "${GITHUB_REF}" = "refs/heads/master"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Require accepted public SEARCH baseline
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const raw = fs.readFileSync('data/ai-navigator.json', 'utf8');
+          const config = JSON.parse(raw);
+          if (config.mode !== 'search' || typeof config.workerBaseUrl !== 'string' || !config.workerBaseUrl) {
+            throw new Error(`AI-7 canary requires accepted public SEARCH; mode=${String(config.mode)}`);
+          }
+          if (raw.includes('AI_ANSWER_ENABLED')) {
+            throw new Error('Public AI config must not carry the isolated AI_ANSWER_ENABLED gate.');
+          }
+          const provisioning = JSON.parse(fs.readFileSync('infra/cloudflare/wrangler.ai7-full-canary.jsonc', 'utf8'));
+          const canary = provisioning.env?.['ai7-full-canary'];
+          if (canary?.vars?.AI_MODE !== 'full' || canary?.vars?.AI_ANSWER_ENABLED !== 'true') {
+            throw new Error('AI-7 isolated FULL provisioning contract drifted.');
+          }
+          NODE
+          git diff --exit-code -- data/ai-navigator.json
+          mkdir -p quality-artifacts
+
+      - name: Execute bounded FULL canary
+        env:
+          AI7_FULL_WORKER_BASE_URL: ${{ secrets.AI7_FULL_WORKER_BASE_URL }}
+          OPENROUTER_AI7_API_KEY: ${{ secrets.OPENROUTER_AI7_API_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/ai7-full-canary.js > quality-artifacts/ai7-full-canary.json
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync('quality-artifacts/ai7-full-canary.json', 'utf8'));
+          if (report.evidenceClass !== 'ai7-full-canary'
+            || report.publicAiMode !== 'search'
+            || report.isolatedRuntimeMode !== 'full'
+            || report.publicFullActivated !== false
+            || report.publicAnswerEndpoint !== 'disabled'
+            || report.runtime?.sufficientAnswer?.sufficientEvidence !== true
+            || report.runtime?.insufficientAnswer?.sufficientEvidence !== false
+            || report.runtime?.clientUnexpectedExternalRequests !== 0
+            || report.sanitized !== true) {
+            throw new Error('AI-7 sanitized evidence contract failed.');
+          }
+          console.log(JSON.stringify({
+            sourceCommit: report.sourceCommit,
+            publicAiMode: report.publicAiMode,
+            isolatedRuntimeMode: report.isolatedRuntimeMode,
+            publicAnswerEndpoint: report.publicAnswerEndpoint,
+            runUsageDeltaUsd: report.keyAccounting?.runUsageDeltaUsd,
+            sufficientLatencyMs: report.runtime?.sufficientAnswer?.latencyMs,
+            insufficientLatencyMs: report.runtime?.insufficientAnswer?.latencyMs,
+          }));
+          NODE
+          git diff --exit-code -- data/ai-navigator.json
+
+      - name: Upload AI-7 FULL canary evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ai-navigator-full-canary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: quality-artifacts/ai7-full-canary.json
+          if-no-files-found: ignore
+          retention-days: 14
