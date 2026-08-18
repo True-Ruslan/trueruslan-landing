@@ -1,8 +1,18 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-15**. AI Navigator engineering baseline production-accepted на `ca4cecd510b5c0f6bad6cef31b6b5dd630f5f50f`; public AI остаётся OFF. Controlled launch remains not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Обновлено: **2026-08-18**. AI-6 public SEARCH production acceptance — ACCEPTED on exact runtime SHA `3809d6f0290ab22f080e919f2ff26b1b018f3db6`; canonical manual run `32148448724` — SUCCESS. `/v1/answer` remains disabled; FULL is not active. Controlled launch remains not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Полный pre-2026-08-15 snapshot сохранён в `docs/archive/2026-08-14/CHANGELOG.md`.
+
+## 2026-08-18 — AI-6 public semantic SEARCH — PRODUCTION ACCEPTED
+
+- AI-5 real-provider/index acceptance was completed before public activation; accepted semantic index evidence was made durable and provider-free for restore through PR #280 / issue #276.
+- AI-6 isolated SEARCH canary evidence was recorded through PR #273; public SEARCH activation followed in PR #275 while preserving opt-in behavior, ordinary Diplodoc fallback and `/v1/answer` disabled.
+- Production-only integration defects were then removed without widening scope: PR #277 handled late search hydration, PR #278 preserved actionable acceptance diagnostics, PR #279 rebound SEARCH after Diplodoc DOM replacement, and PR #281 intercepted the live Diplodoc search-button click in capture phase only while AI is enabled.
+- PR #281 TDD: RED Build #2346 / `32137532919` failed exactly on the two new button-click regressions; exact-head `2fcc31475d16fa9a07fb15d0a13cc363e785cd25` then passed Build #2349 / `32137885631`, Dependency Review #1713 / `32137885632` and CodeQL #1903 / `32137885722`, including AI Navigator browser smoke, Firefox/WebKit compatibility and visual regression.
+- Merged SEARCH runtime SHA `3809d6f0290ab22f080e919f2ff26b1b018f3db6`: Pages #293 / `32139175939`, CodeQL #1904 / `32139175988`, Production Live Smoke #671 / `32139176165` and post-Pages #672 / `32139345457` — SUCCESS.
+- Canonical manual `AI Navigator Public SEARCH Acceptance` #6 / `32148448724` — SUCCESS on the exact runtime SHA. Sanitized evidence recorded `embedRequests=1`, static index HTTP 200, `POST /v1/embed` HTTP 200, `semanticOutcome=semantic-result`, first result `/notes/deployment-success-is-not-production-verification/`, `answerEndpointDisabled=true`, `answerActionAbsent=true`, `unexpectedExternalRequests=0`. Artifact `9328756080`, digest `sha256:d8d0d242c72e7ad4e122bb486ecded358b8e9b1f852f9928edb041c410b0d623`.
+- Issue #274 is CLOSED / COMPLETED. AI-6 SEARCH is the accepted public AI baseline. AI-7/FULL is now permitted as a separate canary but is not active.
 
 ## 2026-08-15 — AI Navigator static-first engineering baseline — PRODUCTION ACCEPTED / PUBLIC AI OFF
 
