@@ -20,30 +20,41 @@ function sha256(bytes) {
   return crypto.createHash('sha256').update(bytes).digest('hex');
 }
 
-function verifyDurableSource({rootDir}) {
+function readVerifiedDurableSource({rootDir}) {
   const sourceDir = path.join(rootDir, ...ACCEPTED_AI5_SOURCE.split('/'));
+  const verifiedFiles = new Map();
+
   for (const name of REQUIRED_INDEX_FILES) {
     const sourcePath = path.join(sourceDir, name);
-    if (!fs.statSync(sourcePath, {throwIfNoEntry: false})?.isFile()) {
-      throw new Error(`Accepted AI-5 durable source is missing ${ACCEPTED_AI5_SOURCE}/${name}`);
+    let bytes;
+    try {
+      bytes = fs.readFileSync(sourcePath);
+    } catch (error) {
+      if (error?.code === 'ENOENT') {
+        throw new Error(`Accepted AI-5 durable source is missing ${ACCEPTED_AI5_SOURCE}/${name}`);
+      }
+      throw error;
     }
-    const digest = sha256(fs.readFileSync(sourcePath));
+
+    const digest = sha256(bytes);
     const expected = ACCEPTED_AI5_FILE_DIGESTS[name];
     if (digest !== expected) {
       throw new Error(`Accepted AI-5 durable source digest mismatch for ${name}: sha256:${digest}`);
     }
+    verifiedFiles.set(name, bytes);
   }
-  return sourceDir;
+
+  return verifiedFiles;
 }
 
 function copyAcceptedIndex({rootDir}) {
-  const sourceDir = verifyDurableSource({rootDir});
+  const verifiedFiles = readVerifiedDurableSource({rootDir});
   const targetDir = path.join(rootDir, 'data', 'ai-index');
 
   fs.rmSync(targetDir, {recursive: true, force: true});
   fs.mkdirSync(targetDir, {recursive: true});
-  for (const name of REQUIRED_INDEX_FILES) {
-    fs.copyFileSync(path.join(sourceDir, name), path.join(targetDir, name));
+  for (const [name, bytes] of verifiedFiles) {
+    fs.writeFileSync(path.join(targetDir, name), bytes);
   }
 }
 
