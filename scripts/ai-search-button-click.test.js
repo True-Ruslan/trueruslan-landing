@@ -26,6 +26,7 @@ test('enabled AI SEARCH intercepts the live search button even when a form exist
 });
 
 test('button interceptor is transparent while AI is OFF and blocks ordinary click handling only when AI is ON', () => {
+  // Production Diplodoc owns the visible button click, so AI must intercept before its ordinary-search handler.
   assert.match(
     SOURCE,
     /function onSearchButtonClick\(event\) \{\s*if \(!enabled\) return;\s*event\?\.preventDefault\?\.\(\);\s*event\?\.stopImmediatePropagation\?\.\(\);\s*void submitAi\(event\);\s*\}/s,
