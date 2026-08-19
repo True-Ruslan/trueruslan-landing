@@ -123,6 +123,61 @@ test('AI-7 FULL probe proves grounded and insufficient answers while public SEAR
   assert.equal(JSON.stringify(report).includes('workers.dev'), false);
 });
 
+test('AI-7 FULL probe reports only a bounded Worker error code and never leaks raw provider error text', async () => {
+  const rawProviderError = 'provider leaked credential sk-or-v1-DO-NOT-LOG at https://provider.invalid/private';
+  const fetchImpl = async (url, init = {}) => {
+    const target = String(url);
+    const method = init.method || 'GET';
+    const origin = init.headers?.Origin;
+
+    if (target === `${CANARY}/v1/answer` && method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': ORIGIN,
+          'Access-Control-Allow-Methods': 'POST',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      });
+    }
+    if (target === `${CANARY}/v1/answer` && origin === 'https://example.invalid') {
+      return json(403, {code: 'origin_forbidden', error: 'Origin is not allowed.'});
+    }
+    if (target === `${CANARY}/v1/embed`) {
+      return json(200, {
+        model: 'openai/text-embedding-3-small',
+        dimensions: 512,
+        embedding: Array(512).fill(0.01),
+      });
+    }
+    if (target === `${CANARY}/v1/answer`) {
+      return json(502, {code: 'provider_http_error', error: rawProviderError});
+    }
+    throw new Error(`unexpected request: ${method} ${target}`);
+  };
+
+  let failure;
+  try {
+    await probeAi7FullWorker({
+      workerBaseUrl: CANARY,
+      publicWorkerBaseUrl: PUBLIC,
+      origin: ORIGIN,
+      embeddingModel: 'openai/text-embedding-3-small',
+      embeddingDimensions: 512,
+      fetchImpl,
+    });
+  } catch (error) {
+    failure = error;
+  }
+
+  assert.ok(failure instanceof Error);
+  assert.equal(failure.message, 'AI-7 sufficient answer returned HTTP 502 code=provider_http_error');
+  assert.equal(failure.message.includes(rawProviderError), false);
+  assert.equal(failure.message.includes('sk-or-v1'), false);
+  assert.equal(failure.message.includes('provider.invalid'), false);
+  assert.equal(failure.message.includes('workers.dev'), false);
+});
+
 test('AI-7 evidence is sanitized, SEARCH-preserving and rejects excess spend', () => {
   const probeReport = {
     workerOriginDigest: `sha256:${'1'.repeat(64)}`,
