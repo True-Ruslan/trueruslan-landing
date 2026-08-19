@@ -1,10 +1,9 @@
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-const test = require('node:test');
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import test from 'node:test';
 
 const source = fs.readFileSync(
-  path.join(__dirname, '..', 'docs', '_assets', 'script', 'ai-search.js'),
+  new URL('../docs/_assets/script/ai-search.js', import.meta.url),
   'utf8',
 );
 
