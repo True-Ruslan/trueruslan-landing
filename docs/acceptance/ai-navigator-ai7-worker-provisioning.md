@@ -15,6 +15,8 @@ Use only:
 
 The config deliberately has no `route`/`routes`, disables top-level `workers_dev`, and enables a `workers.dev` endpoint only inside the named FULL canary environment. The named environment requires both `AI_MODE=full` and `AI_ANSWER_ENABLED=true`; the canonical Worker still fails closed on `/v1/answer` unless the answer-specific gate is explicitly enabled. The environment declares only the `OPENROUTER_API_KEY` secret name; no credential value belongs in Git.
 
+The canary config also enables Cloudflare's `global_fetch_strictly_public` compatibility flag. AI-7 loads the canonical corpus from the public URL `https://trueruslan.ru/ai/chunks.json`; because that hostname is in the same Cloudflare-managed zone, this flag forces the Worker's global `fetch()` through the public Internet/front door rather than a direct origin path. This is intentional: canary answers must be grounded in the same public corpus that a browser can retrieve. The Worker still validates the exact corpus URL, JSON shape, stable chunk IDs, canonical source fields and content hashes, so public routing does not weaken the corpus trust boundary.
+
 ## Preconditions
 
 1. AI-7 implementation must be merged and repository-tested on the exact `master` SHA that will be accepted.
@@ -59,7 +61,7 @@ npx --yes wrangler@4.118.0 deploy \
   --outdir .wrangler/ai7-full-canary-dry-run
 ```
 
-The dry run must succeed before live deployment. Do not weaken the config or remove the explicit answer gate to force a pass.
+The dry run must succeed before live deployment. Do not weaken the config, remove `global_fetch_strictly_public`, or remove the explicit answer gate to force a pass.
 
 ## 4. Deploy the isolated FULL Worker
 
@@ -76,6 +78,8 @@ Expected deployment target name:
 `trueruslan-ai-navigator-ai7-full-canary`
 
 Record only the clean HTTPS `workers.dev` origin printed by Wrangler. Do not add a custom domain or production route.
+
+**After any change to `wrangler.ai7-full-canary.jsonc`, including compatibility flags, redeploy this isolated Worker before rerunning the manual canary.** A repository merge alone does not change the already deployed Worker runtime.
 
 ## 5. Create the protected GitHub Environment
 
