@@ -7,6 +7,7 @@ import {loadAiConfig} from './ai-config.js';
 const OPENROUTER_CURRENT_KEY_URL = 'https://openrouter.ai/api/v1/key';
 const REQUEST_TIMEOUT_MS = 12_000;
 const MAX_ANSWER_WORDS = 450;
+const WORKER_ERROR_CODE = /^[a-z][a-z0-9_]{0,63}$/;
 export const AI7_MAX_KEY_LIMIT_USD = 2;
 export const AI7_MAX_RUN_SPEND_USD = 0.02;
 export const AI7_MAX_REQUEST_LATENCY_MS = 12_000;
@@ -55,6 +56,20 @@ async function responseJson(response, label) {
   } catch {
     throw new Error(`AI-7 ${label} returned invalid JSON`);
   }
+}
+
+async function throwWorkerHttpFailure(response, label) {
+  const status = Number.isInteger(response?.status) ? response.status : 'unknown';
+  let code = 'unknown';
+  try {
+    const payload = await response.json();
+    if (typeof payload?.code === 'string' && WORKER_ERROR_CODE.test(payload.code)) {
+      code = payload.code;
+    }
+  } catch {
+    // Failure diagnostics intentionally ignore raw response bodies.
+  }
+  throw new Error(`AI-7 ${label} returned HTTP ${status} code=${code}`);
 }
 
 async function timedFetch(fetchImpl, url, init, label) {
@@ -208,7 +223,7 @@ export async function probeAi7FullWorker({
     headers: {Origin: origin, 'Content-Type': 'application/json'},
     body: JSON.stringify({query: 'Как проверяется сайт после успешного деплоя?'}),
   }, 'embedding');
-  if (embeddingResponse.status !== 200) throw new Error(`AI-7 embedding returned HTTP ${embeddingResponse.status}`);
+  if (embeddingResponse.status !== 200) await throwWorkerHttpFailure(embeddingResponse, 'embedding');
   const embeddingPayload = await responseJson(embeddingResponse, 'embedding');
   validateEmbedding(embeddingPayload, embeddingModel, embeddingDimensions);
 
@@ -217,7 +232,7 @@ export async function probeAi7FullWorker({
     headers: {Origin: origin, 'Content-Type': 'application/json'},
     body: JSON.stringify({question: SUFFICIENT_QUESTION, chunkIds: [AI7_SUFFICIENT_CHUNK_ID]}),
   }, 'sufficient-answer');
-  if (sufficientResponse.status !== 200) throw new Error(`AI-7 sufficient answer returned HTTP ${sufficientResponse.status}`);
+  if (sufficientResponse.status !== 200) await throwWorkerHttpFailure(sufficientResponse, 'sufficient answer');
   const sufficientAnswer = validateSufficientAnswer(await responseJson(sufficientResponse, 'sufficient-answer'));
 
   const {response: insufficientResponse, latencyMs: insufficientLatencyMs} = await timedFetch(fetchImpl, answerUrl, {
@@ -225,7 +240,7 @@ export async function probeAi7FullWorker({
     headers: {Origin: origin, 'Content-Type': 'application/json'},
     body: JSON.stringify({question: INSUFFICIENT_QUESTION, chunkIds: [AI7_SUFFICIENT_CHUNK_ID]}),
   }, 'insufficient-answer');
-  if (insufficientResponse.status !== 200) throw new Error(`AI-7 insufficient answer returned HTTP ${insufficientResponse.status}`);
+  if (insufficientResponse.status !== 200) await throwWorkerHttpFailure(insufficientResponse, 'insufficient answer');
   const insufficientAnswer = validateInsufficientAnswer(await responseJson(insufficientResponse, 'insufficient-answer'));
 
   const {response: publicAnswerResponse, latencyMs: publicAnswerLatencyMs} = await timedFetch(fetchImpl, publicAnswerUrl, {
