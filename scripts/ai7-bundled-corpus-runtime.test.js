@@ -102,3 +102,17 @@ test('AI-7 provisioning uses a dedicated accepted-corpus runtime with no same-zo
   assert.match(runtime, /data\/ai-index-accepted\/ai5\/chunks\.json/);
   assert.match(runtime, /canonicalCorpus/);
 });
+
+test('dedicated AI-7 runtime injects accepted corpus and performs no corpus network request', async () => {
+  const {handleRequest: handleAi7Request} = await import('../infra/cloudflare/ai-navigator-ai7-runtime.mjs');
+  const calls = [];
+  const response = await handleAi7Request(answerRequest(), env({AI_MODE: 'full'}), async (url) => {
+    calls.push(String(url));
+    if (String(url) === CHAT_URL) return providerResponse();
+    throw new Error(`unexpected outbound request: ${url}`);
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).sufficientEvidence, true);
+  assert.deepEqual(calls, [CHAT_URL]);
+});
