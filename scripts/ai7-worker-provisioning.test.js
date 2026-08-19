@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const CONFIG_PATH = new URL('../infra/cloudflare/wrangler.ai7-full-canary.jsonc', import.meta.url);
+const RUNTIME_PATH = new URL('../infra/cloudflare/ai-navigator-ai7-runtime.mjs', import.meta.url);
 const RUNBOOK_PATH = new URL('../docs/acceptance/ai-navigator-ai7-worker-provisioning.md', import.meta.url);
 const EXPECTED_VARS = {
   AI_ENABLED: 'true',
   AI_MODE: 'full',
   AI_ANSWER_ENABLED: 'true',
   AI_ALLOWED_ORIGIN: 'https://trueruslan.ru',
-  AI_CORPUS_ORIGIN: 'https://trueruslan.ru',
   AI_EMBEDDING_MODEL: 'openai/text-embedding-3-small',
   AI_EMBEDDING_DIMENSIONS: '512',
   AI_ANSWER_MODEL: 'google/gemini-2.5-flash-lite',
@@ -30,10 +30,10 @@ function assertNoRoutes(value, path = 'config') {
 
 test('AI-7 Wrangler config is isolated and fails closed outside the named FULL canary environment', () => {
   const config = loadConfig();
-  assert.equal(config.main, './ai-navigator-runtime.mjs');
+  assert.equal(config.main, './ai-navigator-ai7-runtime.mjs');
   assert.equal(config.workers_dev, false);
   assert.equal(config.preview_urls, false);
-  assert.deepEqual(config.compatibility_flags, ['global_fetch_strictly_public']);
+  assert.equal(config.compatibility_flags, undefined);
   assertNoRoutes(config);
   assert.equal(config.vars, undefined, 'top-level Worker must not receive enabled AI vars');
 
@@ -50,11 +50,19 @@ test('AI-7 Wrangler config stores no credential and enables answers only inside 
   const config = JSON.parse(raw);
   assert.equal(raw.includes('OPENROUTER_API_KEY='), false);
   assert.equal(raw.includes('sk-or-'), false);
+  assert.equal(raw.includes('AI_CORPUS_ORIGIN'), false);
   assert.equal(config.vars, undefined);
   assert.equal(config.env['ai7-full-canary'].vars.AI_MODE, 'full');
   assert.equal(config.env['ai7-full-canary'].vars.AI_ENABLED, 'true');
   assert.equal(config.env['ai7-full-canary'].vars.AI_ANSWER_ENABLED, 'true');
   assert.equal(config.env['ai7-full-canary'].vars.AI_ANSWER_MODEL, 'google/gemini-2.5-flash-lite');
+});
+
+test('AI-7 dedicated runtime owns the accepted corpus without changing the generic runtime entrypoint', () => {
+  const runtime = fs.readFileSync(RUNTIME_PATH, 'utf8');
+  assert.match(runtime, /data\/ai-index-accepted\/ai5\/chunks\.json/u);
+  assert.match(runtime, /canonicalCorpus/u);
+  assert.doesNotMatch(runtime, /https:\/\/trueruslan\.ru\/ai\/chunks\.json/u);
 });
 
 test('AI-7 operator runbook pins isolated provisioning and preserves SEARCH as public baseline', () => {
@@ -69,7 +77,9 @@ test('AI-7 operator runbook pins isolated provisioning and preserves SEARCH as p
   assert.match(runbook, /confirm_full_canary=true/u);
   assert.match(runbook, /PUBLIC SEARCH/u);
   assert.match(runbook, /FULL[^\n]*not[^\n]*production/iu);
-  assert.match(runbook, /global_fetch_strictly_public/u);
-  assert.match(runbook, /public(?: Internet| front door)/iu);
+  assert.match(runbook, /accepted AI-5 corpus/iu);
+  assert.match(runbook, /490,477 bytes/u);
+  assert.doesNotMatch(runbook, /global_fetch_strictly_public/u);
+  assert.doesNotMatch(runbook, /AI_CORPUS_ORIGIN/u);
   assert.doesNotMatch(runbook, /sk-or-/u);
 });

@@ -222,7 +222,15 @@ function validateCanonicalCorpus(value) {
   return chunks;
 }
 
-async function fetchCanonicalCorpus(env, fetchImpl) {
+async function fetchCanonicalCorpus(env, fetchImpl, canonicalCorpus) {
+  if (canonicalCorpus !== undefined) {
+    const chunks = validateCanonicalCorpus(canonicalCorpus);
+    if (!chunks) {
+      return {ok: false, status: 502, code: 'corpus_invalid', error: 'Canonical AI corpus failed validation.'};
+    }
+    return {ok: true, chunks};
+  }
+
   const corpusOrigin = normalizeHttpsOrigin(env.AI_CORPUS_ORIGIN);
   if (!corpusOrigin) return {ok: false, status: 503, code: 'provider_unconfigured', error: 'AI corpus origin is not configured.'};
   const corpusUrl = `${corpusOrigin}/ai/chunks.json`;
@@ -416,7 +424,7 @@ async function handleEmbed(request, env, fetchImpl, corsOrigin) {
   }, {origin: corsOrigin});
 }
 
-async function handleAnswer(request, env, fetchImpl, corsOrigin) {
+async function handleAnswer(request, env, fetchImpl, corsOrigin, options = {}) {
   if (env.AI_ENABLED !== 'true') {
     return errorResponse(503, 'feature_disabled', 'AI feature is disabled.', {origin: corsOrigin});
   }
@@ -442,7 +450,7 @@ async function handleAnswer(request, env, fetchImpl, corsOrigin) {
     return errorResponse(400, validated.code, validated.error, {origin: corsOrigin});
   }
 
-  const corpusResult = await fetchCanonicalCorpus(env, fetchImpl);
+  const corpusResult = await fetchCanonicalCorpus(env, fetchImpl, options.canonicalCorpus);
   if (!corpusResult.ok) {
     return errorResponse(corpusResult.status, corpusResult.code, corpusResult.error, {origin: corsOrigin});
   }
@@ -510,7 +518,7 @@ async function handleAnswer(request, env, fetchImpl, corsOrigin) {
   return jsonResponse(200, answer, {origin: corsOrigin});
 }
 
-export async function handleRequest(request, env, fetchImpl = globalThis.fetch) {
+export async function handleRequest(request, env, fetchImpl = globalThis.fetch, options = {}) {
   const url = new URL(request.url);
   if (!['/v1/embed', '/v1/answer'].includes(url.pathname)) {
     return errorResponse(404, 'not_found', 'Route not found.');
@@ -529,7 +537,7 @@ export async function handleRequest(request, env, fetchImpl = globalThis.fetch) 
   const corsOrigin = originState.origin && originState.origin === env.AI_ALLOWED_ORIGIN
     ? originState.origin
     : null;
-  if (url.pathname === '/v1/answer') return handleAnswer(request, env, fetchImpl, corsOrigin);
+  if (url.pathname === '/v1/answer') return handleAnswer(request, env, fetchImpl, corsOrigin, options);
   return handleEmbed(request, env, fetchImpl, corsOrigin);
 }
 
