@@ -282,7 +282,7 @@
     return {sufficientEvidence: true, answer, citations: [...payload.citations]};
   }
 
-  async function requestGroundedAnswer({workerBaseUrl, question, chunkIds, fetchImpl = root.fetch?.bind(root)}) {
+  async function requestGroundedAnswer({workerBaseUrl, question, chunkIds, signal, fetchImpl = root.fetch?.bind(root)}) {
     if (typeof fetchImpl !== 'function') throw new Error('fetch is unavailable');
     validateWorkerBaseUrl(workerBaseUrl);
     const normalizedQuestion = typeof question === 'string' ? question.trim() : '';
@@ -298,6 +298,7 @@
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({question: normalizedQuestion, chunkIds}),
+      signal,
     });
     if (!response?.ok) throw new Error(`AI grounded answer unavailable: HTTP ${response?.status ?? 'unknown'}`);
     return validateGroundedAnswerPayload(await response.json(), chunkIds);
@@ -384,7 +385,33 @@
     return section;
   }
 
-  function createAnswerAction({document, panel, config, question, results, index, fetchImpl = root.fetch?.bind(root)}) {
+  function invalidatePendingAnswer(state) {
+    state.controller?.abort?.();
+    state.controller = null;
+    state.generation += 1;
+  }
+
+  function beginAnswerRequest(state) {
+    invalidatePendingAnswer(state);
+    const controller = typeof root.AbortController === 'function' ? new root.AbortController() : null;
+    state.controller = controller;
+    return {controller, generation: state.generation};
+  }
+
+  function isCurrentAnswerRequest(state, generation) {
+    return state.generation === generation;
+  }
+
+  function createAnswerAction({
+    document,
+    panel,
+    config,
+    question,
+    results,
+    index,
+    answerRequestState = {controller: null, generation: 0},
+    fetchImpl = root.fetch?.bind(root),
+  }) {
     if (!document || !panel || config?.mode !== 'full' || !Array.isArray(results) || results.length === 0) return null;
     const selectedIds = selectAnswerChunkIds(results, config.answerMaxChunks);
     if (selectedIds.length === 0) return null;
@@ -399,6 +426,7 @@
     button.addEventListener('click', async () => {
       if (inFlight) return;
       inFlight = true;
+      const request = beginAnswerRequest(answerRequestState);
       button.setAttribute('aria-busy', 'true');
       button.setAttribute('disabled', '');
       try {
@@ -406,16 +434,23 @@
           workerBaseUrl: config.workerBaseUrl,
           question,
           chunkIds: selectedIds,
+          signal: request.controller?.signal,
           fetchImpl,
         });
+        if (!isCurrentAnswerRequest(answerRequestState, request.generation)) return;
         renderGroundedAnswer({document, panel, result, selectedIds, chunks: index?.chunks});
       } catch (error) {
+        if (error?.name === 'AbortError') return;
+        if (!isCurrentAnswerRequest(answerRequestState, request.generation)) return;
         const match = String(error?.message || '').match(/HTTP\s+(\d+)/i);
         renderAnswerFailure({document, panel, status: match ? Number(match[1]) : null});
       } finally {
-        inFlight = false;
-        button.removeAttribute('aria-busy');
-        button.removeAttribute('disabled');
+        if (isCurrentAnswerRequest(answerRequestState, request.generation)) {
+          answerRequestState.controller = null;
+          inFlight = false;
+          button.removeAttribute('aria-busy');
+          button.removeAttribute('disabled');
+        }
       }
     });
     panel.append(button);
@@ -520,9 +555,11 @@
     let enabled = false;
     let indexPromise = null;
     let inFlight = false;
+    const answerRequestState = {controller: null, generation: 0};
 
     function setEnabled(next) {
       enabled = Boolean(next);
+      if (!enabled) invalidatePendingAnswer(answerRequestState);
       switchButton.setAttribute('aria-checked', enabled ? 'true' : 'false');
       switchButton.setAttribute('data-tr-ai-enabled', enabled ? 'true' : 'false');
       wrapper.classList?.toggle('tr-ai-switch--enabled', enabled);
@@ -546,6 +583,7 @@
       if (inFlight) return;
       const query = String(input.value || '').trim();
       if (!query || query.length > config.maxQueryChars) return;
+      invalidatePendingAnswer(answerRequestState);
       removeAnswerSurfaces(panel);
       inFlight = true;
       switchButton.setAttribute('aria-busy', 'true');
@@ -570,6 +608,7 @@
           question: query,
           results,
           index,
+          answerRequestState,
           fetchImpl: root.fetch?.bind(root),
         });
       } catch {
