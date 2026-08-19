@@ -14,9 +14,9 @@ The solution is to keep custom engineering work estimate-only and introduce a sm
 
 1. Add a clear public catalog of standardized services without weakening the existing estimate-first boundary for custom work.
 2. Publish exactly three initial fixed-price services:
-   - Technical consultation — 60 minutes — 5,000 RUB.
-   - Java / Backend mentoring session — 60 minutes — 4,000 RUB.
-   - Express Code Review — 7,500 RUB for one bounded review package.
+   - `Техническая консультация по backend-разработке — 60 минут` — 5,000 RUB.
+   - `Наставничество по Java и Backend — 60 минут` — 4,000 RUB.
+   - `Экспресс Code Review` — 7,500 RUB for one bounded review package.
 3. Generate a valid YML feed at build time from one canonical structured source.
 4. Make the feed available at the stable production URL `https://trueruslan.ru/yandex-business.yml`.
 5. Fail CI when service data, landing pages, URLs, prices, categories, or YML output become inconsistent.
@@ -64,6 +64,15 @@ categories[]
 services[]
 ```
 
+The initial category registry is fixed to:
+
+```text
+1  IT-консультации
+2  Наставничество
+```
+
+`technical-consultation-60` and `express-code-review` belong to category `1`; `java-backend-mentoring-60` belongs to category `2`.
+
 Each service record contains:
 
 ```text
@@ -99,7 +108,9 @@ Markdown remains the canonical source for long-form human-facing copy. `services
 
 ### 6.1 Technical consultation
 
+- Name: `Техническая консультация по backend-разработке — 60 минут`
 - SKU: `technical-consultation-60`
+- Category: `IT-консультации` (`1`)
 - Price: 5,000 RUB
 - Scope: one 60-minute remote consultation.
 - Topics may include Java, Kotlin, Spring Boot, backend architecture, APIs, integration design, databases, Kafka, testing, CI/CD, or engineering use of AI/LLM tools.
@@ -107,7 +118,9 @@ Markdown remains the canonical source for long-form human-facing copy. `services
 
 ### 6.2 Java / Backend mentoring
 
+- Name: `Наставничество по Java и Backend — 60 минут`
 - SKU: `java-backend-mentoring-60`
+- Category: `Наставничество` (`2`)
 - Price: 4,000 RUB
 - Scope: one 60-minute remote mentoring session.
 - Suitable for a knowledge-gap review, code/project discussion, interview preparation, learning plan, or focused technical topic.
@@ -115,7 +128,9 @@ Markdown remains the canonical source for long-form human-facing copy. `services
 
 ### 6.3 Express Code Review
 
+- Name: `Экспресс Code Review`
 - SKU: `express-code-review`
+- Category: `IT-консультации` (`1`)
 - Price: 7,500 RUB
 - Scope: one PR/patch or equivalent bounded change set up to 800 changed source lines, excluding generated files, vendored code, lockfiles, and machine-generated artifacts.
 - Review time budget: up to 90 minutes.
@@ -181,7 +196,7 @@ Each enabled service is emitted as an `<offer id="..." available="true">` with `
 
 XML escaping is mandatory for all text nodes and attribute values. No string concatenation may bypass the escaping helper.
 
-The feed timestamp is supplied explicitly to the renderer in tests. Production build uses the build start time in RFC 3339 form with timezone, avoiding nondeterministic test fixtures while complying with the YML freshness requirement.
+The feed timestamp is supplied explicitly to the renderer in tests. Production build captures one UTC build-start instant and renders it as RFC 3339 with `Z`, avoiding environment-dependent local timezone behavior while complying with the requirement to include timezone information.
 
 ## 9. Feed freshness and production lifecycle
 
@@ -203,7 +218,7 @@ The implementation plan will select the concrete workflow file after inspecting 
 
 The existing static-first post-processing boundary remains the owner of generated public artifacts. Feed generation is invoked from the normal `copy-assets`/post-processing chain so local build, PR CI, Pages build, and scheduled freshness build all use the same code path.
 
-Add `check:yandex-feed` (or an equivalent focused command) and include it in the normal test/build gate.
+Add the exact npm command `check:yandex-feed` and include it in the normal test/build gate.
 
 Required checks:
 
