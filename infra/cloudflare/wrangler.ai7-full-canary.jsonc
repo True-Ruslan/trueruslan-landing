@@ -1,0 +1,29 @@
+{
+  "name": "trueruslan-ai-navigator",
+  "main": "./ai-navigator-runtime.mjs",
+  "compatibility_date": "2026-08-18",
+  "workers_dev": false,
+  "preview_urls": false,
+  "env": {
+    "ai7-full-canary": {
+      "name": "trueruslan-ai-navigator-ai7-full-canary",
+      "workers_dev": true,
+      "preview_urls": false,
+      "vars": {
+        "AI_ENABLED": "true",
+        "AI_MODE": "full",
+        "AI_ANSWER_ENABLED": "true",
+        "AI_ALLOWED_ORIGIN": "https://trueruslan.ru",
+        "AI_CORPUS_ORIGIN": "https://trueruslan.ru",
+        "AI_EMBEDDING_MODEL": "openai/text-embedding-3-small",
+        "AI_EMBEDDING_DIMENSIONS": "512",
+        "AI_ANSWER_MODEL": "google/gemini-2.5-flash-lite"
+      },
+      "secrets": {
+        "required": [
+          "OPENROUTER_API_KEY"
+        ]
+      }
+    }
+  }
+}

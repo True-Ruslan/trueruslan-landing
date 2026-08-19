@@ -10,6 +10,7 @@ const OPENROUTER_CHAT_URL = 'https://openrouter.ai/api/v1/chat/completions';
 function env(overrides = {}) {
   return {
     AI_ENABLED: 'true',
+    AI_ANSWER_ENABLED: 'true',
     OPENROUTER_API_KEY: 'test-secret-key',
     AI_ALLOWED_ORIGIN: ORIGIN,
     AI_CORPUS_ORIGIN: ORIGIN,
