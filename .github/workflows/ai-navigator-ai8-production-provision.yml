@@ -1,0 +1,163 @@
+name: AI Navigator AI-8 Production Provision
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_provision:
+        description: Provision and verify the dedicated AI-8 production FULL Worker without activating public FULL
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai8-production-provision
+  cancel-in-progress: false
+
+jobs:
+  provision:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: ai8-public-full-production
+
+    steps:
+      - name: Require exact master and explicit provisioning confirmation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/master" || { echo "AI-8 provisioning is master-only" >&2; exit 1; }
+          test "${{ inputs.confirm_provision }}" = "true" || { echo "Explicit provisioning confirmation is required" >&2; exit 1; }
+
+      - name: Require protected environment secrets
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OPENROUTER_AI8_API_KEY: ${{ secrets.OPENROUTER_AI8_API_KEY }}
+          AI8_FULL_WORKER_BASE_URL: ${{ secrets.AI8_FULL_WORKER_BASE_URL }}
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID OPENROUTER_AI8_API_KEY AI8_FULL_WORKER_BASE_URL; do
+            test -n "${!name:-}" || { echo "Missing required environment secret: $name" >&2; exit 1; }
+          done
+          case "$OPENROUTER_AI8_API_KEY" in *$'\n'*|*$'\r'*) echo "OpenRouter key contains an invalid newline" >&2; exit 1;; esac
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Re-prove provider-free AI-8 provisioning contracts
+        run: >-
+          node --test
+          scripts/ai8-preparation-contract.test.js
+          scripts/ai8-runtime-wrapper.test.js
+          scripts/ai8-production-provisioning-contract.test.js
+          scripts/ai8-production-provisioning-verify.test.js
+
+      - name: Restore exact accepted AI index
+        run: node scripts/ai-index-restore.js
+
+      - name: Confirm public SEARCH baseline before provisioning
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const config = JSON.parse(fs.readFileSync('data/ai-navigator.json', 'utf8'));
+          if (config.mode !== 'search') throw new Error('Public AI mode must remain SEARCH during provisioning');
+          if (config.workerBaseUrl !== 'https://trueruslan-ai-navigator-ai6-search-canary.trueruslan.workers.dev') {
+            throw new Error('Public SEARCH Worker drifted before provisioning');
+          }
+          NODE
+
+      - name: Validate dedicated Worker target
+        shell: bash
+        env:
+          AI8_FULL_WORKER_BASE_URL: ${{ secrets.AI8_FULL_WORKER_BASE_URL }}
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import {validateAi8ProductionWorkerBaseUrl} from './scripts/ai8-production-provisioning-verify.js';
+          validateAi8ProductionWorkerBaseUrl(process.env.AI8_FULL_WORKER_BASE_URL);
+          NODE
+
+      - name: Create ephemeral Worker secret file
+        shell: bash
+        env:
+          OPENROUTER_AI8_API_KEY: ${{ secrets.OPENROUTER_AI8_API_KEY }}
+        run: |
+          set -euo pipefail
+          secret_file="$RUNNER_TEMP/ai8-production-secrets.env"
+          umask 077
+          printf 'OPENROUTER_API_KEY=%s\n' "$OPENROUTER_AI8_API_KEY" > "$secret_file"
+          chmod 600 "$secret_file"
+          printf 'AI8_SECRET_FILE=%s\n' "$secret_file" >> "$GITHUB_ENV"
+
+      - name: Wrangler dry run
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/ai8-production-dry-run"
+          npx --yes wrangler@4.120.0 deploy \
+            --config infra/cloudflare/wrangler.ai8-full-production.jsonc \
+            --env ai8-full-production \
+            --secrets-file "$AI8_SECRET_FILE" \
+            --dry-run \
+            --outdir "$RUNNER_TEMP/ai8-production-dry-run" \
+            --strict
+
+      - name: Deploy dedicated AI-8 production Worker
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.120.0 deploy \
+            --config infra/cloudflare/wrangler.ai8-full-production.jsonc \
+            --env ai8-full-production \
+            --secrets-file "$AI8_SECRET_FILE" \
+            --strict
+
+      - name: Verify provisioned Worker before public activation
+        shell: bash
+        env:
+          OPENROUTER_AI8_API_KEY: ${{ secrets.OPENROUTER_AI8_API_KEY }}
+          AI8_FULL_WORKER_BASE_URL: ${{ secrets.AI8_FULL_WORKER_BASE_URL }}
+          AI8_CONFIRM_PROVISION: "true"
+        run: |
+          set -euo pipefail
+          node scripts/ai8-production-provisioning-verify.js
+
+      - name: Remove ephemeral Worker secret file
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "$RUNNER_TEMP/ai8-production-secrets.env"
+
+      - name: Upload sanitized provisioning evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ai8-production-provisioning
+          path: |
+            quality-artifacts/ai8-production-provisioning.json
+            quality-artifacts/ai8-production-provisioning.json.sha256
+          if-no-files-found: ignore
+          retention-days: 90
