@@ -166,6 +166,11 @@ function mapProviderFailure(status) {
   return 502;
 }
 
+function corpusHttpFailureCode(status) {
+  if (Number.isInteger(status) && status >= 400 && status <= 599) return `corpus_http_${status}`;
+  return 'corpus_http_error';
+}
+
 function normalizeHttpsOrigin(value) {
   if (typeof value !== 'string' || !value.trim()) return null;
   try {
@@ -230,10 +235,15 @@ async function fetchCanonicalCorpus(env, fetchImpl) {
       signal: AbortSignal.timeout(CORPUS_REQUEST_TIMEOUT_MS),
     });
   } catch {
-    return {ok: false, status: 502, code: 'corpus_unavailable', error: 'Canonical AI corpus is temporarily unavailable.'};
+    return {ok: false, status: 502, code: 'corpus_fetch_failed', error: 'Canonical AI corpus is temporarily unavailable.'};
   }
   if (!response?.ok) {
-    return {ok: false, status: 502, code: 'corpus_unavailable', error: 'Canonical AI corpus is temporarily unavailable.'};
+    return {
+      ok: false,
+      status: 502,
+      code: corpusHttpFailureCode(response?.status),
+      error: 'Canonical AI corpus is temporarily unavailable.',
+    };
   }
   if (response.url !== corpusUrl) {
     return {ok: false, status: 502, code: 'corpus_invalid', error: 'Canonical AI corpus failed validation.'};
