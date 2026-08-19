@@ -25,7 +25,11 @@ test('FULL answer requests are cancelled and invalidated across UI state changes
   const submitAi = source.match(/async function submitAi\(event\) \{[\s\S]*?\n    \}/)?.[0] || '';
   assert.match(submitAi, /invalidatePendingAnswer\(answerRequestState\)/);
 
-  const createAnswerAction = source.match(/function createAnswerAction\([\s\S]*?\n  \}/)?.[0] || '';
+  const createAnswerActionStart = source.indexOf('function createAnswerAction(');
+  const createAnswerActionEnd = source.indexOf('\n  function findInput(', createAnswerActionStart);
+  assert.notEqual(createAnswerActionStart, -1, 'createAnswerAction source is missing');
+  assert.notEqual(createAnswerActionEnd, -1, 'createAnswerAction source boundary is missing');
+  const createAnswerAction = source.slice(createAnswerActionStart, createAnswerActionEnd);
   assert.match(createAnswerAction, /answerRequestState/);
   assert.match(createAnswerAction, /const request = beginAnswerRequest\(answerRequestState\)/);
   assert.match(createAnswerAction, /signal: request\.controller\?\.signal/);
