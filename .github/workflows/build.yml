@@ -55,7 +55,14 @@ jobs:
         run: |
           set -o pipefail
           node scripts/layout-overflow-smoke.cjs 2>&1 | tee layout-overflow.log
-      - name: Install Firefox and WebKit for compatibility smoke
+      - name: Install Firefox and WebKit for compatibility smoke (attempt 1)
+        id: install-cross-browser-attempt-1
+        timeout-minutes: 8
+        continue-on-error: true
+        run: node .quality-tools/node_modules/playwright/cli.js install --with-deps firefox webkit
+      - name: Install Firefox and WebKit for compatibility smoke (attempt 2)
+        if: steps.install-cross-browser-attempt-1.outcome != 'success'
+        timeout-minutes: 8
         run: node .quality-tools/node_modules/playwright/cli.js install --with-deps firefox webkit
       - name: Browser smoke, accessibility and Lighthouse
         shell: bash
