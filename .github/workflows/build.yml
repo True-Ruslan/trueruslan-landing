@@ -12,7 +12,67 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  cross-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
+      options: --user 1001
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Restore exact accepted AI index
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/ai-index-restore.js
+      - name: Build docs
+        run: npm run build:docs
+      - name: Check generated site integrity
+        run: npm run check:site
+      - name: Install pinned Playwright client
+        run: >-
+          npm install --prefix .quality-tools --package-lock=false --no-save
+          playwright@1.61.1
+      - name: Verify Playwright image contract
+        run: |
+          test "$(node .quality-tools/node_modules/playwright/cli.js --version)" = "Version 1.61.1"
+          test "${PLAYWRIGHT_BROWSERS_PATH:-}" = "/ms-playwright"
+          test -d /ms-playwright
+      - name: Firefox and WebKit compatibility smoke
+        run: |
+          set -o pipefail
+          node scripts/cross-browser-smoke.cjs 2>&1 | tee cross-browser-smoke.log
+      - name: Preserve cross-browser diagnostics
+        if: always()
+        run: |
+          mkdir -p cross-browser-quality-artifacts
+          cp cross-browser-smoke.log cross-browser-quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
+          cp artifacts/cross-browser-summary.json cross-browser-quality-artifacts/cross-browser-summary.json 2>/dev/null || true
+          cp artifacts/cross-browser-failure.txt cross-browser-quality-artifacts/cross-browser-failure.txt 2>/dev/null || true
+          cp artifacts/cross-browser-failure-*.png cross-browser-quality-artifacts/ 2>/dev/null || true
+      - name: Upload cross-browser evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cross-browser-quality-artifacts
+          path: cross-browser-quality-artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
+
   build-docs:
+    needs: cross-browser
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
@@ -55,15 +115,6 @@ jobs:
         run: |
           set -o pipefail
           node scripts/layout-overflow-smoke.cjs 2>&1 | tee layout-overflow.log
-      - name: Install Firefox and WebKit for compatibility smoke
-        id: install_compat_browsers
-        timeout-minutes: 5
-        continue-on-error: true
-        run: node .quality-tools/node_modules/playwright/cli.js install --with-deps firefox webkit
-      - name: Retry Firefox and WebKit compatibility install
-        if: ${{ steps.install_compat_browsers.outcome == 'failure' }}
-        timeout-minutes: 8
-        run: node .quality-tools/node_modules/playwright/cli.js install --with-deps firefox webkit
       - name: Browser smoke, accessibility and Lighthouse
         shell: bash
         run: |
@@ -124,11 +175,6 @@ jobs:
         run: |
           set -o pipefail
           node scripts/work-with-me-browser-smoke.cjs 2>&1 | tee work-with-me-browser-smoke.log
-      - name: Firefox and WebKit compatibility smoke
-        shell: bash
-        run: |
-          set -o pipefail
-          node scripts/cross-browser-smoke.cjs 2>&1 | tee cross-browser-smoke.log
       - name: Generated search browser smoke
         shell: bash
         run: |
@@ -214,7 +260,6 @@ jobs:
           cp navigation-ia-browser-smoke.log quality-artifacts/navigation-ia-browser-smoke.log 2>/dev/null || true
           cp homepage-layout-polish-browser-smoke.log quality-artifacts/homepage-layout-polish-browser-smoke.log 2>/dev/null || true
           cp work-with-me-browser-smoke.log quality-artifacts/work-with-me-browser-smoke.log 2>/dev/null || true
-          cp cross-browser-smoke.log quality-artifacts/cross-browser-smoke.log 2>/dev/null || true
           cp search-smoke.log quality-artifacts/search-smoke 2>/dev/null || true
           cp ai-navigator-verify.log quality-artifacts/ai-navigator-verify.log 2>/dev/null || true
           cp ai-navigator-browser-smoke.log quality-artifacts/ai-navigator-browser-smoke.log 2>/dev/null || true
