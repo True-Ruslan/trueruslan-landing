@@ -49,10 +49,10 @@ function providerResponse(chunkId = CANARY_CHUNK_ID) {
 }
 
 test('accepted AI-5 corpus is a bounded repository-owned FULL grounding source', () => {
-  const stat = fs.statSync(ACCEPTED_CORPUS_PATH);
-  assert.ok(stat.size > 0);
-  assert.ok(stat.size < 1_000_000, `accepted corpus unexpectedly grew to ${stat.size} bytes`);
-  const corpus = JSON.parse(fs.readFileSync(ACCEPTED_CORPUS_PATH, 'utf8'));
+  const corpusBytes = fs.readFileSync(ACCEPTED_CORPUS_PATH);
+  assert.ok(corpusBytes.byteLength > 0);
+  assert.ok(corpusBytes.byteLength < 1_000_000, `accepted corpus unexpectedly grew to ${corpusBytes.byteLength} bytes`);
+  const corpus = JSON.parse(corpusBytes.toString('utf8'));
   assert.equal(corpus.length, 327);
   assert.ok(corpus.some((chunk) => chunk.id === CANARY_CHUNK_ID));
 });
@@ -97,7 +97,6 @@ test('AI-7 provisioning uses a dedicated accepted-corpus runtime with no same-zo
     || !config.compatibility_flags.includes('global_fetch_strictly_public'));
   assert.equal('AI_CORPUS_ORIGIN' in config.env['ai7-full-canary'].vars, false);
 
-  assert.equal(fs.existsSync(AI7_RUNTIME_PATH), true, 'dedicated AI-7 runtime must exist');
   const runtime = fs.readFileSync(AI7_RUNTIME_PATH, 'utf8');
   assert.match(runtime, /data\/ai-index-accepted\/ai5\/chunks\.json/);
   assert.match(runtime, /canonicalCorpus/);
