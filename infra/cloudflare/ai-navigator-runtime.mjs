@@ -28,7 +28,7 @@ function featureDisabledResponse(request, env, pathname) {
   });
 }
 
-export async function handleRequest(request, env, fetchImpl = globalThis.fetch) {
+export async function handleRequest(request, env, fetchImpl = globalThis.fetch, options = {}) {
   const pathname = new URL(request.url).pathname;
   const mode = runtimeMode(env);
 
@@ -39,7 +39,7 @@ export async function handleRequest(request, env, fetchImpl = globalThis.fetch) 
     return featureDisabledResponse(request, env, pathname);
   }
 
-  return handleWorkerRequest(request, env, fetchImpl);
+  return handleWorkerRequest(request, env, fetchImpl, options);
 }
 
 export default {
