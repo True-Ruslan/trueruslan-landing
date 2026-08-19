@@ -33,6 +33,7 @@ test('AI-7 Wrangler config is isolated and fails closed outside the named FULL c
   assert.equal(config.main, './ai-navigator-runtime.mjs');
   assert.equal(config.workers_dev, false);
   assert.equal(config.preview_urls, false);
+  assert.deepEqual(config.compatibility_flags, ['global_fetch_strictly_public']);
   assertNoRoutes(config);
   assert.equal(config.vars, undefined, 'top-level Worker must not receive enabled AI vars');
 
@@ -68,5 +69,7 @@ test('AI-7 operator runbook pins isolated provisioning and preserves SEARCH as p
   assert.match(runbook, /confirm_full_canary=true/u);
   assert.match(runbook, /PUBLIC SEARCH/u);
   assert.match(runbook, /FULL[^\n]*not[^\n]*production/iu);
+  assert.match(runbook, /global_fetch_strictly_public/u);
+  assert.match(runbook, /public(?: Internet| front door)/iu);
   assert.doesNotMatch(runbook, /sk-or-/u);
 });
