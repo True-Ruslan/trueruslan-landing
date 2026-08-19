@@ -149,7 +149,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -n "${AI8_SECRET_FILE:-}" ]; then rm -f "$AI8_SECRET_FILE"; fi
+          rm -f "$RUNNER_TEMP/ai8-production-secrets.env"
 
       - name: Upload sanitized provisioning evidence
         if: always()
