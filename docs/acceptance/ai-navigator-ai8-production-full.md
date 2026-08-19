@@ -27,17 +27,20 @@ Create/protect the GitHub Environment `ai8-public-full-production`. Require huma
 - `OPENROUTER_AI8_API_KEY` — the dedicated lifetime-capped ordinary OpenRouter key used only by the AI-8 production Worker;
 - `AI8_FULL_WORKER_BASE_URL` — exactly `https://trueruslan-ai-navigator-ai8-full-production.trueruslan.workers.dev`.
 
+The workflow references those secrets only in the individual steps that require them. Provider-free dependency installation, contract tests and accepted-index restoration receive no Cloudflare or OpenRouter secret environment variables.
+
 The workflow is `workflow_dispatch` only, `contents: read`, `master` only, and requires `confirm_provision=true`. It performs these operations in order:
 
 1. re-proves the provider-free AI-8 provisioning/runtime contracts;
 2. restores and verifies the exact accepted AI index;
 3. proves `data/ai-navigator.json` is still the accepted AI-6 SEARCH baseline;
-4. creates a mode-`0600` secret file under the ephemeral runner directory;
-5. runs `wrangler@4.120.0 deploy --dry-run --strict` first;
-6. deploys only `infra/cloudflare/wrangler.ai8-full-production.jsonc --env ai8-full-production` with the dedicated OpenRouter key via `--secrets-file`;
-7. runs `scripts/ai8-production-provisioning-verify.js` directly against the dedicated Worker while public production is still SEARCH;
-8. deletes the ephemeral secret file even on failure;
-9. uploads only sanitized provisioning evidence and its SHA-256 digest for 90 days.
+4. validates the exact dedicated AI-8 Worker target before any deploy;
+5. creates a mode-`0600` secret file under the ephemeral runner directory;
+6. runs `wrangler@4.120.0 deploy --dry-run --strict` first;
+7. deploys only `infra/cloudflare/wrangler.ai8-full-production.jsonc --env ai8-full-production` with the dedicated OpenRouter key via `--secrets-file`;
+8. runs `scripts/ai8-production-provisioning-verify.js` directly against the dedicated Worker while public production is still SEARCH;
+9. deletes the ephemeral secret file even on failure;
+10. uploads only sanitized provisioning evidence and its SHA-256 digest for 90 days.
 
 The workflow never commits, pushes, edits `data/ai-navigator.json`, creates a Cloudflare route/custom domain, deletes a Worker, or activates FULL on the site.
 
@@ -70,7 +73,7 @@ OPENROUTER_API_KEY=<dedicated-ai8-production-key>
 
 `.dev.vars*`, `.env*` and `.wrangler/` are repository-ignored. Never put the provider key in Wrangler `vars`, source files, logs, PR text, or artifacts.
 
-Dry-run first:
+Dry run first:
 
 ```bash
 npx --yes wrangler@4.120.0 deploy \
@@ -82,7 +85,7 @@ npx --yes wrangler@4.120.0 deploy \
   --strict
 ```
 
-Only after reviewing the dry-run may the same exact config be deployed:
+Only after reviewing the dry run may the same exact config be deployed:
 
 ```bash
 npx --yes wrangler@4.120.0 deploy \
