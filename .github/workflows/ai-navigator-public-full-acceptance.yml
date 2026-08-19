@@ -1,0 +1,100 @@
+name: AI Navigator Public FULL Acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_public_full:
+        description: Confirm that public FULL was intentionally activated on master
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai8-public-full-acceptance
+  cancel-in-progress: false
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: ai8-public-full-production
+    steps:
+      - name: Require exact master activation confirmation
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" != "refs/heads/master" || "${{ inputs.confirm_public_full }}" != "true" ]]; then
+            echo "AI-8 public FULL acceptance requires refs/heads/master and explicit confirmation." >&2
+            exit 1
+          fi
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Restore exact accepted AI index
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/ai-index-restore.js
+      - name: Verify activated repository and dedicated Worker boundary
+        env:
+          AI8_FULL_WORKER_BASE_URL: ${{ secrets.AI8_FULL_WORKER_BASE_URL }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const publicConfig = JSON.parse(fs.readFileSync('data/ai-navigator.json', 'utf8'));
+          const workerConfig = JSON.parse(fs.readFileSync('infra/cloudflare/wrangler.ai8-full-production.jsonc', 'utf8'));
+          const env = workerConfig.env?.['ai8-full-production'];
+          if (publicConfig.mode !== 'full') throw new Error('Public config is not FULL.');
+          if (!process.env.AI8_FULL_WORKER_BASE_URL || publicConfig.workerBaseUrl !== process.env.AI8_FULL_WORKER_BASE_URL) throw new Error('Public config does not target the dedicated AI-8 production Worker.');
+          if (env?.vars?.AI_MODE !== 'full' || env?.vars?.AI_ANSWER_ENABLED !== 'true') throw new Error('AI-8 production Worker config is not FULL.');
+          if (env?.name !== 'trueruslan-ai-navigator-ai8-full-production') throw new Error('AI-8 production Worker identity drifted.');
+          NODE
+      - name: Execute bounded public FULL acceptance
+        shell: bash
+        env:
+          AI8_FULL_WORKER_BASE_URL: ${{ secrets.AI8_FULL_WORKER_BASE_URL }}
+          OPENROUTER_AI8_API_KEY: ${{ secrets.OPENROUTER_AI8_API_KEY }}
+        run: |
+          mkdir -p quality-artifacts
+          set -o pipefail
+          node scripts/ai8-public-full-acceptance.js 2>&1 | tee quality-artifacts/ai8-public-full-acceptance.log
+      - name: Verify sanitized acceptance evidence
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync('quality-artifacts/ai8-public-full-acceptance.json', 'utf8'));
+          if (report.evidenceClass !== 'ai8-public-full-acceptance'
+            || report.sourceCommit !== process.env.GITHUB_SHA.toLowerCase()
+            || report.publicAiMode !== 'full'
+            || report.productionRuntimeMode !== 'full'
+            || report.publicFullActivated !== true
+            || report.runtime?.sufficientAnswer?.sufficientEvidence !== true
+            || report.runtime?.insufficientAnswer?.sufficientEvidence !== false
+            || !report.runtime?.searchRegression
+            || report.runtime?.clientUnexpectedExternalRequests !== 0
+            || report.sanitized !== true) throw new Error('AI-8 acceptance evidence is incomplete or unsafe.');
+          NODE
+          sha256sum quality-artifacts/ai8-public-full-acceptance.json | awk '{print $1}' > quality-artifacts/ai8-public-full-acceptance.sha256
+          echo "AI-8 public FULL acceptance evidence verified for $GITHUB_SHA"
+          echo "Evidence SHA-256: $(cat quality-artifacts/ai8-public-full-acceptance.sha256)"
+      - name: Upload bounded acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ai8-public-full-acceptance
+          path: |
+            quality-artifacts/ai8-public-full-acceptance.json
+            quality-artifacts/ai8-public-full-acceptance.sha256
+            quality-artifacts/ai8-public-full-acceptance.log
+          if-no-files-found: ignore
+          retention-days: 90
