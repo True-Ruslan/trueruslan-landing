@@ -24,6 +24,7 @@ test('FULL answer requests are cancelled and invalidated across UI state changes
 
   const submitAi = source.match(/async function submitAi\(event\) \{[\s\S]*?\n    \}/)?.[0] || '';
   assert.match(submitAi, /invalidatePendingAnswer\(answerRequestState\)/);
+  assert.match(submitAi, /removeAnswerSurfaces\(panel\)/);
 
   const createAnswerActionStart = source.indexOf('function createAnswerAction(');
   const createAnswerActionEnd = source.indexOf('\n  function findInput(', createAnswerActionStart);
