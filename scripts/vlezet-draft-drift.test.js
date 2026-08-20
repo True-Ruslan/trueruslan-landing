@@ -6,23 +6,24 @@ import test from 'node:test';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const EVIDENCE_PATH = path.join(ROOT, 'data', 'project-evidence.json');
 
-test('Vlezet keeps failed M7.8C history while M8.3 Draft is active and pre-production remains unchanged', () => {
+test('Vlezet keeps failed M7.8C history while M8.3 is accepted and M8.4 retest remains pending', () => {
   const evidence = JSON.parse(fs.readFileSync(EVIDENCE_PATH, 'utf8'));
   const vlezet = evidence.find((entry) => entry.project === 'vlezet');
 
   assert.ok(vlezet, 'missing Vlezet evidence snapshot');
   assert.equal(vlezet.status, 'verified');
-  assert.equal(vlezet.lastVerified, '2026-08-16');
+  assert.equal(vlezet.lastVerified, '2026-08-19');
 
   const versions = new Map(vlezet.versions.map(({label, value}) => [label, value]));
   assert.equal(versions.get('Accepted recognition slice'), 'M7.8B');
   assert.match(versions.get('Automatic M7.8C result'), /FAIL.*closed unmerged/i);
-  assert.match(versions.get('Accepted editor slice'), /M8\.2.*product-owner accepted.*merged/i);
-  assert.equal(versions.get('Next acceptance boundary'), 'M8.3 Precision Reference Calibration');
-  assert.match(versions.get('Active product slice'), /M8\.3 Precision Reference Calibration active in Draft PR #92/i);
-  assert.match(versions.get('Active product slice'), /Testing Policy Phase A.*P0 IndexedDB persistence hardening/i);
-  assert.match(versions.get('Active product slice'), /TDD RED/i);
-  assert.match(versions.get('Active product slice'), /not product-owner accepted, merged or released/i);
+  assert.match(versions.get('Accepted editor slice'), /M8\.3.*product-owner accepted.*merged.*post-merge verified/i);
+  assert.equal(versions.get('Next acceptance boundary'), 'M8.4 Assisted Tracing');
+  assert.match(versions.get('Active product slice'), /M8\.4 Assisted Tracing Draft PR #94/i);
+  assert.match(versions.get('Active product slice'), /automated GREEN/i);
+  assert.match(versions.get('Active product slice'), /two real-plan Product Owner FAILs/i);
+  assert.match(versions.get('Active product slice'), /same-plan Product Owner retest pending/i);
+  assert.match(versions.get('Active product slice'), /not accepted, merged or released/i);
 
   const m78c = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/42');
   assert.ok(m78c, 'missing bounded M7.8C failure signal');
@@ -52,18 +53,31 @@ test('Vlezet keeps failed M7.8C history while M8.3 Draft is active and pre-produ
   assert.match(persistence.scope, /pre-production/i);
 
   const handoff = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/91');
-  const draft = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/92');
-  assert.ok(handoff && draft, 'missing M8.3 handoff or active Draft signal');
+  const m83Draft = vlezet.signals.find(({label}) => label === 'M8.3 Precision Reference Calibration Draft PR #92');
+  const m83Accepted = vlezet.signals.find(({label}) => label === 'M8.3 Precision Reference Calibration accepted PR #92');
+  const m83Reconciliation = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/93');
+  const m84Draft = vlezet.signals.find(({url}) => url === 'https://github.com/True-Ruslan/vlezet/pull/94');
+  assert.ok(handoff && m83Draft && m83Accepted && m83Reconciliation && m84Draft, 'missing M8.3/M8.4 evidence chain');
   assert.equal(handoff.state, 'merged');
-  assert.equal(draft.state, 'pending');
-  assert.equal(draft.observedAt, '2026-08-16');
-  assert.match(draft.scope, /58542998b8c5086e64932defb347689a82d842ef/);
-  assert.match(draft.scope, /TDD RED/i);
-  assert.match(draft.scope, /not product-owner accepted, merged or released/i);
-  assert.match(draft.scope, /pre-production/i);
+  assert.equal(m83Draft.state, 'pending');
+  assert.equal(m83Draft.observedAt, '2026-08-16');
+  assert.match(m83Draft.scope, /TDD RED/i);
+  assert.match(m83Draft.scope, /historical pre-acceptance evidence only/i);
+  assert.equal(m83Accepted.state, 'merged');
+  assert.equal(m83Accepted.observedAt, '2026-08-17');
+  assert.match(m83Accepted.scope, /bcb38150e0e6b823e2679b751ae1d96ea84b7ea8/);
+  assert.match(m83Accepted.scope, /01f520988a84291fb6e4f918e21f3403f17c4529/);
+  assert.match(m83Accepted.scope, /post-merge main passed CI #5248 and CodeQL #608/i);
+  assert.equal(m83Reconciliation.state, 'merged');
+  assert.equal(m84Draft.state, 'pending');
+  assert.equal(m84Draft.observedAt, '2026-08-19');
+  assert.match(m84Draft.scope, /c019af73a9224c1a63d4f377c21d03949ee9c28c/);
+  assert.match(m84Draft.scope, /CI #5337.*Browser Acceptance #1780/i);
+  assert.match(m84Draft.scope, /same real plan still requires Product Owner retest/i);
+  assert.match(m84Draft.scope, /not accepted, merged or released/i);
 
   assert.doesNotMatch(
-    [m78c.scope, assisted.scope, m82.scope, persistence.scope, handoff.scope, draft.scope].join('\n'),
-    /M7\.8C.*product-owner accepted|M8\.2.*production-ready|M8\.2.*released|M8\.3.*production-ready/i,
+    [m78c.scope, assisted.scope, m82.scope, persistence.scope, handoff.scope, m83Draft.scope, m83Accepted.scope, m83Reconciliation.scope, m84Draft.scope].join('\n'),
+    /M7\.8C.*product-owner accepted|M8\.4.*product-owner accepted|M8\.4.*production-ready|M8\.4.*released/i,
   );
 });
