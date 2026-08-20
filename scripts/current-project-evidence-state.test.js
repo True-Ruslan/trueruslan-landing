@@ -69,7 +69,7 @@ test('Vlezet evidence records accepted M8.3 and pending M8.4 Product Owner retes
 
   assert.equal(current(vlezetTimeline).length, 1);
   assert.match(current(vlezetTimeline)[0].title, /M8\.4 Assisted Tracing.*product retest pending/i);
-  assert.match(current(vlezetTimeline)[0].description, /two real-plan Product Owner.*failed usefulness acceptance/i);
+  assert.match(current(vlezetTimeline)[0].description, /Real-plan Product Owner checks on 2026-08-18 and 2026-08-19 both failed usefulness acceptance/i);
   assert.match(current(vlezetTimeline)[0].description, /not accepted, merged or released/i);
   assert.equal(next(vlezetTimeline).length, 1);
   assert.match(next(vlezetTimeline)[0].title, /Retest M8\.4.*same real plan/i);
