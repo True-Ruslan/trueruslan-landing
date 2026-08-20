@@ -220,19 +220,31 @@ async function assertProjectTimeline(page, slug) {
     throw new Error(`${slug} timeline must expose exactly one current milestone.`);
   }
 
-  const nextCount = await timeline.locator('.tr-project-timeline__item--next').count();
+  const next = timeline.locator('.tr-project-timeline__item--next');
+  const nextCount = await next.count();
   if (slug === 'vlezet') {
-    if (nextCount !== 0) {
-      throw new Error('vlezet timeline must not invent a next milestone while M8.3 is the active acceptance boundary.');
+    if (nextCount !== 1) {
+      throw new Error(`vlezet timeline must expose exactly one bounded M8.4 same-plan retest milestone; got ${nextCount}.`);
     }
     const currentText = await current.innerText();
-    for (const marker of [/M8\.3 Precision Reference Calibration/i, /Draft/i, /RED/i]) {
+    for (const marker of [/M8\.4 Assisted Tracing/i, /product retest pending/i]) {
       if (!marker.test(currentText)) {
-        throw new Error(`vlezet current milestone lost its active Draft/RED M8.3 boundary: ${currentText}`);
+        throw new Error(`vlezet current milestone lost its pending M8.4 product-retest boundary: ${currentText}`);
       }
     }
-    if (!/not product-owner accepted, merged or released/i.test(currentText)) {
-      throw new Error('vlezet current milestone must preserve the explicit no-promotion boundary.');
+    if (!/Real-plan Product Owner checks on 2026-08-18 and 2026-08-19 both failed usefulness acceptance/i.test(currentText)) {
+      throw new Error('vlezet current milestone must preserve both observed real-plan Product Owner FAILs.');
+    }
+    if (!/not accepted, merged or released/i.test(currentText)) {
+      throw new Error('vlezet current milestone must preserve the explicit M8.4 no-promotion boundary.');
+    }
+
+    const nextText = await next.innerText();
+    if (!/Retest M8\.4.*same real plan/i.test(nextText)) {
+      throw new Error(`vlezet next milestone must be the bounded same-plan M8.4 retest: ${nextText}`);
+    }
+    if (!/only an observed PASS.*merge/i.test(nextText)) {
+      throw new Error('vlezet next milestone must keep merge gated on an observed same-plan Product Owner PASS.');
     }
     return;
   }
