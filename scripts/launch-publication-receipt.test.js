@@ -158,6 +158,31 @@ test('fails closed on tracking URLs, duplicate target-channel observations, unkn
   );
 });
 
+test('bounds receipt cardinality, canonical authority and publication transport surface', () => {
+  const tooMany = input();
+  tooMany.publications = Array.from({length: 39}, () => ({...tooMany.publications[0]}));
+  assert.throws(
+    () => normalizePublicationReceipt({input: tooMany, targets: targets(), now: new Date('2026-08-21T00:40:00.000Z')}),
+    /38|too many|at most/i,
+  );
+
+  const nonDefaultPort = input();
+  nonDefaultPort.publications = [{...nonDefaultPort.publications[0], publicationUrl: 'https://t.me:8443/TrueRuslan_Blog/123'}];
+  assert.throws(
+    () => normalizePublicationReceipt({input: nonDefaultPort, targets: targets(), now: new Date('2026-08-21T00:40:00.000Z')}),
+    /port|host/i,
+  );
+
+  const poisonedTargets = targets();
+  poisonedTargets[0] = {...poisonedTargets[0], canonicalUrl: 'https://example.com/'};
+  const poisonedInput = input();
+  poisonedInput.publications = [{...poisonedInput.publications[0], canonicalUrl: 'https://example.com/'}];
+  assert.throws(
+    () => normalizePublicationReceipt({input: poisonedInput, targets: poisonedTargets, now: new Date('2026-08-21T00:40:00.000Z')}),
+    /canonical production origin|trueruslan\.ru/i,
+  );
+});
+
 test('renders an explicit evidence boundary and keeps search-performance conclusions out of the receipt', () => {
   const receipt = normalizePublicationReceipt({
     input: input(),
@@ -174,7 +199,7 @@ test('renders an explicit evidence boundary and keeps search-performance conclus
   assert.doesNotMatch(markdown, /P4\.1B.*(?:DONE|ACCEPTED)|P3\.6.*(?:DONE|ACCEPTED)/i);
 });
 
-test('writes normalized receipt artifacts with SHA-256 provenance while keeping the raw operator input private', () => {
+test('writes normalized receipt artifacts with SHA-256 provenance while keeping the raw operator input private and bounded', () => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'launch-publication-receipt-'));
   const inputPath = path.join(tempDir, 'operator-receipt.json');
   const outputDir = path.join(tempDir, 'output');
@@ -196,6 +221,18 @@ test('writes normalized receipt artifacts with SHA-256 provenance while keeping 
     assert.equal(fs.existsSync(result.markdownPath), true);
     assert.equal(fs.existsSync(path.join(outputDir, 'operator-receipt.json')), false);
     assert.match(fs.readFileSync(result.markdownPath, 'utf8'), /SHA-256 provenance/i);
+
+    const oversizedPath = path.join(tempDir, 'oversized.json');
+    fs.writeFileSync(oversizedPath, `${JSON.stringify(input())}${' '.repeat(70 * 1024)}`, 'utf8');
+    assert.throws(
+      () => writePublicationReceipt({
+        inputPath: oversizedPath,
+        outputDir,
+        targets: targets(),
+        now: new Date('2026-08-21T00:40:00.000Z'),
+      }),
+      /64 KiB|too large|65536/i,
+    );
   } finally {
     fs.rmSync(tempDir, {recursive: true, force: true});
   }
