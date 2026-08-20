@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-18**. AI-6 public SEARCH production acceptance — **ACCEPTED** on exact runtime SHA `3809d6f0290ab22f080e919f2ff26b1b018f3db6`; canonical manual run `32148448724` passed with one successful `/v1/embed` request, a semantic result, `/v1/answer` disabled and zero unexpected external requests. Controlled launch остаётся `not-published`; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Последнее смысловое обновление: **2026-08-20**. AI-8 public FULL production acceptance — **ACCEPTED** on exact merged `master` SHA `93028b979f273b6382f480a500555a258c426607`; canonical manual run `32355776796` passed the dedicated production Worker, CORS allow/deny, accepted 512-dimensional embedding contract, semantic SEARCH regression, grounded citation, insufficient-evidence behavior, bounded spend and zero unexpected external requests. Sanitized evidence artifact `9401577436`; evidence digest `sha256:93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2`. Controlled launch остаётся `not-published`; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Полный snapshot до reconciliation сохранён byte-for-byte в `docs/archive/2026-08-14/PROJECT_STATE.md`. Этот root-файл остаётся current durable snapshot и одновременно сохраняет compact historical contract markers, используемые CI.
 
@@ -13,13 +13,12 @@ Repository implementation, exact-head CI, deployed production, external provider
 TrueRuslan Landing — static-first personal engineering platform на Diplodoc + GitHub Pages с canonical identity `https://trueruslan.ru`. Diplodoc остаётся обычным site-wide full-text search owner; canonical content и URLs не зависят от runtime AI.
 
 ```text
-AI-6 accepted runtime SHA:           3809d6f0290ab22f080e919f2ff26b1b018f3db6
-Pages:                              #293 / 32139175939 — SUCCESS
-Production Live Smoke (push):       #671 / 32139176165 — SUCCESS
-Production Live Smoke (post-Pages): #672 / 32139345457 — SUCCESS
-master CodeQL:                      #1904 / 32139175988 — SUCCESS
-AI Navigator production mode:       search
-AI-6 public SEARCH acceptance:      #6 / 32148448724 — SUCCESS
+AI-8 accepted runtime SHA:           93028b979f273b6382f480a500555a258c426607
+AI Navigator production mode:       full
+AI-8 public FULL acceptance:        #1 / 32355776796 — SUCCESS
+AI-8 acceptance artifact:           9401577436
+AI-8 evidence SHA-256:              93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2
+AI-6 SEARCH rollback baseline:       3809d6f0290ab22f080e919f2ff26b1b018f3db6
 controlled launch:                  not-published
 ```
 
@@ -30,9 +29,9 @@ Current cross-project evidence snapshot:
 - Vlezet: M8.3 Precision Reference Calibration is active at Draft / TDD RED and is not product-owner accepted, merged or released.
 - Content Freshness: clean master result is `0 findings / 4 repos / 57 links`; issue #78 is CLOSED / COMPLETED.
 
-## 2. AI Navigator — PUBLIC SEARCH PRODUCTION ACCEPTED / FULL NOT ENABLED
+## 2. AI Navigator — PUBLIC FULL PRODUCTION ACCEPTED / SEARCH ROLLBACK PRESERVED
 
-Accepted stack:
+Accepted engineering stack:
 - PR #248 — static-first design;
 - PR #249 — TDD implementation plan;
 - PR #250 — deterministic canonical public corpus + reviewed 50-case RU/EN retrieval benchmark;
@@ -40,13 +39,15 @@ Accepted stack:
 - PR #252 — reversible mode-gated semantic-search integration and stateless query-embedding Worker boundary;
 - PR #253 — Worker-owned canonical grounding, strict answers/citations, CORS/preflight, provider-free acceptance gates.
 
-Security TDD during PR #250: RED `83380141b1f1b0eba35b4425871ce017d1a2ae0f`; broader RED `81c9b4c58ac0dffb229e4769f42db785bb8dda3d`; final GREEN sanitizer `54d78cfd0d1b817ece42086aee61062410cf59d6`; Build #2204, CodeQL #1733, Dependency Review #1568 — SUCCESS.
+AI-5 real-provider/index acceptance and AI-6 isolated SEARCH canary were completed before public SEARCH activation. Public SEARCH was activated through PR #275 and accepted on runtime SHA `3809d6f0290ab22f080e919f2ff26b1b018f3db6` via canonical run `32148448724`; artifact `9328756080`, digest `sha256:d8d0d242c72e7ad4e122bb486ecded358b8e9b1f852f9928edb041c410b0d623`. That exact SEARCH state remains the rollback baseline.
 
-Final PR #253 exact head `8b9beacbda0e7c3042d7838b6242c790981c238f`: Build #2207 / `31905319214`, CodeQL #1739 / `31905319219`, Dependency Audit #269 / `31905319207`, Dependency Review #1571 / `31905319201` — SUCCESS; AI Navigator offline verification and browser smoke — SUCCESS.
+AI-7 FULL remained isolated and was accepted as a canary with KEEP verdict before any public promotion. AI-8 then separated production provisioning from activation: PR #290 hardened stale FULL answer cancellation; PR #292 added the isolated production preparation and read-only acceptance boundary; PR #293 added protected production provisioning; PR #294 activated only `mode=full` and the dedicated production Worker after provisioning succeeded.
 
-AI-5 real-provider/index acceptance and AI-6 isolated SEARCH canary were completed before public activation. Public SEARCH was then activated through PR #275; late Diplodoc hydration/rebinding and production button ownership were corrected through PR #277, #279 and #281, while PR #278 preserved actionable failure diagnostics. PR #280 / issue #276 moved the accepted semantic index to a durable repository-owned source with exact SHA-256 verification and provider-free restore.
+AI-8 production provisioning canonical run `32348455080` succeeded on attempt 2 against source `6b483871d0d949f351a545f980290ca407f40f06`; provisioning evidence digest `sha256:8396ee9c657ad82a3946240bfe208c30afcd91bc7e6e6c878870e38d6006a490`. Provisioning did not alter the public SEARCH config and did not create a route/custom-domain takeover.
 
-Production config is now `mode=search`. SEARCH remains explicit opt-in and ordinary Diplodoc search remains the fallback. Canonical manual acceptance run `32148448724` on exact SHA `3809d6f0290ab22f080e919f2ff26b1b018f3db6` recorded `embedRequests=1`, `POST /v1/embed` HTTP 200, `semanticOutcome=semantic-result`, first result `/notes/deployment-success-is-not-production-verification/`, `answerEndpointDisabled=true`, `answerActionAbsent=true` and `unexpectedExternalRequests=0`. Sanitized artifact `9328756080` has digest `sha256:d8d0d242c72e7ad4e122bb486ecded358b8e9b1f852f9928edb041c410b0d623`. `/v1/answer` remains disabled and AI-7/FULL is not active.
+Public FULL activation merged as `93028b979f273b6382f480a500555a258c426607`. Canonical manual `AI Navigator Public FULL Acceptance` run `32355776796` passed on that exact SHA. Sanitized artifact `9401577436` has digest `sha256:93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2`. Evidence records `publicAiMode=full`, `productionRuntimeMode=full`, `publicFullActivated=true`, OpenRouter lifetime cap `$2` with no reset, run usage delta `$0`, embedding model `openai/text-embedding-3-small` / 512 dimensions, top-5 semantic regression with the expected canonical document first, grounded answer `42` words with exact citation `ru:note:deployment-success-is-not-production-verification:chto-izmenilos-v-moem-ponimanii-deployment`, insufficient answer `0` words / no citations, and `clientUnexpectedExternalRequests=0`.
+
+Production config is now `mode=full` and targets only `https://trueruslan-ai-navigator-ai8-full-production.trueruslan.workers.dev`. The accepted AI-6 SEARCH Worker remains untouched as the immediate rollback target. Ordinary CI/build remains provider-free.
 
 ## 3. Transparent `trueruslan.com` alias readiness
 
@@ -72,7 +73,7 @@ P3.5B exact production acceptance and P3.5C exact production acceptance remain h
 
 Portfolio 1.0 presentation implementation is **COMPLETE THROUGH C7**.
 Current bounded product/operator lane: P4.1B real external evidence review — **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**.
-AI engineering lane: AI-7 FULL canary + KEEP / DOWNGRADE / REMOVE verdict is now **PERMITTED / NEXT AS A SEPARATE CANARY**, but is not active.
+AI engineering lane: AI-8 public FULL rollout is **DONE / PRODUCTION ACCEPTED**; next work is operational observation and regression/spend monitoring only, with AI-6 SEARCH preserved as rollback.
 P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**.
 
 ## 7. Known maintenance / technical debt
@@ -81,13 +82,14 @@ P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**.
 - issue #78 — CLOSED / COMPLETED after clean Content Freshness reconciliation (`0 findings / 4 repos / 57 links`); no active freshness debt is implied.
 - issue #111 — authenticated Yandex Webmaster/operator boundary.
 - issue #212 — authenticated P4.1B external evidence collection/review.
-- issues #274 and #276 are CLOSED / COMPLETED; AI-6 SEARCH has no remaining activation/index-retention gate. AI-7/FULL still requires its own explicit canary and acceptance and must not be promoted automatically.
+- issues #274 and #276 are CLOSED / COMPLETED; AI-6 SEARCH remains the accepted rollback baseline.
+- issue #289 — AI-8 rollout acceptance is complete; close after this durable state update is merged.
 
 ## 8. Next optimal order
 
 Product/operator: deliberate manual controlled launch → real GSC/Yandex Webmaster observations → evidence-backed P4.1C/P3.6 decisions.
 
-AI engineering: AI-7 FULL canary → bounded grounded-answer acceptance → KEEP / DOWNGRADE / REMOVE. SEARCH remains the accepted production baseline until that separate verdict; ordinary CI/build remains provider-free.
+AI engineering: keep AI-8 FULL stable, observe real failures/latency/spend without weakening evidence gates, and retain immediate rollback to the accepted AI-6 SEARCH baseline. No additional AI promotion gate is currently required.
 
 ## Historical durable acceptance contract
 
