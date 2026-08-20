@@ -57,6 +57,8 @@ The input is strict JSON with no undeclared fields:
 
 Timestamps use canonical ISO-8601 UTC format. `publishedAt` must not be later than `observedAt`, and `observedAt` must not be in the future.
 
+The local input is bounded to **64 KiB** and at most **38 observations**, matching the accepted maximum controlled-launch draft count. These bounds are enforced before JSON normalization/business processing.
+
 ## Public-channel boundary
 
 Only a channel already allowed by the canonical target can be recorded.
@@ -69,9 +71,9 @@ Public publication hosts are fail-closed:
 
 `direct` sharing is intentionally excluded from public publication evidence because a private handoff has no stable public observation surface.
 
-Publication URLs must use HTTPS, contain no credentials, query parameters or fragments, and identify a concrete path on the expected host. Tracking/UTM mutation is rejected.
+Publication URLs must use HTTPS, contain no credentials, non-default ports, query parameters or fragments, and identify a concrete path on the expected host. Tracking/UTM mutation is rejected.
 
-The target `canonicalUrl` must byte-match the URL derived from canonical distribution readiness. The receipt cannot introduce a legacy `/landing/` identity, `.html` identity, alternate host or tracking URL.
+The target `canonicalUrl` must byte-match the URL derived from canonical distribution readiness and must remain on the exact `https://trueruslan.ru` production origin. The receipt cannot introduce a legacy `/landing/` identity, `.html` identity, alternate host or tracking URL.
 
 ## Provenance and verification class
 
