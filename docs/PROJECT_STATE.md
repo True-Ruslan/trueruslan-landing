@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-20**. AI-8 public FULL production acceptance — **ACCEPTED** on exact merged `master` SHA `93028b979f273b6382f480a500555a258c426607`; canonical manual run `32355776796` passed the dedicated production Worker, CORS allow/deny, accepted 512-dimensional embedding contract, semantic SEARCH regression, grounded citation, insufficient-evidence behavior, bounded spend and zero unexpected external requests. Sanitized evidence artifact `9401577436`; evidence digest `sha256:93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2`. Controlled launch остаётся `not-published`; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Последнее смысловое обновление: **2026-08-20**. Cross-project Content Freshness reconciliation — **ACCEPTED** through PR #296, merged into `master` as `eef10c07d37d97f75ea47857b304af4c197bf914`. Final exact-head Build #2423 / `32418136511`, Content Freshness #244 / `32418136446`, CodeQL #1989 / `32418136443` and Dependency Review #1787 / `32418136563` were SUCCESS. Canonical master Content Freshness run `32418834360` then completed with **0 findings / 0 warnings / 0 errors**, artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`, and automatically closed issue #78 as COMPLETED. AI-8 public FULL production acceptance and the exact AI-6 SEARCH rollback baseline remain unchanged. Controlled launch remains `not-published`; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Полный snapshot до reconciliation сохранён byte-for-byte в `docs/archive/2026-08-14/PROJECT_STATE.md`. Этот root-файл остаётся current durable snapshot и одновременно сохраняет compact historical contract markers, используемые CI.
 
@@ -19,15 +19,17 @@ AI-8 public FULL acceptance:        #1 / 32355776796 — SUCCESS
 AI-8 acceptance artifact:           9401577436
 AI-8 evidence SHA-256:              93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2
 AI-6 SEARCH rollback baseline:       3809d6f0290ab22f080e919f2ff26b1b018f3db6
+freshness reconciliation SHA:        eef10c07d37d97f75ea47857b304af4c197bf914
+master freshness run:               32418834360 — SUCCESS / 0 findings
 controlled launch:                  not-published
 ```
 
-N1–N6 presentation/editorial implementation, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification remain accepted. Post-N6 reconciliation now also includes PR #254 durable-state contract repair, PR #255 cross-project Content Freshness reconciliation, PR #256 Vlezet production-verifier boundary, PR #257 VillAIgence public 0.3.2 truth and PR #258 VillAIgence production-verifier reconciliation.
+N1–N6 presentation/editorial implementation, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification remain accepted. Post-N6 reconciliation includes PR #254 durable-state contract repair, PR #255 cross-project Content Freshness reconciliation, PR #256 Vlezet production-verifier boundary, PR #257 VillAIgence public 0.3.2 truth, PR #258 VillAIgence production-verifier reconciliation, and PR #296 current cross-project evidence reconciliation after AI-8 and Vlezet M8.4 activity.
 
 Current cross-project evidence snapshot:
 - VillAIgence: official release `0.3.2+1.21.1`; automated release gates PASS; historical installed 0.3.1 corrective canary FAILED; PR #169 correction and PR #171 exact 0.3.2 retest handoff are merged; exact installed 0.3.2 corrective canary remains PENDING; `0.2.0+1.21.1` with `7 PASS / 0 FAIL` remains the last fully accepted installed baseline; 0.4 remains blocked.
-- Vlezet: M8.3 Precision Reference Calibration is active at Draft / TDD RED and is not product-owner accepted, merged or released.
-- Content Freshness: clean master result is `0 findings / 4 repos / 57 links`; issue #78 is CLOSED / COMPLETED.
+- Vlezet: M8.3 Precision Reference Calibration is Product Owner accepted, merged and post-merge verified. M8.4 Assisted Tracing remains Draft PR #94: automated GREEN after two real-plan Product Owner FAILs; same-plan Product Owner retest pending; it is not accepted, merged or released; lifecycle remains pre-production.
+- Content Freshness: PR #296 merged as `eef10c07d37d97f75ea47857b304af4c197bf914`; canonical master run `32418834360` — SUCCESS with `0 findings / 0 warnings / 0 errors`; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`; issue #78 is CLOSED / COMPLETED.
 
 ## 2. AI Navigator — PUBLIC FULL PRODUCTION ACCEPTED / SEARCH ROLLBACK PRESERVED
 
@@ -79,11 +81,12 @@ P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**.
 ## 7. Known maintenance / technical debt
 
 - issue #82 — OPEN upstream Diplodoc/markdown-it blocker; no forced incompatible override.
-- issue #78 — CLOSED / COMPLETED after clean Content Freshness reconciliation (`0 findings / 4 repos / 57 links`); no active freshness debt is implied.
+- issue #78 — CLOSED / COMPLETED after canonical master Content Freshness run `32418834360` reported `0 findings / 0 warnings / 0 errors`; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`; no active freshness debt is implied.
 - issue #111 — authenticated Yandex Webmaster/operator boundary.
 - issue #212 — authenticated P4.1B external evidence collection/review.
 - issues #274 and #276 are CLOSED / COMPLETED; AI-6 SEARCH remains the accepted rollback baseline.
-- issue #289 — AI-8 rollout acceptance is complete; close after this durable state update is merged.
+- issue #289 — CLOSED / COMPLETED after AI-8 public FULL production acceptance.
+- PR #291 — CLOSED UNMERGED; its cross-browser install resilience approach was superseded by the accepted pinned-container gate.
 
 ## 8. Next optimal order
 

@@ -1,8 +1,18 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-20**. AI-8 public FULL production acceptance — ACCEPTED on exact merged `master` SHA `93028b979f273b6382f480a500555a258c426607`; canonical manual run `32355776796` — SUCCESS. Sanitized artifact `9401577436`, evidence digest `sha256:93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2`. AI-6 SEARCH remains the explicit rollback baseline. Controlled launch remains not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Обновлено: **2026-08-20**. Cross-project Content Freshness reconciliation — ACCEPTED through PR #296, merged as `eef10c07d37d97f75ea47857b304af4c197bf914`. Final exact-head Build #2423 / `32418136511`, Content Freshness #244 / `32418136446`, CodeQL #1989 / `32418136443` and Dependency Review #1787 / `32418136563` were SUCCESS. Canonical master Content Freshness run `32418834360` then completed with `0 findings / 0 warnings / 0 errors`; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`; issue #78 automatically closed as COMPLETED. AI-8 public FULL and AI-6 SEARCH rollback truth remain unchanged. Controlled launch remains not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Полный pre-2026-08-15 snapshot сохранён в `docs/archive/2026-08-14/CHANGELOG.md`.
+
+## 2026-08-20 — Content Freshness reconciliation after AI-8 and Vlezet M8.4 — ACCEPTED
+
+- The scheduled Content Freshness guard had reopened issue #78 after repository activity moved beyond the previous controlled snapshot. The warnings were treated as review triggers, not as automatic lifecycle evidence.
+- PR #296 reconciled the canonical cross-project evidence/history for the already accepted AI-8 FULL production state and newer Vlezet activity. It also advanced stale truth-contract/browser fixtures only where the generated canonical evidence had changed; runtime, Worker, provider, model, routing, analytics and production AI mode were unchanged.
+- Vlezet M8.3 Precision Reference Calibration is Product Owner accepted, merged and post-merge verified. M8.4 Assisted Tracing remains Draft PR #94: automated GREEN after two real-plan Product Owner FAILs; same-plan Product Owner retest pending; it is not accepted, merged or released; lifecycle remains pre-production.
+- PR #296 final exact head `862676fa3619114e681627cce363ae9e3a2cc70d`: Build #2423 / `32418136511`, Content Freshness #244 / `32418136446`, CodeQL #1989 / `32418136443` and Dependency Review #1787 / `32418136563` — SUCCESS. Full Build included pinned Firefox/WebKit compatibility, generated-DOM Project Evidence and Portfolio v0.3 smoke, RU/EN no-JS/i18n, accessibility/Lighthouse, search/AI offline-browser, analytics consent, metadata/OG, visual regression, custom-domain artifact and discovery checks.
+- PR #296 squash-merged into `master` as `eef10c07d37d97f75ea47857b304af4c197bf914`.
+- Canonical master Content Freshness run `32418834360` — SUCCESS with `0 findings / 0 warnings / 0 errors`. Artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`. Issue #78 was automatically updated to `Content Freshness Guard — clean` and CLOSED / COMPLETED by the workflow.
+- AI-8 FULL remains the accepted public production AI baseline; exact AI-6 SEARCH runtime `3809d6f0290ab22f080e919f2ff26b1b018f3db6` remains the immediate rollback. Controlled launch stays `not-published`; P4.1B remains sparse pre-launch evidence review; P4.1C and P3.6 remain waiting. No external Search Console/Webmaster or measurement outcome was fabricated or inferred.
 
 ## 2026-08-20 — AI-8 public FULL — PRODUCTION ACCEPTED
 
@@ -15,7 +25,7 @@
 - Canonical manual `AI Navigator Public FULL Acceptance` #1 / `32355776796` — SUCCESS on that exact SHA. Artifact `9401577436`, evidence digest `sha256:93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2`; artifact archive digest `sha256:f1d9e91aa7a51689db51dfca874ae3c021c1c1259c668d2089d1df53ae882b38`.
 - Acceptance evidence: `publicAiMode=full`, `productionRuntimeMode=full`, `publicFullActivated=true`; OpenRouter key lifetime cap `$2`, no reset, run usage delta `$0`; public config latency `469 ms`; CORS preflight `92 ms`; forbidden-origin rejection `58 ms`; `openai/text-embedding-3-small` / 512-dimensional embedding `325 ms`; expected canonical document ranked first in top-5 semantic regression; grounded answer `42` words / `767 ms` with exact citation `ru:note:deployment-success-is-not-production-verification:chto-izmenilos-v-moem-ponimanii-deployment`; insufficient-evidence answer `0` words / no citations / `539 ms`; `clientUnexpectedExternalRequests=0`; evidence sanitized.
 - AI-8 FULL is now the accepted public production AI baseline. The exact AI-6 SEARCH runtime `3809d6f0290ab22f080e919f2ff26b1b018f3db6` remains untouched as immediate rollback. Ordinary CI/build remains provider-free.
-- Issue #289 is completed by this durable state update and is closed after merge.
+- Issue #289 is CLOSED / COMPLETED after the accepted AI-8 production rollout.
 
 ## 2026-08-18 — AI-6 public semantic SEARCH — PRODUCTION ACCEPTED
 
