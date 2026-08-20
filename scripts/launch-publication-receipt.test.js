@@ -11,6 +11,8 @@ import {
   writePublicationReceipt,
 } from './launch-publication-receipt.js';
 
+const ROOT = path.resolve(import.meta.dirname, '..');
+
 function targets() {
   return [
     {
@@ -197,4 +199,25 @@ test('writes normalized receipt artifacts with SHA-256 provenance while keeping 
   } finally {
     fs.rmSync(tempDir, {recursive: true, force: true});
   }
+});
+
+test('repository integration keeps publication receipt local, private-input and read-only toward external channels', () => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  const gitignore = fs.readFileSync(path.join(ROOT, '.gitignore'), 'utf8');
+  const workflow = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'distribution-readiness.yml'), 'utf8');
+  const spec = fs.readFileSync(path.join(ROOT, 'docs', 'keystone', 'specs', '2026-08-21-controlled-launch-publication-receipt.md'), 'utf8');
+  const implementation = fs.readFileSync(path.join(ROOT, 'scripts', 'launch-publication-receipt.js'), 'utf8');
+
+  assert.equal(pkg.scripts['report:launch-receipt'], 'node scripts/launch-publication-receipt.js');
+  assert.match(gitignore, /^\/private\/distribution\/$/m);
+  assert.match(workflow, /scripts\/launch-publication-receipt\.js/);
+  assert.match(workflow, /scripts\/launch-publication-receipt\.test\.js/);
+  assert.match(workflow, /node --test scripts\/launch-publication-receipt\.test\.js/);
+  assert.match(workflow, /contents:\s*read/);
+  assert.doesNotMatch(workflow, /contents:\s*write|issues:\s*write|deployments:\s*write/);
+  assert.doesNotMatch(workflow, /curl|api\.github\.com|api\.telegram|api\.habr/i);
+  assert.doesNotMatch(implementation, /\bfetch\s*\(|https\.request|http\.request|child_process|execSync|spawnSync/);
+  assert.match(spec, /operator-supplied-not-independently-fetched/);
+  assert.match(spec, /private\/distribution/);
+  assert.match(spec, /does not complete P4\.1B or P3\.6/i);
 });
