@@ -8,6 +8,9 @@ import {loadDistributionReadiness} from './distribution-readiness.js';
 const MODULE_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(MODULE_PATH), '..');
 const DEFAULT_OUTPUT_DIR = path.join(ROOT, 'distribution-artifacts');
+const CANONICAL_ORIGIN = 'https://trueruslan.ru';
+const MAX_RAW_BYTES = 64 * 1024;
+const MAX_PUBLICATIONS = 38;
 const PUBLICATION_HOSTS = new Map([
   ['github', 'github.com'],
   ['habr', 'habr.com'],
@@ -46,6 +49,34 @@ function parseTimestamp(value, label) {
   return {iso, timestamp};
 }
 
+function validateTargetCanonicalUrl(value, targetId) {
+  const normalized = requireString(value, `canonicalUrl for target ${targetId}`, {maxLength: 500});
+  let url;
+  try {
+    url = new URL(normalized);
+  } catch {
+    throw new Error(`canonicalUrl for target ${targetId} must be an absolute URL.`);
+  }
+  if (
+    url.origin !== CANONICAL_ORIGIN ||
+    url.username ||
+    url.password ||
+    url.port ||
+    url.search ||
+    url.hash ||
+    !url.pathname.startsWith('/')
+  ) {
+    throw new Error(`canonicalUrl for target ${targetId} must remain on the canonical production origin ${CANONICAL_ORIGIN}.`);
+  }
+  if (url.pathname !== '/' && !url.pathname.endsWith('/')) {
+    throw new Error(`canonicalUrl for target ${targetId} must use a directory-style clean URL.`);
+  }
+  if (url.pathname.startsWith('/landing/') || /\.html(?:$|\/)/.test(url.pathname)) {
+    throw new Error(`canonicalUrl for target ${targetId} must not use a legacy public identity.`);
+  }
+  return url.href;
+}
+
 function validateCanonicalUrl(value, target) {
   const normalized = requireString(value, `canonicalUrl for ${target.id}`, {maxLength: 500});
   if (normalized !== target.canonicalUrl) {
@@ -65,8 +96,8 @@ function validatePublicationUrl(value, channel) {
 
   const expectedHost = PUBLICATION_HOSTS.get(channel);
   if (!expectedHost) throw new Error(`${channel} cannot be used as public publication evidence.`);
-  if (url.protocol !== 'https:' || url.username || url.password) {
-    throw new Error(`publicationUrl for ${channel} must be a credential-free HTTPS URL.`);
+  if (url.protocol !== 'https:' || url.username || url.password || url.port) {
+    throw new Error(`publicationUrl for ${channel} must be a credential-free HTTPS URL without a non-default port.`);
   }
   if (url.hostname !== expectedHost) {
     throw new Error(`publicationUrl host for ${channel} must be ${expectedHost}.`);
@@ -87,10 +118,20 @@ function normalizeTargets(targets) {
     requirePlainObject(target, 'distribution target');
     const id = requireString(target.id, 'distribution target id', {maxLength: 80});
     if (byId.has(id)) throw new Error(`Duplicate distribution target id: ${id}`);
+    if (!Number.isInteger(target.priority) || target.priority < 1) throw new Error(`Invalid distribution priority for ${id}.`);
     if (!Array.isArray(target.channels) || target.channels.length === 0) {
       throw new Error(`Distribution target ${id} must expose channels.`);
     }
-    byId.set(id, target);
+    const channels = target.channels.map((channel) => requireString(channel, `channel for ${id}`, {maxLength: 40}));
+    if (new Set(channels).size !== channels.length) throw new Error(`Distribution target ${id} contains duplicate channels.`);
+    byId.set(id, {
+      id,
+      priority: target.priority,
+      canonicalUrl: validateTargetCanonicalUrl(target.canonicalUrl, id),
+      title: requireString(target.title, `title for ${id}`, {maxLength: 240}),
+      evidenceBoundary: requireString(target.evidenceBoundary, `evidenceBoundary for ${id}`, {maxLength: 500}),
+      channels,
+    });
   }
   return byId;
 }
@@ -101,6 +142,9 @@ export function normalizePublicationReceipt({input, targets, now = new Date()} =
   if (input.schemaVersion !== 1) throw new Error('publication receipt schemaVersion must be 1.');
   if (!Array.isArray(input.publications) || input.publications.length === 0) {
     throw new Error('publication receipt must contain at least one publication observation.');
+  }
+  if (input.publications.length > MAX_PUBLICATIONS) {
+    throw new Error(`publication receipt may contain at most ${MAX_PUBLICATIONS} observations.`);
   }
 
   const nowTimestamp = now instanceof Date ? now.getTime() : Number.NaN;
@@ -216,7 +260,11 @@ export function writePublicationReceipt({
 } = {}) {
   if (!inputPath) throw new Error('writePublicationReceipt requires an explicit inputPath.');
   const resolvedInputPath = path.resolve(inputPath);
-  const raw = fs.readFileSync(resolvedInputPath, 'utf8');
+  const rawBytes = fs.readFileSync(resolvedInputPath);
+  if (rawBytes.length > MAX_RAW_BYTES) {
+    throw new Error(`Publication receipt input is too large; maximum is ${MAX_RAW_BYTES} bytes (64 KiB).`);
+  }
+  const raw = rawBytes.toString('utf8');
   let input;
   try {
     input = JSON.parse(raw);
@@ -226,7 +274,7 @@ export function writePublicationReceipt({
 
   const canonicalTargets = targets ?? loadDistributionReadiness(loadOptions).targets;
   const receipt = normalizePublicationReceipt({input, targets: canonicalTargets, now});
-  receipt.sourceSha256 = crypto.createHash('sha256').update(raw).digest('hex');
+  receipt.sourceSha256 = crypto.createHash('sha256').update(rawBytes).digest('hex');
   const markdown = renderPublicationReceiptMarkdown(receipt);
 
   fs.mkdirSync(outputDir, {recursive: true});
