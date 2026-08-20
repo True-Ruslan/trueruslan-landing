@@ -88,7 +88,7 @@ test('current reconciliation records accepted Vlezet M8.3 and pending M8.4 retes
   assert.equal(current.length, 1);
   assert.equal(next.length, 1);
   assert.match(current[0].title, /M8\.4 Assisted Tracing.*product retest pending/i);
-  assert.match(current[0].description, /two real-plan Product Owner.*failed usefulness acceptance/i);
+  assert.match(current[0].description, /Real-plan Product Owner checks on 2026-08-18 and 2026-08-19 both failed usefulness acceptance/i);
   assert.match(current[0].description, /not accepted, merged or released/i);
   assert.match(next[0].title, /Retest M8\.4.*same real plan/i);
   assert.match(next[0].description, /only an observed PASS.*merge/i);
