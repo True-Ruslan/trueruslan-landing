@@ -185,7 +185,12 @@ async function assertEnglishVlezetNoJsEvidence(page) {
     'P0 post-merge truth / M8.3 handoff PR #91',
     'M8.3 Precision Reference Calibration Draft PR #92',
     'TDD RED',
-    'not product-owner accepted, merged or released',
+    'historical pre-acceptance evidence only',
+    'M8.3 Precision Reference Calibration accepted PR #92',
+    'M8.3 protected integration reconciliation PR #93',
+    'M8.4 Assisted Tracing Draft PR #94',
+    'same real plan still requires Product Owner retest',
+    'not accepted, merged or released',
     'pre-production',
   ];
   for (const marker of markers) {
