@@ -25,8 +25,12 @@ function snapshot(slug) {
   return evidence.find((entry) => entry.project === slug);
 }
 
-function signal(slug, url) {
+function signalByUrl(slug, url) {
   return snapshot(slug).signals.find((entry) => entry.url === url);
+}
+
+function signalByLabel(slug, label) {
+  return snapshot(slug).signals.find((entry) => entry.label === label);
 }
 
 function currentTimeline(slug) {
@@ -37,7 +41,7 @@ function nextTimeline(slug) {
   return timelines[slug].filter((entry) => entry.state === 'next');
 }
 
-test('current reconciliation records active Vlezet M8.3 Draft while preserving accepted M8.2 and pre-production lifecycle', () => {
+test('current reconciliation records accepted Vlezet M8.3 and pending M8.4 retest without lifecycle promotion', () => {
   const registry = project('vlezet');
   const current = currentTimeline('vlezet');
   const next = nextTimeline('vlezet');
@@ -46,28 +50,48 @@ test('current reconciliation records active Vlezet M8.3 Draft while preserving a
   assert.equal(registry.status, 'pre-production');
   assert.equal(registry.statusLabel, 'ACTIVE DEVELOPMENT');
   assert.equal(controlled.status, 'verified');
-  assert.equal(controlled.lastVerified, '2026-08-16');
-  assert.ok(controlled.versions.some((entry) => entry.label === 'Accepted editor slice' && /M8\.2.*accepted.*merged/i.test(entry.value)));
-  assert.equal(controlled.versions.find((entry) => entry.label === 'Next acceptance boundary')?.value, 'M8.3 Precision Reference Calibration');
-  assert.ok(controlled.versions.some((entry) => entry.label === 'Active product slice' && /M8\.3 Precision Reference Calibration active in Draft PR #92/i.test(entry.value) && /Testing Policy Phase A.*P0 IndexedDB persistence hardening/i.test(entry.value) && /TDD RED/i.test(entry.value) && /not product-owner accepted, merged or released/i.test(entry.value)));
+  assert.equal(controlled.lastVerified, '2026-08-19');
+  assert.ok(controlled.versions.some((entry) => entry.label === 'Accepted editor slice' && /M8\.3.*accepted.*merged.*post-merge verified/i.test(entry.value)));
+  assert.equal(controlled.versions.find((entry) => entry.label === 'Next acceptance boundary')?.value, 'M8.4 Assisted Tracing');
+  assert.ok(controlled.versions.some((entry) => entry.label === 'Active product slice'
+    && /M8\.4 Assisted Tracing Draft PR #94/i.test(entry.value)
+    && /automated GREEN/i.test(entry.value)
+    && /two real-plan Product Owner FAILs/i.test(entry.value)
+    && /same-plan Product Owner retest pending/i.test(entry.value)
+    && /not accepted, merged or released/i.test(entry.value)));
 
-  assert.equal(signal('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/52').state, 'unavailable');
-  assert.equal(signal('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/87').state, 'merged');
-  assert.equal(signal('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/90').state, 'merged');
-  assert.match(signal('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/90').scope, /7cb9cfd2a8f809e6000209188b5fab99a2fabfb9/);
-  assert.equal(signal('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/91').state, 'merged');
-  const draft = signal('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/92');
+  assert.equal(signalByUrl('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/52').state, 'unavailable');
+  assert.equal(signalByUrl('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/87').state, 'merged');
+  assert.equal(signalByUrl('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/90').state, 'merged');
+  assert.match(signalByUrl('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/90').scope, /7cb9cfd2a8f809e6000209188b5fab99a2fabfb9/);
+  assert.equal(signalByUrl('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/91').state, 'merged');
+
+  const draft = signalByLabel('vlezet', 'M8.3 Precision Reference Calibration Draft PR #92');
+  const accepted = signalByLabel('vlezet', 'M8.3 Precision Reference Calibration accepted PR #92');
+  const handoff = signalByUrl('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/93');
+  const m84 = signalByUrl('vlezet', 'https://github.com/True-Ruslan/vlezet/pull/94');
+  assert.ok(draft && accepted && handoff && m84);
   assert.equal(draft.state, 'pending');
   assert.equal(draft.observedAt, '2026-08-16');
-  assert.match(draft.scope, /58542998b8c5086e64932defb347689a82d842ef/);
   assert.match(draft.scope, /TDD RED/i);
-  assert.match(draft.scope, /not product-owner accepted, merged or released/i);
+  assert.match(draft.scope, /historical pre-acceptance evidence only/i);
+  assert.equal(accepted.state, 'merged');
+  assert.match(accepted.scope, /01f520988a84291fb6e4f918e21f3403f17c4529/);
+  assert.match(accepted.scope, /post-merge main passed CI #5248 and CodeQL #608/i);
+  assert.equal(handoff.state, 'merged');
+  assert.equal(m84.state, 'pending');
+  assert.match(m84.scope, /c019af73a9224c1a63d4f377c21d03949ee9c28c/);
+  assert.match(m84.scope, /CI #5337.*Browser Acceptance #1780/i);
+  assert.match(m84.scope, /same real plan.*Product Owner retest/i);
+  assert.match(m84.scope, /not accepted, merged or released/i);
 
   assert.equal(current.length, 1);
-  assert.equal(next.length, 0);
-  assert.match(current[0].title, /M8\.3 Precision Reference Calibration.*active.*Draft.*RED/i);
-  assert.match(current[0].description, /not product-owner accepted, merged or released/i);
-  assert.match(current[0].description, /pre-production lifecycle remains unchanged/i);
+  assert.equal(next.length, 1);
+  assert.match(current[0].title, /M8\.4 Assisted Tracing.*product retest pending/i);
+  assert.match(current[0].description, /two real-plan Product Owner.*failed usefulness acceptance/i);
+  assert.match(current[0].description, /not accepted, merged or released/i);
+  assert.match(next[0].title, /Retest M8\.4.*same real plan/i);
+  assert.match(next[0].description, /only an observed PASS.*merge/i);
 });
 
 test('current reconciliation records VillAIgence 0.3.2 publication without inventing installed acceptance', () => {
@@ -87,13 +111,13 @@ test('current reconciliation records VillAIgence 0.3.2 publication without inven
   assert.ok(controlled.versions.some((entry) => entry.label === 'Active development slice' && /0\.3\.1 installed FAIL/i.test(entry.value) && /VAI-PCM-MULTI-001.*pending/i.test(entry.value) && /do not start 0\.4/i.test(entry.value)));
 
   for (const number of [125, 153, 155, 158, 159, 160, 165, 167, 169, 171]) {
-    assert.equal(signal('livingworld', `https://github.com/True-Ruslan/villAIgence/pull/${number}`).state, 'merged');
+    assert.equal(signalByUrl('livingworld', `https://github.com/True-Ruslan/villAIgence/pull/${number}`).state, 'merged');
   }
-  const installed031 = signal('livingworld', 'https://github.com/True-Ruslan/villAIgence/blob/1.21.1/docs/livingworld/VALIDATION_0.3.1_CORRECTIVE_INSTALLED.md');
+  const installed031 = signalByUrl('livingworld', 'https://github.com/True-Ruslan/villAIgence/blob/1.21.1/docs/livingworld/VALIDATION_0.3.1_CORRECTIVE_INSTALLED.md');
   assert.equal(installed031.state, 'failed');
   assert.equal(installed031.observedAt, '2026-08-15');
   assert.match(installed031.scope, /Muammer.*amber-pine-314.*did not recall/i);
-  const release032 = signal('livingworld', 'https://github.com/True-Ruslan/villAIgence/releases/tag/0.3.2%2B1.21.1');
+  const release032 = signalByUrl('livingworld', 'https://github.com/True-Ruslan/villAIgence/releases/tag/0.3.2%2B1.21.1');
   assert.equal(release032.state, 'published');
   assert.match(release032.scope, /b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015/);
   assert.match(release032.scope, /not installed acceptance/i);
@@ -101,15 +125,12 @@ test('current reconciliation records VillAIgence 0.3.2 publication without inven
   assert.equal(current.length, 1);
   assert.equal(next.length, 1);
   assert.match(current[0].title, /0\.3\.2.*corrective release.*installed canary pending/i);
-  assert.match(current[0].description, /release-candidate.*ACCEPTANCE IN PROGRESS/i);
   assert.match(current[0].description, /VAI-PCM-MULTI-001 remains PENDING/i);
   assert.match(current[0].description, /0\.4 stays blocked/i);
   assert.match(next[0].title, /0\.3\.2.*VAI-PCM-MULTI-001.*canary/i);
-  assert.match(next[0].description, /b51cfcf3f46718fac9620586cf8b5aae53356c600d5ac375ca3280050befe015/);
-  assert.match(next[0].description, /Only real installed PASS.*repository reconciliation/i);
 });
 
-test('current reconciliation preserves C7 and N6 history while recording the AI Navigator production baseline', () => {
+test('current reconciliation preserves C7 and N6 history while recording AI-8 FULL with AI-6 rollback', () => {
   const registry = project('portfolio-platform');
   const current = currentTimeline('portfolio-platform');
   const next = nextTimeline('portfolio-platform');
@@ -117,28 +138,34 @@ test('current reconciliation preserves C7 and N6 history while recording the AI 
 
   assert.equal(registry.status, 'production');
   assert.equal(controlled.status, 'verified');
-  assert.equal(controlled.lastVerified, '2026-08-16');
+  assert.equal(controlled.lastVerified, '2026-08-20');
   assert.ok(controlled.versions.some((entry) => entry.label === 'Portfolio Clarity redesign' && /C7/.test(entry.value) && /production accepted/i.test(entry.value)));
-  assert.ok(controlled.versions.some((entry) => entry.label === 'Current production baseline' && /8fe29188e4da9250b405f5e23b7ee8afe97e21d6/.test(entry.value) && /AI Navigator.*public AI OFF/i.test(entry.value)));
+  assert.ok(controlled.versions.some((entry) => entry.label === 'Current production baseline'
+    && /93028b979f273b6382f480a500555a258c426607/.test(entry.value)
+    && /be439044b67b93c6112659c5ac8c6f50153b1f52/.test(entry.value)
+    && /3809d6f0290ab22f080e919f2ff26b1b018f3db6.*rollback/i.test(entry.value)));
+  assert.ok(controlled.versions.some((entry) => entry.label === 'AI Navigator' && /public FULL production accepted/i.test(entry.value) && /provider-free/i.test(entry.value) && /SEARCH rollback/i.test(entry.value)));
   assert.ok(controlled.versions.some((entry) => entry.label === 'Measurement checkpoint' && /P3\.6.*NEXT.*WAITING/i.test(entry.value)));
   assert.ok(controlled.versions.some((entry) => entry.label === 'Search Discovery' && /P4\.1A READY.*P4\.1B IN PROGRESS.*SPARSE PRE-LAUNCH BASELINE.*not-published.*P4\.1C WAITING/i.test(entry.value)));
-  assert.equal(signal('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/pull/198').state, 'merged');
-  assert.equal(signal('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/pull/234').state, 'merged');
-  assert.equal(signal('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/pull/237').state, 'merged');
-  assert.equal(signal('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/pull/253').state, 'merged');
-  assert.equal(signal('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/pull/254').state, 'merged');
-  assert.match(signal('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/pull/237').scope, /f0e489d75f5bcb1f64057e1046faad877bf3f952/);
-  assert.match(signal('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/pull/254').scope, /Pages #273.*Production Live #620.*CodeQL #1752/i);
+
+  for (const number of [198, 234, 237, 253, 254, 294, 295]) {
+    assert.equal(signalByUrl('portfolio-platform', `https://github.com/True-Ruslan/trueruslan-landing/pull/${number}`).state, 'merged');
+  }
+  assert.match(signalByUrl('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/pull/237').scope, /f0e489d75f5bcb1f64057e1046faad877bf3f952/);
+  assert.match(signalByUrl('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/pull/254').scope, /Pages #273.*Production Live #620.*CodeQL #1752/i);
+  assert.match(signalByUrl('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/32148448724').scope, /semantic result.*answer disabled.*zero unexpected external requests/i);
+  assert.match(signalByUrl('portfolio-platform', 'https://github.com/True-Ruslan/trueruslan-landing/actions/runs/32355776796').scope, /512 dimensions.*grounded canonical citation.*zero unexpected external requests/i);
 
   assert.equal(current.length, 1);
   assert.equal(next.length, 1);
-  assert.match(current[0].title, /AI Navigator.*production accepted.*public AI off/i);
-  assert.match(current[0].description, /8fe29188e4da9250b405f5e23b7ee8afe97e21d6/);
-  assert.match(current[0].description, /Pages #273.*Production Live #620.*CodeQL #1752/i);
-  assert.match(current[0].description, /No live provider.*SEARCH\/FULL canary.*SEO, engagement or causal product-impact claim/i);
+  assert.match(current[0].title, /AI-8 public FULL production accepted/i);
+  assert.match(current[0].description, /93028b979f273b6382f480a500555a258c426607/);
+  assert.match(current[0].description, /AI-6 SEARCH remains the explicit rollback baseline/i);
+  assert.match(current[0].description, /ordinary CI stays provider-free/i);
   assert.match(next[0].title, /Controlled manual launch.*real search.*measurement evidence/i);
   assert.match(next[0].description, /10-target \/ 38-draft/i);
   assert.match(next[0].description, /Search Console.*Yandex Webmaster/i);
+  assert.match(next[0].description, /P4\.1C and P3\.6 remain evidence-gated/i);
 });
 
 test('reconciled controlled evidence produces no repository-drift finding for the observed 2026-08-11 state', () => {
