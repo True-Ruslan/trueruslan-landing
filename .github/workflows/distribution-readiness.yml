@@ -16,6 +16,7 @@ on:
       - 'scripts/launch-pack.test.js'
       - 'scripts/launch-publication-receipt.js'
       - 'scripts/launch-publication-receipt.test.js'
+      - 'scripts/launch-publication-receipt.integration.test.js'
       - 'docs/DISTRIBUTION.md'
       - 'docs/keystone/specs/2026-08-12-controlled-launch-pack.md'
       - 'docs/keystone/specs/2026-08-21-controlled-launch-publication-receipt.md'
@@ -51,7 +52,7 @@ jobs:
           set -o pipefail
           node scripts/distribution-readiness.js --check-runbook 2>&1 | tee distribution-readiness.log
           node scripts/launch-pack.js 2>&1 | tee launch-pack.log
-          node --test scripts/launch-publication-receipt.test.js 2>&1 | tee launch-publication-receipt-test.log
+          node --test scripts/launch-publication-receipt.test.js scripts/launch-publication-receipt.integration.test.js 2>&1 | tee launch-publication-receipt-test.log
 
       - name: Preserve generator logs
         if: always()
