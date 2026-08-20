@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "mode": "search",
-  "workerBaseUrl": "https://trueruslan-ai-navigator-ai6-search-canary.trueruslan.workers.dev",
+  "mode": "full",
+  "workerBaseUrl": "https://trueruslan-ai-navigator-ai8-full-production.trueruslan.workers.dev",
   "embeddingModel": "openai/text-embedding-3-small",
   "embeddingDimensions": 512,
   "answerModel": "google/gemini-2.5-flash-lite",
