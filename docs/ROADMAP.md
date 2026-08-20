@@ -1,19 +1,19 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-20**. AI-8 public FULL is production-accepted on exact merged `master` SHA `93028b979f273b6382f480a500555a258c426607`; canonical manual acceptance run `32355776796` is SUCCESS. Sanitized artifact `9401577436`, evidence digest `sha256:93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2`. AI-6 SEARCH remains the explicit rollback baseline. Controlled launch — not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Обновлено: **2026-08-20**. Cross-project Content Freshness reconciliation is accepted through PR #296, merged as `eef10c07d37d97f75ea47857b304af4c197bf914`; final exact-head Build #2423 / `32418136511`, Content Freshness #244 / `32418136446`, CodeQL #1989 / `32418136443` and Dependency Review #1787 / `32418136563` were SUCCESS. Canonical master freshness run `32418834360` then completed with **0 findings / 0 warnings / 0 errors**; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`; issue #78 is CLOSED / COMPLETED. AI-8 public FULL remains production-accepted on runtime SHA `93028b979f273b6382f480a500555a258c426607`, and AI-6 SEARCH remains the explicit rollback baseline. Controlled launch — not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Предыдущий полный snapshot сохранён в `docs/archive/2026-08-14/ROADMAP.md`.
 
 ## Current accepted baseline
 
-N1–N6, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification are DONE / PRODUCTION ACCEPTED. PR #254–#258 preserve the latest durable-state, cross-project freshness and production-verifier reconciliation chain. Transparent `trueruslan.com` repository readiness is accepted via PR #247 but external DNS/Cloudflare activation is NOT LIVE.
+N1–N6, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification are DONE / PRODUCTION ACCEPTED. PR #254–#258 preserve the earlier durable-state, cross-project freshness and production-verifier reconciliation chain; PR #296 is the current controlled evidence reconciliation after AI-8 and Vlezet M8.4 activity. Transparent `trueruslan.com` repository readiness is accepted via PR #247 but external DNS/Cloudflare activation is NOT LIVE.
 
-AI Navigator engineering baseline #248–#253 remains accepted; AI-5 real-provider/index acceptance, AI-6 SEARCH activation, AI-7 isolated FULL canary and AI-8 public FULL rollout are now DONE / ACCEPTED at their respective gates. Public production is `mode=full` on exact runtime SHA `93028b979f273b6382f480a500555a258c426607`, targeting only the dedicated `trueruslan-ai-navigator-ai8-full-production` Worker. Canonical manual FULL acceptance #1 / `32355776796` — SUCCESS. The accepted AI-6 SEARCH runtime `3809d6f0290ab22f080e919f2ff26b1b018f3db6` remains untouched as the immediate rollback baseline.
+AI Navigator engineering baseline #248–#253 remains accepted; AI-5 real-provider/index acceptance, AI-6 SEARCH activation, AI-7 isolated FULL canary and AI-8 public FULL rollout are DONE / ACCEPTED at their respective gates. Public production is `mode=full` on exact runtime SHA `93028b979f273b6382f480a500555a258c426607`, targeting only the dedicated `trueruslan-ai-navigator-ai8-full-production` Worker. Canonical manual FULL acceptance #1 / `32355776796` — SUCCESS. The accepted AI-6 SEARCH runtime `3809d6f0290ab22f080e919f2ff26b1b018f3db6` remains untouched as the immediate rollback baseline.
 
 Current cross-project truth:
 - VillAIgence official release is `0.3.2+1.21.1`; automated release gates PASS; historical installed 0.3.1 corrective canary FAILED; PR #169 and PR #171 are merged; exact installed 0.3.2 corrective canary remains PENDING; 0.4 remains blocked. The last fully accepted installed baseline remains `0.2.0+1.21.1` with `7 PASS / 0 FAIL`.
-- Vlezet M8.3 Precision Reference Calibration remains Draft / TDD RED and is not product-owner accepted, merged or released.
-- Content Freshness is clean at `0 findings / 4 repos / 57 links`; issue #78 is CLOSED / COMPLETED.
+- Vlezet M8.3 Precision Reference Calibration is Product Owner accepted, merged and post-merge verified. M8.4 Assisted Tracing remains Draft PR #94: automated GREEN after two real-plan Product Owner FAILs; same-plan Product Owner retest pending; it is not accepted, merged or released; lifecycle remains pre-production.
+- Content Freshness: PR #296 merged as `eef10c07d37d97f75ea47857b304af4c197bf914`; canonical master run `32418834360` — SUCCESS with `0 findings / 0 warnings / 0 errors`; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`; issue #78 is CLOSED / COMPLETED.
 
 ## Priority A — controlled manual launch / external evidence
 
@@ -57,10 +57,11 @@ P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE; suffic
 
 ## Maintenance lane
 
-- #82 remains OPEN upstream Diplodoc/markdown-it blocker; next historical review marker 2026-08-17; do not use forced incompatible overrides.
-- #78 is CLOSED / COMPLETED after clean Content Freshness reconciliation (`0 findings / 4 repos / 57 links`).
+- #82 remains OPEN upstream Diplodoc/markdown-it blocker; do not use forced incompatible overrides.
+- #78 is CLOSED / COMPLETED after canonical master Content Freshness run `32418834360` reported `0 findings / 0 warnings / 0 errors`; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`.
 - #111 / #212 remain authenticated operator/external observation work.
-- #289 AI-8 rollout is complete and is closed after this durable state update merges.
+- #289 AI-8 rollout is CLOSED / COMPLETED after production acceptance.
+- PR #291 is CLOSED UNMERGED; the accepted pinned-container cross-browser gate supersedes it.
 - exact artifact и installed acceptance остаются отдельными release gates.
 - no quality/security gate weakening.
 
