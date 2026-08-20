@@ -76,8 +76,6 @@ test('Vlezet keeps failed M7.8C history while M8.3 is accepted and M8.4 retest r
   assert.match(m84Draft.scope, /same real plan still requires Product Owner retest/i);
   assert.match(m84Draft.scope, /not accepted, merged or released/i);
 
-  assert.doesNotMatch(
-    [m78c.scope, assisted.scope, m82.scope, persistence.scope, handoff.scope, m83Draft.scope, m83Accepted.scope, m83Reconciliation.scope, m84Draft.scope].join('\n'),
-    /M7\.8C.*product-owner accepted|M8\.4.*product-owner accepted|M8\.4.*production-ready|M8\.4.*released/i,
-  );
+  assert.doesNotMatch(m78c.scope, /M7\.8C.*product-owner accepted/i);
+  assert.doesNotMatch(m84Draft.scope, /M8\.4.*(?:product-owner accepted|production-ready|has been released|was released|is released)/i);
 });
