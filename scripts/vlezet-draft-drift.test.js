@@ -5,6 +5,9 @@ import test from 'node:test';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const EVIDENCE_PATH = path.join(ROOT, 'data', 'project-evidence.json');
+const PROJECT_STATE_PATH = path.join(ROOT, 'docs', 'PROJECT_STATE.md');
+const ROADMAP_PATH = path.join(ROOT, 'docs', 'ROADMAP.md');
+const CHANGELOG_PATH = path.join(ROOT, 'docs', 'CHANGELOG.md');
 
 test('Vlezet keeps failed M7.8C history while M8.3 is accepted and M8.4 retest remains pending', () => {
   const evidence = JSON.parse(fs.readFileSync(EVIDENCE_PATH, 'utf8'));
@@ -78,4 +81,29 @@ test('Vlezet keeps failed M7.8C history while M8.3 is accepted and M8.4 retest r
 
   assert.doesNotMatch(m78c.scope, /M7\.8C.*product-owner accepted/i);
   assert.doesNotMatch(m84Draft.scope, /M8\.4.*(?:product-owner accepted|production-ready|has been released|was released|is released)/i);
+});
+
+test('durable state mirrors accepted M8.3, pending M8.4 and the clean master freshness reconciliation', () => {
+  const projectState = fs.readFileSync(PROJECT_STATE_PATH, 'utf8');
+  const roadmap = fs.readFileSync(ROADMAP_PATH, 'utf8');
+  const changelog = fs.readFileSync(CHANGELOG_PATH, 'utf8');
+
+  for (const document of [projectState, roadmap]) {
+    assert.match(document, /PR #296/);
+    assert.match(document, /eef10c07d37d97f75ea47857b304af4c197bf914/);
+    assert.match(document, /M8\.3 Precision Reference Calibration.*(?:product-owner accepted|Product Owner accepted).*merged/i);
+    assert.match(document, /M8\.4 Assisted Tracing.*Draft PR #94/i);
+    assert.match(document, /same-plan Product Owner retest pending/i);
+    assert.match(document, /32418834360/);
+    assert.match(document, /9424935318/);
+    assert.match(document, /sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822/);
+    assert.doesNotMatch(document, /Vlezet(?::|\s).*M8\.3 Precision Reference Calibration (?:is active at|remains) Draft \/ TDD RED/i);
+  }
+
+  assert.match(changelog, /2026-08-20 — Content Freshness reconciliation after AI-8 and Vlezet M8\.4 — ACCEPTED/);
+  assert.match(changelog, /PR #296/);
+  assert.match(changelog, /eef10c07d37d97f75ea47857b304af4c197bf914/);
+  assert.match(changelog, /32418834360/);
+  assert.match(changelog, /9424935318/);
+  assert.match(changelog, /sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822/);
 });
