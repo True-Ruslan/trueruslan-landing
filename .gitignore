@@ -6,6 +6,7 @@ graphify-out/
 /.quality-tools/
 /quality-artifacts/
 /private/search-discovery/
+/private/distribution/
 /docs/_includes/publications-catalogue.md
 .dev.vars*
 .env*
