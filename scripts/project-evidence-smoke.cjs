@@ -16,8 +16,8 @@ const PROJECTS = [
     status: 'verified',
     label: 'ПРОВЕРЕНО',
     borderStyle: 'solid',
-    signals: 14,
-    stateCounts: {merged: 9, failed: 1, unavailable: 3, pending: 1},
+    signals: 17,
+    stateCounts: {merged: 11, failed: 1, unavailable: 3, pending: 2},
     requiredText: [
       'M7.8B',
       'Automatic M7.8C recognition PR #42',
@@ -34,7 +34,12 @@ const PROJECTS = [
       'P0 post-merge truth / M8.3 handoff PR #91',
       'M8.3 Precision Reference Calibration Draft PR #92',
       'TDD RED',
-      'not product-owner accepted, merged or released',
+      'historical pre-acceptance evidence only',
+      'M8.3 Precision Reference Calibration accepted PR #92',
+      'M8.3 protected integration reconciliation PR #93',
+      'M8.4 Assisted Tracing Draft PR #94',
+      'same real plan still requires Product Owner retest',
+      'not accepted, merged or released',
     ],
     requiredHrefs: [
       'https://github.com/True-Ruslan/vlezet/pull/42',
@@ -48,6 +53,8 @@ const PROJECTS = [
       'https://github.com/True-Ruslan/vlezet/pull/90',
       'https://github.com/True-Ruslan/vlezet/pull/91',
       'https://github.com/True-Ruslan/vlezet/pull/92',
+      'https://github.com/True-Ruslan/vlezet/pull/93',
+      'https://github.com/True-Ruslan/vlezet/pull/94',
     ],
   },
   {
