@@ -1,8 +1,21 @@
 # CHANGELOG — TrueRuslan Landing
 
-> Обновлено: **2026-08-18**. AI-6 public SEARCH production acceptance — ACCEPTED on exact runtime SHA `3809d6f0290ab22f080e919f2ff26b1b018f3db6`; canonical manual run `32148448724` — SUCCESS. `/v1/answer` remains disabled; FULL is not active. Controlled launch remains not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Обновлено: **2026-08-20**. AI-8 public FULL production acceptance — ACCEPTED on exact merged `master` SHA `93028b979f273b6382f480a500555a258c426607`; canonical manual run `32355776796` — SUCCESS. Sanitized artifact `9401577436`, evidence digest `sha256:93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2`. AI-6 SEARCH remains the explicit rollback baseline. Controlled launch remains not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Полный pre-2026-08-15 snapshot сохранён в `docs/archive/2026-08-14/CHANGELOG.md`.
+
+## 2026-08-20 — AI-8 public FULL — PRODUCTION ACCEPTED
+
+- AI-7 isolated FULL canary completed with KEEP verdict before any public promotion; the canary Worker/key remained isolated and were not reused as the production boundary.
+- PR #290 hardened stale FULL-answer cancellation/generation safety and preserved exact-head quality gates.
+- PR #292 prepared AI-8 with a dedicated production FULL Worker, manual read-only public FULL acceptance workflow, explicit SEARCH rollback and no route/custom-domain takeover.
+- PR #293 added protected production provisioning with environment-scoped Cloudflare/OpenRouter secrets, pinned Wrangler `4.120.0`, provider-free contract reproof, exact accepted-index restore, dry-run before deploy and sanitized evidence. Canonical provisioning run `32348455080` succeeded on attempt 2 against source SHA `6b483871d0d949f351a545f980290ca407f40f06`; evidence digest `sha256:8396ee9c657ad82a3946240bfe208c30afcd91bc7e6e6c878870e38d6006a490`. Public SEARCH remained unchanged during provisioning.
+- PR #294 activated only `data/ai-navigator.json`: `mode=search` → `mode=full` and accepted AI-6 SEARCH Worker → dedicated `https://trueruslan-ai-navigator-ai8-full-production.trueruslan.workers.dev`. Transition-aware tests kept the AI-6 SEARCH identity pinned as rollback while allowing the post-provision FULL state. Exact-head Build, Dependency Review and CodeQL were SUCCESS before merge.
+- Activation merged as exact runtime SHA `93028b979f273b6382f480a500555a258c426607`.
+- Canonical manual `AI Navigator Public FULL Acceptance` #1 / `32355776796` — SUCCESS on that exact SHA. Artifact `9401577436`, evidence digest `sha256:93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2`; artifact archive digest `sha256:f1d9e91aa7a51689db51dfca874ae3c021c1c1259c668d2089d1df53ae882b38`.
+- Acceptance evidence: `publicAiMode=full`, `productionRuntimeMode=full`, `publicFullActivated=true`; OpenRouter key lifetime cap `$2`, no reset, run usage delta `$0`; public config latency `469 ms`; CORS preflight `92 ms`; forbidden-origin rejection `58 ms`; `openai/text-embedding-3-small` / 512-dimensional embedding `325 ms`; expected canonical document ranked first in top-5 semantic regression; grounded answer `42` words / `767 ms` with exact citation `ru:note:deployment-success-is-not-production-verification:chto-izmenilos-v-moem-ponimanii-deployment`; insufficient-evidence answer `0` words / no citations / `539 ms`; `clientUnexpectedExternalRequests=0`; evidence sanitized.
+- AI-8 FULL is now the accepted public production AI baseline. The exact AI-6 SEARCH runtime `3809d6f0290ab22f080e919f2ff26b1b018f3db6` remains untouched as immediate rollback. Ordinary CI/build remains provider-free.
+- Issue #289 is completed by this durable state update and is closed after merge.
 
 ## 2026-08-18 — AI-6 public semantic SEARCH — PRODUCTION ACCEPTED
 
@@ -12,7 +25,7 @@
 - PR #281 TDD: RED Build #2346 / `32137532919` failed exactly on the two new button-click regressions; exact-head `2fcc31475d16fa9a07fb15d0a13cc363e785cd25` then passed Build #2349 / `32137885631`, Dependency Review #1713 / `32137885632` and CodeQL #1903 / `32137885722`, including AI Navigator browser smoke, Firefox/WebKit compatibility and visual regression.
 - Merged SEARCH runtime SHA `3809d6f0290ab22f080e919f2ff26b1b018f3db6`: Pages #293 / `32139175939`, CodeQL #1904 / `32139175988`, Production Live Smoke #671 / `32139176165` and post-Pages #672 / `32139345457` — SUCCESS.
 - Canonical manual `AI Navigator Public SEARCH Acceptance` #6 / `32148448724` — SUCCESS on the exact runtime SHA. Sanitized evidence recorded `embedRequests=1`, static index HTTP 200, `POST /v1/embed` HTTP 200, `semanticOutcome=semantic-result`, first result `/notes/deployment-success-is-not-production-verification/`, `answerEndpointDisabled=true`, `answerActionAbsent=true`, `unexpectedExternalRequests=0`. Artifact `9328756080`, digest `sha256:d8d0d242c72e7ad4e122bb486ecded358b8e9b1f852f9928edb041c410b0d623`.
-- Issue #274 is CLOSED / COMPLETED. AI-6 SEARCH is the accepted public AI baseline. AI-7/FULL is now permitted as a separate canary but is not active.
+- Issue #274 is CLOSED / COMPLETED. AI-6 SEARCH was the accepted public AI baseline before the later AI-8 FULL rollout; it remains the explicit rollback state.
 
 ## 2026-08-15 — AI Navigator static-first engineering baseline — PRODUCTION ACCEPTED / PUBLIC AI OFF
 
