@@ -48,14 +48,19 @@ test('P3.3 preserves canonical lifecycle labels and routes', () => {
   assert.equal(livingworld.href, 'landing/projects/livingworld.html');
 });
 
-test('Vlezet preserves recognition history while M8.3 Draft is active and pre-production remains unchanged', () => {
+test('Vlezet preserves recognition history while M8.3 is accepted and M8.4 Product Owner retest remains pending', () => {
   const evidence = evidenceMap().get('vlezet');
-  assert.equal(evidence.lastVerified, '2026-08-16');
+  assert.equal(evidence.lastVerified, '2026-08-19');
   assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted recognition slice' && value === 'M7.8B'));
   assert.ok(evidence.versions.some(({label, value}) => label === 'Automatic M7.8C result' && /FAIL.*closed unmerged/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted editor slice' && /M8\.2.*accepted.*merged/i.test(value)));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Next acceptance boundary' && value === 'M8.3 Precision Reference Calibration'));
-  assert.ok(evidence.versions.some(({label, value}) => label === 'Active product slice' && /M8\.3 Precision Reference Calibration active in Draft PR #92/i.test(value) && /TDD RED/i.test(value) && /not product-owner accepted, merged or released/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Accepted editor slice' && /M8\.3.*accepted.*merged.*post-merge verified/i.test(value)));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Next acceptance boundary' && value === 'M8.4 Assisted Tracing'));
+  assert.ok(evidence.versions.some(({label, value}) => label === 'Active product slice'
+    && /M8\.4 Assisted Tracing Draft PR #94/i.test(value)
+    && /automated GREEN/i.test(value)
+    && /two real-plan Product Owner FAILs/i.test(value)
+    && /same-plan Product Owner retest pending/i.test(value)
+    && /not accepted, merged or released/i.test(value)));
 
   const failed = findSignal(evidence, 'Automatic M7.8C');
   assert.equal(failed.state, 'failed');
@@ -78,20 +83,37 @@ test('Vlezet preserves recognition history while M8.3 Draft is active and pre-pr
   const persistence = findSignal(evidence, 'P0 IndexedDB persistence remediation PR #90');
   const handoff = findSignal(evidence, 'P0 post-merge truth / M8.3 handoff PR #91');
   const draft = findSignal(evidence, 'M8.3 Precision Reference Calibration Draft PR #92');
+  const accepted = findSignal(evidence, 'M8.3 Precision Reference Calibration accepted PR #92');
+  const reconciliation = findSignal(evidence, 'M8.3 protected integration reconciliation PR #93');
+  const m84 = findSignal(evidence, 'M8.4 Assisted Tracing Draft PR #94');
   assert.equal(persistence.state, 'merged');
   assert.match(persistence.scope, /7cb9cfd2a8f809e6000209188b5fab99a2fabfb9/);
   assert.equal(handoff.state, 'merged');
   assert.equal(draft.state, 'pending');
-  assert.match(draft.scope, /58542998b8c5086e64932defb347689a82d842ef/);
+  assert.equal(draft.observedAt, '2026-08-16');
   assert.match(draft.scope, /TDD RED/i);
-  assert.match(draft.scope, /not product-owner accepted, merged or released/i);
+  assert.match(draft.scope, /historical pre-acceptance evidence only/i);
+  assert.equal(accepted.state, 'merged');
+  assert.equal(accepted.observedAt, '2026-08-17');
+  assert.match(accepted.scope, /01f520988a84291fb6e4f918e21f3403f17c4529/);
+  assert.match(accepted.scope, /post-merge main passed CI #5248 and CodeQL #608/i);
+  assert.equal(reconciliation.state, 'merged');
+  assert.equal(m84.state, 'pending');
+  assert.equal(m84.observedAt, '2026-08-19');
+  assert.match(m84.scope, /c019af73a9224c1a63d4f377c21d03949ee9c28c/);
+  assert.match(m84.scope, /CI #5337.*Browser Acceptance #1780/i);
+  assert.match(m84.scope, /same real plan.*Product Owner retest/i);
+  assert.match(m84.scope, /not accepted, merged or released/i);
 
   const history = readJson('data/project-history/vlezet.json');
   assert.equal(history.filter(({state}) => state === 'current').length, 1);
-  assert.equal(history.filter(({state}) => state === 'next').length, 0);
-  assert.match(history.find(({state}) => state === 'current').title, /M8\.3 Precision Reference Calibration.*active.*Draft.*RED/i);
-  assert.match(history.find(({state}) => state === 'current').description, /pre-production lifecycle remains unchanged/i);
+  assert.equal(history.filter(({state}) => state === 'next').length, 1);
+  assert.match(history.find(({state}) => state === 'current').title, /M8\.4 Assisted Tracing.*product retest pending/i);
+  assert.match(history.find(({state}) => state === 'current').description, /not accepted, merged or released/i);
+  assert.match(history.find(({state}) => state === 'next').title, /Retest M8\.4.*same real plan/i);
+  assert.match(history.find(({state}) => state === 'next').description, /only an observed PASS.*merge/i);
   assert.ok(history.some(({state, title}) => state === 'past' && /M8\.2.*accepted.*merged/i.test(title)));
+  assert.ok(history.some(({state, title}) => state === 'past' && /M8\.3.*accepted.*merged/i.test(title)));
   assert.ok(history.some(({state, title}) => state === 'past' && /Testing Policy Phase A accepted/i.test(title)));
   assert.ok(history.some(({state, title}) => state === 'past' && /P0 IndexedDB persistence remediation accepted/i.test(title)));
 });

@@ -89,9 +89,30 @@
   },
   {
     "date": "2026-08-16",
-    "title": "M8.3 Precision Reference Calibration is active — Draft / RED",
-    "description": "PR #91 established M8.3 as the active product milestone after accepted P0 persistence hardening. Draft PR #92 is now the implementation workstream and remains an intentional TDD RED checkpoint: ReferencePlan stays the persistent authority, viewport/source-snapping verification stays runtime-only, and no schema migration or AI/network dependency is introduced. M8.3 is not product-owner accepted, merged or released; the pre-production lifecycle remains unchanged.",
-    "state": "current",
+    "title": "M8.3 Precision Reference Calibration — Draft / RED checkpoint",
+    "description": "PR #91 established M8.3 as the active product milestone after accepted P0 persistence hardening. Draft PR #92 was observed at an intentional TDD RED checkpoint: ReferencePlan stayed the persistent authority, viewport/source-snapping verification stayed runtime-only, and no schema migration or AI/network dependency was introduced. This is historical pre-acceptance evidence only.",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/vlezet/pull/92"
+  },
+  {
+    "date": "2026-08-17",
+    "title": "M8.3 Precision Reference Calibration accepted and merged",
+    "description": "The Product Owner accepted the focused real-plan M8.3 journey. Final acceptance/docs head bcb38150e0e6b823e2679b751ae1d96ea84b7ea8 passed CI #5247, Browser Acceptance #1692 with Chromium 67/67 and WebKit 57/57, and CodeQL #607. PR #92 was then protected squash-merged as 01f520988a84291fb6e4f918e21f3403f17c4529; post-merge main passed CI #5248 and CodeQL #608. PR #93 reconciled canonical state and unblocked M8.4. Vlezet remains pre-production.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/93"
+  },
+  {
+    "date": "2026-08-19",
+    "title": "M8.4 Assisted Tracing — corrective automated GREEN / product retest pending",
+    "description": "Draft PR #94 is the active beta-critical workstream. Real-plan Product Owner checks on 2026-08-18 and 2026-08-19 both failed usefulness acceptance. The corrective exact head c019af73a9224c1a63d4f377c21d03949ee9c28c is automated-GREEN with CI #5337 and Browser Acceptance #1780 (Chromium 70/70, WebKit 60/60), but the same real plan has not yet passed the required Product Owner retest. Hosted door/window assistance remains blocked; M8.4 is not accepted, merged or released.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/94"
+  },
+  {
+    "date": "NEXT",
+    "title": "Retest M8.4 on the same real plan before any merge",
+    "description": "Run the Product Owner retest with ordinary snapping and source assistance enabled on the same real plan. A FAIL returns to evidence-driven RED→GREEN correction; only an observed PASS may advance acceptance truth, fresh protected integration gates and merge. Do not infer acceptance from automated GREEN alone.",
+    "state": "next",
+    "evidence": "https://github.com/True-Ruslan/vlezet/pull/94"
   }
 ]
