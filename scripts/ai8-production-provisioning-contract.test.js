@@ -4,8 +4,6 @@ import test from 'node:test';
 
 const read = (relative) => fs.readFileSync(new URL(`../${relative}`, import.meta.url), 'utf8');
 
-const publicConfig = JSON.parse(read('data/ai-navigator.json'));
-
 test('AI-8 production provisioning is manual, master-only, environment-scoped and cannot activate FULL', () => {
   const workflow = read('.github/workflows/ai-navigator-ai8-production-provision.yml');
 
@@ -33,11 +31,10 @@ test('AI-8 production provisioning is manual, master-only, environment-scoped an
   assert.doesNotMatch(workflow, /git\s+(?:push|commit|checkout)/i);
   assert.doesNotMatch(workflow, /wrangler\s+delete/i);
 
-  assert.equal(publicConfig.mode, 'search');
-  assert.equal(
-    publicConfig.workerBaseUrl,
-    'https://trueruslan-ai-navigator-ai6-search-canary.trueruslan.workers.dev',
-  );
+  const baselineStep = workflow.match(/      - name: Confirm public SEARCH baseline before provisioning[\s\S]*?(?=\n      - name:)/)?.[0] || '';
+  assert.ok(baselineStep, 'provisioning must retain an explicit pre-activation SEARCH gate');
+  assert.match(baselineStep, /config\.mode !== 'search'/);
+  assert.match(baselineStep, /https:\/\/trueruslan-ai-navigator-ai6-search-canary\.trueruslan\.workers\.dev/);
 });
 
 test('AI-8 provisioning keeps provider and deployment secrets out of provider-free steps', () => {
