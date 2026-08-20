@@ -7,12 +7,12 @@ const read = (relative) => fs.readFileSync(new URL(`../${relative}`, import.meta
 const publicConfig = JSON.parse(read('data/ai-navigator.json'));
 const ai7Config = JSON.parse(read('infra/cloudflare/wrangler.ai7-full-canary.jsonc'));
 
-test('AI-8 preparation keeps the accepted public SEARCH baseline untouched', () => {
-  assert.equal(publicConfig.mode, 'search');
-  assert.equal(
-    publicConfig.workerBaseUrl,
-    'https://trueruslan-ai-navigator-ai6-search-canary.trueruslan.workers.dev',
-  );
+test('AI-8 preparation preserves the accepted SEARCH rollback contract without constraining later activation', () => {
+  const runbook = read('docs/acceptance/ai-navigator-ai8-production-full.md');
+  assert.match(runbook, /must remain `mode: "search"` during provisioning and pre-activation verification/);
+  assert.match(runbook, /FULL activation is a \*\*separate PR after provisioning and pre-activation verification have succeeded\*\*/);
+  assert.match(runbook, /"mode": "search"/);
+  assert.match(runbook, /https:\/\/trueruslan-ai-navigator-ai6-search-canary\.trueruslan\.workers\.dev/);
 });
 
 test('AI-8 has an isolated production FULL Worker contract without route takeover', () => {

@@ -5,7 +5,8 @@ import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const WORKER_ORIGIN = 'https://trueruslan-ai-navigator-ai6-search-canary.trueruslan.workers.dev';
+const ACCEPTED_SEARCH_WORKER = 'https://trueruslan-ai-navigator-ai6-search-canary.trueruslan.workers.dev';
+const AI8_PRODUCTION_WORKER = 'https://trueruslan-ai-navigator-ai8-full-production.trueruslan.workers.dev';
 const ACCEPTED_AI5_SOURCE = 'data/ai-index-accepted/ai5';
 const ACCEPTED_AI5_FILE_DIGESTS = Object.freeze({
   'chunks.json': '1249ed898193d1a05bda632b1328a860909887a1700092ba38e612ac7e6ac17a',
@@ -21,23 +22,24 @@ function config() {
   return JSON.parse(read('data/ai-navigator.json'));
 }
 
-test('public AI config activates only the accepted SEARCH candidate', () => {
+test('public AI config activates only the dedicated AI-8 FULL production candidate', () => {
   const value = config();
-  assert.equal(value.mode, 'search');
-  assert.equal(value.workerBaseUrl, WORKER_ORIGIN);
-  assert.equal(new URL(value.workerBaseUrl).origin, WORKER_ORIGIN);
+  assert.equal(value.mode, 'full');
+  assert.equal(value.workerBaseUrl, AI8_PRODUCTION_WORKER);
+  assert.equal(new URL(value.workerBaseUrl).origin, AI8_PRODUCTION_WORKER);
   assert.equal(value.embeddingModel, 'openai/text-embedding-3-small');
   assert.equal(value.embeddingDimensions, 512);
+  assert.equal(value.answerModel, 'google/gemini-2.5-flash-lite');
   assert.deepEqual(value.hybridWeights, {
     semantic: 0.65,
     lexical: 0.20,
     title: 0.10,
     language: 0.05,
   });
-  assert.notEqual(value.mode, 'full');
+  assert.notEqual(value.workerBaseUrl, ACCEPTED_SEARCH_WORKER);
 });
 
-test('SEARCH builds restore only the exact accepted AI-5 index from durable repository bytes', () => {
+test('enabled AI builds restore only the exact accepted AI-5 index from durable repository bytes', () => {
   const restore = read('scripts/ai-index-restore.js');
   assert.match(restore, new RegExp(ACCEPTED_AI5_SOURCE.replaceAll('/', '\\/')));
   for (const [name, digest] of Object.entries(ACCEPTED_AI5_FILE_DIGESTS)) {
@@ -61,7 +63,7 @@ test('SEARCH builds restore only the exact accepted AI-5 index from durable repo
   }
 });
 
-test('public SEARCH production acceptance is manual-only and bounded', () => {
+test('accepted SEARCH rollback production acceptance remains manual-only and bounded', () => {
   const workflow = read('.github/workflows/ai-navigator-public-search-acceptance.yml');
   assert.match(workflow, /workflow_dispatch:/);
   assert.match(workflow, /confirm_public_search_acceptance:/);
@@ -77,7 +79,7 @@ test('public SEARCH production acceptance is manual-only and bounded', () => {
   assert.doesNotMatch(workflow, /OPENROUTER|API_KEY|Bearer/i);
 });
 
-test('production smoke proves semantic UI wiring without enabling FULL', () => {
+test('accepted SEARCH rollback smoke still proves answer disablement without provider credentials', () => {
   const smoke = read('scripts/ai-public-search-production-smoke.cjs');
   assert.match(smoke, /https:\/\/trueruslan\.ru/);
   assert.match(smoke, /ru-paraphrase-production-proof/);

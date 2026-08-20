@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
@@ -14,7 +16,10 @@ import {
   validateAi8KeyMetadata,
 } from './ai8-public-full-acceptance.js';
 
+const REPOSITORY_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PRODUCTION_WORKER = 'https://trueruslan-ai-navigator-ai8-full-production.example.workers.dev';
+const DEPLOYED_PRODUCTION_WORKER = 'https://trueruslan-ai-navigator-ai8-full-production.trueruslan.workers.dev';
+const ACCEPTED_SEARCH_WORKER = 'https://trueruslan-ai-navigator-ai6-search-canary.trueruslan.workers.dev';
 const PUBLIC_SEARCH_URL = 'https://trueruslan.ru/_search/ru/';
 const MODEL = 'test/embedding-model';
 
@@ -125,12 +130,31 @@ test('AI-8 evidence is sanitized and fails closed on excess spend or unexpected 
   assert.throws(() => buildAi8Evidence({sourceCommit: 'a'.repeat(40), before, after, probeReport, clientUnexpectedExternalRequests: 1}));
 });
 
-test('PREPARATION cannot run live acceptance while repository public config is still SEARCH', async () => {
-  const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+test('activated repository config targets only the dedicated AI-8 production Worker', () => {
+  const config = JSON.parse(fs.readFileSync(path.join(REPOSITORY_ROOT, 'data', 'ai-navigator.json'), 'utf8'));
+  assert.equal(config.mode, 'full');
+  assert.equal(config.workerBaseUrl, DEPLOYED_PRODUCTION_WORKER);
+  assert.notEqual(config.workerBaseUrl, ACCEPTED_SEARCH_WORKER);
+});
+
+test('PREPARATION cannot run live acceptance from an explicit SEARCH repository fixture', async () => {
+  const currentConfig = JSON.parse(fs.readFileSync(path.join(REPOSITORY_ROOT, 'data', 'ai-navigator.json'), 'utf8'));
+  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ai8-search-fixture-'));
+  fs.mkdirSync(path.join(rootDir, 'data'), {recursive: true});
+  fs.writeFileSync(path.join(rootDir, 'data', 'ai-navigator.json'), `${JSON.stringify({
+    ...currentConfig,
+    mode: 'search',
+    workerBaseUrl: ACCEPTED_SEARCH_WORKER,
+  }, null, 2)}\n`, 'utf8');
+
   let calls = 0;
-  await assert.rejects(
-    runAi8PublicFullAcceptance({rootDir, workerBaseUrl: PRODUCTION_WORKER, apiKey: 'not-used', sourceCommit: 'a'.repeat(40), fetchImpl: async () => { calls += 1; throw new Error('network must not be reached'); }}),
-    /already-activated FULL repository config/,
-  );
-  assert.equal(calls, 0);
+  try {
+    await assert.rejects(
+      runAi8PublicFullAcceptance({rootDir, workerBaseUrl: DEPLOYED_PRODUCTION_WORKER, apiKey: 'not-used', sourceCommit: 'a'.repeat(40), fetchImpl: async () => { calls += 1; throw new Error('network must not be reached'); }}),
+      /already-activated FULL repository config/,
+    );
+    assert.equal(calls, 0);
+  } finally {
+    fs.rmSync(rootDir, {recursive: true, force: true});
+  }
 });
