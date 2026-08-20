@@ -2,7 +2,7 @@
   {
     "project": "vlezet",
     "status": "verified",
-    "lastVerified": "2026-08-16",
+    "lastVerified": "2026-08-19",
     "versions": [
       {
         "label": "Web application",
@@ -34,15 +34,15 @@
       },
       {
         "label": "Next acceptance boundary",
-        "value": "M8.3 Precision Reference Calibration"
+        "value": "M8.4 Assisted Tracing"
       },
       {
         "label": "Accepted editor slice",
-        "value": "M8.2 — product-owner accepted, protected squash-merged and post-merge verified"
+        "value": "M8.3 Precision Reference Calibration — product-owner accepted, protected squash-merged and post-merge verified"
       },
       {
         "label": "Active product slice",
-        "value": "M8.3 Precision Reference Calibration active in Draft PR #92 after accepted Testing Policy Phase A and P0 IndexedDB persistence hardening; current implementation checkpoint is TDD RED and is not product-owner accepted, merged or released"
+        "value": "M8.4 Assisted Tracing Draft PR #94 — corrective automated GREEN after two real-plan Product Owner FAILs; same-plan Product Owner retest pending; not accepted, merged or released"
       }
     ],
     "signals": [
@@ -170,7 +170,34 @@
         "state": "pending",
         "url": "https://github.com/True-Ruslan/vlezet/pull/92",
         "observedAt": "2026-08-16",
-        "scope": "Draft PR #92 is the active M8.3 implementation workstream. At the observed head 58542998b8c5086e64932defb347689a82d842ef it remains an intentional TDD RED checkpoint: tests define verifyReferenceCalibration while the production API is not yet implemented. Existing ReferencePlan remains persistent authority, runtime-only navigation/snapping/verification stays non-authoritative, and no schema migration or AI/network dependency is introduced. The Draft is not product-owner accepted, merged or released; lifecycle remains pre-production."
+        "scope": "Draft PR #92 was observed at an intentional TDD RED checkpoint: tests defined verifyReferenceCalibration before the production API existed. ReferencePlan remained persistent authority, runtime-only navigation/snapping/verification stayed non-authoritative, and no schema migration or AI/network dependency was introduced. This is historical pre-acceptance evidence only."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M8.3 Precision Reference Calibration accepted PR #92",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/92",
+        "observedAt": "2026-08-17",
+        "scope": "The Product Owner accepted the focused real-plan M8.3 journey. Final acceptance/docs head bcb38150e0e6b823e2679b751ae1d96ea84b7ea8 passed CI #5247, Browser Acceptance #1692 with Chromium 67/67 and WebKit 57/57, and CodeQL #607. PR #92 was protected squash-merged as 01f520988a84291fb6e4f918e21f3403f17c4529; post-merge main passed CI #5248 and CodeQL #608. This accepts M8.3 only and does not promote Vlezet beyond pre-production."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M8.3 protected integration reconciliation PR #93",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/93",
+        "observedAt": "2026-08-17",
+        "scope": "PR #93 records the M8.3 Product Owner acceptance, protected product merge identity and post-merge verification, and makes M8.4 Assisted Tracing the active beta-critical milestone without changing product code."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "M8.4 Assisted Tracing Draft PR #94",
+        "state": "pending",
+        "url": "https://github.com/True-Ruslan/vlezet/pull/94",
+        "observedAt": "2026-08-19",
+        "scope": "PR #94 remains Draft after real-plan Product Owner checks on 2026-08-18 and 2026-08-19 both failed usefulness acceptance. Corrective exact head c019af73a9224c1a63d4f377c21d03949ee9c28c is automated-GREEN with CI #5337 and Browser Acceptance #1780 (Chromium 70/70, WebKit 60/60), but the same real plan still requires Product Owner retest. Hosted door/window assistance remains blocked; M8.4 is not accepted, merged or released."
       }
     ]
   },
@@ -521,7 +548,7 @@
   {
     "project": "portfolio-platform",
     "status": "verified",
-    "lastVerified": "2026-08-16",
+    "lastVerified": "2026-08-20",
     "versions": [
       {
         "label": "Delivery model",
@@ -545,7 +572,7 @@
       },
       {
         "label": "Search",
-        "value": "Diplodoc generated local index"
+        "value": "Diplodoc generated local index + reversible AI Navigator semantic layer"
       },
       {
         "label": "Analytics",
@@ -561,11 +588,15 @@
       },
       {
         "label": "Current production baseline",
-        "value": "master 8fe29188e4da9250b405f5e23b7ee8afe97e21d6 — AI Navigator engineering baseline production-accepted with public AI OFF; durable project state reconciled"
+        "value": "AI-8 public FULL accepted on runtime SHA 93028b979f273b6382f480a500555a258c426607; durable acceptance recorded by PR #295 / master be439044b67b93c6112659c5ac8c6f50153b1f52; AI-6 SEARCH SHA 3809d6f0290ab22f080e919f2ff26b1b018f3db6 preserved as rollback"
       },
       {
         "label": "Search Discovery",
         "value": "P4.1A READY; P4.1B IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; controlled launch not-published; P4.1C WAITING"
+      },
+      {
+        "label": "AI Navigator",
+        "value": "public FULL production accepted; ordinary CI provider-free; operational observation only, with immediate SEARCH rollback preserved"
       }
     ],
     "signals": [
@@ -720,7 +751,52 @@
         "state": "merged",
         "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/254",
         "observedAt": "2026-08-15",
-        "scope": "PR #254 reconciled the current durable project state while preserving machine-readable historical acceptance contracts. Squash 8fe29188e4da9250b405f5e23b7ee8afe97e21d6 passed Pages #273, Production Live #620 and master CodeQL #1752. Production AI remains OFF; controlled launch remains not-published and P4.1B/P4.1C/P3.6 external-evidence boundaries are unchanged."
+        "scope": "PR #254 reconciled the current durable project state while preserving machine-readable historical acceptance contracts. Squash 8fe29188e4da9250b405f5e23b7ee8afe97e21d6 passed Pages #273, Production Live #620 and master CodeQL #1752. Production AI remained OFF at that stage; controlled launch remained not-published and P4.1B/P4.1C/P3.6 external-evidence boundaries were unchanged."
+      },
+      {
+        "kind": "ci",
+        "mode": "automated",
+        "label": "AI-6 public SEARCH production acceptance",
+        "state": "passed",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/32148448724",
+        "observedAt": "2026-08-18",
+        "scope": "Canonical manual acceptance run 32148448724 passed on exact SEARCH runtime SHA 3809d6f0290ab22f080e919f2ff26b1b018f3db6. Evidence proved the accepted static index, one live embedding request, a semantic result, answer disabled and zero unexpected external requests. This exact state remains the immediate rollback baseline."
+      },
+      {
+        "kind": "ci",
+        "mode": "automated",
+        "label": "AI-8 isolated production provisioning",
+        "state": "passed",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/32348455080",
+        "observedAt": "2026-08-20",
+        "scope": "Protected production provisioning run 32348455080 succeeded on attempt 2 against source 6b483871d0d949f351a545f980290ca407f40f06. It provisioned and pre-activation verified the dedicated AI-8 FULL Worker without changing public SEARCH or creating a route/custom-domain takeover."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "AI-8 public FULL activation PR #294",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/294",
+        "observedAt": "2026-08-20",
+        "scope": "PR #294 changed only public AI mode from SEARCH to FULL and the accepted SEARCH Worker target to the dedicated AI-8 production FULL Worker. Exact runtime SHA 93028b979f273b6382f480a500555a258c426607 preserved AI-6 SEARCH as the explicit rollback contract."
+      },
+      {
+        "kind": "ci",
+        "mode": "automated",
+        "label": "AI-8 public FULL production acceptance",
+        "state": "passed",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/actions/runs/32355776796",
+        "observedAt": "2026-08-20",
+        "scope": "Canonical manual acceptance run 32355776796 passed on exact runtime SHA 93028b979f273b6382f480a500555a258c426607. Sanitized evidence proved the dedicated Worker identity, CORS allow/deny, openai/text-embedding-3-small with 512 dimensions, semantic SEARCH regression, grounded canonical citation, empty insufficient-evidence answer, lifetime-capped spend and zero unexpected external requests."
+      },
+      {
+        "kind": "pr",
+        "mode": "automated",
+        "label": "AI-8 durable production acceptance reconciliation PR #295",
+        "state": "merged",
+        "url": "https://github.com/True-Ruslan/trueruslan-landing/pull/295",
+        "observedAt": "2026-08-20",
+        "scope": "PR #295 recorded the accepted AI-8 FULL production evidence in PROJECT_STATE, ROADMAP and CHANGELOG without modifying runtime, Worker configuration, credentials, routes or acceptance workflows. Squash/master be439044b67b93c6112659c5ac8c6f50153b1f52 is documentation-only durable state on top of the accepted runtime."
       }
     ]
   }
