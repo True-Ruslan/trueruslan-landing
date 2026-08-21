@@ -31,13 +31,13 @@ function assertOrdered(source, markers, label) {
   }
 }
 
-function assertProjectHub({path: relativePath, headings}) {
+function assertProjectHub({path: relativePath, headings, commercialMarkers = ['marketdb']}) {
   const source = read(relativePath);
   assertOrdered(source, headings, relativePath);
   assert.doesNotMatch(
     source,
-    /<a\b[^>]*href=["'][^"']+\.md(?:[?#][^"']*)?["']/i,
-    `${relativePath} raw C3 card anchors must target generated .html files so clean-url projection can publish canonical directory routes`,
+    /<a\b[^>]*class=["'][^"']*tr-project-index-card__cta[^"']*["'][^>]*href=["'][^"']+\.md(?:[?#][^"']*)?["']/i,
+    `${relativePath} raw C3 project-card CTAs must target generated .html files so clean-url projection can publish canonical directory routes`,
   );
 
   const selected = section(source, headings[0], headings[1]);
@@ -48,7 +48,7 @@ function assertProjectHub({path: relativePath, headings}) {
   );
 
   const commercial = section(source, headings[1], headings[2]);
-  assert.deepEqual(markerValues(commercial, 'data-c3-commercial'), ['marketdb']);
+  assert.deepEqual(markerValues(commercial, 'data-c3-commercial'), commercialMarkers);
 
   const labs = section(source, headings[2]);
   assert.deepEqual(
@@ -110,6 +110,19 @@ test('C3 source surfaces expose the approved scan-first Projects hierarchy and f
     path: 'docs/en/projects.md',
     headings: ['## Selected work', '## Historical commercial context', '## Labs & experiments'],
   });
+
+  const projectsRu = read('docs/landing/projects.md');
+  assert.match(
+    projectsRu,
+    /class="tr-commercial-current"[^>]*data-tr-commercial-current(?:\s|>)/,
+    'RU current work must stay outside the C3 commercial-project identity set',
+  );
+  assert.doesNotMatch(projectsRu, /data-c3-commercial="current"/);
+  assert.match(
+    projectsRu,
+    /class="tr-commercial-current__link" href="resume\.md">подробности по ролям и стеку — в разделе Опыт\.<\/a>/,
+    'RU current-work callout must keep one descriptive source-relative Experience link outside project-card CTA routing',
+  );
 
   const flagships = [
     ['livingworld', 'docs/landing/projects/livingworld.md', 'docs/en/projects/livingworld.md'],

@@ -31,15 +31,15 @@ test('inspected visual overrides are bounded to explicitly reviewed baseline key
   }
 });
 
-test('C3/N3 Projects overrides record the reviewed scan-first layouts', () => {
+test('Projects overrides record the reviewed current-work callout layouts', () => {
   assert.deepEqual(
     {
       desktop: [overrides['projects-desktop.png'].width, overrides['projects-desktop.png'].height],
       mobile: [overrides['projects-mobile.png'].width, overrides['projects-mobile.png'].height],
     },
     {
-      desktop: [1440, 1753],
-      mobile: [390, 3099],
+      desktop: [1440, 1813],
+      mobile: [390, 3246],
     },
   );
   assert.ok(overrides['projects-desktop.png'].height < base.baselines['projects-desktop.png'].height);

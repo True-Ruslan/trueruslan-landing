@@ -39,7 +39,9 @@
 <a class="tr-project-index-card__cta" href="https://marketdb.pro">marketdb.pro ↗</a>
 </article>
 
-Текущая коммерческая работа — QWEP; подробности по ролям и стеку — в разделе [Опыт](resume.md).
+<div class="tr-commercial-current" data-tr-commercial-current>
+<p class="tr-commercial-current__line"><span class="tr-commercial-current__status">Текущая коммерческая работа</span> <strong class="tr-commercial-current__title">— QWEP;</strong> <a class="tr-commercial-current__link" href="resume.md">подробности по ролям и стеку — в разделе Опыт.</a></p>
+</div>
 
 ## Лаборатория и эксперименты
 

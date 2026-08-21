@@ -181,12 +181,30 @@ async function assertArchiveAndLightbox(page, name, baseUrl) {
 }
 
 async function waitForVisibleRevealTransitions(page) {
+  await page.waitForFunction(() => {
+    const effectiveBottom = window.innerHeight * 0.93;
+    const nodes = [...document.querySelectorAll('.tr-reveal')].filter((node) => {
+      const rect = node.getBoundingClientRect();
+      const style = getComputedStyle(node);
+      return rect.width > 0
+        && rect.height > 0
+        && rect.bottom > 0
+        && rect.top < effectiveBottom
+        && rect.right > 0
+        && rect.left < window.innerWidth
+        && style.display !== 'none'
+        && style.visibility !== 'hidden';
+    });
+    return nodes.length > 0 && nodes.every((node) => node.classList.contains('is-visible'));
+  });
+
   await page.evaluate(async () => {
     const revealAnimations = [...document.querySelectorAll('.tr-reveal.is-visible')]
       .flatMap((node) => node.getAnimations())
       .filter((animation) => animation.playState !== 'finished');
     await Promise.all(revealAnimations.map((animation) => animation.finished.catch(() => undefined)));
   });
+
   await page.waitForFunction(() => [...document.querySelectorAll('.tr-reveal.is-visible')]
     .every((node) => Number.parseFloat(getComputedStyle(node).opacity) >= 0.999));
 }
