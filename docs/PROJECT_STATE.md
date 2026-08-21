@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-20**. Cross-project Content Freshness reconciliation — **ACCEPTED** through PR #296, merged into `master` as `eef10c07d37d97f75ea47857b304af4c197bf914`. Final exact-head Build #2423 / `32418136511`, Content Freshness #244 / `32418136446`, CodeQL #1989 / `32418136443` and Dependency Review #1787 / `32418136563` were SUCCESS. Canonical master Content Freshness run `32418834360` then completed with **0 findings / 0 warnings / 0 errors**, artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`, and automatically closed issue #78 as COMPLETED. AI-8 public FULL production acceptance and the exact AI-6 SEARCH rollback baseline remain unchanged. Controlled launch remains `not-published`; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Последнее смысловое обновление: **2026-08-21**. Controlled-launch publication receipt tooling — **ACCEPTED** through PR #298, exact final head `8cf398244e4feca346e616911b401c42daa5c8ce`, squash-merged into `master` as `87e468042f5db20b314ab788d99ac6a17e26d88e`. Exact-head Build #2439 / `32422592155`, CodeQL #2007 / `32422592122`, Distribution Readiness #209 / `32422592157`, Dependency Review #1803 / `32422592151` and Dependency Audit Evidence #281 / `32422592227` were SUCCESS. Focused artifact `9426221563`, digest `sha256:aeb056cdc5d99957311cb8c7056d97fe1ad6a9a82521c7298245ce8121d354be`, passed 8/8 receipt contract/integration tests while preserving **10 targets / 38 manual drafts / `not-published`**. The receipt boundary is local/operator-supplied, independently unverified and has `stateImpact: none`; no external publication, SEO/measurement promotion or Search Console/Webmaster mutation was inferred. AI-8 public FULL production acceptance and the exact AI-6 SEARCH rollback baseline remain unchanged. P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Полный snapshot до reconciliation сохранён byte-for-byte в `docs/archive/2026-08-14/PROJECT_STATE.md`. Этот root-файл остаётся current durable snapshot и одновременно сохраняет compact historical contract markers, используемые CI.
 
@@ -21,10 +21,11 @@ AI-8 evidence SHA-256:              93f07c39183feb21ff69a7557fb220cadf6cf172a9a0
 AI-6 SEARCH rollback baseline:       3809d6f0290ab22f080e919f2ff26b1b018f3db6
 freshness reconciliation SHA:        eef10c07d37d97f75ea47857b304af4c197bf914
 master freshness run:               32418834360 — SUCCESS / 0 findings
+launch receipt tooling merge:        87e468042f5db20b314ab788d99ac6a17e26d88e
 controlled launch:                  not-published
 ```
 
-N1–N6 presentation/editorial implementation, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification remain accepted. Post-N6 reconciliation includes PR #254 durable-state contract repair, PR #255 cross-project Content Freshness reconciliation, PR #256 Vlezet production-verifier boundary, PR #257 VillAIgence public 0.3.2 truth, PR #258 VillAIgence production-verifier reconciliation, and PR #296 current cross-project evidence reconciliation after AI-8 and Vlezet M8.4 activity.
+N1–N6 presentation/editorial implementation, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification remain accepted. Post-N6 reconciliation includes PR #254 durable-state contract repair, PR #255 cross-project Content Freshness reconciliation, PR #256 Vlezet production-verifier boundary, PR #257 VillAIgence public 0.3.2 truth, PR #258 VillAIgence production-verifier reconciliation, PR #296 cross-project evidence reconciliation after AI-8 and Vlezet M8.4 activity, and PR #298 accepted controlled-launch publication receipt intake. PR #298 is repository/operator tooling only: it does not itself publish, independently verify a supplied external URL, or change product/search/measurement acceptance.
 
 Current cross-project evidence snapshot:
 - VillAIgence: official release `0.3.2+1.21.1`; automated release gates PASS; historical installed 0.3.1 corrective canary FAILED; PR #169 correction and PR #171 exact 0.3.2 retest handoff are merged; exact installed 0.3.2 corrective canary remains PENDING; `0.2.0+1.21.1` with `7 PASS / 0 FAIL` remains the last fully accepted installed baseline; 0.4 remains blocked.
@@ -58,6 +59,8 @@ PR #247 prepared repository-side host-preserving/Cloudflare alias contracts. `tr
 ## 4. External launch and search evidence
 
 - controlled launch pack: **10 targets / 38 manual drafts / not-published**;
+- controlled launch publication receipt intake — **ACCEPTED** through PR #298; raw input remains private under `private/distribution/`; normalized output is `operator-supplied-not-independently-fetched` with `stateImpact: none`;
+- a publication receipt may be created only after a real manual public post exists; it is provenance handoff, not proof of reach, indexing, ranking, engagement or causal product impact;
 - P4.1B intake tooling — PRODUCTION ACCEPTED;
 - P4.1B real external evidence review — **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**;
 - P4.1C — **WAITING**;
@@ -74,7 +77,7 @@ P3.5B exact production acceptance and P3.5C exact production acceptance remain h
 ## 6. Approved next product slice
 
 Portfolio 1.0 presentation implementation is **COMPLETE THROUGH C7**.
-Current bounded product/operator lane: P4.1B real external evidence review — **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**.
+Current bounded product/operator lane: deliberate manual controlled launch, then local publication receipt capture for real posted surfaces, followed by P4.1B real external evidence review — **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**. Receipt capture alone does not advance the evidence lane.
 AI engineering lane: AI-8 public FULL rollout is **DONE / PRODUCTION ACCEPTED**; next work is operational observation and regression/spend monitoring only, with AI-6 SEARCH preserved as rollback.
 P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**.
 
@@ -83,14 +86,14 @@ P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**.
 - issue #82 — OPEN upstream Diplodoc/markdown-it blocker; no forced incompatible override.
 - issue #78 — CLOSED / COMPLETED after canonical master Content Freshness run `32418834360` reported `0 findings / 0 warnings / 0 errors`; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`; no active freshness debt is implied.
 - issue #111 — authenticated Yandex Webmaster/operator boundary.
-- issue #212 — authenticated P4.1B external evidence collection/review.
+- issue #212 — OPEN; tracker reconciled on 2026-08-21 to the accepted real GSC **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**. The first GSC adapter is accepted, but current evidence remains insufficient for P4.1C/P3.6 and Yandex-specific evidence is still outstanding.
 - issues #274 and #276 are CLOSED / COMPLETED; AI-6 SEARCH remains the accepted rollback baseline.
 - issue #289 — CLOSED / COMPLETED after AI-8 public FULL production acceptance.
 - PR #291 — CLOSED UNMERGED; its cross-browser install resilience approach was superseded by the accepted pinned-container gate.
 
 ## 8. Next optimal order
 
-Product/operator: deliberate manual controlled launch → real GSC/Yandex Webmaster observations → evidence-backed P4.1C/P3.6 decisions.
+Product/operator: deliberate manual controlled launch → local fail-closed receipt for the real public surfaces → real post-launch GSC/Yandex Webmaster observations over a meaningful window → evidence-backed P4.1C/P3.6 decisions.
 
 AI engineering: keep AI-8 FULL stable, observe real failures/latency/spend without weakening evidence gates, and retain immediate rollback to the accepted AI-6 SEARCH baseline. No additional AI promotion gate is currently required.
 
@@ -146,4 +149,5 @@ This compact ledger keeps the exact evidence markers consumed by repository cont
 - P4.1B intake tooling — DONE / PRODUCTION ACCEPTED: PR #210; `6083e4d950d74b272cce199fedccc730dfcc4fed`; Build #1922 / 31599699918 — SUCCESS; 731 PASS / 0 FAIL; Pages: #234 / 31600575541 — SUCCESS; Production Live Smoke: #520 / 31600575540 — SUCCESS; CodeQL: #1475 / 31600575547 — SUCCESS; externalEvidence: not-collected; externalEvidence=not-collected.
 - P4.1B real Google Search Console adapter — DONE / PRODUCTION ACCEPTED: PR #213; `831535461f3c72d53e3510574ae7ae9c52ab54f6`; accepted against a real Google Search Console shape; observations remain sparse pre-public-launch / SPARSE PRE-LAUNCH BASELINE.
 - Controlled launch pack — PRODUCTION ACCEPTED: PR #214; `bed23ac0330ca112b94259998adcd8187203988a`; 10 targets / 38 manual drafts / not-published.
+- Controlled launch publication receipt intake — DONE / ACCEPTED: PR #298; exact head `8cf398244e4feca346e616911b401c42daa5c8ce`; merged `87e468042f5db20b314ab788d99ac6a17e26d88e`; Build #2439 / `32422592155`, CodeQL #2007 / `32422592122`, Distribution Readiness #209 / `32422592157`, Dependency Review #1803 / `32422592151`, Dependency Audit Evidence #281 / `32422592227` — SUCCESS; focused artifact `9426221563`, digest `sha256:aeb056cdc5d99957311cb8c7056d97fe1ad6a9a82521c7298245ce8121d354be`; 8/8 receipt tests PASS; raw operator input private; normalized receipt verification state `operator-supplied-not-independently-fetched`; `stateImpact: none`; no external post or search/measurement conclusion was created by repository tooling.
 - P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE. P4.1C — WAITING. P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE. Controlled launch remains not-published. Clean-URL observation clock remains `2026-08-05T00:00:00Z`.
