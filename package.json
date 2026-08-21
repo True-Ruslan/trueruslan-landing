@@ -52,6 +52,7 @@
     "check:ai": "node scripts/ai-index-verify.js --allow-off",
     "report:discovery:external": "node scripts/search-discovery-external-report.js",
     "report:launch-pack": "node scripts/launch-pack.js",
+    "report:launch-receipt": "node scripts/launch-publication-receipt.js",
     "check:freshness": "node scripts/content-freshness-report.js",
     "probe:freshness": "node scripts/content-freshness-probe.js",
     "ai:corpus": "node scripts/ai-corpus.js --write data/ai-index/chunks.json",

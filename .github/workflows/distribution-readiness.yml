@@ -14,8 +14,14 @@ on:
       - 'scripts/launch-distribution-contract.test.js'
       - 'scripts/launch-pack.js'
       - 'scripts/launch-pack.test.js'
+      - 'scripts/launch-publication-receipt.js'
+      - 'scripts/launch-publication-receipt.test.js'
+      - 'scripts/launch-publication-receipt.integration.test.js'
       - 'docs/DISTRIBUTION.md'
       - 'docs/keystone/specs/2026-08-12-controlled-launch-pack.md'
+      - 'docs/keystone/specs/2026-08-21-controlled-launch-publication-receipt.md'
+      - 'package.json'
+      - '.gitignore'
       - '.github/workflows/distribution-readiness.yml'
 
 permissions:
@@ -46,6 +52,7 @@ jobs:
           set -o pipefail
           node scripts/distribution-readiness.js --check-runbook 2>&1 | tee distribution-readiness.log
           node scripts/launch-pack.js 2>&1 | tee launch-pack.log
+          node --test scripts/launch-publication-receipt.test.js scripts/launch-publication-receipt.integration.test.js 2>&1 | tee launch-publication-receipt-test.log
 
       - name: Preserve generator logs
         if: always()
@@ -54,6 +61,7 @@ jobs:
           mkdir -p distribution-artifacts
           cp distribution-readiness.log distribution-artifacts/distribution-readiness.log 2>/dev/null || true
           cp launch-pack.log distribution-artifacts/launch-pack.log 2>/dev/null || true
+          cp launch-publication-receipt-test.log distribution-artifacts/launch-publication-receipt-test.log 2>/dev/null || true
 
       - name: Upload distribution readiness evidence
         if: always()
