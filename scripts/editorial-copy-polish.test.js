@@ -20,7 +20,8 @@ test('RU Projects uses public-facing project language while preserving project t
     normalizeChunkText(source),
     /Текущая коммерческая работа — QWEP; подробности по ролям и стеку — в разделе Опыт\./,
   );
-  assert.match(source, /class="tr-commercial-current"[^>]*data-c3-commercial="current"/);
+  assert.match(source, /class="tr-commercial-current"[^>]*data-tr-commercial-current(?:\s|>)/);
+  assert.doesNotMatch(source, /data-c3-commercial="current"/);
   absent(source, ['Открыть case study', 'Static-first', 'source, artifact, deployment', 'recognition как'], 'RU Projects');
 });
 
