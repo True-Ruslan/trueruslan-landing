@@ -69,10 +69,10 @@ jobs:
 
           echo "sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout trusted default branch
+      - name: Checkout trusted workflow commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: ${{ github.event.repository.default_branch }}
+          ref: ${{ github.sha }}
           path: trusted
           persist-credentials: false
           fetch-depth: 1
@@ -93,15 +93,16 @@ jobs:
       - name: Reject executable or authority changes
         run: |
           set -euo pipefail
+          # Content maintenance is fail-closed. Authority-bearing examples such as
+          # scripts/*.js, .github/*, package-lock.json and data/ai-navigator.json
+          # are intentionally excluded from this allowlist.
           while IFS= read -r changed; do
             case "$changed" in
-              scripts/*.test.js|tests/*|docs/*)
-                ;;
-              scripts/*.js|.github/*|package.json|package-lock.json|data/ai-navigator.json|data/ai-index-accepted/*|data/ai-index/*)
-                echo "::error::AI maintenance refuses executable or authority change: $changed"
-                exit 1
+              docs/*|scripts/*.test.js|tests/*)
                 ;;
               *)
+                echo "::error::AI maintenance refuses non-content candidate: $changed"
+                exit 1
                 ;;
             esac
           done < "$RUNNER_TEMP/candidate-files.txt"
@@ -159,7 +160,13 @@ jobs:
             throw new Error(`maintenance refresh accounting mismatch: expected ${changed.length}, got ${refreshed.refreshed}`);
           }
           const after = await fetchCurrentKeyMetadata({apiKey});
-          const runUsageDeltaUsd = Number(Math.max(0, after.usageUsd - before.usageUsd).toFixed(12));
+          if (after.limitUsd !== before.limitUsd || after.limitReset !== null || before.limitReset !== null) {
+            throw new Error('provider key policy changed during maintenance');
+          }
+          if (after.usageUsd + 1e-9 < before.usageUsd) {
+            throw new Error('provider usage moved backwards during maintenance');
+          }
+          const runUsageDeltaUsd = Number((after.usageUsd - before.usageUsd).toFixed(12));
           const evidence = {
             schemaVersion: 1,
             evidenceClass: 'real-provider-index-maintenance',
