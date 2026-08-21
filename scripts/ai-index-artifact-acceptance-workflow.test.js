@@ -36,8 +36,8 @@ test('reviewed AI index artifact acceptance is workflow-run gated, provider-free
   assert.match(source, /providerAccess/);
   assert.match(source, /real-provider-index-maintenance/);
   assert.match(source, /data\/ai-index-accepted\/ai5/);
-  assert.match(source, /git diff --cached --name-only/);
-  assert.match(source, /git push/);
+  assert.match(source, /git -C candidate diff --cached --name-only/);
+  assert.match(source, /git -C candidate push origin/);
 
   assert.doesNotMatch(source, /OPENROUTER_API_KEY|secrets\.OPENROUTER|ai5-provider-acceptance/);
   assert.doesNotMatch(source, /actions\/download-artifact|allow-unsafe-pr-checkout:\s*true/);
