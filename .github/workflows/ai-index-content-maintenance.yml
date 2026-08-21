@@ -17,7 +17,6 @@ jobs:
         github.event.comment.author_association == 'OWNER' &&
         startsWith(github.event.comment.body, '/refresh-ai-index ')) ||
       (github.event_name == 'pull_request_target' &&
-        github.actor == github.repository_owner &&
         github.event.pull_request.user.login == github.repository_owner &&
         github.event.pull_request.head.repo.full_name == github.repository &&
         startsWith(github.event.pull_request.body, '/refresh-ai-index '))
@@ -43,7 +42,6 @@ jobs:
         github.event.comment.author_association == 'OWNER' &&
         startsWith(github.event.comment.body, '/refresh-ai-index ')) ||
       (github.event_name == 'pull_request_target' &&
-        github.actor == github.repository_owner &&
         github.event.pull_request.user.login == github.repository_owner &&
         github.event.pull_request.head.repo.full_name == github.repository &&
         startsWith(github.event.pull_request.body, '/refresh-ai-index '))
