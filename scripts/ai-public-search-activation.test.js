@@ -4,15 +4,11 @@ import path from 'node:path';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
+import {ACCEPTED_AI5_FILE_DIGESTS, ACCEPTED_AI5_SOURCE} from './ai-index-restore.js';
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ACCEPTED_SEARCH_WORKER = 'https://trueruslan-ai-navigator-ai6-search-canary.trueruslan.workers.dev';
 const AI8_PRODUCTION_WORKER = 'https://trueruslan-ai-navigator-ai8-full-production.trueruslan.workers.dev';
-const ACCEPTED_AI5_SOURCE = 'data/ai-index-accepted/ai5';
-const ACCEPTED_AI5_FILE_DIGESTS = Object.freeze({
-  'chunks.json': '1249ed898193d1a05bda632b1328a860909887a1700092ba38e612ac7e6ac17a',
-  'index-meta.json': 'ad301d88071b2a57fe68df07cd98cdd9596ecc1ccc832453fc692af4d92f718d',
-  'embeddings.bin': 'aaf2c7ba86a53f0ff040e63c2c75decbf538a84d6c54c1da0e44f124b199510a',
-});
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
@@ -42,8 +38,13 @@ test('public AI config activates only the dedicated AI-8 FULL production candida
 test('enabled AI builds restore only the exact accepted AI-5 index from durable repository bytes', () => {
   const restore = read('scripts/ai-index-restore.js');
   assert.match(restore, new RegExp(ACCEPTED_AI5_SOURCE.replaceAll('/', '\\/')));
+  assert.deepEqual(
+    Object.keys(ACCEPTED_AI5_FILE_DIGESTS).sort(),
+    ['chunks.json', 'embeddings.bin', 'index-meta.json'],
+    'accepted restore allowlist drifted',
+  );
   for (const [name, digest] of Object.entries(ACCEPTED_AI5_FILE_DIGESTS)) {
-    assert.match(restore, new RegExp(digest), `${name}: accepted digest must remain pinned`);
+    assert.match(restore, new RegExp(digest), `${name}: accepted digest must remain pinned by the restore authority`);
   }
   assert.match(restore, /verifyAiIndex/);
   assert.match(restore, /providerAccess: false/);

@@ -580,7 +580,7 @@
     "ru:page:about:vne-koda": "sha256:a83a748f37bda746300147e69f03434bdd5d45790c048e88bbb06976c3cda763",
     "ru:page:now:intro": "sha256:2f7105ca8861520683014fe79b5930f890b76dfcc35245922317835d6ad2ad2b",
     "ru:page:projects:intro": "sha256:c30615d3d3164a4bf3b2a6d25084a410c48366a55e10aed3ec1ddc9357f16065",
-    "ru:page:projects:istoricheskii-kommercheskii-kontekst": "sha256:ee90f310d262d769bf318a97d0a0939c841537f986f0345175bf6fc7ed500a28",
+    "ru:page:projects:istoricheskii-kommercheskii-kontekst": "sha256:f0b0a35f12158be6cbf92adaf4aebcbed8c8246fdee6213ce617e4dbc137cfc6",
     "ru:page:projects:izbrannye-proekty": "sha256:b060add7a033b3540c5a096fcb18b7930f6d25dec364c9258bc083c3eb25db52",
     "ru:page:projects:laboratoriya-i-eksperimenty": "sha256:97c15d51c2a4c0e88b6b32f057a45631191f9650edb7403d350a662a7f445829",
     "ru:page:publications:intro": "sha256:afcc8dc67a312add6825836e974121e12f99994acf48cc4f55db64c0f5fd5be0",
@@ -660,7 +660,7 @@
     "ru:publication:diplodoc-github-pages:intro": "sha256:00ea076028c9bd7628e8e0b7dece4b78e92f40b79a62416217193d95669e7878",
     "ru:publication:java-algorithmic-problems:intro": "sha256:3c6219e1b1a32d20cfa1ec77cb397ded6815d73e63e5b4d7e26cbb0850c353ed"
   },
-  "corpusDigest": "sha256:1249ed898193d1a05bda632b1328a860909887a1700092ba38e612ac7e6ac17a",
-  "embeddingsDigest": "sha256:aaf2c7ba86a53f0ff040e63c2c75decbf538a84d6c54c1da0e44f124b199510a",
-  "sourceCommit": "f02cfff534ca5a1e251981827a0b886a6c5ec112"
+  "corpusDigest": "sha256:95b4f2347c9206ea782c31f6c87048bc5073dc1e666f1e1e22be1f12595c393a",
+  "embeddingsDigest": "sha256:5928142dacccc18c69a8d3df7e3ecbb6202138595bd6c85059f41817a7665e67",
+  "sourceCommit": "4e779359b279b8f9cf47a3088be7553d9570d6ce"
 }
