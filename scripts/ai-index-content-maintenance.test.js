@@ -38,6 +38,15 @@ test('AI index content maintenance binds the command to the same-repository curr
   assert.match(source, /persist-credentials: false/g);
 });
 
+test('trusted authority is pinned to the issue-comment event SHA and candidate paths are content-only allowlisted', () => {
+  const source = readWorkflow();
+
+  assert.match(source, /name: Checkout trusted workflow commit[\s\S]*?ref: \$\{\{ github\.sha \}\}/);
+  assert.doesNotMatch(source, /ref: \$\{\{ github\.event\.repository\.default_branch \}\}/);
+  assert.match(source, /docs\/\*\|scripts\/\*\.test\.js\|tests\/\*/);
+  assert.match(source, /AI maintenance refuses non-content candidate:/);
+});
+
 test('AI index content maintenance executes trusted indexing code and rejects unsafe candidate inputs', () => {
   const source = readWorkflow();
 
@@ -65,6 +74,11 @@ test('AI index content maintenance uses bounded real-provider accounting and pre
   assert.match(source, /createEmbeddingAccountingFetch/);
   assert.match(source, /refreshAiIndex/);
   assert.match(source, /refreshed > 8/);
+  assert.match(source, /after\.limitUsd !== before\.limitUsd/);
+  assert.match(source, /after\.limitReset !== null/);
+  assert.match(source, /after\.usageUsd \+ 1e-9 < before\.usageUsd/);
+  assert.match(source, /provider key policy changed during maintenance/);
+  assert.match(source, /provider usage moved backwards during maintenance/);
   assert.match(source, /node scripts\/ai-index-verify\.js/);
   assert.match(source, /"providerAccess": false/);
   assert.match(source, /actions\/upload-artifact@[a-f0-9]{40}/);
