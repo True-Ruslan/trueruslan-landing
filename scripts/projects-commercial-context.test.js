@@ -22,8 +22,9 @@ test('Projects turns the existing QWEP sentence into a lightweight current-work 
   assert.ok(marketDbIndex < currentIndex, 'presentation-only refinement must preserve canonical commercial-section text order');
 
   assert.match(projects, /class="tr-commercial-current"[^>]*data-tr-commercial-current/);
-  assert.match(projects, /class="tr-commercial-current__status"[^>]*>Текущая коммерческая работа<\/span>/);
-  assert.match(projects, /class="tr-commercial-current__title"[^>]*>— QWEP;<\/strong>/);
+  assert.match(projects, /class="tr-commercial-current__status"[^>]*>текущая занятость<\/span>/);
+  assert.match(projects, /class="tr-commercial-current__title"[^>]*>— QWEP<\/strong>/);
+  assert.doesNotMatch(projects, /— QWEP;/, 'current employment title must not end with a semicolon');
   assert.match(
     projects,
     /<a class="tr-commercial-current__link" href="resume\.md">подробности по ролям и стеку — в разделе Опыт\.<\/a>/,
