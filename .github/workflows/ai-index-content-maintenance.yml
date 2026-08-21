@@ -409,9 +409,7 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
-          if "$ISSUE_NUMBER" =~ ^[1-9][0-9]*$; then
-            :
-          else
+          if ! [[ "$ISSUE_NUMBER" =~ ^[1-9][0-9]*$ ]]; then
             echo "::error::Maintenance result has no valid PR number."
             exit 1
           fi
