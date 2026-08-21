@@ -207,6 +207,11 @@ jobs:
           persist-credentials: false
           fetch-depth: 1
 
+      - name: Setup pinned Node.js for trusted offline verification
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+
       - name: Rebuild candidate corpus with trusted code and verify artifact offline
         env:
           CANDIDATE_SHA: ${{ steps.authorize.outputs.candidate_sha }}
@@ -262,7 +267,6 @@ jobs:
             data/ai-index-accepted/ai5/index-meta.json \
             data/ai-index-accepted/ai5/embeddings.bin
 
-          git diff --cached --name-only -- candidate >/dev/null 2>&1 || true
           STAGED="$(git -C candidate diff --cached --name-only | sort)"
           EXPECTED="$(printf '%s\n' \
             'data/ai-index-accepted/ai5/chunks.json' \
