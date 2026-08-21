@@ -7,11 +7,27 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: ai-index-content-maintenance-${{ github.event.issue.number }}
-  cancel-in-progress: false
-
 jobs:
+  receipt:
+    if: >-
+      github.event.issue.pull_request &&
+      github.event.comment.author_association == 'OWNER' &&
+      startsWith(github.event.comment.body, '/refresh-ai-index ')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    permissions:
+      issues: write
+    steps:
+      - name: Publish sanitized maintenance receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          BODY="AI index content maintenance: **received**. Run: ${RUN_URL}. Command validation and provider execution are not complete."
+          gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/comments" -f body="$BODY" >/dev/null
+
   maintenance:
     if: >-
       github.event.issue.pull_request &&
@@ -20,11 +36,17 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment: ai5-provider-acceptance
+    concurrency:
+      group: ai-index-content-maintenance-${{ github.event.issue.number }}
+      cancel-in-progress: false
     permissions:
       contents: read
       pull-requests: read
     outputs:
       candidate_sha: ${{ steps.candidate.outputs.sha }}
+      deduplicated: ${{ steps.dedupe.outputs.deduplicated }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+      artifact_digest: ${{ steps.upload.outputs.artifact-digest }}
     steps:
       - name: Resolve exact candidate
         id: candidate
@@ -69,7 +91,35 @@ jobs:
 
           echo "sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
 
+      - name: Recheck existing successful maintenance
+        id: dedupe
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          MATCH_COUNT="$(
+            gh api --paginate "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/comments?per_page=100" \
+              | jq -s --arg sha "$CANDIDATE_SHA" '
+                  [
+                    .[][] |
+                    select(
+                      .user.login == "github-actions[bot]" and
+                      (.body | startswith("AI index content maintenance: **success**. Candidate: `" + $sha + "`. Run:"))
+                    )
+                  ] | length
+                '
+          )"
+          if [ "$MATCH_COUNT" -gt 0 ]; then
+            echo "deduplicated=true" >> "$GITHUB_OUTPUT"
+            echo "Existing successful bot-authored maintenance evidence found for exact candidate; provider work will be skipped."
+          else
+            echo "deduplicated=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout trusted workflow commit
+        if: steps.dedupe.outputs.deduplicated != 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.sha }}
@@ -78,6 +128,7 @@ jobs:
           fetch-depth: 1
 
       - name: Checkout exact candidate
+        if: steps.dedupe.outputs.deduplicated != 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ steps.candidate.outputs.sha }}
@@ -86,11 +137,13 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Node.js
+        if: steps.dedupe.outputs.deduplicated != 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: 24
 
       - name: Reject executable or authority changes
+        if: steps.dedupe.outputs.deduplicated != 'true'
         run: |
           set -euo pipefail
           # Content maintenance is fail-closed. Authority-bearing examples such as
@@ -119,6 +172,7 @@ jobs:
           cp -a trusted/data/ai-index-accepted/ai5 candidate/data/ai-index
 
       - name: Refresh bounded changed chunks
+        if: steps.dedupe.outputs.deduplicated != 'true'
         working-directory: candidate
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_AI5_API_KEY }}
@@ -191,6 +245,7 @@ jobs:
           NODE
 
       - name: Offline verify refreshed candidate
+        if: steps.dedupe.outputs.deduplicated != 'true'
         working-directory: candidate
         run: |
           set -euo pipefail
@@ -199,6 +254,8 @@ jobs:
           grep -q '"providerAccess": false' quality-artifacts/ai-index-maintenance-verify.json
 
       - name: Upload candidate index evidence
+        id: upload
+        if: steps.dedupe.outputs.deduplicated != 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: ai-index-content-maintenance-${{ github.event.issue.number }}-${{ github.run_id }}
@@ -225,8 +282,25 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           RESULT: ${{ needs.maintenance.result }}
           CANDIDATE_SHA: ${{ needs.maintenance.outputs.candidate_sha }}
+          DEDUPLICATED: ${{ needs.maintenance.outputs.deduplicated }}
+          ARTIFACT_ID: ${{ needs.maintenance.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ needs.maintenance.outputs.artifact_digest }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
-          BODY="AI index content maintenance: **${RESULT}**. Candidate: \`${CANDIDATE_SHA:-unresolved}\`. Run: ${RUN_URL}"
+          if [ "$DEDUPLICATED" = "true" ]; then
+            BODY="AI index content maintenance: **success-deduplicated**. Candidate: \`${CANDIDATE_SHA:-unresolved}\`. Run: ${RUN_URL}. Existing successful bot-authored maintenance evidence already exists; provider was not called."
+          elif [ "$RESULT" = "success" ]; then
+            if ! [[ "$ARTIFACT_ID" =~ ^[0-9]+$ ]]; then
+              echo "::error::Successful maintenance must expose a numeric artifact ID."
+              exit 1
+            fi
+            if ! [[ "$ARTIFACT_DIGEST" =~ ^[a-f0-9]{64}$ ]]; then
+              echo "::error::Successful maintenance must expose a SHA-256 artifact digest."
+              exit 1
+            fi
+            BODY="AI index content maintenance: **success**. Candidate: \`${CANDIDATE_SHA}\`. Run: ${RUN_URL}. Artifact: ${ARTIFACT_ID}; sha256:${ARTIFACT_DIGEST}."
+          else
+            BODY="AI index content maintenance: **${RESULT}**. Candidate: \`${CANDIDATE_SHA:-unresolved}\`. Run: ${RUN_URL}."
+          fi
           gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/comments" -f body="$BODY" >/dev/null
