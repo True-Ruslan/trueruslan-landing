@@ -2,58 +2,70 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 
-const workflowPath = '.github/workflows/ai-index-content-maintenance.yml';
+const providerWorkflowPath = '.github/workflows/ai-index-content-maintenance.yml';
+const persistWorkflowPath = '.github/workflows/ai-index-maintenance-persist.yml';
 
-function readWorkflow() {
-  return fs.readFileSync(workflowPath, 'utf8');
+function read(path) {
+  return fs.readFileSync(path, 'utf8');
 }
 
-test('successful provider maintenance persists only verified accepted-index bytes from a secret-free job', () => {
-  const source = readWorkflow();
-  const maintenanceStart = source.indexOf('  maintenance:');
+test('provider maintenance remains read-only while durable persistence is a separate downstream workflow', () => {
+  const provider = read(providerWorkflowPath);
+  const persist = read(persistWorkflowPath);
+
+  assert.doesNotMatch(provider, /contents:\s*write/);
+  assert.match(persist, /^name: AI Index Maintenance Persist$/m);
+  assert.match(
+    persist,
+    /^\s{2}workflow_run:\s*\n\s{4}workflows: \[AI Index Content Maintenance\]\s*\n\s{4}types: \[completed\]$/m,
+  );
+  assert.match(persist, /^permissions: \{\}$/m);
+  assert.doesNotMatch(persist, /environment:|OPENROUTER|secrets\./);
+});
+
+test('persistence gates write permission behind secret-free artifact and exact-PR authorization', () => {
+  const source = read(persistWorkflowPath);
+  const gateStart = source.indexOf('  gate:');
   const persistStart = source.indexOf('  persist:');
-  const reportStart = source.indexOf('  report:');
+  assert.ok(gateStart >= 0 && persistStart > gateStart, 'secret-free gate must precede the write-capable persist job');
 
-  assert.ok(maintenanceStart >= 0 && persistStart > maintenanceStart && reportStart > persistStart,
-    'persist must be isolated after provider maintenance and before reporting');
+  const gate = source.slice(gateStart, persistStart);
+  const persist = source.slice(persistStart);
 
-  const maintenance = source.slice(maintenanceStart, persistStart);
-  const persist = source.slice(persistStart, reportStart);
+  assert.match(gate, /permissions:[\s\S]*?actions: read[\s\S]*?contents: read[\s\S]*?pull-requests: read/);
+  assert.doesNotMatch(gate, /contents:\s*write|pull-requests:\s*write|issues:\s*write/);
+  assert.match(gate, /eligible=false/);
+  assert.match(gate, /eligible=true/);
+  assert.match(gate, /AI Index Content Maintenance/);
+  assert.match(gate, /ai-index-content-maintenance-/);
+  assert.match(gate, /workflow_run\.id/);
+  assert.match(gate, /artifact_digest/);
+  assert.match(gate, /pulls\/\$PR_NUMBER/);
+  assert.match(gate, /CONFIRM_OPENROUTER_REAL_EMBEDDING_RUN/);
+  assert.match(gate, /HEAD_REPO/);
+  assert.match(gate, /HEAD_SHA/);
 
-  assert.match(maintenance, /permissions:\s*\n\s{6}contents: read\s*\n\s{6}pull-requests: read/);
-  assert.doesNotMatch(maintenance, /contents:\s*write/);
-
-  assert.match(persist, /needs: maintenance/);
-  assert.match(persist, /needs\.maintenance\.result == 'success'/);
-  assert.match(persist, /needs\.maintenance\.outputs\.deduplicated != 'true'/);
+  assert.match(persist, /needs: gate/);
+  assert.match(persist, /needs\.gate\.outputs\.eligible == 'true'/);
   assert.match(persist, /permissions:[\s\S]*?actions: read[\s\S]*?contents: write[\s\S]*?pull-requests: read/);
   assert.doesNotMatch(persist, /environment:|OPENROUTER|secrets\./);
+});
 
-  assert.match(persist, /ARTIFACT_ID: \$\{\{ needs\.maintenance\.outputs\.artifact_id \}\}/);
-  assert.match(persist, /ARTIFACT_DIGEST: \$\{\{ needs\.maintenance\.outputs\.artifact_digest \}\}/);
-  assert.match(persist, /CANDIDATE_SHA: \$\{\{ needs\.maintenance\.outputs\.candidate_sha \}\}/);
+test('artifact persistence is byte-verified, exact-head race-safe and writes exactly three accepted files', () => {
+  const source = read(persistWorkflowPath);
+  const persist = source.slice(source.indexOf('  persist:'));
+
   assert.match(persist, /actions\/artifacts\/\$ARTIFACT_ID/);
   assert.match(persist, /sha256sum/);
-  assert.match(persist, /workflow_run\.id/);
   assert.match(persist, /AI index persistence refuses unexpected artifact files/);
   assert.match(persist, /find .* -type l/);
-
   assert.match(persist, /real-provider-index-maintenance/);
   assert.match(persist, /providerAccess/);
   assert.match(persist, /sourceCommit/);
   assert.match(persist, /corpusDigest/);
   assert.match(persist, /embeddingsDigest/);
-});
-
-test('accepted-index persistence is exact-head race-safe and writes exactly three durable files in one commit', () => {
-  const source = readWorkflow();
-  const persist = source.slice(source.indexOf('  persist:'), source.indexOf('  report:'));
 
   assert.match(persist, /pulls\/\$PR_NUMBER/);
-  assert.match(persist, /HEAD_SHA/);
-  assert.match(persist, /HEAD_REPO/);
-  assert.match(persist, /HEAD_REF/);
-  assert.match(persist, /CANDIDATE_SHA/);
   assert.match(persist, /Persistence candidate no longer matches the current PR head/);
   assert.match(persist, /git\/ref\/heads\/\$HEAD_REF/);
   assert.match(persist, /Ref moved before accepted-index persistence/);
@@ -74,19 +86,10 @@ test('accepted-index persistence is exact-head race-safe and writes exactly thre
   assert.doesNotMatch(persist, /git push|persist-credentials:\s*true|allow-unsafe-pr-checkout:\s*true/);
 });
 
-test('workflow-run reporting uses PR-scoped write permission and concurrency stays PR-scoped', () => {
-  const source = readWorkflow();
-  const receipt = source.slice(source.indexOf('  receipt:'), source.indexOf('  maintenance:'));
-  const maintenance = source.slice(source.indexOf('  maintenance:'), source.indexOf('  persist:'));
-  const report = source.slice(source.indexOf('  report:'));
-
-  assert.match(receipt, /permissions:\s*\n\s{6}pull-requests: write/);
-  assert.doesNotMatch(receipt, /issues:\s*write/);
-  assert.match(report, /permissions:\s*\n\s{6}pull-requests: write/);
-  assert.doesNotMatch(report, /issues:\s*write/);
-
-  assert.match(
-    maintenance,
-    /group: ai-index-content-maintenance-\$\{\{ github\.event_name == 'issue_comment' && github\.event\.issue\.number \|\| github\.event\.pull_request\.number \|\| needs\.workflow_run_gate\.outputs\.pr_number \}\}/,
-  );
+test('persistence never trusts or executes files from the maintenance artifact', () => {
+  const source = read(persistWorkflowPath);
+  assert.doesNotMatch(source, /node .*artifact|npm .*artifact|bash .*artifact|sh .*artifact|source .*artifact/);
+  assert.doesNotMatch(source, /actions\/checkout|actions\/download-artifact|actions\/cache/);
+  assert.match(source, /quality-artifacts\/ai-index-maintenance-provider\.json/);
+  assert.match(source, /quality-artifacts\/ai-index-maintenance-verify\.json/);
 });
