@@ -8,9 +8,9 @@ import {verifyAiIndex} from './ai-index-verify.js';
 
 export const ACCEPTED_AI5_SOURCE = 'data/ai-index-accepted/ai5';
 export const ACCEPTED_AI5_FILE_DIGESTS = Object.freeze({
-  'chunks.json': '1249ed898193d1a05bda632b1328a860909887a1700092ba38e612ac7e6ac17a',
-  'index-meta.json': 'ad301d88071b2a57fe68df07cd98cdd9596ecc1ccc832453fc692af4d92f718d',
-  'embeddings.bin': 'aaf2c7ba86a53f0ff040e63c2c75decbf538a84d6c54c1da0e44f124b199510a',
+  'chunks.json': '95b4f2347c9206ea782c31f6c87048bc5073dc1e666f1e1e22be1f12595c393a',
+  'index-meta.json': 'e3d79fcf3042b17ff7ab9f933e371fa65b272ac9e72b3dcb8bc121a04955d113',
+  'embeddings.bin': '5928142dacccc18c69a8d3df7e3ecbb6202138595bd6c85059f41817a7665e67',
 });
 
 const REQUIRED_INDEX_FILES = Object.freeze(Object.keys(ACCEPTED_AI5_FILE_DIGESTS));
