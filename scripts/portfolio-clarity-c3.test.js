@@ -105,7 +105,6 @@ test('C3 source surfaces expose the approved scan-first Projects hierarchy and f
   assertProjectHub({
     path: 'docs/landing/projects.md',
     headings: ['## Избранные проекты', '## Исторический коммерческий контекст', '## Лаборатория и эксперименты'],
-    commercialMarkers: ['marketdb', 'current'],
   });
   assertProjectHub({
     path: 'docs/en/projects.md',
@@ -113,6 +112,12 @@ test('C3 source surfaces expose the approved scan-first Projects hierarchy and f
   });
 
   const projectsRu = read('docs/landing/projects.md');
+  assert.match(
+    projectsRu,
+    /class="tr-commercial-current"[^>]*data-tr-commercial-current(?:\s|>)/,
+    'RU current work must stay outside the C3 commercial-project identity set',
+  );
+  assert.doesNotMatch(projectsRu, /data-c3-commercial="current"/);
   assert.match(
     projectsRu,
     /class="tr-commercial-current__link" href="resume\.md">подробности по ролям и стеку — в разделе Опыт\.<\/a>/,
