@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+import {normalizeChunkText} from './ai-corpus.js';
+
 const read = (path) => readFile(path, 'utf8');
 const absent = (source, phrases, label) => {
   for (const phrase of phrases) assert.equal(source.includes(phrase), false, `${label}: ${phrase}`);
@@ -14,7 +16,11 @@ test('RU Projects uses public-facing project language while preserving project t
   assert.match(source, /распознавание используется как подсказка, которую нужно проверить/);
   assert.match(source, /Открыть проект →/);
   assert.match(source, /<strong>Статус:<\/strong> закрыт\./);
-  assert.match(source, /Текущая коммерческая работа — QWEP/);
+  assert.match(
+    normalizeChunkText(source),
+    /Текущая коммерческая работа — QWEP; подробности по ролям и стеку — в разделе Опыт\./,
+  );
+  assert.match(source, /class="tr-commercial-current"[^>]*data-c3-commercial="current"/);
   absent(source, ['Открыть case study', 'Static-first', 'source, artifact, deployment', 'recognition как'], 'RU Projects');
 });
 
