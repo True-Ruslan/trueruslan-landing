@@ -27,9 +27,13 @@ test('completed Build workflow_run gates AI maintenance without trusting prior-r
   assert.match(gate, /WORKFLOW_HEAD_REPO: \$\{\{ github\.event\.workflow_run\.head_repository\.full_name \}\}/);
   assert.match(gate, /WORKFLOW_PR_NUMBER: \$\{\{ github\.event\.workflow_run\.pull_requests\[0\]\.number \}\}/);
   assert.match(gate, /github\.repository_owner/);
+  assert.match(gate, /CONFIRM_OPENROUTER_REAL_EMBEDDING_RUN/);
   assert.match(gate, /authorized=false/);
   assert.match(gate, /authorized=true/);
-  assert.doesNotMatch(gate, /environment:|OPENROUTER|actions\/checkout|download-artifact|actions\/cache/);
+  assert.doesNotMatch(
+    gate,
+    /environment:|OPENROUTER_API_KEY|secrets\.OPENROUTER|actions\/checkout|download-artifact|actions\/cache/,
+  );
 
   assert.match(source, /needs\.workflow_run_gate\.outputs\.authorized == 'true'/);
   assert.match(source, /needs\.workflow_run_gate\.outputs\.pr_number/);
