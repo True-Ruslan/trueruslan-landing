@@ -1,12 +1,12 @@
 # ROADMAP — TrueRuslan Landing
 
-> Обновлено: **2026-08-20**. Cross-project Content Freshness reconciliation is accepted through PR #296, merged as `eef10c07d37d97f75ea47857b304af4c197bf914`; final exact-head Build #2423 / `32418136511`, Content Freshness #244 / `32418136446`, CodeQL #1989 / `32418136443` and Dependency Review #1787 / `32418136563` were SUCCESS. Canonical master freshness run `32418834360` then completed with **0 findings / 0 warnings / 0 errors**; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`; issue #78 is CLOSED / COMPLETED. AI-8 public FULL remains production-accepted on runtime SHA `93028b979f273b6382f480a500555a258c426607`, and AI-6 SEARCH remains the explicit rollback baseline. Controlled launch — not-published; P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Обновлено: **2026-08-21**. Controlled-launch publication receipt tooling is accepted through PR #298, exact final head `8cf398244e4feca346e616911b401c42daa5c8ce`, squash-merged into `master` as `87e468042f5db20b314ab788d99ac6a17e26d88e`. Exact-head Build #2439 / `32422592155`, CodeQL #2007 / `32422592122`, Distribution Readiness #209 / `32422592157`, Dependency Review #1803 / `32422592151` and Dependency Audit Evidence #281 / `32422592227` were SUCCESS. The focused distribution artifact `9426221563` (`sha256:aeb056cdc5d99957311cb8c7056d97fe1ad6a9a82521c7298245ce8121d354be`) passed 8/8 receipt contract/integration tests while preserving **10 targets / 38 manual drafts / `not-published`**. AI-8 public FULL remains production-accepted and AI-6 SEARCH remains the rollback baseline. P4.1B real external evidence review remains IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — NEXT / WAITING FOR EXTERNAL EVIDENCE.
 >
 > Предыдущий полный snapshot сохранён в `docs/archive/2026-08-14/ROADMAP.md`.
 
 ## Current accepted baseline
 
-N1–N6, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification are DONE / PRODUCTION ACCEPTED. PR #254–#258 preserve the earlier durable-state, cross-project freshness and production-verifier reconciliation chain; PR #296 is the current controlled evidence reconciliation after AI-8 and Vlezet M8.4 activity. Transparent `trueruslan.com` repository readiness is accepted via PR #247 but external DNS/Cloudflare activation is NOT LIVE.
+N1–N6, Navigation IA, Engineering Notes reader architecture, clean URLs and production verification are DONE / PRODUCTION ACCEPTED. PR #254–#258 preserve the earlier durable-state, cross-project freshness and production-verifier reconciliation chain; PR #296 is the current controlled evidence reconciliation after AI-8 and Vlezet M8.4 activity. PR #298 adds the accepted fail-closed local/operator receipt boundary for real manual controlled-launch publications; it does not publish externally, independently verify a supplied URL or promote search/measurement state. Transparent `trueruslan.com` repository readiness is accepted via PR #247 but external DNS/Cloudflare activation is NOT LIVE.
 
 AI Navigator engineering baseline #248–#253 remains accepted; AI-5 real-provider/index acceptance, AI-6 SEARCH activation, AI-7 isolated FULL canary and AI-8 public FULL rollout are DONE / ACCEPTED at their respective gates. Public production is `mode=full` on exact runtime SHA `93028b979f273b6382f480a500555a258c426607`, targeting only the dedicated `trueruslan-ai-navigator-ai8-full-production` Worker. Canonical manual FULL acceptance #1 / `32355776796` — SUCCESS. The accepted AI-6 SEARCH runtime `3809d6f0290ab22f080e919f2ff26b1b018f3db6` remains untouched as the immediate rollback baseline.
 
@@ -18,11 +18,12 @@ Current cross-project truth:
 ## Priority A — controlled manual launch / external evidence
 
 1. Deliberately publish selected drafts from the accepted 10-target / 38-draft pack.
-2. Keep repository automation read-only toward external publication/profile/search-console state.
-3. Collect authenticated/operator-supplied GSC/Yandex Webmaster observations.
-4. Continue P4.1B review only from real evidence.
-5. P4.1C remains WAITING until reviewed evidence supports a concrete change.
-6. P3.6 remains NEXT / WAITING until sufficient aggregate traffic and observation-window requirements are met.
+2. After a real manual public post exists, record only its canonical target/channel/public URL/timestamps through the accepted local receipt intake (`npm run report:launch-receipt -- --input private/distribution/operator-receipt.json`). Raw operator input stays private; normalized output remains `operator-supplied-not-independently-fetched` with `stateImpact: none`.
+3. Keep repository automation read-only toward external publication/profile/search-console state; a publication receipt is provenance handoff, not independent verification or SEO/measurement evidence.
+4. Collect authenticated/operator-supplied GSC/Yandex Webmaster observations.
+5. Continue P4.1B review only from real search-engine evidence and meaningful observation windows.
+6. P4.1C remains WAITING until reviewed evidence supports a concrete change.
+7. P3.6 remains NEXT / WAITING until sufficient aggregate traffic and observation-window requirements are met.
 
 Clean-URL observation clock remains `2026-08-05T00:00:00Z`.
 
@@ -59,7 +60,8 @@ P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE; suffic
 
 - #82 remains OPEN upstream Diplodoc/markdown-it blocker; do not use forced incompatible overrides.
 - #78 is CLOSED / COMPLETED after canonical master Content Freshness run `32418834360` reported `0 findings / 0 warnings / 0 errors`; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`.
-- #111 / #212 remain authenticated operator/external observation work.
+- #111 remains the authenticated Yandex Webmaster/operator boundary.
+- #212 remains OPEN and is reconciled to the accepted real GSC **SPARSE PRE-LAUNCH BASELINE**; the first GSC adapter is accepted, but evidence is still insufficient for P4.1C/P3.6 and Yandex-specific evidence remains outstanding.
 - #289 AI-8 rollout is CLOSED / COMPLETED after production acceptance.
 - PR #291 is CLOSED UNMERGED; the accepted pinned-container cross-browser gate supersedes it.
 - exact artifact и installed acceptance остаются отдельными release gates.
@@ -95,7 +97,7 @@ This compact ledger keeps exact evidence markers consumed by repository contract
 
 ### Professional/presentation acceptance
 - Work with me / Работа со мной production acceptance: `433ee076f3f90dfe14feea97f59ad84bca0c337a`; Pages `31285875710`; deployment `5814010976`; Production Live `31285898990`; digest `sha256:e01e5baf0675d826334b2d75dd865e66833eaf2f804181a2061f7389b3505577`.
-- Portfolio presentation refinement — PRODUCTION ACCEPTED. Homepage/Experience/NotchHub presentation refinement — PRODUCTION ACCEPTED. Homepage density, Experience, unified header and NotchHub — PRODUCTION ACCEPTED. Accepted `4395128144c069663e67c660e5b549cfca851ae8`; Pages `31260596290`; deployment `5809298234`; Production Live `31260625145`; precursor `2ccb495872b94027980ecaaab1ee7bbc0f3a8ba8`; run `31259991547`; Vlezet Current work remains explicit.
+- Portfolio presentation refinement — PRODUCTION ACCEPTED. Homepage/Experience/NotchHub presentation refinement — PRODUCTION ACCEPTED. Homepage density, Experience, unified header and NotchHub — PRODUCTION ACCEPTED. Accepted `4395128144c069663e67c660e5b549cfca851ae8`; Pages `31260596290`; Production Live `31260625145`; precursor `2ccb495872b94027980ecaaab1ee7bbc0f3a8ba8`; run `31259991547`; Vlezet Current work remains explicit.
 
 ### Portfolio clarity C1–C7 durable production acceptance
 - C1 — Presentation foundation — PRODUCTION ACCEPTED: `9cc9d69e6b49e3e9f3432788f0deb943d7acebf5`; Build `31304311486`; Pages `31304612906`; deployment `5817134996`; Production Live `31304642055`; digest `sha256:41af56c91d59b5c80134d49b1928b0fde348384334c8863ddd9c74c9f4e5c85c`. C2 — Homepage clarity follows.
@@ -117,4 +119,5 @@ This compact ledger keeps exact evidence markers consumed by repository contract
 - P4.1B intake tooling — DONE / PRODUCTION ACCEPTED: PR #210; `6083e4d950d74b272cce199fedccc730dfcc4fed`; Build #1922 / 31599699918 — SUCCESS; 731 PASS / 0 FAIL; Pages: #234 / 31600575541 — SUCCESS; Production Live Smoke: #520 / 31600575540 — SUCCESS; CodeQL: #1475 / 31600575547 — SUCCESS; externalEvidence: not-collected; externalEvidence=not-collected.
 - P4.1B real Google Search Console adapter — DONE / PRODUCTION ACCEPTED: PR #213; `831535461f3c72d53e3510574ae7ae9c52ab54f6`; accepted against a real Google Search Console shape; observations remain sparse pre-public-launch / SPARSE PRE-LAUNCH BASELINE.
 - Controlled launch pack — PRODUCTION ACCEPTED: PR #214; `bed23ac0330ca112b94259998adcd8187203988a`; 10 targets / 38 manual drafts / not-published.
+- Controlled launch publication receipt intake — DONE / ACCEPTED: PR #298; exact head `8cf398244e4feca346e616911b401c42daa5c8ce`; merged `87e468042f5db20b314ab788d99ac6a17e26d88e`; Build #2439 / `32422592155`, CodeQL #2007 / `32422592122`, Distribution Readiness #209 / `32422592157`, Dependency Review #1803 / `32422592151`, Dependency Audit Evidence #281 / `32422592227` — SUCCESS; artifact `9426221563`, digest `sha256:aeb056cdc5d99957311cb8c7056d97fe1ad6a9a82521c7298245ce8121d354be`; 8/8 receipt tests PASS; raw input private; normalized receipts are operator-supplied/not independently fetched with `stateImpact: none`; no external publication occurred automatically.
 - P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE. P4.1C — WAITING. P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE. Controlled launch remains not-published. Clean-URL observation clock remains `2026-08-05T00:00:00Z`.
