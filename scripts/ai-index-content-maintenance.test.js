@@ -38,7 +38,7 @@ test('AI index content maintenance binds the command to the same-repository curr
   assert.match(source, /persist-credentials: false/g);
 });
 
-test('trusted authority is pinned to the issue-comment event SHA and candidate paths are content-only allowlisted', () => {
+test('trusted authority is pinned to the trusted event SHA and candidate paths are content-only allowlisted', () => {
   const source = readWorkflow();
 
   assert.match(source, /name: Checkout trusted workflow commit[\s\S]*?ref: \$\{\{ github\.sha \}\}/);
@@ -104,7 +104,10 @@ test('provider concurrency is job-scoped and rechecks bot-authored success befor
   const source = readWorkflow();
   const maintenance = source.slice(source.indexOf('  maintenance:'), source.indexOf('  report:'));
 
-  assert.match(maintenance, /concurrency:\s*\n\s{6}group: ai-index-content-maintenance-\$\{\{ github\.event\.issue\.number \}\}\s*\n\s{6}cancel-in-progress: false/);
+  assert.match(
+    maintenance,
+    /concurrency:\s*\n\s{6}group: ai-index-content-maintenance-\$\{\{ github\.event_name == 'issue_comment' && github\.event\.issue\.number \|\| github\.event\.pull_request\.number \}\}\s*\n\s{6}cancel-in-progress: false/,
+  );
   const dedupe = maintenance.indexOf('Recheck existing successful maintenance');
   const secretUse = maintenance.indexOf('OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_AI5_API_KEY }}');
   assert.ok(dedupe >= 0 && secretUse > dedupe, 'dedupe must execute after concurrency acquisition and before provider access');
@@ -127,4 +130,24 @@ test('write permission is isolated to secret-free receipt/report jobs and report
   assert.match(source, /artifact_digest: \$\{\{ steps\.upload\.outputs\.artifact-digest \}\}/);
   assert.match(report, /ARTIFACT_ID: \$\{\{ needs\.maintenance\.outputs\.artifact_id \}\}/);
   assert.match(report, /ARTIFACT_DIGEST: \$\{\{ needs\.maintenance\.outputs\.artifact_digest \}\}/);
+});
+
+test('owner-only pull-request edit fallback dispatches the same exact command without trusting PR code', () => {
+  const source = readWorkflow();
+
+  assert.match(source, /^\s{2}pull_request_target:\s*\n\s{4}types: \[edited\]$/m);
+  assert.match(source, /github\.event_name == 'pull_request_target'/);
+  assert.match(source, /github\.actor == github\.repository_owner/);
+  assert.match(source, /github\.event\.pull_request\.user\.login == github\.repository_owner/);
+  assert.match(source, /github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
+  assert.match(source, /startsWith\(github\.event\.pull_request\.body, '\/refresh-ai-index '\)/);
+  assert.match(
+    source,
+    /github\.event_name == 'issue_comment' && github\.event\.comment\.body \|\| github\.event\.pull_request\.body/,
+  );
+  assert.match(
+    source,
+    /github\.event_name == 'issue_comment' && github\.event\.issue\.number \|\| github\.event\.pull_request\.number/,
+  );
+  assert.doesNotMatch(source, /allow-unsafe-pr-checkout:\s*true/);
 });
