@@ -132,12 +132,12 @@ test('write permission is isolated to secret-free receipt/report jobs and report
   assert.match(report, /ARTIFACT_DIGEST: \$\{\{ needs\.maintenance\.outputs\.artifact_digest \}\}/);
 });
 
-test('owner-only pull-request edit fallback dispatches the same exact command without trusting PR code', () => {
+test('owner-authored same-repository PR fallback accepts an authorized app operator without trusting PR code', () => {
   const source = readWorkflow();
 
   assert.match(source, /^\s{2}pull_request_target:\s*\n\s{4}types: \[edited\]$/m);
   assert.match(source, /github\.event_name == 'pull_request_target'/);
-  assert.match(source, /github\.actor == github\.repository_owner/);
+  assert.doesNotMatch(source, /github\.actor == github\.repository_owner/);
   assert.match(source, /github\.event\.pull_request\.user\.login == github\.repository_owner/);
   assert.match(source, /github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
   assert.match(source, /startsWith\(github\.event\.pull_request\.body, '\/refresh-ai-index '\)/);
