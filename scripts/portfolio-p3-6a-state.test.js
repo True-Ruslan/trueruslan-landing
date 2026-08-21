@@ -58,8 +58,10 @@ test('PROJECT_STATE records P3.6A readiness acceptance without claiming P3.6 mea
   assert.doesNotMatch(state, /P3\.6 — Measurement checkpoint — DONE/);
   assert.match(
     state,
-    /## 6\. Approved next product slice[\s\S]*Portfolio 1\.0 presentation implementation is \*\*COMPLETE THROUGH C7\*\*[\s\S]*Current bounded product\/operator lane: P4\.1B real external evidence review — \*\*IN PROGRESS \/ SPARSE PRE-LAUNCH BASELINE\*\*[\s\S]*P3\.6 remains \*\*NEXT \/ WAITING FOR EXTERNAL EVIDENCE\*\*/,
+    /## 6\. Approved next product slice[\s\S]*Portfolio 1\.0 presentation implementation is \*\*COMPLETE THROUGH C7\*\*[\s\S]*Current bounded product\/operator lane: deliberate manual controlled launch, then local publication receipt capture for real posted surfaces, followed by P4\.1B real external evidence review — \*\*IN PROGRESS \/ SPARSE PRE-LAUNCH BASELINE\*\*\. Receipt capture alone does not advance the evidence lane\.[\s\S]*P3\.6 remains \*\*NEXT \/ WAITING FOR EXTERNAL EVIDENCE\*\*/,
   );
+  assert.match(state, /controlled launch[^\n]*not-published/i);
+  assert.match(state, /publication receipt[^\n]*(?:does not|not proof|stateImpact: none)/i);
   assert.doesNotMatch(state, /\*\*P3\.5C — English Publications — NEXT\*\*/);
   assertEvidence(state, 'PROJECT_STATE');
 });
