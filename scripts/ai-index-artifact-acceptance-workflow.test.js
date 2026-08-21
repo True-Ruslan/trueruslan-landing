@@ -24,7 +24,6 @@ test('reviewed AI index artifact acceptance is workflow-run gated, provider-free
   assert.match(source, /\/accept-ai-index/);
   assert.match(source, /CONFIRM_AI_INDEX_ARTIFACT_ACCEPTANCE/);
   assert.match(source, /github\.event\.workflow_run\.head_sha/);
-  assert.match(source, /github\.event\.workflow_run\.pull_requests\[0\]\.number/);
   assert.match(source, /github\.repository_owner/);
   assert.match(source, /head\.repo\.full_name/);
   assert.match(source, /head\.sha/);
@@ -32,6 +31,7 @@ test('reviewed AI index artifact acceptance is workflow-run gated, provider-free
   assert.match(source, /actions\/artifacts\/\$ARTIFACT_ID/);
   assert.match(source, /actions\/runs\/\$MAINTENANCE_RUN_ID\/jobs/);
   assert.match(source, /ai-index-content-maintenance-/);
+  assert.match(source, /MAX_ARTIFACT_BYTES/);
   assert.match(source, /sha256sum/);
   assert.match(source, /providerAccess/);
   assert.match(source, /real-provider-index-maintenance/);
@@ -41,4 +41,41 @@ test('reviewed AI index artifact acceptance is workflow-run gated, provider-free
 
   assert.doesNotMatch(source, /OPENROUTER_API_KEY|secrets\.OPENROUTER|ai5-provider-acceptance/);
   assert.doesNotMatch(source, /actions\/download-artifact|allow-unsafe-pr-checkout:\s*true/);
+});
+
+test('workflow_run is only a wake-up signal and unrelated Builds stay non-failing', () => {
+  const source = readWorkflow();
+  const gateStart = source.indexOf('  gate:');
+  const acceptStart = source.indexOf('  accept:');
+
+  assert.ok(gateStart >= 0 && acceptStart > gateStart, 'read-only gate must precede the write-capable accept job');
+  const gate = source.slice(gateStart, acceptStart);
+
+  assert.match(gate, /permissions:\s*\n\s{6}pull-requests: read/);
+  assert.doesNotMatch(gate, /contents: write|actions: read/);
+  assert.match(gate, /echo "authorized=false"/);
+  assert.match(gate, /WORKFLOW_HEAD_BRANCH: \$\{\{ github\.event\.workflow_run\.head_branch \}\}/);
+  assert.match(gate, /-f state=open/);
+  assert.match(gate, /-f head="\$REPOSITORY_OWNER:\$WORKFLOW_HEAD_BRANCH"/);
+  assert.match(gate, /PR_COUNT=.*length/);
+  assert.match(gate, /\[ "\$COMMAND" != "\/accept-ai-index" \]/);
+  assert.match(gate, /echo "authorized=true"/);
+  assert.doesNotMatch(source, /workflow_run\.pull_requests\[/);
+});
+
+test('write-capable acceptance requires gate authorization and rechecks revocable operator intent', () => {
+  const source = readWorkflow();
+  const acceptStart = source.indexOf('  accept:');
+  assert.ok(acceptStart >= 0, 'accept job must exist');
+  const accept = source.slice(acceptStart);
+
+  assert.match(accept, /needs: gate/);
+  assert.match(accept, /if: needs\.gate\.outputs\.authorized == 'true'/);
+  assert.match(accept, /contents: write/);
+  assert.match(accept, /PR_NUMBER: \$\{\{ needs\.gate\.outputs\.pr_number \}\}/);
+  assert.match(accept, /CANDIDATE_SHA: \$\{\{ needs\.gate\.outputs\.candidate_sha \}\}/);
+  assert.match(accept, /CURRENT_BODY/);
+  assert.match(accept, /CURRENT_COMMAND_LINE/);
+  assert.match(accept, /EXPECTED_COMMAND_LINE/);
+  assert.match(accept, /acceptance command changed before repository mutation/i);
 });
