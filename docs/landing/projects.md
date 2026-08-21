@@ -30,16 +30,7 @@
 </article>
 </div>
 
-## Коммерческий контекст
-
-<div class="tr-commercial-current" data-c3-commercial="current">
-<span class="tr-commercial-current__status">Сейчас</span>
-<div class="tr-commercial-current__body">
-<p class="tr-commercial-current__title">QWEP</p>
-<p class="tr-commercial-current__summary">Текущая коммерческая работа.</p>
-</div>
-<a class="tr-commercial-current__link" href="resume.md">Роль, задачи и стек — в разделе «Опыт» →</a>
-</div>
+## Исторический коммерческий контекст
 
 <article class="tr-project-index-card tr-project-index-card--commercial" data-c3-commercial="marketdb">
 <h3>MarketDB</h3>
@@ -47,6 +38,10 @@
 <ul class="tr-project-index-card__tags" aria-label="Стек"><li>Java</li><li>Spring Boot</li><li>PostgreSQL</li><li>ClickHouse</li></ul>
 <a class="tr-project-index-card__cta" href="https://marketdb.pro">marketdb.pro ↗</a>
 </article>
+
+<div class="tr-commercial-current" data-c3-commercial="current">
+<p class="tr-commercial-current__line"><span class="tr-commercial-current__status">Текущая коммерческая работа</span> <strong class="tr-commercial-current__title">— QWEP;</strong> <a class="tr-commercial-current__link" href="resume.md">подробности по ролям и стеку — в разделе Опыт.</a></p>
+</div>
 
 ## Лаборатория и эксперименты
 
