@@ -128,3 +128,23 @@ test('write permission is isolated to secret-free receipt/report jobs and report
   assert.match(report, /ARTIFACT_ID: \$\{\{ needs\.maintenance\.outputs\.artifact_id \}\}/);
   assert.match(report, /ARTIFACT_DIGEST: \$\{\{ needs\.maintenance\.outputs\.artifact_digest \}\}/);
 });
+
+test('owner-only pull-request edit fallback dispatches the same exact command without trusting PR code', () => {
+  const source = readWorkflow();
+
+  assert.match(source, /^\s{2}pull_request_target:\s*\n\s{4}types: \[edited\]$/m);
+  assert.match(source, /github\.event_name == 'pull_request_target'/);
+  assert.match(source, /github\.actor == github\.repository_owner/);
+  assert.match(source, /github\.event\.pull_request\.user\.login == github\.repository_owner/);
+  assert.match(source, /github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
+  assert.match(source, /startsWith\(github\.event\.pull_request\.body, '\/refresh-ai-index '\)/);
+  assert.match(
+    source,
+    /github\.event_name == 'issue_comment' && github\.event\.comment\.body \|\| github\.event\.pull_request\.body/,
+  );
+  assert.match(
+    source,
+    /github\.event_name == 'issue_comment' && github\.event\.issue\.number \|\| github\.event\.pull_request\.number/,
+  );
+  assert.doesNotMatch(source, /allow-unsafe-pr-checkout:\s*true/);
+});
