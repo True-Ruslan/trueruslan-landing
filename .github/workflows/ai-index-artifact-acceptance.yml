@@ -1,0 +1,291 @@
+name: AI Index Artifact Acceptance
+
+on:
+  workflow_run:
+    workflows: [Build]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-index-artifact-acceptance-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  accept:
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Authorize exact reviewed artifact
+        id: authorize
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          WORKFLOW_HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          WORKFLOW_PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          WORKFLOW_SECOND_PR_NUMBER: ${{ github.event.workflow_run.pull_requests[1].number }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$WORKFLOW_PR_NUMBER" =~ ^[1-9][0-9]*$ ]] || [ -n "${WORKFLOW_SECOND_PR_NUMBER:-}" ]; then
+            echo "::error::Artifact acceptance requires exactly one pull request."
+            exit 1
+          fi
+          if [ "$WORKFLOW_HEAD_REPO" != "$GITHUB_REPOSITORY" ] || ! [[ "$WORKFLOW_HEAD_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Artifact acceptance requires an exact same-repository Build head."
+            exit 1
+          fi
+
+          PR_JSON="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$WORKFLOW_PR_NUMBER")"
+          PR_STATE="$(jq -r '.state' <<< "$PR_JSON")"
+          PR_AUTHOR="$(jq -r '.user.login' <<< "$PR_JSON")"
+          HEAD_SHA="$(jq -r '.head.sha' <<< "$PR_JSON")"
+          HEAD_REPO="$(jq -r '.head.repo.full_name' <<< "$PR_JSON")"
+          HEAD_REF="$(jq -r '.head.ref' <<< "$PR_JSON")"
+          PR_BODY="$(jq -r '.body // ""' <<< "$PR_JSON")"
+
+          if [ "$PR_STATE" != "open" ] || [ "$PR_AUTHOR" != "$REPOSITORY_OWNER" ]; then
+            echo "::error::Artifact acceptance requires an open repository-owner PR."
+            exit 1
+          fi
+          if [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ] || [ "$HEAD_SHA" != "$WORKFLOW_HEAD_SHA" ]; then
+            echo "::error::Build head is stale or outside the repository."
+            exit 1
+          fi
+          if ! [[ "$HEAD_REF" =~ ^[A-Za-z0-9._/-]+$ ]] || [[ "$HEAD_REF" == -* ]] || [[ "$HEAD_REF" == */../* ]]; then
+            echo "::error::PR head ref is not safe for an exact non-force push."
+            exit 1
+          fi
+
+          read -r COMMAND CANDIDATE_SHA MAINTENANCE_RUN_ID ARTIFACT_ID ARTIFACT_DIGEST CONFIRMATION EXTRA <<< "$PR_BODY"
+          if [ "$COMMAND" != "/accept-ai-index" ] || [ -n "${EXTRA:-}" ]; then
+            echo "::error::Expected exact AI-index artifact acceptance command on the first PR body line."
+            exit 1
+          fi
+          if ! [[ "$CANDIDATE_SHA" =~ ^[a-f0-9]{40}$ ]] || [ "$CANDIDATE_SHA" != "$HEAD_SHA" ]; then
+            echo "::error::Acceptance candidate SHA must equal the current PR head."
+            exit 1
+          fi
+          if ! [[ "$MAINTENANCE_RUN_ID" =~ ^[1-9][0-9]*$ ]] || ! [[ "$ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]; then
+            echo "::error::Maintenance run and artifact IDs must be positive integers."
+            exit 1
+          fi
+          if ! [[ "$ARTIFACT_DIGEST" =~ ^[a-f0-9]{64}$ ]]; then
+            echo "::error::Artifact digest must be a lowercase SHA-256 hex digest."
+            exit 1
+          fi
+          if [ "$CONFIRMATION" != "CONFIRM_AI_INDEX_ARTIFACT_ACCEPTANCE" ]; then
+            echo "::error::Explicit artifact-acceptance confirmation is required."
+            exit 1
+          fi
+
+          echo "pr_number=$WORKFLOW_PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
+          echo "maintenance_run_id=$MAINTENANCE_RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "artifact_id=$ARTIFACT_ID" >> "$GITHUB_OUTPUT"
+          echo "artifact_digest=$ARTIFACT_DIGEST" >> "$GITHUB_OUTPUT"
+
+      - name: Verify maintenance run and artifact metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.authorize.outputs.pr_number }}
+          CANDIDATE_SHA: ${{ steps.authorize.outputs.candidate_sha }}
+          MAINTENANCE_RUN_ID: ${{ steps.authorize.outputs.maintenance_run_id }}
+          ARTIFACT_ID: ${{ steps.authorize.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ steps.authorize.outputs.artifact_digest }}
+        run: |
+          set -euo pipefail
+          RUN_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$MAINTENANCE_RUN_ID")"
+          if [ "$(jq -r '.name' <<< "$RUN_JSON")" != "AI Index Content Maintenance" ] || [ "$(jq -r '.event' <<< "$RUN_JSON")" != "workflow_run" ]; then
+            echo "::error::Artifact source is not the trusted maintenance workflow."
+            exit 1
+          fi
+
+          JOBS_JSON="$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$MAINTENANCE_RUN_ID/jobs?per_page=100" | jq -s '[.[].jobs[]]')"
+          MAINTENANCE_SUCCESS="$(jq '[.[] | select(.name == "maintenance" and .conclusion == "success")] | length' <<< "$JOBS_JSON")"
+          GATE_SUCCESS="$(jq '[.[] | select(.name == "workflow_run_gate" and .conclusion == "success")] | length' <<< "$JOBS_JSON")"
+          if [ "$MAINTENANCE_SUCCESS" -ne 1 ] || [ "$GATE_SUCCESS" -ne 1 ]; then
+            echo "::error::Trusted gate and maintenance jobs must each have exactly one successful result."
+            exit 1
+          fi
+
+          ARTIFACT_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID")"
+          EXPECTED_NAME="ai-index-content-maintenance-$PR_NUMBER-$MAINTENANCE_RUN_ID"
+          if [ "$(jq -r '.name' <<< "$ARTIFACT_JSON")" != "$EXPECTED_NAME" ] || [ "$(jq -r '.expired' <<< "$ARTIFACT_JSON")" != "false" ]; then
+            echo "::error::Artifact name or retention state does not match the reviewed evidence."
+            exit 1
+          fi
+          if [ "$(jq -r '.workflow_run.id' <<< "$ARTIFACT_JSON")" != "$MAINTENANCE_RUN_ID" ]; then
+            echo "::error::Artifact does not belong to the reviewed maintenance run."
+            exit 1
+          fi
+          if [ "$(jq -r '.digest' <<< "$ARTIFACT_JSON")" != "sha256:$ARTIFACT_DIGEST" ]; then
+            echo "::error::GitHub artifact digest does not match explicit operator acceptance."
+            exit 1
+          fi
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > "$RUNNER_TEMP/ai-index-artifact.zip"
+          printf '%s  %s\n' "$ARTIFACT_DIGEST" "$RUNNER_TEMP/ai-index-artifact.zip" | sha256sum --check --strict
+
+          EXPECTED_LIST="$RUNNER_TEMP/expected-artifact-files.txt"
+          ACTUAL_LIST="$RUNNER_TEMP/actual-artifact-files.txt"
+          cat > "$EXPECTED_LIST" <<'FILES'
+          data/ai-index/chunks.json
+          data/ai-index/embeddings.bin
+          data/ai-index/index-meta.json
+          quality-artifacts/ai-index-maintenance-provider.json
+          quality-artifacts/ai-index-maintenance-verify.json
+          FILES
+          unzip -Z1 "$RUNNER_TEMP/ai-index-artifact.zip" | sort > "$ACTUAL_LIST"
+          diff -u "$EXPECTED_LIST" "$ACTUAL_LIST"
+
+          mkdir "$RUNNER_TEMP/ai-index-artifact"
+          unzip -q "$RUNNER_TEMP/ai-index-artifact.zip" -d "$RUNNER_TEMP/ai-index-artifact"
+          if find "$RUNNER_TEMP/ai-index-artifact" -type l -print -quit | grep -q .; then
+            echo "::error::Reviewed artifact must not contain symlinks."
+            exit 1
+          fi
+
+          PROVIDER="$RUNNER_TEMP/ai-index-artifact/quality-artifacts/ai-index-maintenance-provider.json"
+          VERIFY="$RUNNER_TEMP/ai-index-artifact/quality-artifacts/ai-index-maintenance-verify.json"
+          META="$RUNNER_TEMP/ai-index-artifact/data/ai-index/index-meta.json"
+
+          jq -e --arg sha "$CANDIDATE_SHA" '
+            .schemaVersion == 1 and
+            .evidenceClass == "real-provider-index-maintenance" and
+            .sourceCommit == $sha and
+            (.changedChunkCount >= 1 and .changedChunkCount <= 8) and
+            .candidateIndex.sourceCommit == $sha and
+            .candidateIndex.chunkCount == 327 and
+            .provider.requestCount >= 1
+          ' "$PROVIDER" >/dev/null
+          jq -e --arg sha "$CANDIDATE_SHA" '
+            .providerAccess == false and
+            .sourceCommit == $sha and
+            .chunkCount == 327 and
+            .embeddingModel == "openai/text-embedding-3-small" and
+            .dimensions == 512
+          ' "$VERIFY" >/dev/null
+          jq -e --arg sha "$CANDIDATE_SHA" '
+            .sourceCommit == $sha and
+            .embeddingModel == "openai/text-embedding-3-small" and
+            .dimensions == 512
+          ' "$META" >/dev/null
+
+          CORPUS_DIGEST="$(jq -r '.corpusDigest' "$META")"
+          EMBEDDINGS_DIGEST="$(jq -r '.embeddingsDigest' "$META")"
+          [ "$CORPUS_DIGEST" = "$(jq -r '.corpusDigest' "$VERIFY")" ]
+          [ "$EMBEDDINGS_DIGEST" = "$(jq -r '.embeddingsDigest' "$VERIFY")" ]
+          [ "$CORPUS_DIGEST" = "$(jq -r '.candidateIndex.corpusDigest' "$PROVIDER")" ]
+          [ "$EMBEDDINGS_DIGEST" = "$(jq -r '.candidateIndex.embeddingsDigest' "$PROVIDER")" ]
+
+          CHUNKS_SHA="$(sha256sum "$RUNNER_TEMP/ai-index-artifact/data/ai-index/chunks.json" | cut -d' ' -f1)"
+          EMBEDDINGS_SHA="$(sha256sum "$RUNNER_TEMP/ai-index-artifact/data/ai-index/embeddings.bin" | cut -d' ' -f1)"
+          [ "$CORPUS_DIGEST" = "sha256:$CHUNKS_SHA" ]
+          [ "$EMBEDDINGS_DIGEST" = "sha256:$EMBEDDINGS_SHA" ]
+
+      - name: Checkout trusted acceptance authority
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          path: trusted
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ steps.authorize.outputs.candidate_sha }}
+          path: candidate
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Rebuild candidate corpus with trusted code and verify artifact offline
+        env:
+          CANDIDATE_SHA: ${{ steps.authorize.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          mkdir verification
+          rsync -a --exclude=.git candidate/ verification/
+          rm -rf verification/scripts
+          cp -a trusted/scripts verification/scripts
+          cp trusted/data/ai-navigator.json verification/data/ai-navigator.json
+          rm -rf verification/data/ai-index
+          cp -a "$RUNNER_TEMP/ai-index-artifact/data/ai-index" verification/data/ai-index
+
+          (
+            cd verification
+            test -z "${OPENROUTER_API_KEY:-}"
+            node scripts/ai-corpus.js --write "$RUNNER_TEMP/rebuilt-corpus.json"
+            node scripts/ai-index-verify.js | tee "$RUNNER_TEMP/reverified-index.json"
+          )
+          cmp "$RUNNER_TEMP/rebuilt-corpus.json" "$RUNNER_TEMP/ai-index-artifact/data/ai-index/chunks.json"
+          grep -q '"providerAccess": false' "$RUNNER_TEMP/reverified-index.json"
+          grep -q "\"sourceCommit\": \"$CANDIDATE_SHA\"" "$RUNNER_TEMP/reverified-index.json"
+
+      - name: Recheck exact PR head before repository mutation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.authorize.outputs.pr_number }}
+          CANDIDATE_SHA: ${{ steps.authorize.outputs.candidate_sha }}
+          HEAD_REF: ${{ steps.authorize.outputs.head_ref }}
+        run: |
+          set -euo pipefail
+          PR_JSON="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")"
+          [ "$(jq -r '.state' <<< "$PR_JSON")" = "open" ]
+          [ "$(jq -r '.head.repo.full_name' <<< "$PR_JSON")" = "$GITHUB_REPOSITORY" ]
+          [ "$(jq -r '.head.sha' <<< "$PR_JSON")" = "$CANDIDATE_SHA" ]
+          [ "$(jq -r '.head.ref' <<< "$PR_JSON")" = "$HEAD_REF" ]
+
+      - name: Commit only reviewed accepted-index bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ steps.authorize.outputs.head_ref }}
+          CANDIDATE_SHA: ${{ steps.authorize.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          ACCEPTED_DIR="candidate/data/ai-index-accepted/ai5"
+          mkdir -p "$ACCEPTED_DIR"
+          cp "$RUNNER_TEMP/ai-index-artifact/data/ai-index/chunks.json" "$ACCEPTED_DIR/chunks.json"
+          cp "$RUNNER_TEMP/ai-index-artifact/data/ai-index/index-meta.json" "$ACCEPTED_DIR/index-meta.json"
+          cp "$RUNNER_TEMP/ai-index-artifact/data/ai-index/embeddings.bin" "$ACCEPTED_DIR/embeddings.bin"
+
+          git -C candidate add -- \
+            data/ai-index-accepted/ai5/chunks.json \
+            data/ai-index-accepted/ai5/index-meta.json \
+            data/ai-index-accepted/ai5/embeddings.bin
+
+          git diff --cached --name-only -- candidate >/dev/null 2>&1 || true
+          STAGED="$(git -C candidate diff --cached --name-only | sort)"
+          EXPECTED="$(printf '%s\n' \
+            'data/ai-index-accepted/ai5/chunks.json' \
+            'data/ai-index-accepted/ai5/embeddings.bin' \
+            'data/ai-index-accepted/ai5/index-meta.json')"
+          if [ "$STAGED" != "$EXPECTED" ]; then
+            echo "::error::Artifact acceptance attempted to stage an unexpected repository path."
+            printf 'Staged paths:\n%s\n' "$STAGED"
+            exit 1
+          fi
+          if git -C candidate diff --cached --quiet; then
+            echo "Accepted index already matches the reviewed artifact; no commit required."
+            exit 0
+          fi
+
+          REMOTE_HEAD="$(git ls-remote "https://github.com/$GITHUB_REPOSITORY.git" "refs/heads/$HEAD_REF" | cut -f1)"
+          if [ "$REMOTE_HEAD" != "$CANDIDATE_SHA" ]; then
+            echo "::error::PR branch moved before acceptance commit."
+            exit 1
+          fi
+
+          git -C candidate config user.name 'github-actions[bot]'
+          git -C candidate config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C candidate commit -m 'data: accept reviewed AI index artifact'
+          gh auth setup-git
+          git -C candidate push origin "HEAD:refs/heads/$HEAD_REF"
