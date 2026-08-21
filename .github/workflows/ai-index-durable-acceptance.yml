@@ -1,0 +1,339 @@
+name: AI Index Durable Acceptance
+
+on:
+  workflow_run:
+    workflows: [Build]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-index-durable-acceptance-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    outputs:
+      authorized: ${{ steps.gate.outputs.authorized }}
+      pr_number: ${{ steps.gate.outputs.pr_number }}
+      candidate_sha: ${{ steps.gate.outputs.candidate_sha }}
+      head_ref: ${{ steps.gate.outputs.head_ref }}
+      maintenance_run_id: ${{ steps.gate.outputs.maintenance_run_id }}
+      artifact_id: ${{ steps.gate.outputs.artifact_id }}
+      artifact_digest: ${{ steps.gate.outputs.artifact_digest }}
+    steps:
+      - name: Authorize exact reviewed maintenance artifact
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_EVENT: ${{ github.event.workflow_run.event }}
+          BUILD_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          BUILD_HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          BUILD_PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          BUILD_SECOND_PR_NUMBER: ${{ github.event.workflow_run.pull_requests[1].number }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          echo "authorized=false" >> "$GITHUB_OUTPUT"
+
+          if [ "$BUILD_EVENT" != "pull_request" ]; then
+            echo "Completed Build is not a pull-request run."
+            exit 0
+          fi
+          if ! [[ "$BUILD_PR_NUMBER" =~ ^[1-9][0-9]*$ ]] || [ -n "${BUILD_SECOND_PR_NUMBER:-}" ]; then
+            echo "Completed Build must resolve to exactly one pull request."
+            exit 0
+          fi
+          if [ "$BUILD_HEAD_REPO" != "$GITHUB_REPOSITORY" ] || ! [[ "$BUILD_HEAD_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "Completed Build candidate authority is invalid."
+            exit 0
+          fi
+
+          PR_JSON="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$BUILD_PR_NUMBER")"
+          PR_STATE="$(jq -r '.state' <<< "$PR_JSON")"
+          PR_AUTHOR="$(jq -r '.user.login' <<< "$PR_JSON")"
+          HEAD_SHA="$(jq -r '.head.sha' <<< "$PR_JSON")"
+          HEAD_REPO="$(jq -r '.head.repo.full_name' <<< "$PR_JSON")"
+          HEAD_REF="$(jq -r '.head.ref' <<< "$PR_JSON")"
+          PR_BODY="$(jq -r '.body // ""' <<< "$PR_JSON")"
+
+          if [ "$PR_STATE" != "open" ] || [ "$PR_AUTHOR" != "$REPOSITORY_OWNER" ]; then
+            echo "Acceptance requires an open repository-owner PR."
+            exit 0
+          fi
+          if [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ] || [ "$HEAD_SHA" != "$BUILD_HEAD_SHA" ]; then
+            echo "Completed Build no longer matches the current same-repository PR head."
+            exit 0
+          fi
+          if [ "$HEAD_REF" = "master" ] || ! [[ "$HEAD_REF" =~ ^[A-Za-z0-9._/-]+$ ]] || [[ "$HEAD_REF" == *".."* ]]; then
+            echo "PR branch is not a safe writable non-default ref."
+            exit 0
+          fi
+
+          read -r COMMAND REQUESTED_SHA MAINTENANCE_RUN_ID ARTIFACT_ID ARTIFACT_SHA CONFIRMATION EXTRA <<< "$PR_BODY"
+          if [ "$COMMAND" != "/accept-ai-index" ] || [ -n "${EXTRA:-}" ]; then
+            echo "Owner PR does not carry an exact durable-acceptance command."
+            exit 0
+          fi
+          if [ "$REQUESTED_SHA" != "$HEAD_SHA" ] || ! [[ "$REQUESTED_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "Durable acceptance is not bound to the current exact PR head."
+            exit 0
+          fi
+          if ! [[ "$MAINTENANCE_RUN_ID" =~ ^[1-9][0-9]*$ ]] || ! [[ "$ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]; then
+            echo "Maintenance run or artifact identity is invalid."
+            exit 0
+          fi
+          if ! [[ "$ARTIFACT_SHA" =~ ^[a-f0-9]{64}$ ]] || [ "$CONFIRMATION" != "CONFIRM_AI_INDEX_DURABLE_ACCEPTANCE" ]; then
+            echo "Artifact digest or explicit durable-acceptance confirmation is invalid."
+            exit 0
+          fi
+
+          RUN_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$MAINTENANCE_RUN_ID")"
+          RUN_NAME="$(jq -r '.name' <<< "$RUN_JSON")"
+          RUN_EVENT="$(jq -r '.event' <<< "$RUN_JSON")"
+          RUN_PATH="$(jq -r '.path' <<< "$RUN_JSON")"
+          if [ "$RUN_NAME" != "AI Index Content Maintenance" ] || [ "$RUN_EVENT" != "workflow_run" ] || [ "$RUN_PATH" != ".github/workflows/ai-index-content-maintenance.yml" ]; then
+            echo "Referenced run is not the trusted AI index maintenance workflow."
+            exit 0
+          fi
+
+          JOBS_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$MAINTENANCE_RUN_ID/jobs?per_page=100")"
+          if [ "$(jq '[.jobs[] | select(.name == "workflow_run_gate" and .conclusion == "success")] | length' <<< "$JOBS_JSON")" -ne 1 ] || \
+             [ "$(jq '[.jobs[] | select(.name == "maintenance" and .conclusion == "success")] | length' <<< "$JOBS_JSON")" -ne 1 ]; then
+            echo "Trusted maintenance authorization/provider job did not succeed exactly once."
+            exit 0
+          fi
+
+          ARTIFACTS_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$MAINTENANCE_RUN_ID/artifacts?per_page=100")"
+          ARTIFACT_JSON="$(jq -c --argjson id "$ARTIFACT_ID" '[.artifacts[] | select(.id == $id)] | if length == 1 then .[0] else empty end' <<< "$ARTIFACTS_JSON")"
+          if [ -z "$ARTIFACT_JSON" ]; then
+            echo "Referenced artifact does not belong uniquely to the trusted maintenance run."
+            exit 0
+          fi
+          EXPECTED_NAME="ai-index-content-maintenance-${BUILD_PR_NUMBER}-${MAINTENANCE_RUN_ID}"
+          if [ "$(jq -r '.name' <<< "$ARTIFACT_JSON")" != "$EXPECTED_NAME" ] || [ "$(jq -r '.expired' <<< "$ARTIFACT_JSON")" != "false" ]; then
+            echo "Maintenance artifact name or retention state is invalid."
+            exit 0
+          fi
+          METADATA_DIGEST="$(jq -r '.digest // ""' <<< "$ARTIFACT_JSON")"
+          if [ "$METADATA_DIGEST" != "sha256:$ARTIFACT_SHA" ]; then
+            echo "Artifact metadata digest does not match the explicitly reviewed artifact digest."
+            exit 0
+          fi
+
+          echo "pr_number=$BUILD_PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
+          echo "maintenance_run_id=$MAINTENANCE_RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "artifact_id=$ARTIFACT_ID" >> "$GITHUB_OUTPUT"
+          echo "artifact_digest=$ARTIFACT_SHA" >> "$GITHUB_OUTPUT"
+          echo "authorized=true" >> "$GITHUB_OUTPUT"
+
+  persist:
+    needs: gate
+    if: needs.gate.outputs.authorized == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Verify artifact bytes and atomically persist accepted index
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
+          CANDIDATE_SHA: ${{ needs.gate.outputs.candidate_sha }}
+          HEAD_REF: ${{ needs.gate.outputs.head_ref }}
+          MAINTENANCE_RUN_ID: ${{ needs.gate.outputs.maintenance_run_id }}
+          ARTIFACT_ID: ${{ needs.gate.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ needs.gate.outputs.artifact_digest }}
+          TRUSTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          WORK_DIR="$RUNNER_TEMP/ai-index-durable-acceptance"
+          ZIP_PATH="$WORK_DIR/artifact.zip"
+          EXTRACT_DIR="$WORK_DIR/extracted"
+          mkdir -p "$EXTRACT_DIR"
+
+          PR_JSON="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")"
+          CURRENT_SHA="$(jq -r '.head.sha' <<< "$PR_JSON")"
+          CURRENT_REPO="$(jq -r '.head.repo.full_name' <<< "$PR_JSON")"
+          CURRENT_REF="$(jq -r '.head.ref' <<< "$PR_JSON")"
+          if [ "$(jq -r '.state' <<< "$PR_JSON")" != "open" ] || [ "$CURRENT_SHA" != "$CANDIDATE_SHA" ] || \
+             [ "$CURRENT_REPO" != "$GITHUB_REPOSITORY" ] || [ "$CURRENT_REF" != "$HEAD_REF" ]; then
+            echo "::error::PR authority changed after durable-acceptance authorization."
+            exit 1
+          fi
+
+          JOBS_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$MAINTENANCE_RUN_ID/jobs?per_page=100")"
+          if [ "$(jq '[.jobs[] | select(.name == "maintenance" and .conclusion == "success")] | length' <<< "$JOBS_JSON")" -ne 1 ]; then
+            echo "::error::Trusted maintenance job is no longer a unique success."
+            exit 1
+          fi
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > "$ZIP_PATH"
+          ACTUAL_ZIP_SHA="$(sha256sum "$ZIP_PATH" | awk '{print $1}')"
+          if [ "$ACTUAL_ZIP_SHA" != "$ARTIFACT_DIGEST" ]; then
+            echo "::error::Downloaded artifact digest mismatch."
+            exit 1
+          fi
+          echo "Verified artifact digest: sha256:$ACTUAL_ZIP_SHA"
+
+          CANDIDATE_SHA="$CANDIDATE_SHA" EXTRACT_DIR="$EXTRACT_DIR" ZIP_PATH="$ZIP_PATH" python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import zipfile
+
+          candidate = os.environ['CANDIDATE_SHA']
+          zip_path = pathlib.Path(os.environ['ZIP_PATH'])
+          out = pathlib.Path(os.environ['EXTRACT_DIR'])
+          expected = {
+              'data/ai-index/chunks.json',
+              'data/ai-index/index-meta.json',
+              'data/ai-index/embeddings.bin',
+              'quality-artifacts/ai-index-maintenance-provider.json',
+              'quality-artifacts/ai-index-maintenance-verify.json',
+          }
+          with zipfile.ZipFile(zip_path) as archive:
+              names = archive.namelist()
+              if len(names) != len(expected) or set(names) != expected:
+                  raise SystemExit('maintenance archive member allowlist mismatch')
+              if sum(info.file_size for info in archive.infolist()) > 2_000_000:
+                  raise SystemExit('maintenance archive exceeds bounded uncompressed size')
+              for name in names:
+                  path = pathlib.PurePosixPath(name)
+                  if path.is_absolute() or '..' in path.parts:
+                      raise SystemExit('unsafe maintenance archive member')
+                  target = out / path
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(archive.read(name))
+
+          chunks_path = out / 'data/ai-index/chunks.json'
+          meta_path = out / 'data/ai-index/index-meta.json'
+          embeddings_path = out / 'data/ai-index/embeddings.bin'
+          provider_path = out / 'quality-artifacts/ai-index-maintenance-provider.json'
+          verify_path = out / 'quality-artifacts/ai-index-maintenance-verify.json'
+          chunks = json.loads(chunks_path.read_text())
+          meta = json.loads(meta_path.read_text())
+          provider = json.loads(provider_path.read_text())
+          verify = json.loads(verify_path.read_text())
+
+          digest = lambda path: 'sha256:' + hashlib.sha256(path.read_bytes()).hexdigest()
+          chunks_digest = digest(chunks_path)
+          embeddings_digest = digest(embeddings_path)
+          if not isinstance(chunks, list) or len(chunks) != 327:
+              raise SystemExit('candidate chunk count is not the accepted bounded shape')
+          if meta.get('sourceCommit') != candidate or provider.get('sourceCommit') != candidate or verify.get('sourceCommit') != candidate:
+              raise SystemExit('candidate sourceCommit provenance mismatch')
+          if meta.get('corpusDigest') != chunks_digest or verify.get('corpusDigest') != chunks_digest:
+              raise SystemExit('candidate corpus digest mismatch')
+          if meta.get('embeddingsDigest') != embeddings_digest or verify.get('embeddingsDigest') != embeddings_digest:
+              raise SystemExit('candidate embeddings digest mismatch')
+          if verify.get('providerAccess') is not False or verify.get('chunkCount') != len(chunks):
+              raise SystemExit('offline verification evidence is invalid')
+          if meta.get('embeddingModel') != 'openai/text-embedding-3-small' or meta.get('dimensions') != 512:
+              raise SystemExit('candidate embedding authority drifted')
+          if verify.get('embeddingModel') != meta.get('embeddingModel') or verify.get('dimensions') != meta.get('dimensions'):
+              raise SystemExit('offline verification model/dimensions mismatch')
+          if len(embeddings_path.read_bytes()) != len(chunks) * meta['dimensions'] * 4:
+              raise SystemExit('candidate Float32 index byte length mismatch')
+          changed = provider.get('changedChunkCount')
+          if not isinstance(changed, int) or not 1 <= changed <= 8:
+              raise SystemExit('provider changed-chunk budget is invalid')
+          candidate_index = provider.get('candidateIndex', {})
+          if candidate_index.get('sourceCommit') != candidate or candidate_index.get('corpusDigest') != chunks_digest or candidate_index.get('embeddingsDigest') != embeddings_digest:
+              raise SystemExit('provider candidate-index evidence mismatch')
+          provider_stats = provider.get('provider', {})
+          if provider_stats.get('requestCount') != 1 or provider_stats.get('totalTokens', 0) <= 0 or provider_stats.get('costCredits', 0) <= 0:
+              raise SystemExit('provider accounting does not prove one bounded real request')
+          key_policy = provider.get('keyPolicy', {})
+          if key_policy.get('configuredLimitUsd') != 2 or key_policy.get('lifetimeNoReset') is not True:
+              raise SystemExit('provider key policy evidence is invalid')
+          PY
+
+          CHUNKS_PATH="$EXTRACT_DIR/data/ai-index/chunks.json"
+          META_PATH="$EXTRACT_DIR/data/ai-index/index-meta.json"
+          EMBEDDINGS_PATH="$EXTRACT_DIR/data/ai-index/embeddings.bin"
+          CHUNKS_SHA="$(sha256sum "$CHUNKS_PATH" | awk '{print $1}')"
+          META_SHA="$(sha256sum "$META_PATH" | awk '{print $1}')"
+          EMBEDDINGS_SHA="$(sha256sum "$EMBEDDINGS_PATH" | awk '{print $1}')"
+
+          gh api "repos/$GITHUB_REPOSITORY/contents/scripts/ai-index-restore.js?ref=$TRUSTED_SHA" --jq '.content' | tr -d '\n' | base64 --decode > "$WORK_DIR/ai-index-restore.js"
+          CHUNKS_SHA="$CHUNKS_SHA" META_SHA="$META_SHA" EMBEDDINGS_SHA="$EMBEDDINGS_SHA" RESTORE_PATH="$WORK_DIR/ai-index-restore.js" python3 - <<'PY'
+          import os
+          import pathlib
+          import re
+
+          path = pathlib.Path(os.environ['RESTORE_PATH'])
+          source = path.read_text()
+          replacements = {
+              'chunks.json': os.environ['CHUNKS_SHA'],
+              'index-meta.json': os.environ['META_SHA'],
+              'embeddings.bin': os.environ['EMBEDDINGS_SHA'],
+          }
+          for name, digest in replacements.items():
+              pattern = rf"('{re.escape(name)}': ')[a-f0-9]{{64}}(')"
+              source, count = re.subn(pattern, rf"\g<1>{digest}\g<2>", source)
+              if count != 1:
+                  raise SystemExit(f'expected exactly one trusted restore digest for {name}, found {count}')
+          path.write_text(source)
+          PY
+
+          create_blob() {
+            local file="$1"
+            base64 -w0 "$file" | jq -Rs '{content: ., encoding: "base64"}' | \
+              gh api --method POST "repos/$GITHUB_REPOSITORY/git/blobs" --input - --jq '.sha'
+          }
+
+          CHUNKS_BLOB="$(create_blob "$CHUNKS_PATH")"
+          META_BLOB="$(create_blob "$META_PATH")"
+          EMBEDDINGS_BLOB="$(create_blob "$EMBEDDINGS_PATH")"
+          RESTORE_BLOB="$(create_blob "$WORK_DIR/ai-index-restore.js")"
+          BASE_TREE="$(gh api "repos/$GITHUB_REPOSITORY/git/commits/$CANDIDATE_SHA" --jq '.tree.sha')"
+
+          TREE_SHA="$(jq -n \
+            --arg base "$BASE_TREE" \
+            --arg chunks "$CHUNKS_BLOB" \
+            --arg meta "$META_BLOB" \
+            --arg embeddings "$EMBEDDINGS_BLOB" \
+            --arg restore "$RESTORE_BLOB" \
+            '{base_tree:$base,tree:[
+              {path:"data/ai-index-accepted/ai5/chunks.json",mode:"100644",type:"blob",sha:$chunks},
+              {path:"data/ai-index-accepted/ai5/index-meta.json",mode:"100644",type:"blob",sha:$meta},
+              {path:"data/ai-index-accepted/ai5/embeddings.bin",mode:"100644",type:"blob",sha:$embeddings},
+              {path:"scripts/ai-index-restore.js",mode:"100644",type:"blob",sha:$restore}
+            ]}' | gh api --method POST "repos/$GITHUB_REPOSITORY/git/trees" --input - --jq '.sha')"
+
+          COMMIT_SHA="$(jq -n --arg tree "$TREE_SHA" --arg parent "$CANDIDATE_SHA" \
+            --arg message "chore: accept verified AI index for $CANDIDATE_SHA" \
+            '{message:$message,tree:$tree,parents:[$parent]}' | \
+            gh api --method POST "repos/$GITHUB_REPOSITORY/git/commits" --input - --jq '.sha')"
+
+          FINAL_PR_JSON="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")"
+          FINAL_HEAD_SHA="$(jq -r '.head.sha' <<< "$FINAL_PR_JSON")"
+          FINAL_HEAD_REF="$(jq -r '.head.ref' <<< "$FINAL_PR_JSON")"
+          if [ "$FINAL_HEAD_SHA" != "$CANDIDATE_SHA" ] || [ "$FINAL_HEAD_REF" != "$HEAD_REF" ]; then
+            echo "::error::PR head moved before atomic ref update."
+            exit 1
+          fi
+          REF_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$HEAD_REF" --jq '.object.sha')"
+          if [ "$REF_SHA" != "$CANDIDATE_SHA" ]; then
+            echo "::error::Owner PR branch ref moved before atomic update."
+            exit 1
+          fi
+
+          echo "Updating owner PR branch with force=false fast-forward semantics."
+          jq -n --arg sha "$COMMIT_SHA" '{sha:$sha,force:false}' | \
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/git/refs/heads/$HEAD_REF" --input - >/dev/null
+          echo "Durable accepted-index commit: $COMMIT_SHA"
