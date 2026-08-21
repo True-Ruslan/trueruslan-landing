@@ -104,7 +104,7 @@ This compact ledger keeps exact evidence markers consumed by repository contract
 
 ### Professional/presentation acceptance
 - Work with me / Работа со мной production acceptance: `433ee076f3f90dfe14feea97f59ad84bca0c337a`; Pages `31285875710`; deployment `5814010976`; Production Live `31285898990`; digest `sha256:e01e5baf0675d826334b2d75dd865e66833eaf2f804181a2061f7389b3505577`.
-- Portfolio presentation refinement — PRODUCTION ACCEPTED. Homepage/Experience/NotchHub presentation refinement — PRODUCTION ACCEPTED. Homepage density, Experience, unified header and NotchHub — PRODUCTION ACCEPTED. Accepted `4395128144c069663e67c660e5b549cfca851ae8`; Pages `31260596290`; Production Live `31260625145`; precursor `2ccb495872b94027980ecaaab1ee7bbc0f3a8ba8`; run `31259991547`; Vlezet Current work remains explicit.
+- Portfolio presentation refinement — PRODUCTION ACCEPTED. Homepage/Experience/NotchHub presentation refinement — PRODUCTION ACCEPTED. Homepage density, Experience, unified header and NotchHub — PRODUCTION ACCEPTED. Accepted `4395128144c069663e67c660e5b549cfca851ae8`; Pages `31260596290`; deployment `5809298234`; Production Live `31260625145`; precursor `2ccb495872b94027980ecaaab1ee7bbc0f3a8ba8`; run `31259991547`; Vlezet Current work remains explicit.
 
 ### Portfolio clarity C1–C7 durable production acceptance
 - C1 — Presentation foundation — PRODUCTION ACCEPTED: `9cc9d69e6b49e3e9f3432788f0deb943d7acebf5`; Build `31304311486`; Pages `31304612906`; deployment `5817134996`; Production Live `31304642055`; digest `sha256:41af56c91d59b5c80134d49b1928b0fde348384334c8863ddd9c74c9f4e5c85c`. C2 — Homepage clarity follows.
