@@ -32,15 +32,22 @@ test('reviewed AI index artifact acceptance is workflow-run gated, provider-free
   assert.match(source, /actions\/runs\/\$MAINTENANCE_RUN_ID\/jobs/);
   assert.match(source, /ai-index-content-maintenance-/);
   assert.match(source, /MAX_ARTIFACT_BYTES/);
+  assert.match(source, /MAX_UNCOMPRESSED_BYTES/);
   assert.match(source, /sha256sum/);
   assert.match(source, /providerAccess/);
   assert.match(source, /real-provider-index-maintenance/);
   assert.match(source, /data\/ai-index-accepted\/ai5/);
-  assert.match(source, /git -C candidate diff --cached --name-only/);
-  assert.match(source, /git -C candidate push origin/);
+  assert.match(source, /scripts\/ai-index-restore\.js/);
+
+  assert.match(source, /git\/blobs/);
+  assert.match(source, /git\/trees/);
+  assert.match(source, /git\/commits/);
+  assert.match(source, /git\/refs\/heads/);
+  assert.match(source, /force:false/);
 
   assert.doesNotMatch(source, /OPENROUTER_API_KEY|secrets\.OPENROUTER|ai5-provider-acceptance/);
   assert.doesNotMatch(source, /actions\/download-artifact|allow-unsafe-pr-checkout:\s*true/);
+  assert.doesNotMatch(source, /actions\/checkout|git\s+(?:checkout|merge|rebase|push)/);
 });
 
 test('workflow_run is only a wake-up signal and unrelated Builds stay non-failing', () => {
@@ -78,4 +85,6 @@ test('write-capable acceptance requires gate authorization and rechecks revocabl
   assert.match(accept, /CURRENT_COMMAND_LINE/);
   assert.match(accept, /EXPECTED_COMMAND_LINE/);
   assert.match(accept, /acceptance command changed before repository mutation/i);
+  assert.match(accept, /CURRENT_HEAD_SHA/);
+  assert.match(accept, /REF_SHA/);
 });
