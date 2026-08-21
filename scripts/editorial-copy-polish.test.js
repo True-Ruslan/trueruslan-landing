@@ -18,8 +18,9 @@ test('RU Projects uses public-facing project language while preserving project t
   assert.match(source, /<strong>Статус:<\/strong> закрыт\./);
   assert.match(
     normalizeChunkText(source),
-    /Текущая коммерческая работа — QWEP; подробности по ролям и стеку — в разделе Опыт\./,
+    /текущая занятость — QWEP подробности по ролям и стеку — в разделе Опыт\./,
   );
+  assert.doesNotMatch(source, /— QWEP;/);
   assert.match(source, /class="tr-commercial-current"[^>]*data-tr-commercial-current(?:\s|>)/);
   assert.doesNotMatch(source, /data-c3-commercial="current"/);
   absent(source, ['Открыть case study', 'Static-first', 'source, artifact, deployment', 'recognition как'], 'RU Projects');
