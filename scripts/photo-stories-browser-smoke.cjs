@@ -195,7 +195,7 @@ async function waitForVisibleRevealTransitions(page) {
         && style.display !== 'none'
         && style.visibility !== 'hidden';
     });
-    return nodes.every((node) => node.classList.contains('is-visible'));
+    return nodes.length > 0 && nodes.every((node) => node.classList.contains('is-visible'));
   });
 
   await page.evaluate(async () => {
