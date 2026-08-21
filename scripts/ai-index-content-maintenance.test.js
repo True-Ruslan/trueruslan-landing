@@ -86,7 +86,35 @@ test('AI index content maintenance uses bounded real-provider accounting and pre
   assert.doesNotMatch(source, /npm audit fix|--force/);
 });
 
-test('write permission is isolated to a secret-free reporting job that surfaces the run URL', () => {
+test('issue-comment maintenance acknowledges receipt outside provider concurrency and secret scope', () => {
+  const source = readWorkflow();
+
+  assert.doesNotMatch(source, /^concurrency:\s*$/m, 'workflow-level concurrency would hide queued command receipt');
+  const receiptStart = source.indexOf('  receipt:');
+  const maintenanceStart = source.indexOf('  maintenance:');
+  assert.ok(receiptStart >= 0 && maintenanceStart > receiptStart, 'receipt job must precede provider maintenance');
+  const receipt = source.slice(receiptStart, maintenanceStart);
+  assert.match(receipt, /permissions:\s*\n\s{6}issues: write/);
+  assert.match(receipt, /AI index content maintenance: \*\*received\*\*/);
+  assert.match(receipt, /github\.server_url.*actions\/runs\/.*github\.run_id/);
+  assert.doesNotMatch(receipt, /environment:|OPENROUTER|contents:\s*write|pull-requests:\s*write/);
+});
+
+test('provider concurrency is job-scoped and rechecks bot-authored success before any provider call', () => {
+  const source = readWorkflow();
+  const maintenance = source.slice(source.indexOf('  maintenance:'), source.indexOf('  report:'));
+
+  assert.match(maintenance, /concurrency:\s*\n\s{6}group: ai-index-content-maintenance-\$\{\{ github\.event\.issue\.number \}\}\s*\n\s{6}cancel-in-progress: false/);
+  const dedupe = maintenance.indexOf('Recheck existing successful maintenance');
+  const secretUse = maintenance.indexOf('OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_AI5_API_KEY }}');
+  assert.ok(dedupe >= 0 && secretUse > dedupe, 'dedupe must execute after concurrency acquisition and before provider access');
+  assert.match(maintenance, /github-actions\[bot\]/);
+  assert.match(maintenance, /AI index content maintenance: \*\*success\*\*\. Candidate:/);
+  assert.match(maintenance, /deduplicated=true/);
+  assert.match(maintenance, /steps\.dedupe\.outputs\.deduplicated != 'true'/g);
+});
+
+test('write permission is isolated to secret-free receipt/report jobs and report surfaces exact artifact identity', () => {
   const source = readWorkflow();
   const report = source.slice(source.indexOf('  report:'));
 
@@ -94,4 +122,9 @@ test('write permission is isolated to a secret-free reporting job that surfaces 
   assert.match(report, /permissions:\s*\n\s{6}issues: write/);
   assert.doesNotMatch(report, /environment:|OPENROUTER|contents:\s*write|pull-requests:\s*write/);
   assert.match(report, /github\.server_url.*actions\/runs\/.*github\.run_id/);
+  assert.match(source, /id: upload/);
+  assert.match(source, /artifact_id: \$\{\{ steps\.upload\.outputs\.artifact-id \}\}/);
+  assert.match(source, /artifact_digest: \$\{\{ steps\.upload\.outputs\.artifact-digest \}\}/);
+  assert.match(report, /ARTIFACT_ID: \$\{\{ needs\.maintenance\.outputs\.artifact_id \}\}/);
+  assert.match(report, /ARTIFACT_DIGEST: \$\{\{ needs\.maintenance\.outputs\.artifact_digest \}\}/);
 });
