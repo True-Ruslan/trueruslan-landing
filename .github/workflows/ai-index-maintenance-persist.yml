@@ -1,0 +1,310 @@
+name: AI Index Maintenance Persist
+
+on:
+  workflow_run:
+    workflows: [AI Index Content Maintenance]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    outputs:
+      eligible: ${{ steps.gate.outputs.eligible }}
+      artifact_id: ${{ steps.gate.outputs.artifact_id }}
+      artifact_digest: ${{ steps.gate.outputs.artifact_digest }}
+      pr_number: ${{ steps.gate.outputs.pr_number }}
+      candidate_sha: ${{ steps.gate.outputs.candidate_sha }}
+      head_ref: ${{ steps.gate.outputs.head_ref }}
+    steps:
+      - name: Authorize exact maintenance artifact and current owner PR
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_RUN_ID: ${{ github.event.workflow_run.id }}
+          UPSTREAM_NAME: ${{ github.event.workflow_run.name }}
+        run: |
+          set -euo pipefail
+          echo "eligible=false" >> "$GITHUB_OUTPUT"
+
+          if ! [[ "$UPSTREAM_RUN_ID" =~ ^[1-9][0-9]*$ ]] || [ "$UPSTREAM_NAME" != "AI Index Content Maintenance" ]; then
+            echo "Upstream workflow identity is not eligible for persistence."
+            exit 0
+          fi
+
+          RUN_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$UPSTREAM_RUN_ID")"
+          RUN_NAME="$(jq -r '.name' <<< "$RUN_JSON")"
+          RUN_EVENT="$(jq -r '.event' <<< "$RUN_JSON")"
+          if [ "$RUN_NAME" != "AI Index Content Maintenance" ]; then
+            echo "Upstream run name does not match the trusted maintenance workflow."
+            exit 0
+          fi
+          case "$RUN_EVENT" in
+            workflow_run|issue_comment|pull_request_target) ;;
+            *)
+              echo "Upstream maintenance event is not an accepted operator path."
+              exit 0
+              ;;
+          esac
+
+          ARTIFACTS_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$UPSTREAM_RUN_ID/artifacts?per_page=100")"
+          MATCHES="$(
+            jq -c --arg suffix "-$UPSTREAM_RUN_ID" '
+              [.artifacts[] |
+                select(.expired == false) |
+                select(.name | startswith("ai-index-content-maintenance-") and endswith($suffix))]
+            ' <<< "$ARTIFACTS_JSON"
+          )"
+          MATCH_COUNT="$(jq 'length' <<< "$MATCHES")"
+          if [ "$MATCH_COUNT" -eq 0 ]; then
+            echo "No completed provider artifact belongs to this maintenance run."
+            exit 0
+          fi
+          if [ "$MATCH_COUNT" -ne 1 ]; then
+            echo "::error::Maintenance persistence requires exactly one candidate artifact; found $MATCH_COUNT."
+            exit 1
+          fi
+
+          ARTIFACT_NAME="$(jq -r '.[0].name' <<< "$MATCHES")"
+          ARTIFACT_ID="$(jq -r '.[0].id' <<< "$MATCHES")"
+          ARTIFACT_RUN_ID="$(jq -r '.[0].workflow_run.id // empty' <<< "$MATCHES")"
+          ARTIFACT_DIGEST="$(jq -r '.[0].digest // empty' <<< "$MATCHES" | sed 's/^sha256://')"
+          if ! [[ "$ARTIFACT_NAME" =~ ^ai-index-content-maintenance-([1-9][0-9]*)-${UPSTREAM_RUN_ID}$ ]]; then
+            echo "::error::Maintenance artifact name is malformed."
+            exit 1
+          fi
+          PR_NUMBER="${BASH_REMATCH[1]}"
+          if [ "$ARTIFACT_RUN_ID" != "$UPSTREAM_RUN_ID" ]; then
+            echo "::error::Maintenance artifact workflow_run.id does not match the upstream run."
+            exit 1
+          fi
+          if ! [[ "$ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]] || ! [[ "$ARTIFACT_DIGEST" =~ ^[a-f0-9]{64}$ ]]; then
+            echo "::error::Maintenance artifact identity is incomplete."
+            exit 1
+          fi
+
+          PR_JSON="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")"
+          PR_STATE="$(jq -r '.state' <<< "$PR_JSON")"
+          PR_AUTHOR="$(jq -r '.user.login' <<< "$PR_JSON")"
+          HEAD_SHA="$(jq -r '.head.sha' <<< "$PR_JSON")"
+          HEAD_REPO="$(jq -r '.head.repo.full_name' <<< "$PR_JSON")"
+          HEAD_REF="$(jq -r '.head.ref' <<< "$PR_JSON")"
+          PR_BODY="$(jq -r '.body // ""' <<< "$PR_JSON")"
+          if [ "$PR_STATE" != "open" ] || [ "$PR_AUTHOR" != "$GITHUB_REPOSITORY_OWNER" ] || [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+            echo "Maintenance artifact no longer belongs to an open owner-authored same-repository PR."
+            exit 0
+          fi
+          if ! [[ "$HEAD_SHA" =~ ^[a-f0-9]{40}$ ]] || [ -z "$HEAD_REF" ]; then
+            echo "::error::Current maintenance PR head is malformed."
+            exit 1
+          fi
+
+          read -r COMMAND REQUESTED_SHA CONFIRMATION EXTRA <<< "$PR_BODY"
+          if [ "$COMMAND" != "/refresh-ai-index" ] || [ -n "${EXTRA:-}" ] || [ "$REQUESTED_SHA" != "$HEAD_SHA" ] || [ "$CONFIRMATION" != "CONFIRM_OPENROUTER_REAL_EMBEDDING_RUN" ]; then
+            echo "Current PR no longer carries exact provider-spend confirmation for its head."
+            exit 0
+          fi
+
+          echo "artifact_id=$ARTIFACT_ID" >> "$GITHUB_OUTPUT"
+          echo "artifact_digest=$ARTIFACT_DIGEST" >> "$GITHUB_OUTPUT"
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
+          echo "eligible=true" >> "$GITHUB_OUTPUT"
+
+  persist:
+    needs: gate
+    if: needs.gate.outputs.eligible == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    concurrency:
+      group: ai-index-maintenance-persist-${{ needs.gate.outputs.pr_number }}
+      cancel-in-progress: false
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Verify artifact bytes and persist accepted index
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_RUN_ID: ${{ github.event.workflow_run.id }}
+          ARTIFACT_ID: ${{ needs.gate.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ needs.gate.outputs.artifact_digest }}
+          PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
+          CANDIDATE_SHA: ${{ needs.gate.outputs.candidate_sha }}
+          HEAD_REF: ${{ needs.gate.outputs.head_ref }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$UPSTREAM_RUN_ID" =~ ^[1-9][0-9]*$ ]] || ! [[ "$ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]] || ! [[ "$ARTIFACT_DIGEST" =~ ^[a-f0-9]{64}$ ]] || ! [[ "$PR_NUMBER" =~ ^[1-9][0-9]*$ ]] || ! [[ "$CANDIDATE_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Persistence inputs are malformed."
+            exit 1
+          fi
+
+          WORKDIR="$(mktemp -d)"
+          trap 'rm -rf "$WORKDIR"' EXIT
+          ARTIFACT_DIR="$WORKDIR/artifact"
+          mkdir -p "$ARTIFACT_DIR"
+
+          ARTIFACT_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID")"
+          OBSERVED_RUN_ID="$(jq -r '.workflow_run.id // empty' <<< "$ARTIFACT_JSON")"
+          OBSERVED_NAME="$(jq -r '.name' <<< "$ARTIFACT_JSON")"
+          OBSERVED_DIGEST="$(jq -r '.digest // empty' <<< "$ARTIFACT_JSON" | sed 's/^sha256://')"
+          OBSERVED_EXPIRED="$(jq -r '.expired' <<< "$ARTIFACT_JSON")"
+          EXPECTED_NAME="ai-index-content-maintenance-$PR_NUMBER-$UPSTREAM_RUN_ID"
+          if [ "$OBSERVED_RUN_ID" != "$UPSTREAM_RUN_ID" ] || [ "$OBSERVED_NAME" != "$EXPECTED_NAME" ] || [ "$OBSERVED_DIGEST" != "$ARTIFACT_DIGEST" ] || [ "$OBSERVED_EXPIRED" != "false" ]; then
+            echo "::error::Artifact metadata changed after the persistence gate."
+            exit 1
+          fi
+
+          curl --fail --location --silent --show-error --retry 0 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" \
+            -o "$WORKDIR/artifact.zip"
+          printf '%s  %s\n' "$ARTIFACT_DIGEST" "$WORKDIR/artifact.zip" | sha256sum --check --status || {
+            echo "::error::Downloaded maintenance artifact digest does not match GitHub metadata."
+            exit 1
+          }
+          unzip -q "$WORKDIR/artifact.zip" -d "$ARTIFACT_DIR"
+
+          if find "$ARTIFACT_DIR" -type l -print -quit | grep -q .; then
+            echo "::error::AI index persistence refuses symlinked artifact entries."
+            exit 1
+          fi
+          EXPECTED_FILES="$(printf '%s\n' \
+            'data/ai-index/chunks.json' \
+            'data/ai-index/embeddings.bin' \
+            'data/ai-index/index-meta.json' \
+            'quality-artifacts/ai-index-maintenance-provider.json' \
+            'quality-artifacts/ai-index-maintenance-verify.json' | sort)"
+          ACTUAL_FILES="$(cd "$ARTIFACT_DIR" && find . -type f -printf '%P\n' | sort)"
+          if [ "$ACTUAL_FILES" != "$EXPECTED_FILES" ]; then
+            echo "::error::AI index persistence refuses unexpected artifact files."
+            printf 'Expected:\n%s\nActual:\n%s\n' "$EXPECTED_FILES" "$ACTUAL_FILES"
+            exit 1
+          fi
+
+          CHUNKS_FILE="$ARTIFACT_DIR/data/ai-index/chunks.json"
+          META_FILE="$ARTIFACT_DIR/data/ai-index/index-meta.json"
+          EMBEDDINGS_FILE="$ARTIFACT_DIR/data/ai-index/embeddings.bin"
+          PROVIDER_FILE="$ARTIFACT_DIR/quality-artifacts/ai-index-maintenance-provider.json"
+          VERIFY_FILE="$ARTIFACT_DIR/quality-artifacts/ai-index-maintenance-verify.json"
+          CHUNKS_SHA="$(sha256sum "$CHUNKS_FILE" | cut -d' ' -f1)"
+          EMBEDDINGS_SHA="$(sha256sum "$EMBEDDINGS_FILE" | cut -d' ' -f1)"
+          CHUNK_COUNT="$(jq '.chunkIds | length' "$META_FILE")"
+          DIMENSIONS="$(jq '.dimensions' "$META_FILE")"
+          EXPECTED_BYTES="$((CHUNK_COUNT * DIMENSIONS * 4))"
+          OBSERVED_BYTES="$(stat -c '%s' "$EMBEDDINGS_FILE")"
+
+          jq -e --arg sha "$CANDIDATE_SHA" --arg corpus "sha256:$CHUNKS_SHA" --arg embeddings "sha256:$EMBEDDINGS_SHA" '
+            .schemaVersion == 1 and
+            .sourceCommit == $sha and
+            .corpusDigest == $corpus and
+            .embeddingsDigest == $embeddings and
+            (.chunkIds | length) > 0 and
+            (.dimensions | type) == "number" and .dimensions > 0
+          ' "$META_FILE" >/dev/null
+          [ "$OBSERVED_BYTES" -eq "$EXPECTED_BYTES" ] || {
+            echo "::error::Embedding byte length does not match chunk count and dimensions."
+            exit 1
+          }
+
+          jq -e --arg sha "$CANDIDATE_SHA" --arg corpus "sha256:$CHUNKS_SHA" --arg embeddings "sha256:$EMBEDDINGS_SHA" '
+            .evidenceClass == "real-provider-index-maintenance" and
+            .sourceCommit == $sha and
+            (.changedChunkCount >= 1 and .changedChunkCount <= 8) and
+            .candidateIndex.sourceCommit == $sha and
+            .candidateIndex.corpusDigest == $corpus and
+            .candidateIndex.embeddingsDigest == $embeddings and
+            .candidateIndex.refreshed == .changedChunkCount and
+            (.candidateIndex.refreshed + .candidateIndex.reused) == .candidateIndex.chunkCount and
+            .provider.requestCount >= 1
+          ' "$PROVIDER_FILE" >/dev/null
+          jq -e --arg sha "$CANDIDATE_SHA" --arg corpus "sha256:$CHUNKS_SHA" --arg embeddings "sha256:$EMBEDDINGS_SHA" '
+            .providerAccess == false and
+            .sourceCommit == $sha and
+            .corpusDigest == $corpus and
+            .embeddingsDigest == $embeddings
+          ' "$VERIFY_FILE" >/dev/null
+
+          PR_JSON="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")"
+          PR_STATE="$(jq -r '.state' <<< "$PR_JSON")"
+          PR_AUTHOR="$(jq -r '.user.login' <<< "$PR_JSON")"
+          HEAD_SHA="$(jq -r '.head.sha' <<< "$PR_JSON")"
+          HEAD_REPO="$(jq -r '.head.repo.full_name' <<< "$PR_JSON")"
+          OBSERVED_HEAD_REF="$(jq -r '.head.ref' <<< "$PR_JSON")"
+          PR_BODY="$(jq -r '.body // ""' <<< "$PR_JSON")"
+          if [ "$PR_STATE" != "open" ] || [ "$PR_AUTHOR" != "$GITHUB_REPOSITORY_OWNER" ] || [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ] || [ "$HEAD_SHA" != "$CANDIDATE_SHA" ] || [ "$OBSERVED_HEAD_REF" != "$HEAD_REF" ]; then
+            echo "::error::Persistence candidate no longer matches the current PR head."
+            exit 1
+          fi
+          read -r COMMAND REQUESTED_SHA CONFIRMATION EXTRA <<< "$PR_BODY"
+          if [ "$COMMAND" != "/refresh-ai-index" ] || [ -n "${EXTRA:-}" ] || [ "$REQUESTED_SHA" != "$CANDIDATE_SHA" ] || [ "$CONFIRMATION" != "CONFIRM_OPENROUTER_REAL_EMBEDDING_RUN" ]; then
+            echo "::error::Persistence lost exact provider-spend authorization."
+            exit 1
+          fi
+
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files?per_page=100" --jq '.[].filename' > "$WORKDIR/pr-files.txt"
+          while IFS= read -r changed; do
+            case "$changed" in
+              docs/*|scripts/*.test.js|tests/*) ;;
+              *)
+                echo "::error::Persistence refuses authority-bearing PR file: $changed"
+                exit 1
+                ;;
+            esac
+          done < "$WORKDIR/pr-files.txt"
+
+          REF_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$HEAD_REF" --jq '.object.sha')"
+          if [ "$REF_SHA" != "$CANDIDATE_SHA" ]; then
+            echo "::error::Ref moved before accepted-index persistence."
+            exit 1
+          fi
+          BASE_TREE="$(gh api "repos/$GITHUB_REPOSITORY/git/commits/$CANDIDATE_SHA" --jq '.tree.sha')"
+
+          CHUNKS_BLOB="$(jq -Rs '{content: ., encoding: "utf-8"}' < "$CHUNKS_FILE" | gh api --method POST "repos/$GITHUB_REPOSITORY/git/blobs" --input - --jq '.sha')"
+          META_BLOB="$(jq -Rs '{content: ., encoding: "utf-8"}' < "$META_FILE" | gh api --method POST "repos/$GITHUB_REPOSITORY/git/blobs" --input - --jq '.sha')"
+          EMBEDDINGS_BLOB="$(base64 -w0 "$EMBEDDINGS_FILE" | jq -Rs '{content: ., encoding: "base64"}' | gh api --method POST "repos/$GITHUB_REPOSITORY/git/blobs" --input - --jq '.sha')"
+
+          TREE_SHA="$(
+            jq -n \
+              --arg base "$BASE_TREE" \
+              --arg chunks "$CHUNKS_BLOB" \
+              --arg meta "$META_BLOB" \
+              --arg embeddings "$EMBEDDINGS_BLOB" \
+              '{base_tree: $base, tree: [
+                {path: "data/ai-index-accepted/ai5/chunks.json", mode: "100644", type: "blob", sha: $chunks},
+                {path: "data/ai-index-accepted/ai5/index-meta.json", mode: "100644", type: "blob", sha: $meta},
+                {path: "data/ai-index-accepted/ai5/embeddings.bin", mode: "100644", type: "blob", sha: $embeddings}
+              ]}' \
+              | gh api --method POST "repos/$GITHUB_REPOSITORY/git/trees" --input - --jq '.sha'
+          )"
+          COMMIT_SHA="$(
+            jq -n --arg message "Persist verified AI index for $CANDIDATE_SHA" --arg tree "$TREE_SHA" --arg parent "$CANDIDATE_SHA" \
+              '{message: $message, tree: $tree, parents: [$parent]}' \
+              | gh api --method POST "repos/$GITHUB_REPOSITORY/git/commits" --input - --jq '.sha'
+          )"
+
+          PR_HEAD_NOW="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')"
+          REF_SHA_NOW="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$HEAD_REF" --jq '.object.sha')"
+          if [ "$PR_HEAD_NOW" != "$CANDIDATE_SHA" ] || [ "$REF_SHA_NOW" != "$CANDIDATE_SHA" ]; then
+            echo "::error::Ref moved before accepted-index persistence."
+            exit 1
+          fi
+
+          jq -n --arg sha "$COMMIT_SHA" '{sha: $sha, force: false}' \
+            | gh api --method PATCH "repos/$GITHUB_REPOSITORY/git/refs/heads/$HEAD_REF" --input - >/dev/null
+          PERSISTED_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$HEAD_REF" --jq '.object.sha')"
+          if [ "$PERSISTED_SHA" != "$COMMIT_SHA" ]; then
+            echo "::error::Accepted-index persistence ref verification failed."
+            exit 1
+          fi
+          printf 'Persisted verified AI index: pr=%s candidate=%s commit=%s artifact=%s sha256:%s\n' \
+            "$PR_NUMBER" "$CANDIDATE_SHA" "$COMMIT_SHA" "$ARTIFACT_ID" "$ARTIFACT_DIGEST"
