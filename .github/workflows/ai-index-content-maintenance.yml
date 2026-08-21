@@ -1,0 +1,224 @@
+name: AI Index Content Maintenance
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions: {}
+
+concurrency:
+  group: ai-index-content-maintenance-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  maintenance:
+    if: >-
+      github.event.issue.pull_request &&
+      github.event.comment.author_association == 'OWNER' &&
+      startsWith(github.event.comment.body, '/refresh-ai-index ')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: ai5-provider-acceptance
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      candidate_sha: ${{ steps.candidate.outputs.sha }}
+    steps:
+      - name: Resolve exact candidate
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          read -r COMMAND REQUESTED_SHA CONFIRMATION EXTRA <<< "$COMMENT_BODY"
+          if [ "$COMMAND" != "/refresh-ai-index" ] || [ -n "${EXTRA:-}" ]; then
+            echo "::error::Expected exactly: /refresh-ai-index <40-hex-sha> CONFIRM_OPENROUTER_REAL_EMBEDDING_RUN"
+            exit 1
+          fi
+          if ! [[ "$REQUESTED_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Requested candidate SHA must be exactly 40 lowercase hex characters."
+            exit 1
+          fi
+          if [ "$CONFIRMATION" != "CONFIRM_OPENROUTER_REAL_EMBEDDING_RUN" ]; then
+            echo "::error::Explicit provider-spend confirmation is required."
+            exit 1
+          fi
+
+          PR_JSON="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$ISSUE_NUMBER")"
+          HEAD_SHA="$(jq -r '.head.sha' <<< "$PR_JSON")"
+          HEAD_REPO="$(jq -r '.head.repo.full_name' <<< "$PR_JSON")"
+          if [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+            echo "::error::Candidate repository must equal current repository."
+            exit 1
+          fi
+          if [ "$REQUESTED_SHA" != "$HEAD_SHA" ]; then
+            echo "::error::Requested SHA must equal current PR head."
+            exit 1
+          fi
+
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$ISSUE_NUMBER/files?per_page=100" --jq '.[].filename' > "$RUNNER_TEMP/candidate-files.txt"
+          FILE_COUNT="$(wc -l < "$RUNNER_TEMP/candidate-files.txt" | tr -d ' ')"
+          if [ "$FILE_COUNT" -lt 1 ] || [ "$FILE_COUNT" -gt 100 ]; then
+            echo "::error::AI content maintenance requires between 1 and 100 changed PR files."
+            exit 1
+          fi
+
+          echo "sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout trusted default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          path: trusted
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ steps.candidate.outputs.sha }}
+          path: candidate
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+
+      - name: Reject executable or authority changes
+        run: |
+          set -euo pipefail
+          while IFS= read -r changed; do
+            case "$changed" in
+              scripts/*.test.js|tests/*|docs/*)
+                ;;
+              scripts/*.js|.github/*|package.json|package-lock.json|data/ai-navigator.json|data/ai-index-accepted/*|data/ai-index/*)
+                echo "::error::AI maintenance refuses executable or authority change: $changed"
+                exit 1
+                ;;
+              *)
+                ;;
+            esac
+          done < "$RUNNER_TEMP/candidate-files.txt"
+
+          if find candidate/docs candidate/data -type l -print -quit | grep -q .; then
+            echo "::error::AI maintenance refuses symlinked corpus inputs."
+            exit 1
+          fi
+
+          rm -rf candidate/scripts
+          cp -a trusted/scripts candidate/scripts
+          cp trusted/data/ai-navigator.json candidate/data/ai-navigator.json
+          rm -rf candidate/data/ai-index
+          cp -a trusted/data/ai-index-accepted/ai5 candidate/data/ai-index
+
+      - name: Refresh bounded changed chunks
+        working-directory: candidate
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_AI5_API_KEY }}
+          SOURCE_COMMIT: ${{ steps.candidate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {buildAiCorpus} from './scripts/ai-corpus.js';
+          import {loadAiConfig} from './scripts/ai-config.js';
+          import {refreshAiIndex} from './scripts/ai-index.js';
+          import {createEmbeddingAccountingFetch, fetchCurrentKeyMetadata} from './scripts/ai5-provider-acceptance.js';
+
+          const sourceCommit = process.env.SOURCE_COMMIT;
+          if (!/^[a-f0-9]{40}$/.test(sourceCommit || '')) throw new Error('maintenance source commit is invalid');
+          const apiKey = process.env.OPENROUTER_API_KEY;
+          if (!apiKey) throw new Error('maintenance provider key is unavailable');
+
+          const rootDir = process.cwd();
+          const config = loadAiConfig(path.join(rootDir, 'data', 'ai-navigator.json'));
+          const baselineMeta = JSON.parse(fs.readFileSync(path.join(rootDir, 'data', 'ai-index', 'index-meta.json'), 'utf8'));
+          const chunks = buildAiCorpus({rootDir, config});
+          const changed = chunks.filter(({id, contentHash}) => baselineMeta.contentHashes?.[id] !== contentHash);
+          if (changed.length < 1 || changed.length > 8) {
+            throw new Error(`maintenance changed-chunk budget requires 1..8 chunks; got ${changed.length}`);
+          }
+
+          const before = await fetchCurrentKeyMetadata({apiKey});
+          const accounting = createEmbeddingAccountingFetch();
+          const refreshed = await refreshAiIndex({
+            rootDir,
+            config,
+            apiKey,
+            fetchImpl: accounting.fetch,
+            sourceCommit,
+          });
+          if (refreshed.refreshed !== changed.length || refreshed.refreshed > 8) {
+            throw new Error(`maintenance refresh accounting mismatch: expected ${changed.length}, got ${refreshed.refreshed}`);
+          }
+          const after = await fetchCurrentKeyMetadata({apiKey});
+          const runUsageDeltaUsd = Number(Math.max(0, after.usageUsd - before.usageUsd).toFixed(12));
+          const evidence = {
+            schemaVersion: 1,
+            evidenceClass: 'real-provider-index-maintenance',
+            sourceCommit,
+            publicAiMode: config.mode,
+            keyPolicy: {
+              configuredLimitUsd: after.limitUsd,
+              lifetimeNoReset: after.limitReset === null,
+            },
+            keyAccounting: {
+              beforeUsageUsd: before.usageUsd,
+              afterUsageUsd: after.usageUsd,
+              runUsageDeltaUsd,
+            },
+            changedChunkCount: changed.length,
+            candidateIndex: refreshed,
+            provider: accounting.report(),
+          };
+          fs.mkdirSync('quality-artifacts', {recursive: true});
+          fs.writeFileSync('quality-artifacts/ai-index-maintenance-provider.json', `${JSON.stringify(evidence, null, 2)}\n`);
+          process.stdout.write(`${JSON.stringify({sourceCommit, changedChunkCount: changed.length, candidateIndex: refreshed}, null, 2)}\n`);
+          NODE
+
+      - name: Offline verify refreshed candidate
+        working-directory: candidate
+        run: |
+          set -euo pipefail
+          test -z "${OPENROUTER_API_KEY:-}"
+          node scripts/ai-index-verify.js | tee quality-artifacts/ai-index-maintenance-verify.json
+          grep -q '"providerAccess": false' quality-artifacts/ai-index-maintenance-verify.json
+
+      - name: Upload candidate index evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ai-index-content-maintenance-${{ github.event.issue.number }}-${{ github.run_id }}
+          path: |
+            candidate/data/ai-index/chunks.json
+            candidate/data/ai-index/index-meta.json
+            candidate/data/ai-index/embeddings.bin
+            candidate/quality-artifacts/ai-index-maintenance-provider.json
+            candidate/quality-artifacts/ai-index-maintenance-verify.json
+          if-no-files-found: error
+          retention-days: 1
+
+  report:
+    if: ${{ always() && needs.maintenance.result != 'skipped' }}
+    needs: maintenance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    permissions:
+      issues: write
+    steps:
+      - name: Publish sanitized maintenance result
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RESULT: ${{ needs.maintenance.result }}
+          CANDIDATE_SHA: ${{ needs.maintenance.outputs.candidate_sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          BODY="AI index content maintenance: **${RESULT}**. Candidate: \`${CANDIDATE_SHA:-unresolved}\`. Run: ${RUN_URL}"
+          gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/comments" -f body="$BODY" >/dev/null
