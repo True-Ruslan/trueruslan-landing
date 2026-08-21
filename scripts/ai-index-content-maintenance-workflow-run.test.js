@@ -25,7 +25,12 @@ test('completed Build workflow_run gates AI maintenance without trusting prior-r
   assert.match(gate, /permissions:\s*\n\s{6}pull-requests: read/);
   assert.match(gate, /WORKFLOW_HEAD_SHA: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/);
   assert.match(gate, /WORKFLOW_HEAD_REPO: \$\{\{ github\.event\.workflow_run\.head_repository\.full_name \}\}/);
-  assert.match(gate, /WORKFLOW_PR_NUMBER: \$\{\{ github\.event\.workflow_run\.pull_requests\[0\]\.number \}\}/);
+  assert.match(gate, /WORKFLOW_HEAD_BRANCH: \$\{\{ github\.event\.workflow_run\.head_branch \}\}/);
+  assert.match(gate, /-f state=open/);
+  assert.match(gate, /-f head="\$REPOSITORY_OWNER:\$WORKFLOW_HEAD_BRANCH"/);
+  assert.match(gate, /PR_COUNT=.*length/);
+  assert.match(gate, /\[ "\$PR_COUNT" -ne 1 \]/);
+  assert.doesNotMatch(gate, /workflow_run\.pull_requests\[/);
   assert.match(gate, /github\.repository_owner/);
   assert.match(gate, /CONFIRM_OPENROUTER_REAL_EMBEDDING_RUN/);
   assert.match(gate, /authorized=false/);
