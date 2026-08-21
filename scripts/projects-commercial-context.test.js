@@ -16,18 +16,19 @@ test('Projects turns the existing QWEP sentence into a lightweight current-work 
   assert.match(projects, /^## Исторический коммерческий контекст$/m);
 
   const marketDbIndex = projects.indexOf('data-c3-commercial="marketdb"');
-  const currentIndex = projects.indexOf('data-c3-commercial="current"');
+  const currentIndex = projects.indexOf('data-tr-commercial-current');
   assert.ok(marketDbIndex >= 0, 'MarketDB commercial card must remain');
   assert.ok(currentIndex >= 0, 'current commercial-context callout must exist');
   assert.ok(marketDbIndex < currentIndex, 'presentation-only refinement must preserve canonical commercial-section text order');
 
-  assert.match(projects, /class="tr-commercial-current"[^>]*data-c3-commercial="current"/);
+  assert.match(projects, /class="tr-commercial-current"[^>]*data-tr-commercial-current/);
   assert.match(projects, /class="tr-commercial-current__status"[^>]*>Текущая коммерческая работа<\/span>/);
   assert.match(projects, /class="tr-commercial-current__title"[^>]*>— QWEP;<\/strong>/);
   assert.match(
     projects,
     /<a class="tr-commercial-current__link" href="resume\.md">подробности по ролям и стеку — в разделе Опыт\.<\/a>/,
   );
+  assert.equal((projects.match(/data-c3-commercial=/g) ?? []).length, 1, 'QWEP callout must stay outside the C3 project-card identity set');
   assert.doesNotMatch(projects, /<h3>QWEP<\/h3>/, 'QWEP is work context, not a portfolio-project peer');
 });
 
