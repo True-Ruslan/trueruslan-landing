@@ -135,7 +135,7 @@ test('write permission is isolated to secret-free receipt/report jobs and report
 test('owner-authored same-repository PR fallback accepts an authorized app operator without trusting PR code', () => {
   const source = readWorkflow();
 
-  assert.match(source, /^\s{2}pull_request_target:\s*\n\s{4}types: \[edited\]$/m);
+  assert.match(source, /^\s{2}pull_request_target:\s*\n\s{4}types: \[edited, synchronize\]$/m);
   assert.match(source, /github\.event_name == 'pull_request_target'/);
   assert.doesNotMatch(source, /github\.actor == github\.repository_owner/);
   assert.match(source, /github\.event\.pull_request\.user\.login == github\.repository_owner/);
