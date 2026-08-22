@@ -10,6 +10,26 @@ const DEFAULT_OUTPUT_DIR = path.join(ROOT, 'distribution-artifacts');
 const CANONICAL_ORIGIN = 'https://trueruslan.ru';
 const CHANNEL_ORDER = ['github', 'habr', 'telegram', 'direct'];
 const CHANNELS = new Set(CHANNEL_ORDER);
+const FIRST_WAVE_SPECS = [
+  {
+    targetId: 'home',
+    channel: 'telegram',
+    text: (canonicalUrl) =>
+      `Собрал в одном месте то, над чем работаю: backend-проекты, инженерные разборы, публикации и текущие направления. Если хочется быстро понять мой стек и подход к работе — начать можно отсюда:\n\n${canonicalUrl}`,
+  },
+  {
+    targetId: 'projects',
+    channel: 'telegram',
+    text: (canonicalUrl) =>
+      `В разделе с проектами — не просто список технологий, а отдельные инженерные кейсы: задача, моя роль, ограничения, принятые решения и то, чем подтверждён результат.\n\n${canonicalUrl}`,
+  },
+  {
+    targetId: 'engineering-notes',
+    channel: 'telegram',
+    text: (canonicalUrl) =>
+      `Собираю практические заметки по backend, reliability, AI systems и release engineering в одном месте. Стараюсь держать формат коротким: проблема → решение → границы применимости.\n\n${canonicalUrl}`,
+  },
+];
 
 function requireString(value, label, {maxLength = 1000} = {}) {
   if (typeof value !== 'string' || !value.trim()) throw new Error(`${label} must be a non-empty string.`);
@@ -79,6 +99,44 @@ function draftText(target, channel) {
   }
 }
 
+function buildFirstWave(targets) {
+  const byId = new Map(targets.map((target) => [target.id, target]));
+  const drafts = [];
+
+  for (const spec of FIRST_WAVE_SPECS) {
+    const target = byId.get(spec.targetId);
+    if (!target) continue;
+    if (!target.channels.includes(spec.channel)) {
+      throw new Error(`First-wave channel ${spec.channel} is not allowed for launch target ${target.id}.`);
+    }
+    const text = requireString(spec.text(target.canonicalUrl), `first-wave text for ${target.id}`, {maxLength: 1200});
+    if (!text.includes(target.canonicalUrl)) {
+      throw new Error(`First-wave text for ${target.id} must contain its canonical URL.`);
+    }
+    drafts.push({
+      sequence: drafts.length + 1,
+      targetId: target.id,
+      targetPriority: target.priority,
+      channel: spec.channel,
+      title: target.title,
+      canonicalUrl: target.canonicalUrl,
+      evidenceBoundary: target.evidenceBoundary,
+      audiences: [...target.audiences],
+      publicationState: 'not-published',
+      text,
+    });
+  }
+
+  return {
+    status: 'prepared',
+    publicationState: 'not-published',
+    mode: 'manual-only',
+    strategy: 'small-channel-native-wave',
+    draftCount: drafts.length,
+    drafts,
+  };
+}
+
 export function buildLaunchPack({targets} = {}) {
   if (!Array.isArray(targets) || targets.length === 0) throw new Error('Launch pack requires canonical distribution targets.');
   const normalized = targets.map(validateTarget).sort((left, right) => left.priority - right.priority || left.id.localeCompare(right.id, 'en'));
@@ -119,6 +177,7 @@ export function buildLaunchPack({targets} = {}) {
     channels: CHANNEL_ORDER.filter((channel) => drafts.some((draft) => draft.channel === channel)),
     targetCount: normalized.length,
     draftCount: drafts.length,
+    firstWave: buildFirstWave(normalized),
     drafts,
   };
 }
@@ -138,6 +197,28 @@ export function renderLaunchPackMarkdown(pack) {
     'Use the draft as a starting point, review it immediately before posting, and keep the canonical URL unchanged.',
     '',
   ];
+
+  if (pack.firstWave?.drafts?.length) {
+    lines.push(
+      '## Recommended first wave',
+      '',
+      'A small channel-native sequence to launch deliberately before considering the full draft reserve. Every item remains `not-published` until a real external post exists.',
+      '',
+    );
+    for (const draft of pack.firstWave.drafts) {
+      lines.push(
+        `### ${draft.sequence}. ${draft.title} — ${draft.channel}`,
+        '',
+        '```text',
+        draft.text,
+        '```',
+        '',
+        `Publication state: \`${draft.publicationState}\``,
+        '',
+      );
+    }
+    lines.push('## Full draft reserve', '');
+  }
 
   let currentTarget = null;
   for (const draft of pack.drafts) {
@@ -201,6 +282,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === MODULE_PATH) {
   try {
     const {pack, jsonPath, markdownPath} = writeLaunchPack(parseArgs(process.argv.slice(2)));
     console.log(`Controlled launch pack: ${pack.targetCount} targets, ${pack.draftCount} manual drafts.`);
+    console.log(`Recommended first wave: ${pack.firstWave.draftCount} manual drafts; publication state: ${pack.firstWave.publicationState}.`);
     console.log(`Publication state: ${pack.publicationState}`);
     console.log(`JSON: ${jsonPath}`);
     console.log(`Markdown: ${markdownPath}`);
