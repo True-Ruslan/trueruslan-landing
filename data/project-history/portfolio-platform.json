@@ -75,6 +75,13 @@
     "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/295"
   },
   {
+    "date": "2026-08-22",
+    "title": "AI-index content-maintenance and acceptance path hardened",
+    "description": "PR #301 delivered the bounded Projects microcopy update and accepted its single changed semantic chunk through one explicitly authorized real-provider maintenance run plus the provider-free reviewed artifact boundary introduced by PR #311. PR #312 then removed reliance on workflow_run.pull_requests[] by resolving exactly one owner same-repository PR from the completed Build head branch. PR #313 scoped secret-free receipt/report writes to pull-requests:write and keyed workflow-run provider concurrency to the already resolved PR number. Exact-head Build, CodeQL and Dependency Review gates were green for each accepted slice. These changes harden repository/AI maintenance operations only: AI-8 FULL remains the accepted public production AI baseline, AI-6 SEARCH remains rollback, controlled launch remains not-published, P4.1B remains sparse pre-launch and P4.1C/P3.6 remain evidence-gated. Live success of the corrected privileged receipt/report comment path is still an operational observation for the next legitimate maintenance event; no provider call is manufactured solely to prove it.",
+    "state": "past",
+    "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/313"
+  },
+  {
     "date": "NEXT",
     "title": "Controlled manual launch, then real search and measurement evidence",
     "description": "Use the already accepted 10-target / 38-draft launch pack for deliberate operator-controlled manual publication. Repository automation must not post or mutate external publication state. After launch, accumulate authenticated/operator-supplied Google Search Console and Yandex Webmaster observations for P4.1B; P4.1C and P3.6 remain evidence-gated. AI-8 work is operational observation and rollback readiness only; no further promotion gate is currently required.",

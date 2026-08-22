@@ -54,10 +54,19 @@ function summarize(findings) {
   return summary;
 }
 
-function latestRecordedDate(snapshot) {
+function exactTimelineDates(entries) {
+  if (!Array.isArray(entries)) return [];
+  return entries
+    .map((entry) => entry?.date)
+    .filter((value) => typeof value === 'string' && ISO_DATE.test(value.trim()))
+    .map((value) => value.trim());
+}
+
+function latestRecordedDate(snapshot, timelineEntries = []) {
   return maxDate([
     snapshot.lastVerified,
     ...(Array.isArray(snapshot.signals) ? snapshot.signals.map((signal) => signal.observedAt) : []),
+    ...exactTimelineDates(timelineEntries),
   ]);
 }
 
@@ -128,11 +137,11 @@ function analyzeVerifiedSignalChronology(snapshot, findings) {
   }));
 }
 
-function analyzeRepositoryDrift(project, snapshot, observations, findings) {
+function analyzeRepositoryDrift(project, snapshot, observations, findings, timelineEntries = []) {
   const observation = observations?.repositories?.[project.slug];
   if (!observation) return;
 
-  const recorded = latestRecordedDate(snapshot);
+  const recorded = latestRecordedDate(snapshot, timelineEntries);
   if (!recorded) return;
 
   if (observation.pushedAt) {
@@ -226,10 +235,11 @@ export function analyzeContentFreshness({
   for (const snapshot of evidence) {
     const project = projectBySlug.get(snapshot.project);
     if (!project) continue;
+    const timelineEntries = project.timeline ? timelines?.[project.timeline] ?? [] : [];
     analyzeEvidenceAge(snapshot, generatedAt, maxVerifiedAgeDays, findings);
     analyzeEvidenceLinks(snapshot, observations, findings);
     analyzeVerifiedSignalChronology(snapshot, findings);
-    analyzeRepositoryDrift(project, snapshot, observations, findings);
+    analyzeRepositoryDrift(project, snapshot, observations, findings, timelineEntries);
   }
 
   const ordered = sortFindings(findings);
