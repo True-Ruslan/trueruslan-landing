@@ -1,0 +1,52 @@
+name: Restore freshness history once
+
+on:
+  push:
+    branches:
+      - docs/reconcile-state-2026-08-22
+    paths:
+      - .github/workflows/restore-freshness-history-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  restore-history:
+    if: github.repository == 'True-Ruslan/trueruslan-landing' && github.ref == 'refs/heads/docs/reconcile-state-2026-08-22'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: docs/reconcile-state-2026-08-22
+          fetch-depth: 1
+      - name: Restore historical #296 evidence markers
+        shell: python
+        run: |
+          from pathlib import Path
+
+          marker = 'This compact ledger keeps the exact evidence markers consumed by repository contract tests. It is historical evidence, not a claim that older slices are the current product state.'
+          historical = '- Historical Content Freshness reconciliation #296 — accepted on 2026-08-20: PR #296; merge `eef10c07d37d97f75ea47857b304af4c197bf914`; canonical master run `32418834360` — SUCCESS / 0 findings; artifact `9424935318`; digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`. It is superseded only as the **current** freshness snapshot by #314; it remains valid historical evidence.'
+
+          for file in ('docs/PROJECT_STATE.md', 'docs/ROADMAP.md'):
+              path = Path(file)
+              text = path.read_text(encoding='utf-8')
+              if text.count(marker) != 1:
+                  raise SystemExit(f'{file}: historical ledger marker count != 1')
+              if historical in text:
+                  raise SystemExit(f'{file}: historical marker already present')
+              text = text.replace(marker, marker + '\n' + historical, 1)
+              path.write_text(text, encoding='utf-8')
+      - name: Commit docs and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/restore-freshness-history-once.yml
+          changed="$(git status --short | awk '{print $2}' | sort)"
+          expected=$'.github/workflows/restore-freshness-history-once.yml\ndocs/PROJECT_STATE.md\ndocs/ROADMAP.md'
+          [[ "$changed" == "$expected" ]] || { printf 'Unexpected write-set:\n%s\n' "$changed" >&2; exit 1; }
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md
+          git commit -m 'docs: preserve historical freshness evidence'
+          git push origin HEAD:docs/reconcile-state-2026-08-22
