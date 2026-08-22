@@ -71,8 +71,15 @@
     "date": "2026-08-20",
     "title": "AI-8 public FULL production accepted",
     "description": "AI-7 completed as an isolated FULL canary before promotion. PR #293 provisioned the dedicated AI-8 production Worker without altering public SEARCH; PR #294 then activated only public mode=full on exact runtime SHA 93028b979f273b6382f480a500555a258c426607. Canonical manual acceptance run 32355776796 passed CORS allow/deny, the 512-dimensional embedding contract, semantic regression, grounded citation, insufficient-evidence behavior, bounded spend and zero unexpected external requests. PR #295 recorded durable acceptance. AI-6 SEARCH remains the explicit rollback baseline; ordinary CI stays provider-free.",
-    "state": "current",
+    "state": "past",
     "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/295"
+  },
+  {
+    "date": "2026-08-22",
+    "title": "AI-index content-maintenance and acceptance path hardened",
+    "description": "PR #301 delivered the bounded Projects microcopy update and accepted its single changed semantic chunk through one explicitly authorized real-provider maintenance run plus the provider-free reviewed artifact boundary introduced by PR #311. PR #312 then removed reliance on workflow_run.pull_requests[] by resolving exactly one owner same-repository PR from the completed Build head branch. PR #313 scoped secret-free receipt/report writes to pull-requests:write and keyed workflow-run provider concurrency to the already resolved PR number. Exact-head Build, CodeQL and Dependency Review gates were green for each accepted slice. These changes harden repository/AI maintenance operations only: AI-8 FULL remains the accepted public production AI baseline, AI-6 SEARCH remains rollback, controlled launch remains not-published, P4.1B remains sparse pre-launch and P4.1C/P3.6 remain evidence-gated. Live success of the corrected privileged receipt/report comment path is still an operational observation for the next legitimate maintenance event; no provider call is manufactured solely to prove it.",
+    "state": "current",
+    "evidence": "https://github.com/True-Ruslan/trueruslan-landing/pull/313"
   },
   {
     "date": "NEXT",
