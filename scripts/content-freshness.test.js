@@ -137,6 +137,54 @@ test('repository activity newer than the controlled snapshot creates drift witho
   assert.equal(snapshot().status, 'verified');
 });
 
+test('exact ISO timeline evidence participates in repository-drift reconciliation', () => {
+  const report = run({
+    timelines: {
+      livingworld: timeline([
+        {date: '2026-07-22', title: 'Past', description: 'past', state: 'past'},
+        {date: '2026-07-24', title: 'Current', description: 'current', state: 'current'},
+        {date: 'NEXT', title: 'Next', description: 'next', state: 'next'},
+      ]),
+    },
+    observations: {
+      repositories: {
+        livingworld: {
+          url: 'https://github.com/True-Ruslan/minecraft-botics-ai',
+          pushedAt: '2026-07-24T12:00:00Z',
+        },
+      },
+      links: {},
+    },
+  });
+
+  assert.equal(report.findings.some((finding) => finding.code === 'repository-drift'), false);
+});
+
+test('non-ISO timeline labels do not become repository-drift evidence dates', () => {
+  const report = run({
+    timelines: {
+      livingworld: timeline([
+        {date: '2026-07 — 2026-08', title: 'Past', description: 'past', state: 'past'},
+        {date: '2026-08', title: 'Current', description: 'current', state: 'current'},
+        {date: 'NEXT', title: 'Next', description: 'next', state: 'next'},
+      ]),
+    },
+    observations: {
+      repositories: {
+        livingworld: {
+          url: 'https://github.com/True-Ruslan/minecraft-botics-ai',
+          pushedAt: '2026-07-24T12:00:00Z',
+        },
+      },
+      links: {},
+    },
+  });
+
+  const finding = report.findings.find((candidate) => candidate.code === 'repository-drift');
+  assert.ok(finding);
+  assert.equal(finding.details.lastRecordedDate, '2026-07-22');
+});
+
 test('a release newer than evidence is highlighted when registry still says release-candidate', () => {
   const report = run({
     observations: {
