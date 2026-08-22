@@ -15,7 +15,7 @@ const FIRST_WAVE_SPECS = [
     targetId: 'home',
     channel: 'telegram',
     text: (canonicalUrl) =>
-      `Собрал в одном месте то, над чем работаю: backend-проекты, инженерные разборы, публикации и текущие направления. Если хочется быстро понять мой стек и подход к работе — начать можно отсюда:\n\n${canonicalUrl}`,
+      `GitHub, Habr, резюме, проекты и заметки в какой-то момент стали distributed system без service discovery.\n\nПофиксил.\n\nСобрал trueruslan.ru в единый entry point для всего, чем занимаюсь как backend-инженер:\n— /projects/ — инженерные кейсы: задача, роль, ограничения, решения и что реально проверено;\n— /notes/ — backend, reliability, AI systems и release engineering;\n— /publications/ — статьи и исследования;\n— /resume/ — web-CV, чтобы не заниматься distributed tracing по моим профилям.\n\nПод капотом — static-first, GitHub Pages, CI quality gates, clean URLs и AI Navigator. Для личного сайта слегка overengineered. Именно поэтому мне нравится.\n\nЕсли хочется быстро посмотреть, что я строю и как подхожу к инженерным задачам:\n${canonicalUrl}`,
   },
   {
     targetId: 'projects',
