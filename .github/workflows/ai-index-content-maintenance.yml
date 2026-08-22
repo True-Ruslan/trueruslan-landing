@@ -123,7 +123,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     permissions:
-      issues: write
+      pull-requests: write
     steps:
       - name: Publish sanitized maintenance receipt
         env:
@@ -155,7 +155,7 @@ jobs:
     timeout-minutes: 10
     environment: ai5-provider-acceptance
     concurrency:
-      group: ai-index-content-maintenance-${{ github.event_name == 'issue_comment' && github.event.issue.number || github.event.pull_request.number }}
+      group: ai-index-content-maintenance-${{ github.event_name == 'issue_comment' && github.event.issue.number || github.event.pull_request.number || needs.workflow_run_gate.outputs.pr_number }}
       cancel-in-progress: false
     permissions:
       contents: read
@@ -410,7 +410,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     permissions:
-      issues: write
+      pull-requests: write
     steps:
       - name: Publish sanitized maintenance result
         env:

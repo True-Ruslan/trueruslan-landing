@@ -18,11 +18,11 @@ test('AI index content maintenance is explicit owner-triggered and keeps provide
   assert.match(source, /github\.event\.comment\.author_association == 'OWNER'/);
   assert.match(source, /CONFIRM_OPENROUTER_REAL_EMBEDDING_RUN/);
   assert.match(source, /^\s{4}environment: ai5-provider-acceptance$/m);
+  assert.match(source, /^permissions:\s*\n\s{2}contents: read$/m);
 
   const maintenance = source.slice(source.indexOf('  maintenance:'), source.indexOf('  report:'));
   assert.match(maintenance, /permissions:\s*\n\s{6}contents: read\s*\n\s{6}pull-requests: read/);
   assert.doesNotMatch(maintenance, /contents:\s*write|issues:\s*write|pull-requests:\s*write/);
-  assert.doesNotMatch(source, /contents:\s*write|pull-requests:\s*write/);
 });
 
 test('AI index content maintenance binds the command to the same-repository current PR head before provider access', () => {
@@ -94,10 +94,11 @@ test('issue-comment maintenance acknowledges receipt outside provider concurrenc
   const maintenanceStart = source.indexOf('  maintenance:');
   assert.ok(receiptStart >= 0 && maintenanceStart > receiptStart, 'receipt job must precede provider maintenance');
   const receipt = source.slice(receiptStart, maintenanceStart);
-  assert.match(receipt, /permissions:\s*\n\s{6}issues: write/);
+  assert.match(receipt, /permissions:\s*\n\s{6}pull-requests: write/);
+  assert.doesNotMatch(receipt, /issues:\s*write/);
   assert.match(receipt, /AI index content maintenance: \*\*received\*\*/);
   assert.match(receipt, /github\.server_url.*actions\/runs\/.*github\.run_id/);
-  assert.doesNotMatch(receipt, /environment:|OPENROUTER|contents:\s*write|pull-requests:\s*write/);
+  assert.doesNotMatch(receipt, /environment:|OPENROUTER|contents:\s*write|secrets\./);
 });
 
 test('provider concurrency is job-scoped and rechecks bot-authored success before any provider call', () => {
@@ -106,7 +107,7 @@ test('provider concurrency is job-scoped and rechecks bot-authored success befor
 
   assert.match(
     maintenance,
-    /concurrency:\s*\n\s{6}group: ai-index-content-maintenance-\$\{\{ github\.event_name == 'issue_comment' && github\.event\.issue\.number \|\| github\.event\.pull_request\.number \}\}\s*\n\s{6}cancel-in-progress: false/,
+    /concurrency:\s*\n\s{6}group: ai-index-content-maintenance-\$\{\{ github\.event_name == 'issue_comment' && github\.event\.issue\.number \|\| github\.event\.pull_request\.number \|\| needs\.workflow_run_gate\.outputs\.pr_number \}\}\s*\n\s{6}cancel-in-progress: false/,
   );
   const dedupe = maintenance.indexOf('Recheck existing successful maintenance');
   const secretUse = maintenance.indexOf('OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_AI5_API_KEY }}');
@@ -120,10 +121,13 @@ test('provider concurrency is job-scoped and rechecks bot-authored success befor
 test('write permission is isolated to secret-free receipt/report jobs and report surfaces exact artifact identity', () => {
   const source = readWorkflow();
   const report = source.slice(source.indexOf('  report:'));
+  const maintenance = source.slice(source.indexOf('  maintenance:'), source.indexOf('  report:'));
 
   assert.match(report, /needs: maintenance/);
-  assert.match(report, /permissions:\s*\n\s{6}issues: write/);
-  assert.doesNotMatch(report, /environment:|OPENROUTER|contents:\s*write|pull-requests:\s*write/);
+  assert.match(report, /permissions:\s*\n\s{6}pull-requests: write/);
+  assert.doesNotMatch(report, /issues:\s*write/);
+  assert.doesNotMatch(report, /environment:|OPENROUTER|contents:\s*write|secrets\./);
+  assert.doesNotMatch(maintenance, /contents:\s*write|issues:\s*write|pull-requests:\s*write/);
   assert.match(report, /github\.server_url.*actions\/runs\/.*github\.run_id/);
   assert.match(source, /id: upload/);
   assert.match(source, /artifact_id: \$\{\{ steps\.upload\.outputs\.artifact-id \}\}/);
