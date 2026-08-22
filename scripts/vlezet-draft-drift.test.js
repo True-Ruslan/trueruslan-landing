@@ -89,14 +89,14 @@ test('durable state mirrors accepted M8.3, pending M8.4 and the clean master fre
   const changelog = fs.readFileSync(CHANGELOG_PATH, 'utf8');
 
   for (const document of [projectState, roadmap]) {
-    assert.match(document, /PR #296/);
-    assert.match(document, /eef10c07d37d97f75ea47857b304af4c197bf914/);
+    assert.match(document, /PR #314/);
+    assert.match(document, /71185c5b24f06525e6c636f4bcf223bb08197482/);
     assert.match(document, /M8\.3 Precision Reference Calibration.*(?:product-owner accepted|Product Owner accepted).*merged/i);
     assert.match(document, /M8\.4 Assisted Tracing.*Draft PR #94/i);
     assert.match(document, /same-plan Product Owner retest pending/i);
-    assert.match(document, /32418834360/);
-    assert.match(document, /9424935318/);
-    assert.match(document, /sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822/);
+    assert.match(document, /32564655915/);
+    assert.match(document, /9473752972/);
+    assert.match(document, /sha256:42ac27b553cdb086de87caed61c516781a60cb1decafdcad4d8bc8c11b4c8d28/);
     assert.doesNotMatch(document, /Vlezet(?::|\s).*M8\.3 Precision Reference Calibration (?:is active at|remains) Draft \/ TDD RED/i);
   }
 
@@ -106,4 +106,10 @@ test('durable state mirrors accepted M8.3, pending M8.4 and the clean master fre
   assert.match(changelog, /32418834360/);
   assert.match(changelog, /9424935318/);
   assert.match(changelog, /sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822/);
+  assert.match(changelog, /2026-08-22 — AI-index maintenance hardening \+ Content Freshness reconciliation — ACCEPTED/);
+  assert.match(changelog, /PR #314/);
+  assert.match(changelog, /71185c5b24f06525e6c636f4bcf223bb08197482/);
+  assert.match(changelog, /32564655915/);
+  assert.match(changelog, /9473752972/);
+  assert.match(changelog, /sha256:42ac27b553cdb086de87caed61c516781a60cb1decafdcad4d8bc8c11b4c8d28/);
 });
