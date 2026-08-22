@@ -59,6 +59,21 @@ function requestOrigin(request) {
   return value ? value.trim() : null;
 }
 
+function clientKey(request) {
+  return request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For') || 'unknown';
+}
+
+async function checkRateLimit(request, env, pathname) {
+  const limiter = env.RATE_LIMITER;
+  if (!limiter || typeof limiter.limit !== 'function') return true;
+  try {
+    const {success} = await limiter.limit({key: `${pathname}:${clientKey(request)}`});
+    return success !== false;
+  } catch {
+    return true;
+  }
+}
+
 function allowedOrigin(request, env) {
   const origin = requestOrigin(request);
   if (!origin) return {origin: null, allowed: true};
@@ -537,6 +552,14 @@ export async function handleRequest(request, env, fetchImpl = globalThis.fetch, 
   const corsOrigin = originState.origin && originState.origin === env.AI_ALLOWED_ORIGIN
     ? originState.origin
     : null;
+
+  if (!(await checkRateLimit(request, env, url.pathname))) {
+    return errorResponse(429, 'rate_limited', 'Too many requests.', {
+      origin: corsOrigin,
+      headers: {'Retry-After': '60'},
+    });
+  }
+
   if (url.pathname === '/v1/answer') return handleAnswer(request, env, fetchImpl, corsOrigin, options);
   return handleEmbed(request, env, fetchImpl, corsOrigin);
 }
