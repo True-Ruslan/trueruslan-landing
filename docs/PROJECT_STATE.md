@@ -1,6 +1,6 @@
 # PROJECT STATE — TrueRuslan Landing
 
-> Последнее смысловое обновление: **2026-08-21**. Controlled-launch publication receipt tooling — **ACCEPTED** through PR #298, exact final head `8cf398244e4feca346e616911b401c42daa5c8ce`, squash-merged into `master` as `87e468042f5db20b314ab788d99ac6a17e26d88e`. Exact-head Build #2439 / `32422592155`, CodeQL #2007 / `32422592122`, Distribution Readiness #209 / `32422592157`, Dependency Review #1803 / `32422592151` and Dependency Audit Evidence #281 / `32422592227` were SUCCESS. Focused artifact `9426221563`, digest `sha256:aeb056cdc5d99957311cb8c7056d97fe1ad6a9a82521c7298245ce8121d354be`, passed 8/8 receipt contract/integration tests while preserving **10 targets / 38 manual drafts / `not-published`**. The receipt boundary is local/operator-supplied, independently unverified and has `stateImpact: none`; no external publication, SEO/measurement promotion or Search Console/Webmaster mutation was inferred. AI-8 public FULL production acceptance and the exact AI-6 SEARCH rollback baseline remain unchanged. P4.1B real external evidence review — IN PROGRESS / SPARSE PRE-LAUNCH BASELINE; P4.1C — WAITING; P3.6 — Measurement checkpoint — NEXT / WAITING FOR EXTERNAL EVIDENCE.
+> Последнее смысловое обновление: **2026-08-22**. AI-index maintenance / privilege-separation chain #301/#311/#312/#313 and Content Freshness reconciliation #314 are accepted in `master`; #314 merged as `71185c5b24f06525e6c636f4bcf223bb08197482`. Exact #314 head `5ab62536d37271c7b13c7931a1426da88ed93731` passed Build #2523 / `32563926367`, CodeQL #2103 / `32563926355`, Dependency Review #1887 / `32563926359` and Content Freshness #251 / `32563926364` with 0 findings. Canonical master Content Freshness run `32564655915` reported **0 findings / 0 warnings / 0 errors**, artifact `9473752972`, digest `sha256:42ac27b553cdb086de87caed61c516781a60cb1decafdcad4d8bc8c11b4c8d28`, and automatically closed issue #78. AI-8 FULL acceptance, AI-6 SEARCH rollback, controlled launch `not-published`, P4.1B sparse pre-launch, P4.1C WAITING and P3.6 WAITING remain unchanged.
 >
 > Полный snapshot до reconciliation сохранён byte-for-byte в `docs/archive/2026-08-14/PROJECT_STATE.md`. Этот root-файл остаётся current durable snapshot и одновременно сохраняет compact historical contract markers, используемые CI.
 
@@ -19,8 +19,8 @@ AI-8 public FULL acceptance:        #1 / 32355776796 — SUCCESS
 AI-8 acceptance artifact:           9401577436
 AI-8 evidence SHA-256:              93f07c39183feb21ff69a7557fb220cadf6cf172a9a05aff6085522ca59c08a2
 AI-6 SEARCH rollback baseline:       3809d6f0290ab22f080e919f2ff26b1b018f3db6
-freshness reconciliation SHA:        eef10c07d37d97f75ea47857b304af4c197bf914
-master freshness run:               32418834360 — SUCCESS / 0 findings
+freshness reconciliation SHA:        71185c5b24f06525e6c636f4bcf223bb08197482
+master freshness run:               32564655915 — SUCCESS / 0 findings
 launch receipt tooling merge:        87e468042f5db20b314ab788d99ac6a17e26d88e
 controlled launch:                  not-published
 ```
@@ -30,7 +30,7 @@ N1–N6 presentation/editorial implementation, Navigation IA, Engineering Notes 
 Current cross-project evidence snapshot:
 - VillAIgence: official release `0.3.2+1.21.1`; automated release gates PASS; historical installed 0.3.1 corrective canary FAILED; PR #169 correction and PR #171 exact 0.3.2 retest handoff are merged; exact installed 0.3.2 corrective canary remains PENDING; `0.2.0+1.21.1` with `7 PASS / 0 FAIL` remains the last fully accepted installed baseline; 0.4 remains blocked.
 - Vlezet: M8.3 Precision Reference Calibration is Product Owner accepted, merged and post-merge verified. M8.4 Assisted Tracing remains Draft PR #94: automated GREEN after two real-plan Product Owner FAILs; same-plan Product Owner retest pending; it is not accepted, merged or released; lifecycle remains pre-production.
-- Content Freshness: PR #296 merged as `eef10c07d37d97f75ea47857b304af4c197bf914`; canonical master run `32418834360` — SUCCESS with `0 findings / 0 warnings / 0 errors`; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`; issue #78 is CLOSED / COMPLETED.
+- Content Freshness: PR #314 merged as `71185c5b24f06525e6c636f4bcf223bb08197482`; canonical master run `32564655915` — SUCCESS with `0 findings / 0 warnings / 0 errors`; artifact `9473752972`, digest `sha256:42ac27b553cdb086de87caed61c516781a60cb1decafdcad4d8bc8c11b4c8d28`; issue #78 is automatically CLOSED / COMPLETED. Only exact `YYYY-MM-DD` canonical timeline dates now participate in repository-drift reconciliation; month/range/`NEXT` labels stay non-authoritative.
 
 ## 2. AI Navigator — PUBLIC FULL PRODUCTION ACCEPTED / SEARCH ROLLBACK PRESERVED
 
@@ -84,7 +84,8 @@ P3.6 remains **NEXT / WAITING FOR EXTERNAL EVIDENCE**.
 ## 7. Known maintenance / technical debt
 
 - issue #82 — OPEN upstream Diplodoc/markdown-it blocker; no forced incompatible override.
-- issue #78 — CLOSED / COMPLETED after canonical master Content Freshness run `32418834360` reported `0 findings / 0 warnings / 0 errors`; artifact `9424935318`, digest `sha256:ad4c37e1c290f06c3055f0e3fa01f47fe8cf8a9b620caedbc080f75dafdcd822`; no active freshness debt is implied.
+- issue #78 — CLOSED / COMPLETED after PR #314 and canonical master Content Freshness run `32564655915` reported `0 findings / 0 warnings / 0 errors`; artifact `9473752972`, digest `sha256:42ac27b553cdb086de87caed61c516781a60cb1decafdcad4d8bc8c11b4c8d28`. Closure was performed automatically by the guard, not manually.
+- AI-index maintenance #301/#311/#312/#313/#314 — ACCEPTED: one bounded changed-chunk provider refresh, provider-free exact-artifact acceptance, branch-based workflow-run PR authority, PR-scoped secret-free reporting writes, resolved-PR concurrency and exact-date freshness reconciliation. #313 PR CI proves the corrected permission/concurrency contract; successful privileged receipt/report comment execution remains an operational observation for the next legitimate maintenance event.
 - issue #111 — authenticated Yandex Webmaster/operator boundary.
 - issue #212 — OPEN; tracker reconciled on 2026-08-21 to the accepted real GSC **IN PROGRESS / SPARSE PRE-LAUNCH BASELINE**. The first GSC adapter is accepted, but current evidence remains insufficient for P4.1C/P3.6 and Yandex-specific evidence is still outstanding.
 - issues #274 and #276 are CLOSED / COMPLETED; AI-6 SEARCH remains the accepted rollback baseline.
