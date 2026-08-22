@@ -1,0 +1,100 @@
+name: Reconcile state once
+
+on:
+  push:
+    branches:
+      - docs/reconcile-state-2026-08-22
+    paths:
+      - .github/workflows/reconcile-state-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    if: github.repository == 'True-Ruslan/trueruslan-landing' && github.ref == 'refs/heads/docs/reconcile-state-2026-08-22'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: docs/reconcile-state-2026-08-22
+          fetch-depth: 1
+
+      - name: Reconcile durable state files
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          def patch(path, transforms):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              for kind, old, new, label in transforms:
+                  if kind == 'literal':
+                      count = text.count(old)
+                      if count != 1:
+                          raise SystemExit(f'{path} / {label}: expected 1 literal match, found {count}')
+                      text = text.replace(old, new, 1)
+                  else:
+                      text, count = re.subn(old, new, text, count=1, flags=re.MULTILINE)
+                      if count != 1:
+                          raise SystemExit(f'{path} / {label}: expected 1 regex match, found {count}')
+              p.write_text(text, encoding='utf-8')
+
+          master = '71185c5b24f06525e6c636f4bcf223bb08197482'
+          freshness_run = '32564655915'
+          freshness_artifact = '9473752972'
+          freshness_digest = 'sha256:42ac27b553cdb086de87caed61c516781a60cb1decafdcad4d8bc8c11b4c8d28'
+
+          patch('docs/PROJECT_STATE.md', [
+              ('regex', r'^> Последнее смысловое обновление:.*$',
+               f'> Последнее смысловое обновление: **2026-08-22**. AI-index maintenance / privilege-separation chain #301/#311/#312/#313 and Content Freshness reconciliation #314 are accepted in `master`; #314 merged as `{master}`. Exact #314 head `5ab62536d37271c7b13c7931a1426da88ed93731` passed Build #2523 / `32563926367`, CodeQL #2103 / `32563926355`, Dependency Review #1887 / `32563926359` and Content Freshness #251 / `32563926364` with 0 findings. Canonical master Content Freshness run `{freshness_run}` reported **0 findings / 0 warnings / 0 errors**, artifact `{freshness_artifact}`, digest `{freshness_digest}`, and automatically closed issue #78. AI-8 FULL acceptance, AI-6 SEARCH rollback, controlled launch `not-published`, P4.1B sparse pre-launch, P4.1C WAITING and P3.6 WAITING remain unchanged.', 'top snapshot'),
+              ('literal', 'freshness reconciliation SHA:        eef10c07d37d97f75ea47857b304af4c197bf914', f'freshness reconciliation SHA:        {master}', 'freshness SHA'),
+              ('literal', 'master freshness run:               32418834360 — SUCCESS / 0 findings', f'master freshness run:               {freshness_run} — SUCCESS / 0 findings', 'freshness run'),
+              ('regex', r'^- Content Freshness:.*$',
+               f'- Content Freshness: PR #314 merged as `{master}`; canonical master run `{freshness_run}` — SUCCESS with `0 findings / 0 warnings / 0 errors`; artifact `{freshness_artifact}`, digest `{freshness_digest}`; issue #78 is automatically CLOSED / COMPLETED. Only exact `YYYY-MM-DD` canonical timeline dates now participate in repository-drift reconciliation; month/range/`NEXT` labels stay non-authoritative.', 'current freshness'),
+              ('regex', r'^- issue #78 —.*$',
+               f'- issue #78 — CLOSED / COMPLETED after PR #314 and canonical master Content Freshness run `{freshness_run}` reported `0 findings / 0 warnings / 0 errors`; artifact `{freshness_artifact}`, digest `{freshness_digest}`. Closure was performed automatically by the guard, not manually.', 'issue 78'),
+              ('literal', '- issue #111 — authenticated Yandex Webmaster/operator boundary.',
+               '- AI-index maintenance #301/#311/#312/#313/#314 — ACCEPTED: one bounded changed-chunk provider refresh, provider-free exact-artifact acceptance, branch-based workflow-run PR authority, PR-scoped secret-free reporting writes, resolved-PR concurrency and exact-date freshness reconciliation. #313 PR CI proves the corrected permission/concurrency contract; successful privileged receipt/report comment execution remains an operational observation for the next legitimate maintenance event.\n- issue #111 — authenticated Yandex Webmaster/operator boundary.', 'maintenance chain'),
+          ])
+
+          patch('docs/ROADMAP.md', [
+              ('regex', r'^> Обновлено:.*$',
+               f'> Обновлено: **2026-08-22**. AI-index maintenance / privilege-separation chain #301/#311/#312/#313 and Content Freshness reconciliation #314 are accepted; #314 merged as `{master}`. Exact #314 head passed Build #2523 / `32563926367`, CodeQL #2103 / `32563926355`, Dependency Review #1887 / `32563926359` and Content Freshness #251 / `32563926364`. Master Content Freshness `{freshness_run}` then reported 0 findings and automatically closed #78; artifact `{freshness_artifact}`, digest `{freshness_digest}`. Product priority remains controlled manual launch; AI-8 FULL is accepted, AI-6 SEARCH is rollback, P4.1B stays sparse pre-launch, P4.1C and P3.6 stay evidence-gated.', 'top snapshot'),
+              ('literal', 'PR #296 is the current controlled evidence reconciliation after AI-8 and Vlezet M8.4 activity.', 'PR #296 is the historical cross-project evidence reconciliation after AI-8 and Vlezet M8.4 activity; PR #314 is the current repository-maintenance / Content Freshness reconciliation.', 'current reconciliation'),
+              ('regex', r'^- Content Freshness:.*$',
+               f'- Content Freshness: PR #314 merged as `{master}`; master run `{freshness_run}` — SUCCESS with `0 findings / 0 warnings / 0 errors`; artifact `{freshness_artifact}`, digest `{freshness_digest}`; issue #78 is automatically CLOSED / COMPLETED. Exact `YYYY-MM-DD` timeline evidence participates in repository-drift reconciliation; approximate labels do not.', 'current freshness'),
+              ('regex', r'^- #78 is CLOSED / COMPLETED.*$',
+               f'- #78 is CLOSED / COMPLETED after PR #314 and canonical master Content Freshness run `{freshness_run}` reported `0 findings / 0 warnings / 0 errors`; artifact `{freshness_artifact}`, digest `{freshness_digest}`. The guard closed it automatically.', 'issue 78'),
+              ('literal', '- #111 remains the authenticated Yandex Webmaster/operator boundary.',
+               '- #301/#311/#312/#313/#314 maintenance chain is DONE / ACCEPTED. Live success of the corrected privileged receipt/report comment POST remains deferred to the next legitimate maintenance event; no provider call is manufactured solely to prove it.\n- #111 remains the authenticated Yandex Webmaster/operator boundary.', 'maintenance chain'),
+          ])
+
+          section = f'''## 2026-08-22 — AI-index maintenance hardening + Content Freshness reconciliation — ACCEPTED\n\n- PR #301 delivered the bounded Projects microcopy update and refreshed exactly one changed semantic chunk through one explicitly authorized real-provider maintenance run `32527922902`: 1 changed / 326 reused / 327 total chunks, one provider request, artifact `9462829364`, artifact SHA-256 `b479f07f818c6a609e8292a69dda9a36c5228e68de694886a0ddb8182ca3b119`. Final head `797187601e76d564477bc2dc96e32d40b8c61f98` passed Build #2515 / `32533088403`, CodeQL #2092 / `32533088388` and Dependency Review #1879 / `32533088380`; merged as `677d129c2c8272629b5bd26c213fd9a91cd20739`.\n- PR #311 introduced reviewed provider-free exact-artifact acceptance for already authorized AI-index maintenance; exact head `7af736064b3a9e1a887a0cc1cc3815e180e3cb18` passed Build #2511 / `32530196972`, CodeQL #2087 / `32530197012` and Dependency Review #1875 / `32530196949`; merged as `1cae0b4511569f20f0653faed1168f9d4349dcef`.\n- PR #312 removed the remaining `workflow_run.pull_requests[]` authority dependency and resolves exactly one owner-authored same-repository PR from the completed Build branch/head. Exact head `9b77ca7964880ad9a94899b8721736846d92140b` passed Build #2516 / `32533987386`, CodeQL #2094 / `32533987373` and Dependency Review #1880 / `32533987375`; merged as `99babe68889ed170ce93864d1cdfa833eac6eb30`.\n- PR #313 corrected PR-comment authority (`pull-requests: write` only on secret-free receipt/report jobs) and workflow-run provider concurrency keyed by the already resolved PR. Provider execution remains read-only/secret-isolated. Exact head `ef1e92137351572bdbd96ba6593ff65f9c9214fb` passed Build #2519 / `32563061301`, CodeQL #2098 / `32563061304` and Dependency Review #1883 / `32563061302`; merged as `5771f4eb70b2c3b64aeeb76ec49c10a9e49ea6df`. Live success of a future privileged comment POST is not inferred from PR CI and is intentionally left for the next legitimate maintenance event.\n- PR #314 fixed the Content Freshness contract so only exact `YYYY-MM-DD` canonical timeline dates can reconcile repository drift; approximate month/range/`NEXT` labels remain non-authoritative and timeline data cannot silently re-verify a controlled snapshot. AI-8 FULL remains the single current product/runtime baseline; the 2026-08-22 maintenance event is historical evidence.\n- #314 exact head `5ab62536d37271c7b13c7931a1426da88ed93731` passed Build #2523 / `32563926367`, CodeQL #2103 / `32563926355`, Dependency Review #1887 / `32563926359` and Content Freshness #251 / `32563926364`; squash-merged as `{master}`. Canonical master Content Freshness `{freshness_run}` reported **0 findings / 0 warnings / 0 errors**; artifact `{freshness_artifact}`, digest `{freshness_digest}`; issue #78 was automatically changed to `Content Freshness Guard — clean` and CLOSED / COMPLETED.\n- Product/external-evidence state did not move: AI-8 FULL remains accepted, AI-6 SEARCH remains rollback, controlled launch remains **10 targets / 38 manual drafts / `not-published`**, P4.1B remains sparse pre-launch, P4.1C WAITING and P3.6 NEXT / WAITING.\n\n'''
+          patch('docs/CHANGELOG.md', [
+              ('regex', r'^> Обновлено:.*$',
+               f'> Обновлено: **2026-08-22**. AI-index maintenance / privilege-separation and Content Freshness reconciliation chain #301/#311/#312/#313/#314 is accepted. #314 merged as `{master}`; master Content Freshness `{freshness_run}` reported 0 findings and automatically closed #78. AI-8 FULL / AI-6 SEARCH rollback, controlled launch `not-published`, P4.1B sparse pre-launch, P4.1C WAITING and P3.6 WAITING remain unchanged.', 'top snapshot'),
+              ('literal', '## 2026-08-21 — Controlled launch publication receipt intake — ACCEPTED', section + '## 2026-08-21 — Controlled launch publication receipt intake — ACCEPTED', 'new changelog section'),
+          ])
+
+          for path in ('docs/PROJECT_STATE.md', 'docs/ROADMAP.md', 'docs/CHANGELOG.md'):
+              body = Path(path).read_text(encoding='utf-8')
+              for marker in ('2026-08-22', master, freshness_run):
+                  if marker not in body:
+                      raise SystemExit(f'{path}: missing marker {marker}')
+
+      - name: Commit bounded reconciliation
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only)"
+          expected=$'docs/CHANGELOG.md\ndocs/PROJECT_STATE.md\ndocs/ROADMAP.md'
+          [[ "$changed" == "$expected" ]] || { printf 'Unexpected write-set:\n%s\n' "$changed" >&2; exit 1; }
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/PROJECT_STATE.md docs/ROADMAP.md docs/CHANGELOG.md
+          git commit -m 'docs: reconcile accepted maintenance state'
+          git push origin HEAD:docs/reconcile-state-2026-08-22
