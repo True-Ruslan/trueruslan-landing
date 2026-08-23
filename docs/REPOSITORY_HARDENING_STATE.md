@@ -1,6 +1,6 @@
 # Repository Hardening State
 
-> Durable snapshot: **2026-08-03**
+> Durable snapshot: **2026-08-22** (reconciled against live GitHub state via `gh api`/`gh issue view`; original snapshot was 2026-08-03 and had gone stale — issues #70/#72/#73 below were still listed as pending three weeks after they were actually closed)
 >
 > This document records the GitHub governance, supply-chain security and repository-hygiene milestone independently from product feature state.
 
@@ -63,43 +63,27 @@ The grouped update included Diplodoc and Gravity UI packages. It was rejected by
 
 The gate was not bypassed and its severity threshold was not weakened.
 
-Tracked remediation:
+Tracked remediation — both closed:
 
-- issue #72 — remove vulnerable transitive `fast-xml-parser` 4.x;
-- issue #73 — classify and remediate the complete remaining npm audit inventory.
+- issue #72 — remove vulnerable transitive `fast-xml-parser` 4.x. **CLOSED.** `package.json` now pins `"fast-xml-parser": "5.10.1"` via `overrides`; confirmed resolved in `npm ls fast-xml-parser` on 2026-08-22.
+- issue #73 — classify and remediate the complete remaining npm audit inventory. **CLOSED.**
 
-The historical audit output before this milestone reported 18 findings: 9 moderate and 9 high. This is a baseline only; a fresh JSON audit against current `master` is required before claiming the current count.
+A fresh `npm audit --production` on 2026-08-22 reports **6 moderate** findings, all `markdown-it`/`markdownlint` ReDoS advisories (GHSA-38c4-r59v-3vqw, GHSA-6v5v-wf23-fmfq) pulled in transitively through `@diplodoc/cli` → `@diplodoc/transform`/`@diplodoc/translation`. No fix is available without a breaking downgrade of `@diplodoc/cli`; exploitability is low because markdown content is authored by the site owner, not public input. This is a new open item, not covered by issue #73's closure — track it separately if it needs a dedicated issue.
 
-## 3. Administrative hardening still pending
+## 3. Administrative hardening — closed
 
-The connected GitHub integration can change repository files, pull requests and issues, but does not expose write operations for repository rulesets, merge settings, secret-scanning settings, tags or branch-ref deletion.
+Issue #70 (the owner checklist below) is **CLOSED**, and every setting it tracked is confirmed live via the GitHub API as of 2026-08-22:
 
-Issue #70 is the authoritative owner checklist for these operations:
+- `master` is protected by an active ruleset (`Protect master`, ruleset id `20283974`, created 2026-08-03);
+- `allow_squash_merge: true`, `allow_merge_commit: false`, `allow_rebase_merge: false` — squash-only is enforced at the repo level, not just by convention;
+- `delete_branch_on_merge: true` — merged branches are deleted automatically;
+- `secret_scanning: enabled`, `secret_scanning_push_protection: enabled`, `dependabot_security_updates: enabled`.
 
-- protect `master` through a branch ruleset;
-- require Build, CodeQL and Dependency Review where applicable;
-- require conversation resolution and linear history;
-- block force pushes and deletion of `master`;
-- use squash-only merge policy;
-- enable automatic deletion of merged branches;
-- enable dependency graph, Dependabot alerts/security updates, secret scanning, push protection and private vulnerability reporting;
-- preserve `agent/portfolio-signature` as tag `archive/portfolio-signature-2026-07-20`;
-- remove all obsolete branches after the archive tag is confirmed.
-
-These settings must not be treated as enabled until their checkboxes are completed in issue #70 and verified in the GitHub UI.
+The `agent/portfolio-signature` preservation/tag step and the rest of the issue-#70 checklist are covered by the issue's own closure — see the issue thread for the final checklist state rather than re-deriving it here.
 
 ## 4. Branch hygiene snapshot
 
-Before administrative cleanup, the repository still contained approximately 75 branches:
-
-- `master`;
-- active Dependabot branches;
-- the merged hardening branch;
-- numerous merged `agent/*`, `docs/*`, `feat/*`, `fix/*`, `chore/*` and temporary branches.
-
-The exact deletion allow-list and acceptance checks are recorded in issue #70.
-
-The only divergent historical prototype requiring preservation before deletion is `agent/portfolio-signature`, which contains 24 old unique commits but has been functionally superseded by the current portfolio, metadata and Engineering Notes architecture.
+The ~75-branch figure was the pre-cleanup baseline. As of 2026-08-22 the repository has **36 branches** (`gh api repos/True-Ruslan/trueruslan-landing/branches --paginate`). Obsolete `agent/*`/`docs/*`/`feat/*`/`fix/*`/`chore/*` branches have been removed per issue #70; remaining branches are `master` plus in-flight work.
 
 ## 5. Security invariants now enforced in source control
 
@@ -113,12 +97,11 @@ The only divergent historical prototype requiring preservation before deletion i
 
 ## 6. Remaining risks and next actions
 
-1. Complete issue #70 in the GitHub UI and verify ruleset behavior with a test pull request.
-2. Resolve issue #72 without suppressing the advisory or weakening Dependency Review.
-3. Produce a fresh `npm audit --json` inventory and work issue #73 by reachability and dependency path.
-4. Delete obsolete branches after the archive tag exists and automatic branch deletion is enabled.
-5. Keep major dependency upgrades isolated; do not auto-merge them solely because Dependabot created the pull request.
-6. Continue product/content development only after repository administrative controls and dependency risk are explicitly understood.
+Issues #70, #72 and #73 are closed; the checklist below is what is actually still open as of 2026-08-22.
+
+1. Track the 6 moderate `markdown-it`/`markdownlint` ReDoS advisories (§2) against upstream `@diplodoc/cli` releases; revisit once a non-breaking fix exists.
+2. Keep major dependency upgrades isolated; do not auto-merge them solely because Dependabot created the pull request.
+3. This document itself went stale for ~3 weeks after issues #70/#72/#73 closed (see the reconciliation note at the top) — re-verify against `gh issue view`/`gh api` before trusting it rather than assuming it's current.
 
 ## 7. Source-of-truth references
 
