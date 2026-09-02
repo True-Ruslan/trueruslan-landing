@@ -163,12 +163,12 @@ test('applySourcesKnowledgeBase replaces only the generated bibliography placeho
   assert.doesNotMatch(html, /data-tr-sources-placeholder/);
 });
 
-test('canonical data/sources.json preserves the 31 migrated bibliography records', () => {
+test('canonical data/sources.json preserves the migrated bibliography records', () => {
   const registryPath = path.join(process.cwd(), 'data', 'sources.json');
   assert.ok(fs.existsSync(registryPath), 'canonical data/sources.json must exist after migration');
 
   const sources = loadSourcesRegistry(registryPath);
-  assert.equal(sources.length, 31);
+  assert.equal(sources.length, 47);
 
   const first = sources.find((source) => source.url === 'https://habr.com/ru/companies/kts/articles/988510/');
   const blog = sources.find((source) => source.url === 'https://360.yandex.ru/roadtohighload/');
