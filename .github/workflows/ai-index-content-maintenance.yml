@@ -284,10 +284,13 @@ jobs:
           set -euo pipefail
           # Content maintenance is fail-closed. Authority-bearing examples such as
           # scripts/*.js, .github/*, package-lock.json and data/ai-navigator.json
-          # are intentionally excluded from this allowlist.
+          # are intentionally excluded from this allowlist. data/publications.json
+          # and data/sources.json are schema-validated content registries (see
+          # scripts/publication-registry.js and scripts/sources-registry.js) with
+          # no executable surface, so they are allowed as corpus inputs.
           while IFS= read -r changed; do
             case "$changed" in
-              docs/*|scripts/*.test.js|tests/*)
+              docs/*|scripts/*.test.js|tests/*|data/publications.json|data/sources.json)
                 ;;
               *)
                 echo "::error::AI maintenance refuses non-content candidate: $changed"
