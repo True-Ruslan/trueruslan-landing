@@ -9,9 +9,13 @@ const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 const PORT = Number(process.env.PUBLICATIONS_SMOKE_PORT || 4184);
 const {chromium} = requireQualityTool('playwright');
 const {default: AxeBuilder} = requireQualityTool('@axe-core/playwright');
-const EXPECTED_PUBLICATION_IDS = Object.freeze([
+const FEATURED_PUBLICATION_IDS = Object.freeze([
+  'imap-idle-distributed-mail-loader',
   'diplodoc-github-pages',
   'java-algorithmic-problems',
+]);
+const CATALOGUE_PUBLICATION_IDS = Object.freeze([
+  ...FEATURED_PUBLICATION_IDS,
   'automated-conveyor-drive',
 ]);
 const LOCALES = Object.freeze({
@@ -29,8 +33,7 @@ const LOCALES = Object.freeze({
   }),
 });
 
-async function assertEnglishCardSet(root, label) {
-  const expected = EXPECTED_PUBLICATION_IDS.length;
+async function assertEnglishCardSet(root, label, expected) {
   const cards = root.locator('[data-tr-publication-id]');
   const count = await cards.count();
   if (count !== expected) throw new Error(`${label}: expected ${expected} publication cards, got ${count}.`);
@@ -94,22 +97,22 @@ async function assertEnglishPresentation(page, label, {javaScriptEnabled}) {
   for (const text of await catalogue.locator('.tr-publications__group-head h2').allTextContents()) {
     if (text.trim() === 'Технические статьи') throw new Error(`${label}: catalogue section heading leaked Russian UI copy.`);
   }
-  await assertEnglishCardSet(catalogue, `${label} catalogue`);
+  await assertEnglishCardSet(catalogue, `${label} catalogue`, CATALOGUE_PUBLICATION_IDS.length);
 
   if (javaScriptEnabled) {
     const featured = page.locator('.tr-publications-featured--page').first();
     await featured.waitFor({state: 'visible', timeout: 5000});
     const featuredHeading = (await featured.locator('h2').first().textContent())?.trim();
     if (featuredHeading !== 'Featured') throw new Error(`${label}: featured heading is not localized: ${featuredHeading}`);
-    await assertEnglishCardSet(featured, `${label} featured`);
+    await assertEnglishCardSet(featured, `${label} featured`, FEATURED_PUBLICATION_IDS.length);
   }
 }
 
 async function assertFeaturedCardRhythm(page, label) {
   const cards = page.locator('.tr-publications-featured--page .tr-publication-card--featured');
   const count = await cards.count();
-  if (count !== EXPECTED_PUBLICATION_IDS.length) {
-    throw new Error(`${label}: expected ${EXPECTED_PUBLICATION_IDS.length} featured cards for rhythm verification, got ${count}.`);
+  if (count !== FEATURED_PUBLICATION_IDS.length) {
+    throw new Error(`${label}: expected ${FEATURED_PUBLICATION_IDS.length} featured cards for rhythm verification, got ${count}.`);
   }
 
   const rowSelectors = Object.freeze([
@@ -158,15 +161,16 @@ async function assertPublicationContent(page, label, {javaScriptEnabled, locale}
     throw new Error(`${label}: unexpected h1: ${heading}`);
   }
 
-  const expectedCopies = javaScriptEnabled ? 2 : 1;
-  const expectedCardCount = EXPECTED_PUBLICATION_IDS.length * expectedCopies;
+  const expectedCopiesFor = (id) => (javaScriptEnabled && FEATURED_PUBLICATION_IDS.includes(id) ? 2 : 1);
+  const expectedCardCount = CATALOGUE_PUBLICATION_IDS.reduce((sum, id) => sum + expectedCopiesFor(id), 0);
   const cards = page.locator('[data-tr-publication-id]');
   const actualCardCount = await cards.count();
   if (actualCardCount !== expectedCardCount) {
     throw new Error(`${label}: expected ${expectedCardCount} publication cards, got ${actualCardCount}.`);
   }
 
-  for (const id of EXPECTED_PUBLICATION_IDS) {
+  for (const id of CATALOGUE_PUBLICATION_IDS) {
+    const expectedCopies = expectedCopiesFor(id);
     const actualCopies = await page.locator(`[data-tr-publication-id="${id}"]`).count();
     if (actualCopies !== expectedCopies) {
       throw new Error(`${label}: publication ${id} expected ${expectedCopies} visible representation(s), got ${actualCopies}.`);
@@ -303,7 +307,7 @@ async function main() {
 
     writeJsonArtifact('publications-summary.json', {
       checkedAt: new Date().toISOString(),
-      expectedPublicationIds: EXPECTED_PUBLICATION_IDS,
+      expectedPublicationIds: CATALOGUE_PUBLICATION_IDS,
       results,
     });
     console.log('RU and EN Publications enhanced/no-JS browser smoke passed.');

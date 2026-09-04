@@ -130,9 +130,9 @@ test('AI-8 evidence is sanitized and fails closed on excess spend or unexpected 
   assert.throws(() => buildAi8Evidence({sourceCommit: 'a'.repeat(40), before, after, probeReport, clientUnexpectedExternalRequests: 1}));
 });
 
-test('activated repository config targets only the dedicated AI-8 production Worker', () => {
+test('repository config targets only the dedicated AI-8 production Worker, currently off pending an accepted index refresh', () => {
   const config = JSON.parse(fs.readFileSync(path.join(REPOSITORY_ROOT, 'data', 'ai-navigator.json'), 'utf8'));
-  assert.equal(config.mode, 'full');
+  assert.equal(config.mode, 'off');
   assert.equal(config.workerBaseUrl, DEPLOYED_PRODUCTION_WORKER);
   assert.notEqual(config.workerBaseUrl, ACCEPTED_SEARCH_WORKER);
 });
