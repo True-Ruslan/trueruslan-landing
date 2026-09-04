@@ -23,7 +23,7 @@ test('canonical Publications Registry owns English presentation without a second
   assert.equal(exists('data/publications-en.json'), false, 'P3.5C must not create publications-en.json');
 
   const raw = JSON.parse(read('data/publications.json'));
-  assert.equal(raw.length, 3);
+  assert.equal(raw.length, 4);
   for (const entry of raw) {
     assert.equal(typeof entry.en, 'object', `${entry.id} must keep English presentation in the canonical record`);
     assert.equal(typeof entry.en.summary, 'string');

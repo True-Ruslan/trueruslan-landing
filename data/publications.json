@@ -1,5 +1,27 @@
 [
   {
+    "id": "imap-idle-distributed-mail-loader",
+    "title": "Как мы заменили 30-минутный polling на IMAP IDLE и построили маленькую распределённую систему",
+    "kind": "technical-article",
+    "platform": "Habr",
+    "date": "2026-08-17",
+    "role": "author",
+    "language": "ru",
+    "summary": "История эволюции почтового загрузчика прайс-листов: переход от простого polling каждые 30 минут к событийной архитектуре на IMAP IDLE — и цена этого перехода, потребовавшая координации через PostgreSQL leases, идемпотентности и управления конкурентностью.",
+    "topics": ["IMAP IDLE", "Распределённые системы", "PostgreSQL"],
+    "en": {
+      "summary": "The story of evolving a mail-based price-list loader from a simple 30-minute polling job to an event-driven IMAP IDLE architecture — and the cost of that shift: coordination via PostgreSQL leases, idempotency and concurrency control.",
+      "topics": ["IMAP IDLE", "Distributed systems", "PostgreSQL"]
+    },
+    "canonicalUrl": "https://habr.com/ru/articles/1065768/",
+    "links": [],
+    "featured": true,
+    "featuredOrder": 1,
+    "relatedProjects": [],
+    "relatedNotes": [],
+    "verifiedAt": "2026-09-02"
+  },
+  {
     "id": "diplodoc-github-pages",
     "title": "Простенький лендинг/wiki для вас и вашего проекта или как покорить Diplodoc'а и опубликовать на GitHub Pages",
     "kind": "technical-article",
@@ -16,7 +38,7 @@
     "canonicalUrl": "https://habr.com/ru/articles/936508/",
     "links": [],
     "featured": true,
-    "featuredOrder": 1,
+    "featuredOrder": 2,
     "relatedProjects": [],
     "relatedNotes": ["portfolio-runtime-boundary", "static-site-quality-gates"],
     "verifiedAt": "2026-08-02"
@@ -38,7 +60,7 @@
     "canonicalUrl": "https://habr.com/ru/articles/932998/",
     "links": [],
     "featured": true,
-    "featuredOrder": 2,
+    "featuredOrder": 3,
     "relatedProjects": [],
     "relatedNotes": [],
     "verifiedAt": "2026-08-02"
@@ -59,8 +81,7 @@
     },
     "canonicalUrl": "https://habr.com/ru/articles/887770/",
     "links": [],
-    "featured": true,
-    "featuredOrder": 3,
+    "featured": false,
     "relatedProjects": [],
     "relatedNotes": [],
     "verifiedAt": "2026-08-02"

@@ -13,7 +13,7 @@ const DOCS_DIR = path.join(ROOT, 'docs');
 test('Engineering Notes Atom feed excludes every external publication record', () => {
   const notes = loadNotesManifest(path.join(ROOT, 'data', 'notes.json'), {docsDir: DOCS_DIR});
   const publications = loadPublicationRegistry(path.join(ROOT, 'data', 'publications.json'), {
-    asOf: '2026-08-02',
+    asOf: '2026-09-02',
     projectSlugs: [],
     noteSlugs: notes.map(({slug}) => slug),
   });

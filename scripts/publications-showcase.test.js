@@ -23,13 +23,13 @@ test('publication showcase owns one canonical data registry and page', () => {
   assert.equal(fs.existsSync(PAGE_PATH), true, 'docs/landing/publications.md must exist');
 
   const registry = JSON.parse(read(REGISTRY_PATH));
-  assert.equal(registry.length, 3, 'initial catalogue must contain exactly three verified Habr articles');
-  assert.deepEqual(registry.map(({date}) => date), ['2025-08-23', '2025-08-01', '2025-03-04']);
+  assert.equal(registry.length, 4, 'catalogue must contain exactly four verified Habr articles');
+  assert.deepEqual(registry.map(({date}) => date), ['2026-08-17', '2025-08-23', '2025-08-01', '2025-03-04']);
   assert.equal(new Set(registry.map(({id}) => id)).size, registry.length);
   assert.equal(registry.every(({platform}) => platform === 'Habr'), true);
   assert.equal(registry.every(({kind}) => kind === 'technical-article'), true);
   assert.equal(registry.every(({role}) => role === 'author'), true);
-  assert.equal(registry.every(({verifiedAt}) => verifiedAt === '2026-08-02'), true);
+  assert.equal(registry.every(({verifiedAt}) => ['2026-08-02', '2026-09-02'].includes(verifiedAt)), true);
   assert.equal(registry.some((entry) => 'views' in entry || 'votes' in entry || 'likes' in entry), false);
 });
 
