@@ -18,9 +18,9 @@ function config() {
   return JSON.parse(read('data/ai-navigator.json'));
 }
 
-test('public AI config activates only the dedicated AI-8 FULL production candidate', () => {
+test('public AI config is temporarily off pending an accepted index refresh', () => {
   const value = config();
-  assert.equal(value.mode, 'full');
+  assert.equal(value.mode, 'off');
   assert.equal(value.workerBaseUrl, AI8_PRODUCTION_WORKER);
   assert.equal(new URL(value.workerBaseUrl).origin, AI8_PRODUCTION_WORKER);
   assert.equal(value.embeddingModel, 'openai/text-embedding-3-small');

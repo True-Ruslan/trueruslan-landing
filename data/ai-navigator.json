@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "mode": "full",
+  "mode": "off",
   "workerBaseUrl": "https://trueruslan-ai-navigator-ai8-full-production.trueruslan.workers.dev",
   "embeddingModel": "openai/text-embedding-3-small",
   "embeddingDimensions": 512,
