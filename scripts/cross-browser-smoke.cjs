@@ -44,11 +44,11 @@ async function runScenario(browserType, browserName, scenario, baseUrl) {
 
     if (scenario.publications) {
       const cards = page.locator('[data-tr-publication-id]');
-      if (await cards.count() !== 6) {
-        throw new Error(`${browserName} publications page must expose 3 featured and 3 catalogue cards.`);
+      if (await cards.count() !== 7) {
+        throw new Error(`${browserName} publications page must expose 3 featured and 4 catalogue cards.`);
       }
       const externalLinks = page.locator('[data-tr-publication-id] a[target="_blank"][rel="noopener noreferrer"]');
-      if (await externalLinks.count() < 6) {
+      if (await externalLinks.count() < 7) {
         throw new Error(`${browserName} publications external actions are missing safe link attributes.`);
       }
     }

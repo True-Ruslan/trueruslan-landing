@@ -10,6 +10,10 @@ const {
 
 const {chromium} = requireQualityTool('playwright', 'P3.5C English Publications production smoke');
 const PUBLICATIONS = JSON.parse(fs.readFileSync(path.resolve('data/publications.json'), 'utf8'));
+const FEATURED_PUBLICATIONS = PUBLICATIONS
+  .filter((publication) => publication.featured)
+  .sort((a, b) => a.featuredOrder - b.featuredOrder)
+  .slice(0, 3);
 const EXPECTED_DEPLOYED_SHA = process.env.EXPECTED_DEPLOYED_SHA || 'unknown';
 const ARTIFACTS_DIR = path.resolve('production-artifacts');
 const LEGACY_ORIGIN = 'true-ruslan.github.io/trueruslan-landing';
@@ -42,9 +46,9 @@ async function assertSeoPair(page) {
   return {canonical, ru, en, fallback};
 }
 
-async function assertCanonicalPublicationCards(root, label) {
+async function assertCanonicalPublicationCards(root, label, publicationList = PUBLICATIONS) {
   const observed = {};
-  for (const publication of PUBLICATIONS) {
+  for (const publication of publicationList) {
     assert(publication.en?.summary, `canonical registry misses English presentation for ${publication.id}`);
     const cards = root.locator(`[data-tr-publication-id="${publication.id}"]`);
     const count = await cards.count();
@@ -68,8 +72,8 @@ async function assertCanonicalPublicationCards(root, label) {
   return observed;
 }
 
-async function assertEnglishCardSet(root, label) {
-  const expected = PUBLICATIONS.length;
+async function assertEnglishCardSet(root, label, publicationList = PUBLICATIONS) {
+  const expected = publicationList.length;
   const cards = root.locator('[data-tr-publication-id]');
   assert(await cards.count() === expected, `${label}: expected ${expected} cards`);
 
@@ -136,8 +140,8 @@ async function verifyRendered(page) {
   await featured.waitFor({state: 'visible', timeout: 10000});
   const featuredHeading = (await featured.locator('h2').first().textContent())?.trim();
   assert(featuredHeading === 'Featured', `English Publications featured heading drifted: ${featuredHeading}`);
-  await assertEnglishCardSet(featured, 'English Publications rendered featured');
-  await assertCanonicalPublicationCards(featured, 'English Publications rendered featured');
+  await assertEnglishCardSet(featured, 'English Publications rendered featured', FEATURED_PUBLICATIONS);
+  await assertCanonicalPublicationCards(featured, 'English Publications rendered featured', FEATURED_PUBLICATIONS);
 
   const html = await page.content();
   assert(!html.includes(LEGACY_ORIGIN), 'English Publications leaks legacy Pages origin');
