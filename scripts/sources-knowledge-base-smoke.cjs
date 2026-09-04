@@ -1,3 +1,6 @@
+const fs = require('node:fs');
+const path = require('node:path');
+
 const {requireQualityTool, launchChromium} = require('./quality-harness/tools.cjs');
 const {startStaticServer} = require('./quality-harness/static-server.cjs');
 const {createScenarioPage} = require('./quality-harness/browser.cjs');
@@ -7,7 +10,9 @@ const {VIEWPORTS} = require('./quality-harness/scenarios.cjs');
 
 const PORT = Number(process.env.SOURCES_KB_SMOKE_PORT || 4182);
 const ROUTE = '/bibliography/';
-const EXPECTED_SOURCE_COUNT = 31;
+const EXPECTED_SOURCE_COUNT = JSON.parse(
+  fs.readFileSync(path.resolve(__dirname, '..', 'data', 'sources.json'), 'utf8'),
+).sources.length;
 const FIRST_SOURCE_ID = 'source-kak-my-sokratili-obem-dannyh-v-10-raz-ne-povrediv-polzovatelskom-988510';
 
 const {chromium} = requireQualityTool('playwright', 'Sources Knowledge Base smoke tool');
