@@ -7,7 +7,8 @@ graphify-out/
 /quality-artifacts/
 /private/search-discovery/
 /private/distribution/
-/docs/_includes/publications-catalogue.md
+/docs/_includes/
+/production-smoke-report.json
 .dev.vars*
 .env*
 .wrangler/
